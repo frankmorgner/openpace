@@ -1,0 +1,4121 @@
+Index: openssl/Makefile.org
+===================================================================
+--- openssl.orig/Makefile.org	2009-10-14 21:16:38.000000000 +0200
++++ openssl/Makefile.org	2009-06-20 23:49:47.000000000 +0200
+@@ -117,6 +117,7 @@
+ 	md2 md4 md5 sha mdc2 hmac ripemd whrlpool \
+ 	des aes rc2 rc4 rc5 idea bf cast camellia seed modes \
+ 	bn ec rsa dsa ecdsa dh ecdh dso engine \
++	cmac \
+ 	buffer bio stack lhash rand err \
+ 	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
+ 	cms pqueue ts jpake store
+Index: openssl/crypto/ec/ec_curve.c
+===================================================================
+--- openssl.orig/crypto/ec/ec_curve.c	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/ec/ec_curve.c	2009-09-11 20:50:27.000000000 +0200
+@@ -1817,6 +1817,436 @@
+ 	  0xBA,0xFC,0xA7,0x5E }
+ 	};
+ 
++/* For the definition of BP curves see
++ *  http://www.ecc-brainpool.org/download/BP-Kurven-aktuell.pdf or
++ *  http://www.ietf.org/internet-drafts/draft-lochter-pkix-brainpool-ecc-03.txt
++ * These curves are generated verifiable at random, nevertheless the seed is
++ * omitted as parameter because the generation mechanism is different from 
++ * those defined in ANSI X9.62.
++ */
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+20*6]; }
++   _EC_brainpoolP160r1 = {
++	{ NID_X9_62_prime_field, 0,20,1 },
++	{							/* no seed */
++	  0xE9,0x5E,0x4A,0x5F,0x73,0x70,0x59,0xDC,0x60,0xDF,	/* p */
++	  0xC7,0xAD,0x95,0xB3,0xD8,0x13,0x95,0x15,0x62,0x0F,
++	  0x34,0x0E,0x7B,0xE2,0xA2,0x80,0xEB,0x74,0xE2,0xBE,	/* a */
++	  0x61,0xBA,0xDA,0x74,0x5D,0x97,0xE8,0xF7,0xC3,0x00,   
++	  0x1E,0x58,0x9A,0x85,0x95,0x42,0x34,0x12,0x13,0x4F,	/* b */
++	  0xAA,0x2D,0xBD,0xEC,0x95,0xC8,0xD8,0x67,0x5E,0x58,
++	  0xBE,0xD5,0xAF,0x16,0xEA,0x3F,0x6A,0x4F,0x62,0x93,	/* x */
++	  0x8C,0x46,0x31,0xEB,0x5A,0xF7,0xBD,0xBC,0xDB,0xC3,
++	  0x16,0x67,0xCB,0x47,0x7A,0x1A,0x8E,0xC3,0x38,0xF9,	/* y */
++	  0x47,0x41,0x66,0x9C,0x97,0x63,0x16,0xDA,0x63,0x21,
++	  0xE9,0x5E,0x4A,0x5F,0x73,0x70,0x59,0xDC,0x60,0xDF,	/* order */
++	  0x59,0x91,0xD4,0x50,0x29,0x40,0x9E,0x60,0xFC,0x09 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+20*6]; }
++   _EC_brainpoolP160t1 = {
++	{ NID_X9_62_prime_field, 0,20,1 },
++	{							/* no seed */
++	  0xE9,0x5E,0x4A,0x5F,0x73,0x70,0x59,0xDC,0x60,0xDF,	/* p */
++	  0xC7,0xAD,0x95,0xB3,0xD8,0x13,0x95,0x15,0x62,0x0F,
++	  0xE9,0x5E,0x4A,0x5F,0x73,0x70,0x59,0xDC,0x60,0xDF,	/* a */
++	  0xC7,0xAD,0x95,0xB3,0xD8,0x13,0x95,0x15,0x62,0x0C,
++	  0x7A,0x55,0x6B,0x6D,0xAE,0x53,0x5B,0x7B,0x51,0xED,	/* b */
++	  0x2C,0x4D,0x7D,0xAA,0x7A,0x0B,0x5C,0x55,0xF3,0x80,
++	  0xB1,0x99,0xB1,0x3B,0x9B,0x34,0xEF,0xC1,0x39,0x7E,	/* x */
++	  0x64,0xBA,0xEB,0x05,0xAC,0xC2,0x65,0xFF,0x23,0x78,
++	  0xAD,0xD6,0x71,0x8B,0x7C,0x7C,0x19,0x61,0xF0,0x99,	/* y */
++	  0x1B,0x84,0x24,0x43,0x77,0x21,0x52,0xC9,0xE0,0xAD,
++	  0xE9,0x5E,0x4A,0x5F,0x73,0x70,0x59,0xDC,0x60,0xDF,	/* order */
++	  0x59,0x91,0xD4,0x50,0x29,0x40,0x9E,0x60,0xFC,0x09 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+24*6]; }
++   _EC_brainpoolP192r1 = {
++	{ NID_X9_62_prime_field, 0,24,1 },
++	{							/* no seed */
++	  0xC3,0x02,0xF4,0x1D,0x93,0x2A,0x36,0xCD,0xA7,0xA3,	/* p */
++	  0x46,0x30,0x93,0xD1,0x8D,0xB7,0x8F,0xCE,0x47,0x6D,
++	  0xE1,0xA8,0x62,0x97,
++	  0x6A,0x91,0x17,0x40,0x76,0xB1,0xE0,0xE1,0x9C,0x39,	/* a */
++	  0xC0,0x31,0xFE,0x86,0x85,0xC1,0xCA,0xE0,0x40,0xE5,
++	  0xC6,0x9A,0x28,0xEF,
++	  0x46,0x9A,0x28,0xEF,0x7C,0x28,0xCC,0xA3,0xDC,0x72,	/* b */
++	  0x1D,0x04,0x4F,0x44,0x96,0xBC,0xCA,0x7E,0xF4,0x14,
++	  0x6F,0xBF,0x25,0xC9,
++	  0xC0,0xA0,0x64,0x7E,0xAA,0xB6,0xA4,0x87,0x53,0xB0,	/* x */
++	  0x33,0xC5,0x6C,0xB0,0xF0,0x90,0x0A,0x2F,0x5C,0x48,
++	  0x53,0x37,0x5F,0xD6,
++	  0x14,0xB6,0x90,0x86,0x6A,0xBD,0x5B,0xB8,0x8B,0x5F,	/* y */
++	  0x48,0x28,0xC1,0x49,0x00,0x02,0xE6,0x77,0x3F,0xA2,
++	  0xFA,0x29,0x9B,0x8F,
++	  0xC3,0x02,0xF4,0x1D,0x93,0x2A,0x36,0xCD,0xA7,0xA3,	/* order */
++	  0x46,0x2F,0x9E,0x9E,0x91,0x6B,0x5B,0xE8,0xF1,0x02,
++	  0x9A,0xC4,0xAC,0xC1 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+24*6]; }
++   _EC_brainpoolP192t1 = {
++	{ NID_X9_62_prime_field, 0,24,1 },
++	{							/* no seed */
++	  0xC3,0x02,0xF4,0x1D,0x93,0x2A,0x36,0xCD,0xA7,0xA3,	/* p */
++	  0x46,0x30,0x93,0xD1,0x8D,0xB7,0x8F,0xCE,0x47,0x6D,
++	  0xE1,0xA8,0x62,0x97,
++	  0xC3,0x02,0xF4,0x1D,0x93,0x2A,0x36,0xCD,0xA7,0xA3,	/* a */
++	  0x46,0x30,0x93,0xD1,0x8D,0xB7,0x8F,0xCE,0x47,0x6D,
++	  0xE1,0xA8,0x62,0x94,
++	  0x13,0xD5,0x6F,0xFA,0xEC,0x78,0x68,0x1E,0x68,0xF9,	/* b */
++	  0xDE,0xB4,0x3B,0x35,0xBE,0xC2,0xFB,0x68,0x54,0x2E,
++	  0x27,0x89,0x7B,0x79,
++	  0x3A,0xE9,0xE5,0x8C,0x82,0xF6,0x3C,0x30,0x28,0x2E,	/* x */
++	  0x1F,0xE7,0xBB,0xF4,0x3F,0xA7,0x2C,0x44,0x6A,0xF6,
++	  0xF4,0x61,0x81,0x29,
++	  0x09,0x7E,0x2C,0x56,0x67,0xC2,0x22,0x3A,0x90,0x2A,	/* y */
++	  0xB5,0xCA,0x44,0x9D,0x00,0x84,0xB7,0xE5,0xB3,0xDE,
++	  0x7C,0xCC,0x01,0xC9,
++	  0xC3,0x02,0xF4,0x1D,0x93,0x2A,0x36,0xCD,0xA7,0xA3,	/* order */
++	  0x46,0x2F,0x9E,0x9E,0x91,0x6B,0x5B,0xE8,0xF1,0x02,
++	  0x9A,0xC4,0xAC,0xC1 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+28*6]; }
++   _EC_brainpoolP224r1 = {
++	{ NID_X9_62_prime_field, 0,28,1 },
++	{							/* no seed */
++	  0xD7,0xC1,0x34,0xAA,0x26,0x43,0x66,0x86,0x2A,0x18,	/* p */
++	  0x30,0x25,0x75,0xD1,0xD7,0x87,0xB0,0x9F,0x07,0x57,
++	  0x97,0xDA,0x89,0xF5,0x7E,0xC8,0xC0,0xFF,
++	  0x68,0xA5,0xE6,0x2C,0xA9,0xCE,0x6C,0x1C,0x29,0x98,	/* a */
++	  0x03,0xA6,0xC1,0x53,0x0B,0x51,0x4E,0x18,0x2A,0xD8,
++	  0xB0,0x04,0x2A,0x59,0xCA,0xD2,0x9F,0x43,
++	  0x25,0x80,0xF6,0x3C,0xCF,0xE4,0x41,0x38,0x87,0x07,	/* b */
++	  0x13,0xB1,0xA9,0x23,0x69,0xE3,0x3E,0x21,0x35,0xD2,
++	  0x66,0xDB,0xB3,0x72,0x38,0x6C,0x40,0x0B,
++	  0x0D,0x90,0x29,0xAD,0x2C,0x7E,0x5C,0xF4,0x34,0x08,	/* x */
++	  0x23,0xB2,0xA8,0x7D,0xC6,0x8C,0x9E,0x4C,0xE3,0x17,
++	  0x4C,0x1E,0x6E,0xFD,0xEE,0x12,0xC0,0x7D,
++	  0x58,0xAA,0x56,0xF7,0x72,0xC0,0x72,0x6F,0x24,0xC6,	/* y */
++	  0xB8,0x9E,0x4E,0xCD,0xAC,0x24,0x35,0x4B,0x9E,0x99,
++	  0xCA,0xA3,0xF6,0xD3,0x76,0x14,0x02,0xCD,
++	  0xD7,0xC1,0x34,0xAA,0x26,0x43,0x66,0x86,0x2A,0x18,	/* order */
++	  0x30,0x25,0x75,0xD0,0xFB,0x98,0xD1,0x16,0xBC,0x4B,
++	  0x6D,0xDE,0xBC,0xA3,0xA5,0xA7,0x93,0x9F }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+28*6]; }
++   _EC_brainpoolP224t1 = {
++	{ NID_X9_62_prime_field, 0,28,1 },
++	{							/* no seed */
++	  0xD7,0xC1,0x34,0xAA,0x26,0x43,0x66,0x86,0x2A,0x18,	/* p */
++	  0x30,0x25,0x75,0xD1,0xD7,0x87,0xB0,0x9F,0x07,0x57,
++	  0x97,0xDA,0x89,0xF5,0x7E,0xC8,0xC0,0xFF,
++	  0xD7,0xC1,0x34,0xAA,0x26,0x43,0x66,0x86,0x2A,0x18,	/* a */
++	  0x30,0x25,0x75,0xD1,0xD7,0x87,0xB0,0x9F,0x07,0x57,
++	  0x97,0xDA,0x89,0xF5,0x7E,0xC8,0xC0,0xFC,
++	  0x4B,0x33,0x7D,0x93,0x41,0x04,0xCD,0x7B,0xEF,0x27,	/* b */
++	  0x1B,0xF6,0x0C,0xED,0x1E,0xD2,0x0D,0xA1,0x4C,0x08,
++	  0xB3,0xBB,0x64,0xF1,0x8A,0x60,0x88,0x8D,
++	  0x6A,0xB1,0xE3,0x44,0xCE,0x25,0xFF,0x38,0x96,0x42,	/* x */
++	  0x4E,0x7F,0xFE,0x14,0x76,0x2E,0xCB,0x49,0xF8,0x92,
++	  0x8A,0xC0,0xC7,0x60,0x29,0xB4,0xD5,0x80,
++	  0x03,0x74,0xE9,0xF5,0x14,0x3E,0x56,0x8C,0xD2,0x3F,	/* y */
++	  0x3F,0x4D,0x7C,0x0D,0x4B,0x1E,0x41,0xC8,0xCC,0x0D,
++	  0x1C,0x6A,0xBD,0x5F,0x1A,0x46,0xDB,0x4C,
++	  0xD7,0xC1,0x34,0xAA,0x26,0x43,0x66,0x86,0x2A,0x18,	/* order */
++	  0x30,0x25,0x75,0xD0,0xFB,0x98,0xD1,0x16,0xBC,0x4B,
++	  0x6D,0xDE,0xBC,0xA3,0xA5,0xA7,0x93,0x9F }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+32*6]; }
++   _EC_brainpoolP256r1 = {
++	{ NID_X9_62_prime_field, 0,32,1 },
++	{							/* no seed */
++	  0xA9,0xFB,0x57,0xDB,0xA1,0xEE,0xA9,0xBC,0x3E,0x66,	/* p */
++	  0x0A,0x90,0x9D,0x83,0x8D,0x72,0x6E,0x3B,0xF6,0x23,
++	  0xD5,0x26,0x20,0x28,0x20,0x13,0x48,0x1D,0x1F,0x6E,
++	  0x53,0x77,
++	  0x7D,0x5A,0x09,0x75,0xFC,0x2C,0x30,0x57,0xEE,0xF6,	/* a */
++	  0x75,0x30,0x41,0x7A,0xFF,0xE7,0xFB,0x80,0x55,0xC1,
++	  0x26,0xDC,0x5C,0x6C,0xE9,0x4A,0x4B,0x44,0xF3,0x30,
++	  0xB5,0xD9,
++	  0x26,0xDC,0x5C,0x6C,0xE9,0x4A,0x4B,0x44,0xF3,0x30,	/* b */
++	  0xB5,0xD9,0xBB,0xD7,0x7C,0xBF,0x95,0x84,0x16,0x29,
++	  0x5C,0xF7,0xE1,0xCE,0x6B,0xCC,0xDC,0x18,0xFF,0x8C,
++	  0x07,0xB6,
++	  0x8B,0xD2,0xAE,0xB9,0xCB,0x7E,0x57,0xCB,0x2C,0x4B,	/* x */
++	  0x48,0x2F,0xFC,0x81,0xB7,0xAF,0xB9,0xDE,0x27,0xE1,
++	  0xE3,0xBD,0x23,0xC2,0x3A,0x44,0x53,0xBD,0x9A,0xCE,
++	  0x32,0x62,
++	  0x54,0x7E,0xF8,0x35,0xC3,0xDA,0xC4,0xFD,0x97,0xF8,	/* y */
++	  0x46,0x1A,0x14,0x61,0x1D,0xC9,0xC2,0x77,0x45,0x13,
++	  0x2D,0xED,0x8E,0x54,0x5C,0x1D,0x54,0xC7,0x2F,0x04,
++	  0x69,0x97,
++	  0xA9,0xFB,0x57,0xDB,0xA1,0xEE,0xA9,0xBC,0x3E,0x66,	/* order */
++	  0x0A,0x90,0x9D,0x83,0x8D,0x71,0x8C,0x39,0x7A,0xA3,
++	  0xB5,0x61,0xA6,0xF7,0x90,0x1E,0x0E,0x82,0x97,0x48,
++	  0x56,0xA7 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+32*6]; }
++   _EC_brainpoolP256t1 = {
++	{ NID_X9_62_prime_field, 0,32,1 },
++	{							/* no seed */
++	  0xA9,0xFB,0x57,0xDB,0xA1,0xEE,0xA9,0xBC,0x3E,0x66,	/* p */
++	  0x0A,0x90,0x9D,0x83,0x8D,0x72,0x6E,0x3B,0xF6,0x23,
++	  0xD5,0x26,0x20,0x28,0x20,0x13,0x48,0x1D,0x1F,0x6E,
++	  0x53,0x77,
++	  0xA9,0xFB,0x57,0xDB,0xA1,0xEE,0xA9,0xBC,0x3E,0x66,	/* a */
++	  0x0A,0x90,0x9D,0x83,0x8D,0x72,0x6E,0x3B,0xF6,0x23,
++	  0xD5,0x26,0x20,0x28,0x20,0x13,0x48,0x1D,0x1F,0x6E,
++	  0x53,0x74,
++	  0x66,0x2C,0x61,0xC4,0x30,0xD8,0x4E,0xA4,0xFE,0x66,	/* b */
++	  0xA7,0x73,0x3D,0x0B,0x76,0xB7,0xBF,0x93,0xEB,0xC4,
++	  0xAF,0x2F,0x49,0x25,0x6A,0xE5,0x81,0x01,0xFE,0xE9,
++	  0x2B,0x04,
++	  0xA3,0xE8,0xEB,0x3C,0xC1,0xCF,0xE7,0xB7,0x73,0x22,	/* x */
++	  0x13,0xB2,0x3A,0x65,0x61,0x49,0xAF,0xA1,0x42,0xC4,
++	  0x7A,0xAF,0xBC,0x2B,0x79,0xA1,0x91,0x56,0x2E,0x13,
++	  0x05,0xF4,
++	  0x2D,0x99,0x6C,0x82,0x34,0x39,0xC5,0x6D,0x7F,0x7B,	/* y */
++	  0x22,0xE1,0x46,0x44,0x41,0x7E,0x69,0xBC,0xB6,0xDE,
++	  0x39,0xD0,0x27,0x00,0x1D,0xAB,0xE8,0xF3,0x5B,0x25,
++	  0xC9,0xBE,
++	  0xA9,0xFB,0x57,0xDB,0xA1,0xEE,0xA9,0xBC,0x3E,0x66,	/* order */
++	  0x0A,0x90,0x9D,0x83,0x8D,0x71,0x8C,0x39,0x7A,0xA3,
++	  0xB5,0x61,0xA6,0xF7,0x90,0x1E,0x0E,0x82,0x97,0x48,
++	  0x56,0xA7 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+40*6]; }
++   _EC_brainpoolP320r1 = {
++	{ NID_X9_62_prime_field, 0,40,1 },
++	{							/* no seed */
++
++	  0xD3,0x5E,0x47,0x20,0x36,0xBC,0x4F,0xB7,0xE1,0x3C,	/* p */
++	  0x78,0x5E,0xD2,0x01,0xE0,0x65,0xF9,0x8F,0xCF,0xA6,
++	  0xF6,0xF4,0x0D,0xEF,0x4F,0x92,0xB9,0xEC,0x78,0x93,
++	  0xEC,0x28,0xFC,0xD4,0x12,0xB1,0xF1,0xB3,0x2E,0x27,
++	  0x3E,0xE3,0x0B,0x56,0x8F,0xBA,0xB0,0xF8,0x83,0xCC,	/* a */
++	  0xEB,0xD4,0x6D,0x3F,0x3B,0xB8,0xA2,0xA7,0x35,0x13,
++	  0xF5,0xEB,0x79,0xDA,0x66,0x19,0x0E,0xB0,0x85,0xFF,
++	  0xA9,0xF4,0x92,0xF3,0x75,0xA9,0x7D,0x86,0x0E,0xB4,
++	  0x52,0x08,0x83,0x94,0x9D,0xFD,0xBC,0x42,0xD3,0xAD,	/* b */
++	  0x19,0x86,0x40,0x68,0x8A,0x6F,0xE1,0x3F,0x41,0x34,
++	  0x95,0x54,0xB4,0x9A,0xCC,0x31,0xDC,0xCD,0x88,0x45,
++	  0x39,0x81,0x6F,0x5E,0xB4,0xAC,0x8F,0xB1,0xF1,0xA6,
++	  0x43,0xBD,0x7E,0x9A,0xFB,0x53,0xD8,0xB8,0x52,0x89,	/* x */
++	  0xBC,0xC4,0x8E,0xE5,0xBF,0xE6,0xF2,0x01,0x37,0xD1,
++	  0x0A,0x08,0x7E,0xB6,0xE7,0x87,0x1E,0x2A,0x10,0xA5,
++	  0x99,0xC7,0x10,0xAF,0x8D,0x0D,0x39,0xE2,0x06,0x11,
++	  0x14,0xFD,0xD0,0x55,0x45,0xEC,0x1C,0xC8,0xAB,0x40,	/* y */
++	  0x93,0x24,0x7F,0x77,0x27,0x5E,0x07,0x43,0xFF,0xED,
++	  0x11,0x71,0x82,0xEA,0xA9,0xC7,0x78,0x77,0xAA,0xAC,
++	  0x6A,0xC7,0xD3,0x52,0x45,0xD1,0x69,0x2E,0x8E,0xE1,
++	  0xD3,0x5E,0x47,0x20,0x36,0xBC,0x4F,0xB7,0xE1,0x3C,	/* order */
++	  0x78,0x5E,0xD2,0x01,0xE0,0x65,0xF9,0x8F,0xCF,0xA5,
++	  0xB6,0x8F,0x12,0xA3,0x2D,0x48,0x2E,0xC7,0xEE,0x86,
++	  0x58,0xE9,0x86,0x91,0x55,0x5B,0x44,0xC5,0x93,0x11 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+40*6]; }
++   _EC_brainpoolP320t1 = {
++	{ NID_X9_62_prime_field, 0,40,1 },
++	{							/* no seed */
++	  0xD3,0x5E,0x47,0x20,0x36,0xBC,0x4F,0xB7,0xE1,0x3C,	/* p */
++	  0x78,0x5E,0xD2,0x01,0xE0,0x65,0xF9,0x8F,0xCF,0xA6,
++	  0xF6,0xF4,0x0D,0xEF,0x4F,0x92,0xB9,0xEC,0x78,0x93,
++	  0xEC,0x28,0xFC,0xD4,0x12,0xB1,0xF1,0xB3,0x2E,0x27,
++	  0xD3,0x5E,0x47,0x20,0x36,0xBC,0x4F,0xB7,0xE1,0x3C,	/* a */
++	  0x78,0x5E,0xD2,0x01,0xE0,0x65,0xF9,0x8F,0xCF,0xA6,
++	  0xF6,0xF4,0x0D,0xEF,0x4F,0x92,0xB9,0xEC,0x78,0x93,
++	  0xEC,0x28,0xFC,0xD4,0x12,0xB1,0xF1,0xB3,0x2E,0x24,
++	  0xA7,0xF5,0x61,0xE0,0x38,0xEB,0x1E,0xD5,0x60,0xB3,	/* b */
++	  0xD1,0x47,0xDB,0x78,0x20,0x13,0x06,0x4C,0x19,0xF2,
++	  0x7E,0xD2,0x7C,0x67,0x80,0xAA,0xF7,0x7F,0xB8,0xA5,
++	  0x47,0xCE,0xB5,0xB4,0xFE,0xF4,0x22,0x34,0x03,0x53,
++	  0x92,0x5B,0xE9,0xFB,0x01,0xAF,0xC6,0xFB,0x4D,0x3E,	/* x */
++	  0x7D,0x49,0x90,0x01,0x0F,0x81,0x34,0x08,0xAB,0x10,
++	  0x6C,0x4F,0x09,0xCB,0x7E,0xE0,0x78,0x68,0xCC,0x13,
++	  0x6F,0xFF,0x33,0x57,0xF6,0x24,0xA2,0x1B,0xED,0x52,
++	  0x63,0xBA,0x3A,0x7A,0x27,0x48,0x3E,0xBF,0x66,0x71,	/* y */
++	  0xDB,0xEF,0x7A,0xBB,0x30,0xEB,0xEE,0x08,0x4E,0x58,
++	  0xA0,0xB0,0x77,0xAD,0x42,0xA5,0xA0,0x98,0x9D,0x1E,
++	  0xE7,0x1B,0x1B,0x9B,0xC0,0x45,0x5F,0xB0,0xD2,0xC3,
++	  0xD3,0x5E,0x47,0x20,0x36,0xBC,0x4F,0xB7,0xE1,0x3C,	/* order */
++	  0x78,0x5E,0xD2,0x01,0xE0,0x65,0xF9,0x8F,0xCF,0xA5,
++	  0xB6,0x8F,0x12,0xA3,0x2D,0x48,0x2E,0xC7,0xEE,0x86,
++	  0x58,0xE9,0x86,0x91,0x55,0x5B,0x44,0xC5,0x93,0x11 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+48*6]; }
++   _EC_brainpoolP384r1 = {
++	{ NID_X9_62_prime_field, 0,48,1 },
++	{							/* no seed */
++	  0x8C,0xB9,0x1E,0x82,0xA3,0x38,0x6D,0x28,0x0F,0x5D,	/* p */
++	  0x6F,0x7E,0x50,0xE6,0x41,0xDF,0x15,0x2F,0x71,0x09,
++	  0xED,0x54,0x56,0xB4,0x12,0xB1,0xDA,0x19,0x7F,0xB7,
++	  0x11,0x23,0xAC,0xD3,0xA7,0x29,0x90,0x1D,0x1A,0x71,
++	  0x87,0x47,0x00,0x13,0x31,0x07,0xEC,0x53,
++	  0x7B,0xC3,0x82,0xC6,0x3D,0x8C,0x15,0x0C,0x3C,0x72,	/* a */
++	  0x08,0x0A,0xCE,0x05,0xAF,0xA0,0xC2,0xBE,0xA2,0x8E,
++	  0x4F,0xB2,0x27,0x87,0x13,0x91,0x65,0xEF,0xBA,0x91,
++	  0xF9,0x0F,0x8A,0xA5,0x81,0x4A,0x50,0x3A,0xD4,0xEB,
++	  0x04,0xA8,0xC7,0xDD,0x22,0xCE,0x28,0x26,
++	  0x04,0xA8,0xC7,0xDD,0x22,0xCE,0x28,0x26,0x8B,0x39,	/* b */
++	  0xB5,0x54,0x16,0xF0,0x44,0x7C,0x2F,0xB7,0x7D,0xE1,
++	  0x07,0xDC,0xD2,0xA6,0x2E,0x88,0x0E,0xA5,0x3E,0xEB,
++	  0x62,0xD5,0x7C,0xB4,0x39,0x02,0x95,0xDB,0xC9,0x94,
++	  0x3A,0xB7,0x86,0x96,0xFA,0x50,0x4C,0x11,
++	  0x1D,0x1C,0x64,0xF0,0x68,0xCF,0x45,0xFF,0xA2,0xA6,	/* x */
++	  0x3A,0x81,0xB7,0xC1,0x3F,0x6B,0x88,0x47,0xA3,0xE7,
++	  0x7E,0xF1,0x4F,0xE3,0xDB,0x7F,0xCA,0xFE,0x0C,0xBD,
++	  0x10,0xE8,0xE8,0x26,0xE0,0x34,0x36,0xD6,0x46,0xAA,
++	  0xEF,0x87,0xB2,0xE2,0x47,0xD4,0xAF,0x1E,
++	  0x8A,0xBE,0x1D,0x75,0x20,0xF9,0xC2,0xA4,0x5C,0xB1,	/* y */
++	  0xEB,0x8E,0x95,0xCF,0xD5,0x52,0x62,0xB7,0x0B,0x29,
++	  0xFE,0xEC,0x58,0x64,0xE1,0x9C,0x05,0x4F,0xF9,0x91,
++	  0x29,0x28,0x0E,0x46,0x46,0x21,0x77,0x91,0x81,0x11,
++	  0x42,0x82,0x03,0x41,0x26,0x3C,0x53,0x15,
++	  0x8C,0xB9,0x1E,0x82,0xA3,0x38,0x6D,0x28,0x0F,0x5D,	/* order */
++	  0x6F,0x7E,0x50,0xE6,0x41,0xDF,0x15,0x2F,0x71,0x09,
++	  0xED,0x54,0x56,0xB3,0x1F,0x16,0x6E,0x6C,0xAC,0x04,
++	  0x25,0xA7,0xCF,0x3A,0xB6,0xAF,0x6B,0x7F,0xC3,0x10,
++	  0x3B,0x88,0x32,0x02,0xE9,0x04,0x65,0x65 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+48*6]; }
++   _EC_brainpoolP384t1 = {
++	{ NID_X9_62_prime_field, 0,48,1 },
++	{							/* no seed */
++	  0x8C,0xB9,0x1E,0x82,0xA3,0x38,0x6D,0x28,0x0F,0x5D,	/* p */
++	  0x6F,0x7E,0x50,0xE6,0x41,0xDF,0x15,0x2F,0x71,0x09,
++	  0xED,0x54,0x56,0xB4,0x12,0xB1,0xDA,0x19,0x7F,0xB7,
++	  0x11,0x23,0xAC,0xD3,0xA7,0x29,0x90,0x1D,0x1A,0x71,
++	  0x87,0x47,0x00,0x13,0x31,0x07,0xEC,0x53,
++	  0x8C,0xB9,0x1E,0x82,0xA3,0x38,0x6D,0x28,0x0F,0x5D,	/* a */
++	  0x6F,0x7E,0x50,0xE6,0x41,0xDF,0x15,0x2F,0x71,0x09,
++	  0xED,0x54,0x56,0xB4,0x12,0xB1,0xDA,0x19,0x7F,0xB7,
++	  0x11,0x23,0xAC,0xD3,0xA7,0x29,0x90,0x1D,0x1A,0x71,
++	  0x87,0x47,0x00,0x13,0x31,0x07,0xEC,0x50,
++	  0x7F,0x51,0x9E,0xAD,0xA7,0xBD,0xA8,0x1B,0xD8,0x26,	/* b */
++	  0xDB,0xA6,0x47,0x91,0x0F,0x8C,0x4B,0x93,0x46,0xED,
++	  0x8C,0xCD,0xC6,0x4E,0x4B,0x1A,0xBD,0x11,0x75,0x6D,
++	  0xCE,0x1D,0x20,0x74,0xAA,0x26,0x3B,0x88,0x80,0x5C,
++	  0xED,0x70,0x35,0x5A,0x33,0xB4,0x71,0xEE,
++	  0x18,0xDE,0x98,0xB0,0x2D,0xB9,0xA3,0x06,0xF2,0xAF,	/* x */
++	  0xCD,0x72,0x35,0xF7,0x2A,0x81,0x9B,0x80,0xAB,0x12,
++	  0xEB,0xD6,0x53,0x17,0x24,0x76,0xFE,0xCD,0x46,0x2A,
++	  0xAB,0xFF,0xC4,0xFF,0x19,0x1B,0x94,0x6A,0x5F,0x54,
++	  0xD8,0xD0,0xAA,0x2F,0x41,0x88,0x08,0xCC,
++	  0x25,0xAB,0x05,0x69,0x62,0xD3,0x06,0x51,0xA1,0x14,	/* y */
++	  0xAF,0xD2,0x75,0x5A,0xD3,0x36,0x74,0x7F,0x93,0x47,
++	  0x5B,0x7A,0x1F,0xCA,0x3B,0x88,0xF2,0xB6,0xA2,0x08,
++	  0xCC,0xFE,0x46,0x94,0x08,0x58,0x4D,0xC2,0xB2,0x91,
++	  0x26,0x75,0xBF,0x5B,0x9E,0x58,0x29,0x28,
++	  0x8C,0xB9,0x1E,0x82,0xA3,0x38,0x6D,0x28,0x0F,0x5D,	/* order */
++	  0x6F,0x7E,0x50,0xE6,0x41,0xDF,0x15,0x2F,0x71,0x09,
++	  0xED,0x54,0x56,0xB3,0x1F,0x16,0x6E,0x6C,0xAC,0x04,
++	  0x25,0xA7,0xCF,0x3A,0xB6,0xAF,0x6B,0x7F,0xC3,0x10,
++	  0x3B,0x88,0x32,0x02,0xE9,0x04,0x65,0x65 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+64*6]; }
++   _EC_brainpoolP512r1 = {
++	{ NID_X9_62_prime_field, 0,64,1 },
++	{							/* no seed */
++	  0xAA,0xDD,0x9D,0xB8,0xDB,0xE9,0xC4,0x8B,0x3F,0xD4,	/* p */
++	  0xE6,0xAE,0x33,0xC9,0xFC,0x07,0xCB,0x30,0x8D,0xB3,
++	  0xB3,0xC9,0xD2,0x0E,0xD6,0x63,0x9C,0xCA,0x70,0x33,
++	  0x08,0x71,0x7D,0x4D,0x9B,0x00,0x9B,0xC6,0x68,0x42,
++	  0xAE,0xCD,0xA1,0x2A,0xE6,0xA3,0x80,0xE6,0x28,0x81,
++	  0xFF,0x2F,0x2D,0x82,0xC6,0x85,0x28,0xAA,0x60,0x56,
++	  0x58,0x3A,0x48,0xF3,
++	  0x78,0x30,0xA3,0x31,0x8B,0x60,0x3B,0x89,0xE2,0x32,	/* a */
++	  0x71,0x45,0xAC,0x23,0x4C,0xC5,0x94,0xCB,0xDD,0x8D,
++	  0x3D,0xF9,0x16,0x10,0xA8,0x34,0x41,0xCA,0xEA,0x98,
++	  0x63,0xBC,0x2D,0xED,0x5D,0x5A,0xA8,0x25,0x3A,0xA1,
++	  0x0A,0x2E,0xF1,0xC9,0x8B,0x9A,0xC8,0xB5,0x7F,0x11,
++	  0x17,0xA7,0x2B,0xF2,0xC7,0xB9,0xE7,0xC1,0xAC,0x4D,
++	  0x77,0xFC,0x94,0xCA,
++	  0x3D,0xF9,0x16,0x10,0xA8,0x34,0x41,0xCA,0xEA,0x98,	/* b */
++	  0x63,0xBC,0x2D,0xED,0x5D,0x5A,0xA8,0x25,0x3A,0xA1,
++	  0x0A,0x2E,0xF1,0xC9,0x8B,0x9A,0xC8,0xB5,0x7F,0x11,
++	  0x17,0xA7,0x2B,0xF2,0xC7,0xB9,0xE7,0xC1,0xAC,0x4D,
++	  0x77,0xFC,0x94,0xCA,0xDC,0x08,0x3E,0x67,0x98,0x40,
++	  0x50,0xB7,0x5E,0xBA,0xE5,0xDD,0x28,0x09,0xBD,0x63,
++	  0x80,0x16,0xF7,0x23,
++	  0x81,0xAE,0xE4,0xBD,0xD8,0x2E,0xD9,0x64,0x5A,0x21,	/* x */
++	  0x32,0x2E,0x9C,0x4C,0x6A,0x93,0x85,0xED,0x9F,0x70,
++	  0xB5,0xD9,0x16,0xC1,0xB4,0x3B,0x62,0xEE,0xF4,0xD0,
++	  0x09,0x8E,0xFF,0x3B,0x1F,0x78,0xE2,0xD0,0xD4,0x8D,
++	  0x50,0xD1,0x68,0x7B,0x93,0xB9,0x7D,0x5F,0x7C,0x6D,
++	  0x50,0x47,0x40,0x6A,0x5E,0x68,0x8B,0x35,0x22,0x09,
++	  0xBC,0xB9,0xF8,0x22,
++	  0x7D,0xDE,0x38,0x5D,0x56,0x63,0x32,0xEC,0xC0,0xEA,	/* y */
++	  0xBF,0xA9,0xCF,0x78,0x22,0xFD,0xF2,0x09,0xF7,0x00,
++	  0x24,0xA5,0x7B,0x1A,0xA0,0x00,0xC5,0x5B,0x88,0x1F,
++	  0x81,0x11,0xB2,0xDC,0xDE,0x49,0x4A,0x5F,0x48,0x5E,
++	  0x5B,0xCA,0x4B,0xD8,0x8A,0x27,0x63,0xAE,0xD1,0xCA,
++	  0x2B,0x2F,0xA8,0xF0,0x54,0x06,0x78,0xCD,0x1E,0x0F,
++	  0x3A,0xD8,0x08,0x92,
++	  0xAA,0xDD,0x9D,0xB8,0xDB,0xE9,0xC4,0x8B,0x3F,0xD4,	/* order */
++	  0xE6,0xAE,0x33,0xC9,0xFC,0x07,0xCB,0x30,0x8D,0xB3,
++	  0xB3,0xC9,0xD2,0x0E,0xD6,0x63,0x9C,0xCA,0x70,0x33,
++	  0x08,0x70,0x55,0x3E,0x5C,0x41,0x4C,0xA9,0x26,0x19,
++	  0x41,0x86,0x61,0x19,0x7F,0xAC,0x10,0x47,0x1D,0xB1,
++	  0xD3,0x81,0x08,0x5D,0xDA,0xDD,0xB5,0x87,0x96,0x82,
++	  0x9C,0xA9,0x00,0x69 }
++	};
++
++static const struct { EC_CURVE_DATA h; unsigned char data[0+64*6]; }
++   _EC_brainpoolP512t1 = {
++	{ NID_X9_62_prime_field, 0,64,1 },
++	{							/* no seed */
++	  0xAA,0xDD,0x9D,0xB8,0xDB,0xE9,0xC4,0x8B,0x3F,0xD4,	/* p */
++	  0xE6,0xAE,0x33,0xC9,0xFC,0x07,0xCB,0x30,0x8D,0xB3,
++	  0xB3,0xC9,0xD2,0x0E,0xD6,0x63,0x9C,0xCA,0x70,0x33,
++	  0x08,0x71,0x7D,0x4D,0x9B,0x00,0x9B,0xC6,0x68,0x42,
++	  0xAE,0xCD,0xA1,0x2A,0xE6,0xA3,0x80,0xE6,0x28,0x81,
++	  0xFF,0x2F,0x2D,0x82,0xC6,0x85,0x28,0xAA,0x60,0x56,
++	  0x58,0x3A,0x48,0xF3,
++	  0xAA,0xDD,0x9D,0xB8,0xDB,0xE9,0xC4,0x8B,0x3F,0xD4,	/* a */
++	  0xE6,0xAE,0x33,0xC9,0xFC,0x07,0xCB,0x30,0x8D,0xB3,
++	  0xB3,0xC9,0xD2,0x0E,0xD6,0x63,0x9C,0xCA,0x70,0x33,
++	  0x08,0x71,0x7D,0x4D,0x9B,0x00,0x9B,0xC6,0x68,0x42,
++	  0xAE,0xCD,0xA1,0x2A,0xE6,0xA3,0x80,0xE6,0x28,0x81,
++	  0xFF,0x2F,0x2D,0x82,0xC6,0x85,0x28,0xAA,0x60,0x56,
++	  0x58,0x3A,0x48,0xF0,
++	  0x7C,0xBB,0xBC,0xF9,0x44,0x1C,0xFA,0xB7,0x6E,0x18,	/* b */
++	  0x90,0xE4,0x68,0x84,0xEA,0xE3,0x21,0xF7,0x0C,0x0B,
++	  0xCB,0x49,0x81,0x52,0x78,0x97,0x50,0x4B,0xEC,0x3E,
++	  0x36,0xA6,0x2B,0xCD,0xFA,0x23,0x04,0x97,0x65,0x40,
++	  0xF6,0x45,0x00,0x85,0xF2,0xDA,0xE1,0x45,0xC2,0x25,
++	  0x53,0xB4,0x65,0x76,0x36,0x89,0x18,0x0E,0xA2,0x57,
++	  0x18,0x67,0x42,0x3E,
++	  0x64,0x0E,0xCE,0x5C,0x12,0x78,0x87,0x17,0xB9,0xC1,	/* x */
++	  0xBA,0x06,0xCB,0xC2,0xA6,0xFE,0xBA,0x85,0x84,0x24,
++	  0x58,0xC5,0x6D,0xDE,0x9D,0xB1,0x75,0x8D,0x39,0xC0,
++	  0x31,0x3D,0x82,0xBA,0x51,0x73,0x5C,0xDB,0x3E,0xA4,
++	  0x99,0xAA,0x77,0xA7,0xD6,0x94,0x3A,0x64,0xF7,0xA3,
++	  0xF2,0x5F,0xE2,0x6F,0x06,0xB5,0x1B,0xAA,0x26,0x96,
++	  0xFA,0x90,0x35,0xDA,
++	  0x5B,0x53,0x4B,0xD5,0x95,0xF5,0xAF,0x0F,0xA2,0xC8,	/* y */
++	  0x92,0x37,0x6C,0x84,0xAC,0xE1,0xBB,0x4E,0x30,0x19,
++	  0xB7,0x16,0x34,0xC0,0x11,0x31,0x15,0x9C,0xAE,0x03,
++	  0xCE,0xE9,0xD9,0x93,0x21,0x84,0xBE,0xEF,0x21,0x6B,
++	  0xD7,0x1D,0xF2,0xDA,0xDF,0x86,0xA6,0x27,0x30,0x6E,
++	  0xCF,0xF9,0x6D,0xBB,0x8B,0xAC,0xE1,0x98,0xB6,0x1E,
++	  0x00,0xF8,0xB3,0x32,
++	  0xAA,0xDD,0x9D,0xB8,0xDB,0xE9,0xC4,0x8B,0x3F,0xD4,	/* order */
++	  0xE6,0xAE,0x33,0xC9,0xFC,0x07,0xCB,0x30,0x8D,0xB3,
++	  0xB3,0xC9,0xD2,0x0E,0xD6,0x63,0x9C,0xCA,0x70,0x33,
++	  0x08,0x70,0x55,0x3E,0x5C,0x41,0x4C,0xA9,0x26,0x19,
++	  0x41,0x86,0x61,0x19,0x7F,0xAC,0x10,0x47,0x1D,0xB1,
++	  0xD3,0x81,0x08,0x5D,0xDA,0xDD,0xB5,0x87,0x96,0x82,
++	  0x9C,0xA9,0x00,0x69 }
++	};
++
++
+ typedef struct _ec_list_element_st {
+ 	int	nid;
+ 	const EC_CURVE_DATA *data;
+@@ -1902,7 +2332,22 @@
+ 	/* IPSec curves */
+ 	{ NID_ipsec3, &_EC_IPSEC_155_ID3.h, "\n\tIPSec/IKE/Oakley curve #3 over a 155 bit binary field.\n""\tNot suitable for ECDSA.\n\tQuestionable extension field!"},
+ 	{ NID_ipsec4, &_EC_IPSEC_185_ID4.h, "\n\tIPSec/IKE/Oakley curve #4 over a 185 bit binary field.\n""\tNot suitable for ECDSA.\n\tQuestionable extension field!"},
+-};
++	/* brainpool curves */
++	{ NID_brainpoolP160r1, &_EC_brainpoolP160r1.h, "BP curve over a 160 bit prime field"},
++	{ NID_brainpoolP160t1, &_EC_brainpoolP160t1.h, "BP curve over a 160 bit prime field"},
++	{ NID_brainpoolP192r1, &_EC_brainpoolP192r1.h, "BP curve over a 192 bit prime field"},
++	{ NID_brainpoolP192t1, &_EC_brainpoolP192t1.h, "BP curve over a 192 bit prime field"},
++	{ NID_brainpoolP224r1, &_EC_brainpoolP224r1.h, "BP curve over a 224 bit prime field"},
++	{ NID_brainpoolP224t1, &_EC_brainpoolP224t1.h, "BP curve over a 224 bit prime field"},
++	{ NID_brainpoolP256r1, &_EC_brainpoolP256r1.h, "BP curve over a 256 bit prime field"},
++	{ NID_brainpoolP256t1, &_EC_brainpoolP256t1.h, "BP curve over a 256 bit prime field"},
++	{ NID_brainpoolP320r1, &_EC_brainpoolP320r1.h, "BP curve over a 320 bit prime field"},
++	{ NID_brainpoolP320t1, &_EC_brainpoolP320t1.h, "BP curve over a 320 bit prime field"},
++	{ NID_brainpoolP384r1, &_EC_brainpoolP384r1.h, "BP curve over a 384 bit prime field"},
++	{ NID_brainpoolP384t1, &_EC_brainpoolP384t1.h, "BP curve over a 384 bit prime field"},
++	{ NID_brainpoolP512r1, &_EC_brainpoolP512r1.h, "BP curve over a 512 bit prime field"},
++	{ NID_brainpoolP512t1, &_EC_brainpoolP512t1.h, "BP curve over a 512 bit prime field"},
++ };
+ 
+ #define curve_list_length (sizeof(curve_list)/sizeof(ec_list_element))
+ 
+Index: openssl/crypto/ecdh/ecdh.h
+===================================================================
+--- openssl.orig/crypto/ecdh/ecdh.h	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/ecdh/ecdh.h	2009-06-20 23:51:16.000000000 +0200
+@@ -86,6 +86,7 @@
+ #endif
+ 
+ const ECDH_METHOD *ECDH_OpenSSL(void);
++const ECDH_METHOD *ECDH_OpenSSL_Point(void);
+ 
+ void	  ECDH_set_default_method(const ECDH_METHOD *);
+ const ECDH_METHOD *ECDH_get_default_method(void);
+Index: openssl/crypto/ecdh/ech_ossl.c
+===================================================================
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/ecdh/ech_ossl.c	2009-06-20 23:51:16.000000000 +0200
+@@ -211,3 +211,113 @@
+ 	if (buf) OPENSSL_free(buf);
+ 	return(ret);
+ 	}
++
++static int ecdh_compute_key_point(void *out, size_t len, const EC_POINT *pub_key,
++	EC_KEY *ecdh, 
++	void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
++
++static ECDH_METHOD openssl_ecdh_meth_point = {
++	"OpenSSL ECDH method with Point",
++	ecdh_compute_key_point,
++#if 0
++	NULL, /* init     */
++	NULL, /* finish   */
++#endif
++	0,    /* flags    */
++	NULL  /* app_data */
++};
++
++const ECDH_METHOD *ECDH_OpenSSL_Point(void)
++	{
++	return &openssl_ecdh_meth_point;
++	}
++/* This implementation calculates the point as in ecdh_compute_key.
++ * Finally an optional KDF is applied to the point rather than to the x-coordinate as done in ecdh_compute_key.
++ */
++int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
++	EC_KEY *ecdh,
++	void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen))
++	{
++	BN_CTX *ctx;
++	EC_POINT *tmp=NULL;
++	const BIGNUM *priv_key;
++	const EC_GROUP* group;
++	int ret= -1;
++	size_t buflen;
++	unsigned char *buf=NULL;
++
++	if (outlen > INT_MAX)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE); /* sort of, anyway */
++		return -1;
++		}
++
++	if ((ctx = BN_CTX_new()) == NULL) goto err;
++	BN_CTX_start(ctx);
++	
++	priv_key = EC_KEY_get0_private_key(ecdh);
++	if (priv_key == NULL)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_NO_PRIVATE_VALUE);
++		goto err;
++		}
++
++	group = EC_KEY_get0_group(ecdh);
++	if ((tmp=EC_POINT_new(group)) == NULL)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
++		goto err;
++		}
++
++	if (!EC_POINT_mul(group, tmp, NULL, pub_key, priv_key, ctx)) 
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_POINT_ARITHMETIC_FAILURE);
++		goto err;
++		}
++		
++
++        buflen = EC_POINT_point2oct(group, tmp,
++                EC_KEY_get_conv_form(ecdh), NULL, 0, ctx);
++        if (buflen < 0)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_BN_LIB);
++		goto err;
++		}
++	if ((buf = OPENSSL_malloc(buflen)) == NULL)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
++		goto err;
++		}
++	
++        if (buflen != EC_POINT_point2oct(group, tmp,
++                    EC_KEY_get_conv_form(ecdh), buf, buflen, ctx))
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_BN_LIB);
++		goto err;
++		}
++
++	if (KDF != 0)
++		{
++		if (KDF(buf, buflen, out, &outlen) == NULL)
++			{
++			ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_KDF_FAILED);
++			goto err;
++			}
++		ret = outlen;
++		}
++	else
++		{
++		/* no KDF, just copy as much as we can */
++		if (outlen > buflen)
++			outlen = buflen;
++		memcpy(out, buf, outlen);
++		ret = outlen;
++		}
++	
++err:
++	if (tmp) EC_POINT_free(tmp);
++	if (ctx) BN_CTX_end(ctx);
++	if (ctx) BN_CTX_free(ctx);
++	if (buf) OPENSSL_free(buf);
++	return(ret);
++	}
+Index: openssl/crypto/err/err.c
+===================================================================
+--- openssl.orig/crypto/err/err.c	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/err/err.c	2009-08-02 08:52:32.000000000 +0200
+@@ -156,6 +156,7 @@
+ {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
+ {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
+ {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
++{ERR_PACK(ERR_LIB_PACE,0,0)		,"PACE routines"},
+ {0,NULL},
+ 	};
+ 
+Index: openssl/crypto/err/err.h
+===================================================================
+--- openssl.orig/crypto/err/err.h	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/err/err.h	2009-08-02 08:52:32.000000000 +0200
+@@ -198,6 +198,7 @@
+ #define ERR_LIB_TS		47
+ #define ERR_LIB_HMAC		48
+ #define ERR_LIB_JPAKE		49
++#define ERR_LIB_PACE		50
+ 
+ #define ERR_LIB_USER		128
+ 
+@@ -234,6 +235,7 @@
+ #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
+ #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
+ #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
++#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
+ 
+ /* Borland C seems too stupid to be able to shift and do longs in
+  * the pre-processor :-( */
+Index: openssl/crypto/err/err_all.c
+===================================================================
+--- openssl.orig/crypto/err/err_all.c	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/err/err_all.c	2009-08-02 08:52:32.000000000 +0200
+@@ -102,6 +102,9 @@
+ #ifndef OPENSSL_NO_JPAKE
+ #include <openssl/jpake.h>
+ #endif
++#ifndef OPENSSL_NO_PACE
++#include <openssl/pace.h>
++#endif
+ 
+ void ERR_load_crypto_strings(void)
+ 	{
+@@ -154,5 +157,8 @@
+ #ifndef OPENSSL_NO_JPAKE
+ 	ERR_load_JPAKE_strings();
+ #endif
++#ifndef OPENSSL_NO_PACE
++	ERR_load_PACE_strings();
++#endif	
+ #endif
+ 	}
+Index: openssl/crypto/err/openssl.ec
+===================================================================
+--- openssl.orig/crypto/err/openssl.ec	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/err/openssl.ec	2009-08-02 08:52:32.000000000 +0200
+@@ -35,6 +35,7 @@
+ L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
+ L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
+ L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
++L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
+ 
+ # additional header files to be scanned for function names
+ L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/objects/objects.txt
+===================================================================
+--- openssl.orig/crypto/objects/objects.txt	2009-10-14 21:16:38.000000000 +0200
++++ openssl/crypto/objects/objects.txt	2009-09-11 20:51:38.000000000 +0200
+@@ -1257,3 +1257,23 @@
+ # There is no OID that just denotes "HMAC" oddly enough...
+ 
+ 			: HMAC				: hmac
++
++# brainpool curve OIDs (see http://www.ecc-brainpool.org)
++# versionOne OBJECT IDENTIFIER ::= {
++# iso(1) identifified-organization(3) teletrust(36) algorithm(3)
++# signature-algorithm(3) ecSign(2) ecStdCurvesAndGeneration(8)
++# ellipticCurve(1) 1 }
++1 3 36 3 3 2 8 1 1 1 : brainpoolP160r1
++1 3 36 3 3 2 8 1 1 2 : brainpoolP160t1
++1 3 36 3 3 2 8 1 1 3 : brainpoolP192r1
++1 3 36 3 3 2 8 1 1 4 : brainpoolP192t1
++1 3 36 3 3 2 8 1 1 5 : brainpoolP224r1
++1 3 36 3 3 2 8 1 1 6 : brainpoolP224t1
++1 3 36 3 3 2 8 1 1 7 : brainpoolP256r1
++1 3 36 3 3 2 8 1 1 8 : brainpoolP256t1
++1 3 36 3 3 2 8 1 1 9 : brainpoolP320r1
++1 3 36 3 3 2 8 1 1 10 : brainpoolP320t1
++1 3 36 3 3 2 8 1 1 11 : brainpoolP384r1
++1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
++1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
++1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
+Index: openssl/crypto/pace/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/Makefile	2009-06-20 23:43:38.000000000 +0200
+@@ -0,0 +1,54 @@
++DIR=pace
++TOP=../..
++
++CFLAGS= $(INCLUDES) $(CFLAG)
++
++LIB=$(TOP)/libcrypto.a
++LIBOBJ=pace.o pace_err.o
++LIBSRC=pace.c pace_err.c
++
++EXHEADER=pace.h
++TEST=pacetest.c
++
++top:
++	(cd ../..; $(MAKE) DIRS=crypto SDIRS=$(DIR) sub_all)
++
++all:	lib
++
++lib:	$(LIBOBJ)
++	$(AR) $(LIB) $(LIBOBJ)
++	$(RANLIB) $(LIB) || echo Never mind.
++	@touch lib
++
++links:
++	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
++	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
++
++install:
++	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
++	@headerlist="$(EXHEADER)"; for i in $$headerlist ; \
++	do  \
++	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
++	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
++	done;
++
++depend:
++	@[ -n "$(MAKEDEPEND)" ] # should be set by upper Makefile...
++	$(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(LIBSRC)
++
++dclean:
++	$(PERL) -pe 'if (/^# DO NOT DELETE THIS LINE/) {print; exit(0);}' $(MAKEFILE) >Makefile.new
++	mv -f Makefile.new $(MAKEFILE)
++
++clean:
++	rm -f *.s *.o *.obj des lib tags core .pure .nfs* *.old *.bak fluff
++
++pacetest: top pace.h pacetest.c $(LIB)
++	$(CC) $(CFLAGS) -Wall -Werror -g -o pacetest pacetest.c $(LIB)
++	
++protocolRunTest: top pace.h protocolRunTest.c $(LIB)
++	$(CC) $(CFLAGS) -Wall -Werror -g -o protocolRunTest protocolRunTest.c $(LIB)
++# DO NOT DELETE THIS LINE -- make depend depends on it.
++
++pace.o: pace.c pace.h
++pace_err.o: pace_err.c
+Index: openssl/crypto/pace/pace.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace.c	2009-10-14 20:51:53.000000000 +0200
+@@ -0,0 +1,2117 @@
++/**
++ * @file pace.c
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <openssl/pace.h>
++#include <openssl/bio.h>
++#include <openssl/bn.h>
++#include <openssl/buffer.h>
++#include <openssl/crypto.h>
++#include <openssl/dh.h>
++#include <openssl/ec.h>
++#include <openssl/ecdh.h>
++#include <openssl/evp.h>
++#include <openssl/objects.h>
++#include <openssl/rand.h>
++#include <openssl/err.h>
++#include <openssl/cmac.h>
++#include <openssl/asn1.h>
++#include <openssl/conf.h>
++#include <string.h>
++
++/**
++ * @brief Wrapper for the OpenSSL hash functions.
++ *
++ * @param md
++ * @param ctx (optional)
++ * @param impl (optional)
++ * @param in
++ *
++ * @return message digest or NULL if an error occurred
++ */
++static BUF_MEM *
++hash(const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl, const BUF_MEM * in);
++/**
++ * @brief Wrapper to the OpenSSL encryption functions.
++ *
++ * @param ctx (optional)
++ * @param type
++ * @param impl only evaluated if init is 1. (optional)
++ * @param key only evaluated if init is 1.
++ * @param iv only evaluated if init is 1. (optional)
++ * @param enc only evaluated if init is 1.
++ * @param in
++ * @param init whether to initialize (1) the given ctx or not (0).
++ *
++ * @return cipher of in or NULL if an error occurred
++ */
++static BUF_MEM *
++cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
++        unsigned char *key, unsigned char *iv, int enc, const BUF_MEM * in,
++        const int init);
++/**
++ * @brief Wrapper to the OpenSSL pseudo-random number generator.
++ *
++ * @param numbytes number of bytes to randomize
++ *
++ * @return a buffer of randomized bytes or NULL if an error occurred
++ */
++static BUF_MEM *
++randb(int numbytes);
++/**
++ * @brief Computes message authentication code in retail-mode according to
++ * ISO/IEC 9797-1 MAC algorithm 3 / padding method 2 with block cipher DES and
++ * IV=0.
++ *
++ * @param key authentication key
++ * @param in buffer to authenticate
++ *
++ * @return message authentication code or NULL if an error occurred
++ */
++static BUF_MEM *
++retail_mac_des(const BUF_MEM * key, const BUF_MEM * in);
++/**
++ * @brief Compute a CMAC of the input buffer using the encryption algorithm
++ *           specified in the PACE context structure
++ *
++ * @param key the symmetric key used for the computation. The key must have
++ *           the correct length for the encryption algorithm used
++ * @param in buffer that contains the data to for CMAC computation
++ * @param ctx contains the encryption algorithm to use
++ * @param maclen length in number of bytes of the MAC
++ *
++ * @return buffer containing the CMAC or NULL in case of error
++ */
++static BUF_MEM *
++cmac(const BUF_MEM * key, const BUF_MEM * in, const PACE_CTX * ctx,
++        unsigned int maclen);
++/**
++ * @brief encodes a buffer in base64
++ *
++ * @param in buffer to encode
++ *
++ * @return base 64 encoded buffer or NULL if an error occurred
++ */
++static BUF_MEM *
++base64(const BUF_MEM * in);
++/**
++ * @brief Padds a buffer using ISO/IEC 9797-1 padding method 2.
++ *
++ * @param m buffer to padd
++ * @param block_size pad to this block size
++ *
++ * @return new buffer with the padded input or NULL if an error occurred
++ */
++static BUF_MEM *
++add_iso_pad(const BUF_MEM * m, int block_size);
++/**
++ * @brief Encodes public key data objects of the domain parameters in ASN.1
++ * (see TR-3110 D.3)
++ *
++ * @param dp object containing the DH or EC_KEY object
++ * @param ctx
++ *
++ * @return ASN.1 encoded public key data objects or NULL if an error occurred
++ */
++static BUF_MEM *
++asn1_pubkey(const PACE_CTX *ctx, const PACE_DP * dp);
++/**
++ * @brief Generates a DH keypair
++ *
++ * @param dp object containing the DH object
++ * @param ctx
++ *
++ * @return public key of the generated keypair or NULL if an error occurred
++ */
++BUF_MEM *
++dh_generate_key(const PACE_DP * dp, const PACE_CTX * ctx);
++/**
++ * @brief Computes a DH key
++ *
++ * @see PACE_STEP3B_dh_compute_key()
++ */
++BUF_MEM *
++dh_compute_key(const PACE_DP * dp, const PACE_CTX * ctx, const BUF_MEM * in);
++/**
++ * @brief Generates an ECDH keypair
++ *
++ * @param dp object containing the EC_KEY object
++ * @param ctx
++ *
++ * @return public key of the generated keypair or NULL if an error occurred
++ */
++BUF_MEM *
++ecdh_generate_key(const PACE_DP * dp, const PACE_CTX * ctx);
++/**
++ * @brief Computes an ECDH key
++ *
++ * @see PACE_STEP3B_dh_compute_key()
++ */
++BUF_MEM *
++ecdh_compute_key(const PACE_DP * dp, const PACE_CTX * ctx, const BUF_MEM * in);
++/**
++ * @brief Computes a key for DH Generic Mapping (see TR-3110 A.3.5.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++PACE_DP *
++dh_gm_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++BUF_MEM *
++dh_im_generate_key(const PACE_DP * dp, const PACE_CTX * ctx);
++/**
++ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++PACE_DP *
++dh_im_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Computes a key for ECDH Generic Mapping (see TR-3110 A.3.4.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++PACE_DP *
++ecdh_gm_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Computes a key for ECDH Integrated Mapping (see TR-3110 A.3.4.2)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++PACE_DP *
++ecdh_im_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/** 
++ * @brief creates a duplicate of template and changes the generator of its
++ * EC_KEY object
++ * 
++ * @param template
++ * @param g the generator to use
++ * @param ctx (optional)
++ * 
++ * @return the new and modified PACE_DP object or NULL if an error occurred
++ */
++static PACE_DP *
++dp_ecdh_new_generator(const PACE_DP *template, const EC_POINT *g, BN_CTX *ctx);
++/** 
++ * @brief creates a duplicate of template and changes the generator of its
++ * EC_KEY object
++ * 
++ * @param template
++ * @param x affine coordinate of the generator
++ * @param y affine coordinate of the generator
++ * @param ctx (optional)
++ * 
++ * @return the new and modified PACE_DP object or NULL if an error occurred
++ *
++ * @see dp_ecdh_new_generator()
++ */
++static PACE_DP *
++dp_ecdh_new_generator_by_coordinates(const PACE_DP *template, const BIGNUM *x,
++        const BIGNUM *y, BN_CTX *ctx);
++/** 
++ * @brief Duplicates a BUF_MEM object
++ * 
++ * @param buf Object to duplicate
++ * 
++ * @return Duplicate of buf or NULL if an error occurred.
++ */
++BUF_MEM *
++buf_mem_dup(const BUF_MEM *buf);
++/**
++ * @brief converts an EC_POINT object to a BUF_MEM object
++ *
++ * @param ecdh EC_KEY object
++ * @param bn_ctx object (optional)
++ * @param ecp elliptic curve point to convert
++ *
++ * @return converted elliptic curve point or NULL if an error occurred
++ */
++static BUF_MEM *
++point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
++/**
++ * @brief converts an BIGNUM object to a BUF_MEM object
++ *
++ * @param bn bignumber to convert
++ *
++ * @return converted bignumber or NULL if an error occurred
++ */
++static BUF_MEM *
++bn2buf(const BIGNUM *bn);
++/**
++ * @brief initializes a PACE_DP object with ECDH
++ *
++ * @param dp object to initialize
++ * @param ecdh elliptic curve object to use (optional)
++ *
++ * @return 1 on success or 0 if an error occurred
++ */
++static int
++init_ecdh(PACE_DP * dp, EC_KEY * ecdh);
++/**
++ * @brief initializes a PACE_DP object with DH
++ *
++ * @param dp object to initialize
++ * @param dh DH object to use (optional)
++ *
++ * @return 1 on success or 0 if an error occurred
++ */
++static int
++init_dh(PACE_DP * dp, DH * dh);
++
++void
++PACE_DP_free(PACE_DP * dp)
++{
++    if (dp) {
++        OPENSSL_free(dp);
++    }
++}
++
++void
++PACE_DP_clear_free(PACE_DP * dp)
++{
++    if (dp) {
++        if (dp->dh)
++            DH_free(dp->dh);
++        if (dp->ecdh)
++            EC_KEY_free(dp->ecdh);
++        OPENSSL_free(dp);
++    }
++}
++
++PACE_DP *
++PACE_DP_new(void)
++{
++    PACE_DP * out = (PACE_DP *) OPENSSL_malloc(sizeof(PACE_DP));
++    if (!out)
++        return NULL;
++
++    out->protocol = id_PACE_DP_UNDEF;
++    out->dh = NULL;
++    out->ecdh = NULL;
++
++    return out;
++}
++
++PACE_DP *
++PACE_DP_dup(const PACE_DP * dp_in)
++{
++    PACE_DP * out = NULL;
++    if (!dp_in)
++        goto err;
++
++    out = PACE_DP_new();
++    if (!out)
++        goto err;
++
++    out->protocol = dp_in->protocol;
++    if (dp_in->dh) {
++        out->dh = DHparams_dup(dp_in->dh);
++        if (!out->dh)
++            goto err;
++        BN_clear_free(out->dh->priv_key);
++        BN_clear_free(out->dh->pub_key);
++    }
++    if (dp_in->ecdh) {
++        out->ecdh = EC_KEY_dup(dp_in->ecdh);
++        if (!out->ecdh)
++            goto err;
++        /* Note: functions will return error, but clear the keys anyway */
++        EC_KEY_set_private_key(out->ecdh, NULL);
++        EC_KEY_set_public_key(out->ecdh, NULL);
++    }
++
++    return out;
++
++err:
++    if (out)
++        PACE_DP_clear_free(out);
++
++    return NULL;
++}
++
++void
++PACE_SEC_free(PACE_SEC * s)
++{
++    if (s) {
++        OPENSSL_free(s);
++    }
++}
++
++void
++PACE_SEC_clear_free(PACE_SEC * s)
++{
++    if (s) {
++        if (s->mem)
++            BUF_MEM_free(s->mem);
++        OPENSSL_free(s);
++    }
++}
++
++PACE_SEC *
++PACE_SEC_new(void)
++{
++    PACE_SEC * out = (PACE_SEC *) OPENSSL_malloc(sizeof(PACE_SEC));
++    if (!out)
++        return NULL;
++
++    out->mem = NULL;
++    out->type = PACE_SEC_UNDEF;
++
++    return out;
++}
++
++int
++PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type)
++{
++    if (!s || !mem)
++        return 0;
++    s->mem = mem;
++
++    switch (type) {
++        case PACE_PUK:
++        case PACE_CAN:
++        case PACE_PIN:
++        case PACE_MRZ:
++        case PACE_RAW:
++            s->type = type;
++            break;
++
++        default:
++            return 0;
++    }
++
++    return 1;
++}
++
++void
++PACE_CTX_clear_free(PACE_CTX * ctx)
++{
++    if (ctx) {
++        if (ctx->bn_ctx)
++            BN_CTX_free(ctx->bn_ctx);
++        if (ctx->md_ctx) {
++            EVP_MD_CTX_destroy(ctx->md_ctx);
++        }
++        OPENSSL_free(ctx);
++    }
++}
++void
++PACE_CTX_free(PACE_CTX * ctx)
++{
++    if (ctx) {
++        OPENSSL_free(ctx);
++    }
++}
++
++PACE_CTX *
++PACE_CTX_new(void)
++{
++    PACE_CTX * out = (PACE_CTX *) OPENSSL_malloc(sizeof(PACE_CTX));
++    if (!out)
++        return NULL;
++
++    out->protocol = id_PACE_AID_UNDEF;
++    out->bn_ctx = NULL;
++    out->md = NULL;
++    out->md_ctx = NULL;
++    out->md_engine = NULL;
++    out->cipher_ctx = NULL;
++    out->cipher_engine = NULL;
++    out->iv = NULL;
++
++    return out;
++}
++
++int
++PACE_init(PACE_CTX * ctx, PACE_DP * dp, const ALGORITHM_IDENTIFIER * id)
++{
++    if (!ctx || !id)
++        return 0;
++
++    ctx->iv = NULL;
++    ctx->protocol = id->algorithm;
++
++    switch (id->algorithm) {
++        case id_PACE_DH_GM_3DES_CBC_CBC:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_generate_key;
++            ctx->map_compute_key = dh_gm_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_des_ede();
++            break;
++        case id_PACE_DH_IM_3DES_CBC_CBC:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_im_generate_key;
++            ctx->map_compute_key = dh_im_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_des_ede();
++            break;
++        case id_PACE_ECDH_GM_3DES_CBC_CBC:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_gm_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_des_ede();
++            break;
++        case id_PACE_DH_GM_AES_CBC_CMAC_128:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_generate_key;
++            ctx->map_compute_key = dh_gm_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_aes_128_cbc();
++            break;
++        case id_PACE_DH_IM_AES_CBC_CMAC_128:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_im_generate_key;
++            ctx->map_compute_key = dh_im_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_aes_128_cbc();
++            break;
++        case id_PACE_DH_GM_AES_CBC_CMAC_192:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_generate_key;
++            ctx->map_compute_key = dh_gm_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_192_cbc();
++            break;
++        case id_PACE_DH_IM_AES_CBC_CMAC_192:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_im_generate_key;
++            ctx->map_compute_key = dh_im_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_192_cbc();
++            break;
++        case id_PACE_DH_GM_AES_CBC_CMAC_256:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_generate_key;
++            ctx->map_compute_key = dh_gm_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_256_cbc();
++            break;
++        case id_PACE_DH_IM_AES_CBC_CMAC_256:
++            if (!init_dh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = dh_im_generate_key;
++            ctx->map_compute_key = dh_im_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_256_cbc();
++            break;
++        case id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_gm_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_aes_128_cbc();
++            break;
++        case id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_gm_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_192_cbc();
++            break;
++        case id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_gm_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_256_cbc();
++            break;
++        case id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_im_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_256_cbc();
++            break;
++        case id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_im_compute_key;
++            ctx->md = EVP_sha256();
++            ctx->cipher = EVP_aes_192_cbc();
++            break;
++        case id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_im_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_aes_128_cbc();
++            break;
++        case id_PACE_ECDH_IM_3DES_CBC_CBC:
++            if (!init_ecdh(dp, id->parameters))
++                goto err;
++            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_compute_key = ecdh_im_compute_key;
++            ctx->md = EVP_sha1();
++            ctx->cipher = EVP_des_ede();
++            break;
++        default:
++            goto err;
++    }
++
++    if (!ctx->md_ctx)
++        ctx->md_ctx = EVP_MD_CTX_create();
++    if (!ctx->md_ctx) {
++        goto err;
++    }
++
++    if (!ctx->cipher_ctx)
++        ctx->cipher_ctx = EVP_CIPHER_CTX_new();
++    if (!ctx->cipher_ctx) {
++        goto err;
++    }
++    EVP_CIPHER_CTX_init(ctx->cipher_ctx);
++    if (!EVP_CipherInit_ex(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++                ctx->iv, NULL, -1)) {
++        goto err;
++    }
++
++    if (!ctx->bn_ctx)
++        ctx->bn_ctx = BN_CTX_new();
++    if (!ctx->bn_ctx) {
++        goto err;
++    }
++    BN_CTX_init(ctx->bn_ctx);
++
++    return 1;
++
++err:
++    if (ctx->md_ctx) {
++        EVP_MD_CTX_destroy(ctx->md_ctx);
++        ctx->md_ctx = NULL;
++    }
++    if (ctx->cipher_ctx) {
++        EVP_CIPHER_CTX_cleanup(ctx->cipher_ctx);
++        ctx->cipher_ctx = NULL;
++    }
++    if (ctx->bn_ctx)
++        BN_CTX_free(ctx->bn_ctx);
++
++    return 0;
++}
++
++int
++init_ecdh(PACE_DP * dp, EC_KEY * ecdh)
++{
++    if (!dp)
++        return 0;
++
++    if (ecdh)
++        dp->ecdh = ecdh;
++    else
++        dp->ecdh = EC_KEY_new_by_curve_name(NID_brainpoolP512r1);
++    if (!dp->ecdh)
++        return 0;
++
++    dp->protocol = id_PACE_ECDH;
++
++    return 1;
++}
++
++int
++init_dh(PACE_DP * dp, DH * dh)
++{
++    int i;
++    if (!dp)
++        return 0;
++
++    if (dh)
++        dp->dh = dh;
++    else {
++        dp->dh = DH_new();
++        if(!dp->dh ||
++                !DH_generate_parameters_ex(dp->dh, 64, DH_GENERATOR_5, NULL))
++            goto err;
++    }
++    if (!DH_check(dp->dh, &i) ||
++            (DH_CHECK_P_NOT_SAFE_PRIME & i) ||
++            (DH_NOT_SUITABLE_GENERATOR & i) ||
++            (DH_UNABLE_TO_CHECK_GENERATOR & i) ||
++            (i & DH_CHECK_P_NOT_PRIME))
++        goto err;
++
++    dp->protocol = id_PACE_DH;
++
++    return 1;
++
++err:
++    if (!dh && dp->dh) {
++        DH_free(dp->dh);
++        dp->dh = NULL;
++    }
++
++    return 0;
++}
++
++BUF_MEM *
++hash(const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl,
++        const BUF_MEM * in)
++{
++    BUF_MEM * out = NULL;
++    EVP_MD_CTX * tmp_ctx = NULL;
++    if (!md || !in)
++        goto err;
++
++    if (ctx)
++        tmp_ctx = ctx;
++    else {
++        tmp_ctx = EVP_MD_CTX_create();
++        if (!tmp_ctx)
++            goto err;
++    }
++
++    /* get buffer in required size */
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, EVP_MD_size(md)))
++        goto err;
++
++    if (!EVP_DigestInit_ex(tmp_ctx, md, impl) ||
++            !EVP_DigestUpdate(tmp_ctx, in->data, in->length) ||
++            !EVP_DigestFinal_ex(tmp_ctx, (unsigned char *) out->data,
++                &(out->length)))
++
++    if (!ctx)
++        EVP_MD_CTX_destroy(tmp_ctx);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (tmp_ctx && !ctx) {
++        EVP_MD_CTX_destroy(tmp_ctx);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
++        unsigned char *key, unsigned char *iv, int enc, const BUF_MEM * in,
++        int init)
++{
++    BUF_MEM * out = NULL;
++    EVP_CIPHER_CTX * tmp_ctx = NULL;
++    int i;
++    if (!in)
++        goto err;
++
++    if (ctx)
++        tmp_ctx = ctx;
++    else {
++        tmp_ctx = EVP_CIPHER_CTX_new();
++        if (!tmp_ctx)
++            goto err;
++        EVP_CIPHER_CTX_init(tmp_ctx);
++    }
++
++    /* get buffer in required size */
++    i = in->length;
++    i += EVP_CIPHER_block_size(type);
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, i))
++        goto err;
++
++    /* get cipher */
++    if (ctx && init)
++        if (!EVP_CipherInit_ex(tmp_ctx, type, impl, key, iv, enc))
++            goto err;
++    if (!EVP_CipherUpdate(ctx, (unsigned char *) out->data, &i,
++                (unsigned char *) in->data, in->length))
++        goto err;
++    out->length = i;
++    if(!EVP_CipherFinal_ex(ctx, (unsigned char *) (out->data + out->length),
++                &i))
++        goto err;
++    out->length += i;
++
++    if (!ctx) {
++        EVP_CIPHER_CTX_cleanup(tmp_ctx);
++        EVP_CIPHER_CTX_free(tmp_ctx);
++    }
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (!ctx && tmp_ctx) {
++        EVP_CIPHER_CTX_cleanup(tmp_ctx);
++        EVP_CIPHER_CTX_free(tmp_ctx);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++base64(const BUF_MEM * in)
++{
++    BIO *bmem = NULL, *b64 = NULL;
++    BUF_MEM *out = NULL;
++    if (!in)
++        goto err;
++
++    b64 = BIO_new(BIO_f_base64());
++    if (!b64)
++        goto err;
++    /* usually base64 adds newline */
++    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
++
++    bmem = BIO_new(BIO_s_mem());
++    if (!bmem)
++        goto err;
++    /* So BIO_free() leaves BUF_MEM alone */
++    BIO_set_close(bmem, BIO_NOCLOSE);
++    BIO_push(b64, bmem);
++
++    if ((BIO_write(b64, in->data, in->length) < 0) ||
++            (BIO_flush(b64) <= 0))
++        goto err;
++    BIO_get_mem_ptr(b64, &out);
++
++    BIO_free_all(b64);
++    return out;
++
++err:
++    if (b64)
++        BIO_free(b64);
++    if (bmem)
++        BIO_free(bmem);
++    if (out)
++        BUF_MEM_free(out);
++    return NULL;
++}
++
++BUF_MEM *
++cmac(const BUF_MEM * key, const BUF_MEM * in, const PACE_CTX * ctx,
++        unsigned int maclen)
++{
++    CMAC_CTX * cmac_ctx = NULL;
++    BUF_MEM * rv = NULL;
++    if (!key || !ctx || !in || !ctx->cipher ||
++            (key->length < EVP_CIPHER_key_length(ctx->cipher)))
++        goto err;
++
++    rv = BUF_MEM_new();
++    if (!rv || !BUF_MEM_grow(rv, maclen))
++        goto err;
++
++    cmac_ctx = CMAC_CTX_new();
++    if (!cmac_ctx ||
++            !CMAC_Init(cmac_ctx, ctx->cipher, (unsigned char*) key->data,
++                EVP_CIPHER_key_length(ctx->cipher)*8) ||
++            !CMAC_Update(cmac_ctx, (unsigned char*) in->data, in->length) ||
++            !CMAC_Final(cmac_ctx, (unsigned char*) rv->data, maclen))
++        goto err;
++
++    CMAC_CTX_free(cmac_ctx);
++
++    return rv;
++
++err:
++    if (cmac_ctx) {
++        CMAC_CTX_free(cmac_ctx);
++    }
++    if (rv) {
++        BUF_MEM_free(rv);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++randb(int numbytes)
++{
++    BUF_MEM * r = BUF_MEM_new();
++    if (!r ||
++            !BUF_MEM_grow(r, numbytes) ||
++            !RAND_bytes((unsigned char *) r->data, numbytes))
++        goto err;
++
++    return r;
++
++err:
++    if (r)
++        BUF_MEM_free(r);
++
++    return NULL;
++}
++
++BUF_MEM *
++add_iso_pad(const BUF_MEM * m, int block_size)
++{
++    BUF_MEM * r = NULL;
++    int p_len;
++    if (!m)
++        goto err;
++
++    p_len = (m->length / block_size) * block_size + block_size;
++
++    r = BUF_MEM_new();
++    if (!r || !BUF_MEM_grow(r, p_len))
++        goto err;
++    memcpy(r->data, m->data, m->length);
++
++    // iso padding
++    memset(r->data + m->length, 0x80, 1);
++    memset(r->data + m->length + 1 , 0, p_len - m->length - 1);
++    r->length = p_len;
++
++    return r;
++err:
++    if (r)
++        BUF_MEM_free(r);
++
++    return NULL;
++}
++
++BUF_MEM *
++asn1_pubkey(const PACE_CTX *ctx, const PACE_DP *dp)
++{
++    BUF_MEM *out = NULL;
++    BIO *bio = NULL;
++    CONF *conf = NULL;
++    ASN1_TYPE *atyp = NULL;
++    BIGNUM *bn = NULL, *a_bn = NULL, *b_bn = NULL;
++    char *genstr, *p = NULL, *q = NULL, *g = NULL, *y = NULL, *a = NULL,
++         *b = NULL, *G = NULL, *r = NULL, *Y = NULL, *f = NULL;
++    if (!dp || !ctx)
++        goto err;
++
++    bn = BN_new();
++    a_bn = BN_new();
++    bio = BIO_new(BIO_s_mem());
++    if (!bn || !a_bn || !bio ||
++            (BIO_printf(bio, "asn1=IMPLICIT:78A,SEQUENCE:domainParameter\n"
++                    "[domainParameter]\n") < 0))
++        goto err;
++
++    switch (dp->protocol) {
++        case id_PACE_DH:
++            if (!dp->dh)
++                goto err;
++
++            /* Prime modulus */
++            p = BN_bn2hex(dp->dh->p);
++
++            /* Order of the subgroup */
++            /* suppose the order (p-1)/2 */
++            if (!BN_rshift1(bn, dp->dh->p) ||
++                    !BN_mod_exp(a_bn, dp->dh->g, bn, dp->dh->p, ctx->bn_ctx))
++                goto err;
++            /* if a_bn != 1, (q-1)/2 is not the order */
++            if (BN_cmp(a_bn, BN_value_one()) != 0)
++                /* FIXME is this really the second case?
++                 * (see crypto/dh/dh_gen.c:151) */
++                /* order should be p-1 */
++                if (!BN_sub(bn, dp->dh->p, BN_value_one()))
++                    goto err;
++            q = BN_bn2hex(bn);
++
++            /* Generator */
++            g = BN_bn2hex(dp->dh->g);
++
++            /* Public value */
++            y = BN_bn2hex(dp->dh->pub_key);
++
++            if (!y || !g || !q || !p ||
++                    // FIXME how to avoid these errors? see TR-3110 D.2.1.1.
++                    ((y[0] == '0') && (y[1] == '0')) ||
++                    ((g[0] == '0') && (g[1] == '0')) ||
++                    ((q[0] == '0') && (q[1] == '0')) ||
++                    ((p[0] == '0') && (p[1] == '0')) ||
++                    (BIO_printf(bio, "algorithm=OID:%s\n"
++                                "p=IMPLICIT:1,FORMAT:HEX,OCTETSTRING:%s\n"
++                                "q=IMPLICIT:2,FORMAT:HEX,OCTETSTRING:%s\n"
++                                "g=IMPLICIT:3,FORMAT:HEX,OCTETSTRING:%s\n"
++                                "y=IMPLICIT:4,FORMAT:HEX,OCTETSTRING:%s",
++                                id_PACE, p, q, g, y) < 0))
++                goto err;
++
++            OPENSSL_free(y);
++            OPENSSL_free(g);
++            OPENSSL_free(q);
++            OPENSSL_free(p);
++            break;
++
++        case id_PACE_ECDH:
++            if (!dp->ecdh)
++                goto err;
++
++            b_bn = BN_new();
++            if (!b_bn ||
++                    !EC_GROUP_get_curve_GFp(EC_KEY_get0_group(dp->ecdh), bn,
++                        a_bn, b_bn, ctx->bn_ctx))
++                goto err;
++            /* Prime modulus */
++            p = BN_bn2hex(bn);
++            /* First coefficient */
++            a = BN_bn2hex(a_bn);
++            /* Second coefficient */
++            b = BN_bn2hex(b_bn);
++
++            /* Base Point */
++            G = EC_POINT_point2hex(EC_KEY_get0_group(dp->ecdh),
++                    EC_GROUP_get0_generator(EC_KEY_get0_group(dp->ecdh)),
++                    EC_KEY_get_conv_form(dp->ecdh), ctx->bn_ctx);
++
++            /* Order of the base point */
++            if (!EC_GROUP_get_order(EC_KEY_get0_group(dp->ecdh), bn,
++                        ctx->bn_ctx))
++                goto err;
++            r = BN_bn2hex(bn);
++
++            /* Public point */
++            Y = EC_POINT_point2hex(EC_KEY_get0_group(dp->ecdh),
++                    EC_KEY_get0_public_key(dp->ecdh),
++                    EC_KEY_get_conv_form(dp->ecdh), ctx->bn_ctx);
++
++            /* Cofactor */
++            if (!EC_GROUP_get_cofactor(EC_KEY_get0_group(dp->ecdh), bn,
++                        ctx->bn_ctx))
++                goto err;
++            f = BN_bn2hex(bn);
++
++            if (!f || !Y || !r || !G || !b || !a || !p ||
++                    // FIXME how to avoid these errors? see TR-3110 D.2.1.1.
++                    ((f[0] == '0') && (f[1] == '0')) ||
++                    ((r[0] == '0') && (r[1] == '0')) ||
++                    ((b[0] == '0') && (b[1] == '0')) ||
++                    ((a[0] == '0') && (a[1] == '0')) ||
++                    ((p[0] == '0') && (p[1] == '0')))
++                goto err;
++            if (BIO_printf(bio, "algorithm=OID:%s\n"
++                        "p=IMPLICIT:1,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "a=IMPLICIT:2,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "b=IMPLICIT:3,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "G=IMPLICIT:4,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "r=IMPLICIT:5,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "Y=IMPLICIT:6,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "f=IMPLICIT:7,FORMAT:HEX,OCTETSTRING:%s",
++                        id_PACE, p, a, b, G, r, Y, f) < 0)
++                goto err;
++
++            OPENSSL_free(f);
++            OPENSSL_free(Y);
++            OPENSSL_free(r);
++            OPENSSL_free(G);
++            BN_clear_free(b_bn);
++            OPENSSL_free(b);
++            OPENSSL_free(a);
++            OPENSSL_free(p);
++            break;
++
++        default:
++            goto err;
++    }
++
++    if (BIO_flush(bio) <= 0)
++        goto err;
++
++    conf = NCONF_new(NULL);
++    if (!conf || (NCONF_load_bio(conf, bio, NULL) <= 0))
++        goto err;
++
++    genstr = NCONF_get_string(conf, "default", "asn1");
++    if (!genstr)
++        goto err;
++    atyp = ASN1_generate_nconf(genstr, conf);
++    if (!atyp)
++        goto err;
++
++    int l = i2d_ASN1_TYPE(atyp, NULL);
++    if (l <= 0)
++        goto err;
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, l))
++        goto err;
++    unsigned char *d = (unsigned char *) out->data;
++    i2d_ASN1_TYPE(atyp, &d);
++
++    ASN1_TYPE_free(atyp);
++    NCONF_free(conf);
++    BIO_free(bio);
++    BN_clear_free(bn);
++
++    return out;
++
++err:
++    if (y)
++        OPENSSL_free(y);
++    if (g)
++        OPENSSL_free(g);
++    if (q)
++        OPENSSL_free(q);
++    if (p)
++        OPENSSL_free(p);
++
++    if (f)
++        OPENSSL_free(f);
++    if (Y)
++        OPENSSL_free(Y);
++    if (r)
++        OPENSSL_free(r);
++    if (G)
++        OPENSSL_free(G);
++    if (b_bn)
++        BN_clear_free(b_bn);
++    if (b)
++        OPENSSL_free(b);
++    if (a)
++        OPENSSL_free(a);
++    if (p)
++        OPENSSL_free(p);
++
++    if (out)
++        BUF_MEM_free(out);
++    if (atyp)
++        ASN1_TYPE_free(atyp);
++    if (conf)
++        NCONF_free(conf);
++    if (bio)
++        BIO_free(bio);
++    if (a_bn)
++        BN_clear_free(a_bn);
++    if (bn)
++        BN_clear_free(bn);
++
++    return NULL;
++}
++
++BUF_MEM *
++retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
++{
++    BUF_MEM * c_tmp = NULL, * mac = NULL, * block = NULL, * pad = NULL;
++    EVP_CIPHER_CTX * ctx = NULL;
++    if (!key)
++        goto err;
++
++    pad = add_iso_pad(in, EVP_CIPHER_block_size(EVP_des_cbc()));
++    if (!pad)
++        goto err;
++
++    // get last block of des_cbc encrypted input
++    ctx = EVP_CIPHER_CTX_new();
++    if (!ctx)
++        goto err;
++    EVP_CIPHER_CTX_init(ctx);
++    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
++                (unsigned char *) key->data, NULL, 1) ||
++            !EVP_CIPHER_CTX_set_padding(ctx, 0))
++        goto err;
++    c_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, pad, 0);
++    if (!c_tmp)
++        goto err;
++    block = BUF_MEM_new();
++    if (!block ||
++            (BUF_MEM_grow(block, EVP_CIPHER_block_size(EVP_des_cbc())) <
++                EVP_CIPHER_block_size(EVP_des_cbc())))
++        goto err;
++    memcpy(block->data, c_tmp->data + c_tmp->length -
++            EVP_CIPHER_block_size(EVP_des_cbc()),
++            EVP_CIPHER_block_size(EVP_des_cbc()));
++    block->length = EVP_CIPHER_block_size(EVP_des_cbc());
++
++    // decrypt last block with the rest of the key
++    // FIXME iv?
++    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL, (unsigned char *)
++                key->data + EVP_CIPHER_block_size(EVP_des_cbc()), NULL, 0) ||
++            !EVP_CIPHER_CTX_set_padding(ctx, 0))
++        goto err;
++    mac = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 0, block, 0);
++
++    BUF_MEM_free(block);
++    BUF_MEM_free(c_tmp);
++    BUF_MEM_free(pad);
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
++
++    return mac;
++
++err:
++    if (block)
++        BUF_MEM_free(block);
++    if (c_tmp)
++        BUF_MEM_free(c_tmp);
++    if (pad)
++        BUF_MEM_free(pad);
++    if (ctx) {
++        EVP_CIPHER_CTX_cleanup(ctx);
++        EVP_CIPHER_CTX_free(ctx);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++kdf(const BUF_MEM * key, const BUF_MEM * nonce, const __be32 counter,
++        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl)
++{
++    int inlen;
++    BUF_MEM * in = NULL, * out = NULL;
++    if (!key || !md)
++        goto err;
++
++    /* Concatenate secret || nonce || counter */
++    in = BUF_MEM_new();
++    if (!in)
++        goto err;
++    if (nonce) {
++        inlen = key->length + nonce->length + sizeof counter;
++        if (!BUF_MEM_grow(in, inlen))
++            goto err;
++        memcpy(in->data, key->data, key->length);
++        memcpy(in->data + key->length, nonce->data, nonce->length);
++        memcpy(in->data + key->length + nonce->length, &counter, sizeof counter);
++    } else {
++        inlen = key->length + sizeof counter;
++        if (!BUF_MEM_grow(in, inlen))
++            goto err;
++        memcpy(in->data, key->data, key->length);
++        memcpy(in->data + key->length, &counter, sizeof counter);
++    }
++
++    /* Compute Hashvalue */
++    out = hash(md, ctx, impl, in);
++
++    BUF_MEM_free(in);
++    return out;
++
++err:
++    if (in)
++        BUF_MEM_free(in);
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++BUF_MEM *
++kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce, const EVP_MD * md,
++        EVP_MD_CTX * ctx, ENGINE * impl)
++{
++    BUF_MEM * enc = NULL, * out = NULL;
++
++    enc = encoded_secret(pi);
++    if (!enc)
++        goto err;
++
++    out = kdf(enc, nonce, __constant_cpu_to_be32(3), md, ctx, impl);
++
++    BUF_MEM_free(enc);
++    return out;
++
++err:
++    if (enc)
++        BUF_MEM_free(enc);
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++PACE_DP *
++dp_ecdh_new_generator(const PACE_DP *template, const EC_POINT *g, BN_CTX *ctx)
++{
++    BIGNUM *order = NULL, *cofactor = NULL;
++    PACE_DP * out = NULL;
++    EC_GROUP *group = NULL;
++    if (!template || !template->ecdh)
++        goto err;
++
++    order = BN_new();
++    cofactor = BN_new();
++    if (!order || !cofactor ||
++            !EC_GROUP_get_order(EC_KEY_get0_group(template->ecdh),
++                order, ctx) ||
++            !EC_GROUP_get_cofactor(EC_KEY_get0_group(template->ecdh),
++                cofactor, ctx))
++        goto err;
++
++    group = EC_GROUP_dup(EC_KEY_get0_group(template->ecdh));
++    out = PACE_DP_dup(template);
++    if (!group || !out ||
++            !EC_POINT_is_on_curve(group, g, ctx) ||
++            !EC_GROUP_set_generator(group, g, order, cofactor) ||
++            !EC_GROUP_check(group, ctx) ||
++            !EC_KEY_set_group(out->ecdh, group))
++        goto err;
++
++    BN_clear_free(cofactor);
++    BN_clear_free(order);
++    EC_GROUP_clear_free(group);
++
++    return out;
++
++err:
++    if (group)
++        EC_GROUP_clear_free(group);
++    if (cofactor)
++        BN_clear_free(cofactor);
++    if (order)
++        BN_clear_free(order);
++    if (out)
++        PACE_DP_clear_free(out);
++
++    return NULL;
++}
++
++PACE_DP *
++dp_ecdh_new_generator_by_coordinates(const PACE_DP *template, const BIGNUM *x,
++        const BIGNUM *y, BN_CTX *ctx)
++{
++    EC_POINT *g;
++    PACE_DP *out;
++    if (!template || !template->ecdh)
++        return NULL;
++
++    g = EC_POINT_new(EC_KEY_get0_group(template->ecdh));
++    if (!g)
++        return NULL;
++    if (!EC_POINT_set_affine_coordinates_GFp(
++                EC_KEY_get0_group(template->ecdh), g, x, y, ctx)) {
++        EC_POINT_free(g);
++        return NULL;
++    }
++
++    out = dp_ecdh_new_generator(template, g, ctx);
++
++    EC_POINT_free(g);
++
++    return out;
++}
++
++BUF_MEM *
++buf_mem_dup(const BUF_MEM *buf)
++{
++    if (!buf)
++        return NULL;
++    BUF_MEM *dup = BUF_MEM_new();
++
++    if (!BUF_MEM_grow(dup, buf->length)) {
++        BUF_MEM_free(dup);
++        return NULL;
++    }
++    memcpy(dup->data, buf->data, buf->length);
++
++    return dup;
++}
++
++BUF_MEM *
++point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
++{
++    BUF_MEM * out = NULL;
++    EC_GROUP * group = NULL;
++    size_t i;
++
++    /* get buffer in required size */
++    group = EC_GROUP_dup(EC_KEY_get0_group(ecdh));
++    if (!group)
++        goto err;
++    i = EC_POINT_point2oct(group, ecp, EC_KEY_get_conv_form(ecdh), NULL, 0,
++            bn_ctx);
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, i))
++        goto err;
++
++    out->length = EC_POINT_point2oct(group, ecp, EC_KEY_get_conv_form(ecdh),
++            (unsigned char *) out->data, out->max, bn_ctx);
++
++    EC_GROUP_free(group);
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (group)
++        EC_GROUP_free(group);
++
++    return NULL;
++}
++
++BUF_MEM *
++bn2buf(const BIGNUM *bn)
++{
++    BUF_MEM * out = NULL;
++    int i;
++    if (!bn)
++        goto err;
++
++    /* get buffer in required size */
++    i = BN_num_bytes(bn);
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, i))
++        goto err;
++
++    out->length = BN_bn2bin(bn, (unsigned char *) out->data);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++int
++is_char_str(const BUF_MEM * str) {
++    const unsigned char * s = (unsigned char *) str->data;
++    int i = str->length;
++    while (i) {
++        if (*s <= 0x1f || (0x7f < *s && *s < 0x9f))
++            return 0;
++        s++;
++        i--;
++    }
++    return 1;
++}
++
++/* Encode the password (see Table F.2 in BSI TR-03110) */
++BUF_MEM *
++encoded_secret(const PACE_SEC * pi)
++{
++    BUF_MEM * out = NULL;
++    if (!pi)
++        goto err;
++
++    switch (pi->type) {
++        case PACE_PUK:
++            out = base64(pi->mem);
++            break;
++
++        case PACE_CAN:
++        case PACE_PIN:
++        case PACE_MRZ:
++        case PACE_RAW:
++            if (!is_char_str(pi->mem))
++                goto err;
++
++            out = BUF_MEM_new();
++            if (!out || !BUF_MEM_grow(out, pi->mem->length))
++                goto err;
++            memcpy(out->data, pi->mem->data, pi->mem->length);
++            out->length = pi->mem->length;
++            break;
++
++        default:
++            goto err;
++    }
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++BUF_MEM *
++dh_generate_key(const PACE_DP * dp, const PACE_CTX * ctx)
++{
++    if (!dp)
++        return NULL;
++    if (!DH_generate_key(dp->dh))
++        return NULL;
++    return bn2buf(dp->dh->pub_key);
++}
++
++BUF_MEM *
++dh_compute_key(const PACE_DP * dp, const PACE_CTX * ctx, const BUF_MEM * in)
++{
++    BUF_MEM * out = NULL;
++    BIGNUM * bn = NULL;
++    int i;
++    if (!dp || !ctx || !in)
++        goto err;
++
++    /* decode public key */
++    bn = BN_bin2bn((unsigned char *) in->data, in->length, bn);
++    if (!bn)
++        goto err;
++
++    /* get buffer in required size */
++    i = DH_size(dp->dh);
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, i))
++        goto err;
++
++    out->length = DH_compute_key((unsigned char *) out->data, bn, dp->dh);
++    if (out->length < 0)
++        goto err;
++
++    BN_clear_free(bn);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (bn)
++        BN_clear_free(bn);
++
++    return NULL;
++}
++
++BUF_MEM *
++ecdh_generate_key(const PACE_DP * dp, const PACE_CTX * ctx)
++{
++    if (!dp || !ctx)
++        return NULL;
++    if (!EC_KEY_generate_key(dp->ecdh))
++        return NULL;
++    return point2buf(dp->ecdh, ctx->bn_ctx, EC_KEY_get0_public_key(dp->ecdh));
++}
++
++BUF_MEM *
++ecdh_compute_key(const PACE_DP * dp, const PACE_CTX * ctx, const BUF_MEM * in)
++{
++    BUF_MEM * out = NULL;
++    EC_POINT * ecp = NULL;
++    EC_GROUP * group = NULL;
++    int i;
++    if (!dp || !ctx || !in)
++        goto err;
++
++    /* decode public key */
++    group = EC_GROUP_dup(EC_KEY_get0_group(dp->ecdh));
++    ecp = EC_POINT_new(group);
++    if (!group || !ecp ||
++            !EC_POINT_oct2point(group, ecp, (unsigned char *) in->data,
++                in->length, ctx->bn_ctx))
++        goto err;
++
++    /* get buffer in required size */
++    i = EC_POINT_point2oct(group, ecp, EC_KEY_get_conv_form(dp->ecdh),
++            NULL, 0, ctx->bn_ctx);
++    out = BUF_MEM_new();
++    if (!out || !BUF_MEM_grow(out, i))
++        goto err;
++
++    out->length = ECDH_compute_key(out->data, out->max, ecp, dp->ecdh,
++            NULL);
++
++    EC_POINT_free(ecp);
++    EC_GROUP_free(group);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (ecp)
++        EC_POINT_free(ecp);
++    if (group)
++        EC_GROUP_free(group);
++
++    return NULL;
++}
++
++PACE_DP *
++dh_gm_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in)
++{
++    PACE_DP * out = NULL;
++    BUF_MEM * mem_h = NULL;
++    BIGNUM * bn_s = NULL, * bn_h = NULL, * bn_g = NULL;
++    if (!dp_in || !ctx || !s)
++        goto err;
++
++    out = PACE_DP_dup(dp_in);
++
++    /* Convert nonce to BIGNUM */
++    bn_s = BN_bin2bn((unsigned char *) s->data, s->length, bn_s);
++    if (!bn_s)
++        goto err;
++
++    /* complete the DH and get the point h */
++    mem_h = dh_compute_key(dp_in, ctx, in);
++    if (!mem_h)
++        goto err;
++    bn_h = BN_bin2bn((unsigned char *) mem_h->data, mem_h->length, bn_h);
++    if (!bn_h)
++        goto err;
++
++    /* map to new generator */
++    bn_g = BN_new();
++    if (!bn_g)
++        goto err;
++    BN_init(bn_g);
++    if (
++            /* bn_g = g^s mod p */
++            !BN_mod_exp(bn_g, dp_in->dh->g, bn_s, dp_in->dh->p, ctx->bn_ctx) ||
++            /* out->dh->g = bn_g * h mod p = g^s * h mod p */
++            !BN_mod_mul(out->dh->g, bn_g, bn_h, dp_in->dh->p, ctx->bn_ctx))
++        goto err;
++
++    BUF_MEM_free(mem_h);
++    BN_clear_free(bn_h);
++    BN_clear_free(bn_g);
++    BN_clear_free(bn_s);
++    // FIXME public key validation method described in RFC 2631
++
++    return out;
++
++err:
++    if (mem_h)
++        BUF_MEM_free(mem_h);
++    if (bn_h)
++        BN_clear_free(bn_h);
++    if (bn_g)
++        BN_clear_free(bn_g);
++    if (bn_s)
++        BN_clear_free(bn_s);
++    if (out)
++        PACE_DP_clear_free(out);
++
++    return NULL;
++}
++
++BUF_MEM *
++dh_im_generate_key(const PACE_DP * dp, const PACE_CTX * ctx)
++{
++    if (!ctx)
++        return NULL;
++
++    return randb(EVP_CIPHER_key_length(ctx->cipher));
++}
++
++PACE_DP *
++dh_im_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in)
++{
++    PACE_DP * out = NULL;
++    BUF_MEM * x_mem = NULL;
++    BIGNUM * x_bn = NULL, * a = NULL, * p_1 = NULL, * q = NULL;
++    if (!in || in->length < EVP_CIPHER_key_length(ctx->cipher) || !dp_in->dh)
++        goto err;
++
++    x_mem = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++            (unsigned char *) in->data, ctx->iv, 1, s, 1);
++    if (!x_mem)
++        goto err;
++    x_bn = BN_bin2bn((unsigned char *) x_mem->data, x_mem->length, x_bn);
++    if (!x_bn)
++        goto err;
++
++    out = PACE_DP_dup(dp_in);
++    if (!out)
++        goto err;
++
++    a = BN_new();
++    p_1 = BN_new();
++    if (!a || !p_1 ||
++            /* p_1 = p-1 */
++            !BN_sub(p_1, dp_in->dh->p, BN_value_one()))
++        goto err;
++
++    if (!dp_in->dh->q) {
++        q = BN_new();
++        /* DH primes should be strong
++         * (see crypto/dh/dh_gen.c:80 and crypto/dh/generate:20)
++         * p=(2*q)+1 or (p-1)/2 = q */
++        if (!BN_rshift1(q, p_1) ||
++                (BN_is_prime(q, BN_prime_checks, NULL, ctx->bn_ctx, NULL) != 1))
++            goto err;
++    } else {
++        q = dp_in->dh->q;
++    }
++
++    if (
++            /* a = p-1 / q */
++            !BN_div(a, NULL, p_1, q, ctx->bn_ctx) ||
++            // g~ = x^a mod p
++            !BN_mod_exp(out->dh->g, x_bn, a, dp_in->dh->p, ctx->bn_ctx))
++        goto err;
++
++    if (!dp_in->dh->q)
++        BN_clear_free(q);
++    BN_clear_free(p_1);
++    BN_clear_free(a);
++    BN_clear_free(x_bn);
++    BUF_MEM_free(x_mem);
++
++    return out;
++
++err:
++    if (!dp_in->dh->q && q)
++        BN_clear_free(q);
++    if (p_1)
++        BN_clear_free(p_1);
++    if (a)
++        BN_clear_free(a);
++    if (out)
++        PACE_DP_clear_free(out);
++    if (x_bn)
++        BN_clear_free(x_bn);
++    if (x_mem)
++        BUF_MEM_free(x_mem);
++
++    return NULL;
++}
++
++PACE_DP *
++ecdh_gm_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in)
++{
++    PACE_DP * out;
++    BUF_MEM * mem_h = NULL;
++    BIGNUM * bn_s = NULL;
++    EC_POINT * ecp_h = NULL, * ecp_g = NULL;
++    const ECDH_METHOD * default_method = NULL;
++    if (!dp_in || !ctx || !s)
++        goto err;
++
++    default_method = ECDH_get_default_method();
++    ECDH_set_default_method(ECDH_OpenSSL_Point());
++
++    /* Convert nonce to BIGNUM */
++    bn_s = BN_bin2bn((unsigned char *) s->data, s->length, bn_s);
++    if (!bn_s)
++        goto err;
++
++    /* complete the ECDH and get the point h */
++    mem_h = ecdh_compute_key(dp_in, ctx, in);
++    ecp_h = EC_POINT_new(EC_KEY_get0_group(dp_in->ecdh));
++    if (!mem_h || !ecp_h ||
++            !EC_POINT_oct2point(EC_KEY_get0_group(dp_in->ecdh), ecp_h,
++                (unsigned char *) mem_h->data, mem_h->length, ctx->bn_ctx))
++        goto err;
++
++    /* map to new generator */
++    ecp_g = EC_POINT_new(EC_KEY_get0_group(dp_in->ecdh));
++    /* g' = g * s + h */
++    if (!EC_POINT_mul(EC_KEY_get0_group(dp_in->ecdh), ecp_g, bn_s, ecp_h, NULL,
++                ctx->bn_ctx))
++        goto err;
++
++    /* configure the new EC_KEY */
++    out = dp_ecdh_new_generator(dp_in, ecp_g, ctx->bn_ctx);
++
++    EC_POINT_clear_free(ecp_g);
++    EC_POINT_clear_free(ecp_h);
++    BUF_MEM_free(mem_h);
++    BN_clear_free(bn_s);
++    ECDH_set_default_method(default_method);
++
++    return out;
++
++err:
++    if (ecp_g)
++        EC_POINT_clear_free(ecp_g);
++    if (ecp_h)
++        EC_POINT_clear_free(ecp_h);
++    if (mem_h)
++        BUF_MEM_free(mem_h);
++    if (bn_s)
++        BN_clear_free(bn_s);
++    if (default_method)
++        ECDH_set_default_method(default_method);
++
++    return NULL;
++}
++
++PACE_DP *
++ecdh_im_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in)
++{
++    PACE_DP * out;
++    BIGNUM * a = NULL, * b = NULL, * p = NULL;
++    BIGNUM * x = NULL, * y = NULL, * v = NULL, * bn_s = NULL;
++    BIGNUM * tmp = NULL, * tmp2 = NULL, * bn_const = NULL, * bn_inv = NULL;
++
++    if (!dp_in || !ctx || !s)
++        goto err;
++
++    a = BN_new();
++    b = BN_new();
++    p = BN_new();
++    x = BN_new();
++    y = BN_new();
++    v = BN_new();
++    tmp = BN_new();
++    tmp2 = BN_new();
++    bn_const = BN_new();
++    bn_inv = BN_new();
++    if (!a || !b || !p || !x || !y || !v || !tmp || !tmp2 || !bn_const ||
++            !bn_inv)
++        goto err;
++    BN_init(a);
++    BN_init(b);
++    BN_init(p);
++    BN_init(x);
++    BN_init(y);
++    BN_init(v);
++    BN_init(tmp);
++    BN_init(tmp2);
++    BN_init(bn_const);
++    BN_init(bn_inv);
++
++    if (!EC_GROUP_get_curve_GFp(EC_KEY_get0_group(dp_in->ecdh), p, a, b,
++            ctx->bn_ctx))
++        goto err;
++
++    /*Check prerequisites for curve parameters*/
++    if (    !BN_set_word(bn_const, 3) ||
++            (BN_cmp(p,bn_const) != 1) ||
++            /* p^n = 2 mod 3, tested with n = 1*/
++            !BN_set_word(tmp2, 2) ||
++            !BN_nnmod(tmp, p, bn_const, ctx->bn_ctx) ||
++            (BN_cmp(tmp, tmp2) != 0)) {
++        goto err;
++    }
++
++    /* Convert nonce to BIGNUM */
++    bn_s = BN_bin2bn((unsigned char *) s->data, s->length, bn_s);
++    if (!bn_s)
++        goto err;
++
++    if (    /* v = (3a - u^4) / 6u */
++            /* bn_const is still 3 */
++            !BN_mod_mul(tmp, bn_const, a, p, ctx->bn_ctx) ||
++            !BN_set_word(bn_const, 4) ||
++            !BN_mod_exp(tmp2, bn_s, bn_const, p, ctx->bn_ctx) ||
++            !BN_mod_sub(v, tmp, tmp2, p, ctx->bn_ctx) ||
++            !BN_set_word(bn_const, 6) ||
++            !BN_mod_mul(tmp, bn_s, bn_const, p, ctx->bn_ctx) ||
++            /* For division within a galois field we need to compute
++             * the multiplicative inverse of a number */
++            !BN_mod_inverse(bn_inv, tmp, p, ctx->bn_ctx) ||
++            !BN_mod_mul(v, v, bn_inv, p, ctx->bn_ctx) ||
++
++            /* x = (v^2 - b - ((u^6)/27)) */
++            !BN_mod_sqr(tmp, v , p, ctx->bn_ctx) ||
++            !BN_mod_sub(tmp2, tmp, b, p, ctx->bn_ctx) ||
++            /* bn_const is still 6 */
++            !BN_mod_exp(tmp, bn_s, bn_const, p, ctx->bn_ctx) ||
++            !BN_set_word(bn_const, 27) ||
++            !BN_mod_inverse(bn_inv, bn_const, p, ctx->bn_ctx) ||
++            !BN_mod_mul(tmp, tmp , bn_inv, p, ctx->bn_ctx) ||
++            !BN_mod_sub(x, tmp2, tmp, p, ctx->bn_ctx) ||
++
++            /* x -> x^(1/3) = x^((2p^n -1)/3) */
++            !BN_set_word(bn_const,2) ||
++            !BN_mul(tmp, bn_const, p, ctx->bn_ctx) ||
++            !BN_set_word(bn_const,1) ||
++            !BN_sub(tmp, tmp, bn_const) ||
++            !BN_set_word(bn_const,3) ||
++            /* Division is defined, because p^n = 2 mod 3 */
++            !BN_div(tmp, y, tmp, bn_const, ctx->bn_ctx) ||
++            /* printf("Remainder: %s\n", BN_bn2dec(y)); */
++            !BN_mod_exp(tmp2, x, tmp, p, ctx->bn_ctx) ||
++            !BN_copy(x,tmp2) ||
++
++            /* x += u^2/3 */
++            !BN_mod_sqr(tmp, bn_s, p, ctx->bn_ctx) ||
++            /*bn_const is still 3*/
++            !BN_mod_inverse(bn_inv, bn_const, p, ctx->bn_ctx) ||
++            !BN_mod_mul(tmp2, tmp, bn_inv, p, ctx->bn_ctx) ||
++            !BN_mod_add(tmp, x, tmp2, p, ctx->bn_ctx) ||
++            !BN_copy(x, tmp) ||
++
++            /* y = ux + v */
++            !BN_mod_mul(y, bn_s , x, p, ctx->bn_ctx) ||
++            !BN_mod_add(tmp, y, v, p, ctx->bn_ctx) ||
++            !BN_copy(y,tmp))
++        goto err;
++
++    /* configure the new EC_KEY */
++    out = dp_ecdh_new_generator_by_coordinates(dp_in, x, y, ctx->bn_ctx);
++
++    BN_clear_free(a);
++    BN_clear_free(b);
++    BN_clear_free(p);
++    BN_clear_free(x);
++    BN_clear_free(y);
++    BN_clear_free(v);
++    BN_clear_free(bn_s);
++    BN_clear_free(tmp);
++    BN_clear_free(tmp2);
++    BN_clear_free(bn_const);
++    BN_clear_free(bn_inv);
++
++    return out;
++
++err:
++    if (a)
++        BN_clear_free(a);
++    if (b)
++        BN_clear_free(b);
++    if (p)
++        BN_clear_free(p);
++    if (x)
++        BN_clear_free(x);
++    if (y)
++        BN_clear_free(y);
++    if (v)
++        BN_clear_free(v);
++    if (bn_s)
++        BN_clear_free(bn_s);
++    if (tmp)
++        BN_clear_free(tmp);
++    if (tmp2)
++        BN_clear_free(tmp2);
++    if (bn_const)
++        BN_clear_free(bn_const);
++    if (bn_inv)
++        BN_clear_free(bn_inv);
++
++    return NULL;
++}
++
++
++    int
++PACE_STEP1_enc_nonce(const PACE_SEC * pi, const PACE_CTX * ctx,
++        BUF_MEM ** nonce, BUF_MEM ** enc_nonce)
++{
++    BUF_MEM * key = NULL;
++    if (!ctx)
++        goto err;
++
++    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
++    if (!key)
++        goto err;
++
++    *nonce = randb(EVP_CIPHER_block_size(ctx->cipher));
++    if (!*nonce)
++        goto err;
++
++    *enc_nonce = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++            (unsigned char *) key->data, ctx->iv, 1, *nonce, 1);
++
++    return 1;
++
++err:
++    if (key)
++        OPENSSL_free(key);
++
++    PACEerr(PACE_F_PACE_STEP1_PROCESS, PACE_R_NONCE_GENERATION_FAILED);
++    return 0;
++}
++
++BUF_MEM *
++PACE_STEP2_dec_nonce(const PACE_SEC * pi,
++        const BUF_MEM * enc_nonce, const PACE_CTX * ctx)
++{
++    BUF_MEM * nonce = NULL;
++    BUF_MEM * key = NULL;
++    if (!ctx)
++        goto err;
++
++    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
++    if (!key)
++        goto err;
++
++    nonce = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++            (unsigned char *) key->data, ctx->iv, 0, enc_nonce, 1);
++
++err:
++    if (key)
++        BUF_MEM_free(key);
++
++    return nonce;
++}
++
++BUF_MEM *
++PACE_STEP3A_map_generate_key(const PACE_DP * dp, const PACE_CTX * ctx)
++{
++    if (!ctx)
++        return NULL;
++
++    return ctx->map_generate_key(dp, ctx);
++}
++
++PACE_DP *
++PACE_STEP3A_map_compute_key(const PACE_DP * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in)
++{
++    if (!ctx)
++        return NULL;
++
++    return ctx->map_compute_key(dp_in, ctx, s, in);
++}
++
++BUF_MEM *
++PACE_STEP3B_dh_generate_key(const PACE_DP * dp, const PACE_CTX * ctx)
++{
++    if (!dp || !ctx)
++        return NULL;
++
++    switch (dp->protocol) {
++        case id_PACE_DH:
++            return dh_generate_key(dp, ctx);
++        case id_PACE_ECDH:
++            return ecdh_generate_key(dp, ctx);
++        default:
++            return NULL;
++    }
++}
++
++BUF_MEM *
++PACE_STEP3B_dh_compute_key(const PACE_DP * dp, const PACE_CTX * ctx,
++        const BUF_MEM * in)
++{
++    switch (dp->protocol) {
++        case id_PACE_DH:
++            return dh_compute_key(dp, ctx, in);
++        case id_PACE_ECDH:
++            return ecdh_compute_key(dp, ctx, in);
++        default:
++            return NULL;
++    }
++}
++
++int
++PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx, BUF_MEM ** k_mac,
++        BUF_MEM ** k_enc)
++{
++    * k_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
++    * k_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
++    if (!*k_mac || !*k_enc)
++        return 0;
++
++    return 1;
++}
++
++BUF_MEM *
++PACE_STEP4_compute_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
++        BUF_MEM * pub, BUF_MEM * key)
++{
++    BUF_MEM *asn1 = NULL, *out;
++    asn1 = asn1_pubkey(ctx, dp);
++        if (!asn1)
++            goto err;
++
++    switch (ctx->protocol) {
++            case id_PACE_DH_GM_3DES_CBC_CBC:
++            case id_PACE_ECDH_GM_3DES_CBC_CBC:
++            case id_PACE_DH_IM_3DES_CBC_CBC:
++            case id_PACE_ECDH_IM_3DES_CBC_CBC:
++                out = retail_mac_des(key, asn1);
++                break;
++            case id_PACE_DH_GM_AES_CBC_CMAC_128:
++            case id_PACE_DH_GM_AES_CBC_CMAC_192:
++            case id_PACE_DH_GM_AES_CBC_CMAC_256:
++            case id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            case id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            case id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            case id_PACE_DH_IM_AES_CBC_CMAC_128:
++            case id_PACE_DH_IM_AES_CBC_CMAC_192:
++            case id_PACE_DH_IM_AES_CBC_CMAC_256:
++            case id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            case id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            case id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                out = cmac(key, asn1, ctx, PACE_AES_MAC_LENGTH);
++                break;
++            default:
++                goto err;
++    }
++
++    BUF_MEM_free(asn1);
++    return out;
++
++err:
++    if (asn1)
++        BUF_MEM_free(asn1);
++    return NULL;
++}
++
++int
++PACE_STEP5_verify_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
++        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token)
++{
++    PACE_DP *dp_opp = NULL;
++    BUF_MEM *token_verify = NULL, *pub_opp = NULL;
++    EC_POINT *ecp = NULL;
++    int rv;
++    if (!dp)
++        goto err;
++
++    dp_opp = PACE_DP_dup(dp);
++
++    switch (dp->protocol) {
++        case id_PACE_DH:
++            if (!dp_opp || !dp->dh)
++                goto err;
++
++            dp_opp->dh->pub_key = BN_bin2bn((unsigned char *) pub->data,
++                    pub->length, dp_opp->dh->pub_key);
++
++            pub_opp = bn2buf(dp->dh->pub_key);
++            break;
++
++        case id_PACE_ECDH:
++            if (!dp_opp || !dp->ecdh)
++                goto err;
++
++            ecp = EC_POINT_new(EC_KEY_get0_group(dp_opp->ecdh));
++            if (!ecp ||
++                    !EC_POINT_oct2point(EC_KEY_get0_group(dp_opp->ecdh), ecp,
++                        (unsigned char *) pub->data, pub->length, ctx->bn_ctx) ||
++                    !EC_KEY_set_public_key(dp_opp->ecdh, ecp))
++                goto err;
++            EC_POINT_free(ecp);
++
++            pub_opp = point2buf(dp->ecdh, ctx->bn_ctx,
++                    EC_KEY_get0_public_key(dp->ecdh));
++            break;
++
++        default:
++            goto err;
++    }
++
++    token_verify = PACE_STEP4_compute_authentication_token(ctx, dp_opp,
++            pub_opp, key);
++    if (!token_verify || (token_verify->length != token->length))
++        goto err;
++
++    if (memcmp(token_verify->data, token->data, token->length) == 0)
++        rv = 1;
++    else
++        rv = 0;
++
++    BUF_MEM_free(token_verify);
++    BUF_MEM_free(pub_opp);
++    PACE_DP_clear_free(dp_opp);
++
++    return rv;
++
++err:
++    if (ecp)
++        EC_POINT_free(ecp);
++    if (token_verify)
++        BUF_MEM_free(token_verify);
++    if (pub_opp)
++        BUF_MEM_free(pub_opp);
++    if (dp_opp)
++        PACE_DP_clear_free(dp_opp);
++
++    return -1;
++}
+Index: openssl/crypto/pace/pace.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace.h	2009-10-14 20:52:49.000000000 +0200
+@@ -0,0 +1,447 @@
++/**
++ * @mainpage OpenPACE
++ * Implements the Password Authenticated Connection Establishment
++ * (PACE) protocol, as specified in BSI TR-03110 version 2.0.
++ *
++ * PACE is a protocol used to establish strong session keys based
++ * on a weak shared secret (password). The result of a PACE run
++ * are two symmetric keys, one for MAC computation and one for
++ * encryption. It was specfied for Extended Access Control (EAC)
++ * in Machine Readable Travel Documents (MRTD), but can also be
++ * used for securing any other communication channel.
++ *
++ * PACE can be used with different suites of algorithms and is not
++ * subject to any patents.
++ *
++ * @date 2009-04-29
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#ifndef PACE_H_
++#define PACE_H_
++
++#include <asm/byteorder.h>
++#include <openssl/dh.h>
++#include <openssl/ecdh.h>
++#include <openssl/buffer.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/**
++ * @defgroup types                 Data Types
++ * @{ ************************************************************************/
++
++/** Enum for the type of the secret used.
++ */
++enum s_type {
++    /** PUK is the Personal Unblocking key. This type of secret is used
++     * when the card is suspended due to too many incorrect PACE runs */
++    PACE_PUK,
++    /** CAN is the Card access number printed on the card */
++    PACE_CAN,
++    /** PIN is the Personal Identification Number, a secret known only
++     * to the user and not printed on the card */
++    PACE_PIN,
++    /** MRZ is the Machine Readable Zone, printed on the card, encoding
++     * the personal information of the user */
++    PACE_MRZ,
++    /** This type of secret is not defined in BSI TR-03110. We use it as
++     * a generic type, so we can use PACE independent from a ID card */
++    PACE_RAW,
++    /** Undefined type, if nothing else matches */
++    PACE_SEC_UNDEF,
++};
++/** Shared secret */
++typedef struct pace_sec {
++    /** The type of the secret */
++    enum s_type type;
++    /** The secret itself */
++    BUF_MEM * mem;
++} PACE_SEC;
++/** Object identifier of domain parameters */
++enum dp_type {
++    id_PACE_DP_UNDEF,
++    id_PACE_DH,
++    id_PACE_ECDH,
++};
++/** Domain parameters */
++typedef struct pace_dp {
++    /** Object identifier */
++    enum dp_type protocol;
++    /** Classic Diffie-Hellman parameters */
++    DH * dh;
++    /** Elliptic curve Diffie-Hellman parameters */
++    EC_KEY * ecdh;
++} PACE_DP;
++
++/** AES message authentication: CMAC of 8 bytes length */
++#define PACE_AES_MAC_LENGTH 8
++/** Object identifiers for PACE */
++enum ctx_type {
++    id_PACE_DH_GM_3DES_CBC_CBC,
++    id_PACE_DH_GM_AES_CBC_CMAC_128,
++    id_PACE_DH_GM_AES_CBC_CMAC_192,
++    id_PACE_DH_GM_AES_CBC_CMAC_256,
++    id_PACE_ECDH_GM_3DES_CBC_CBC,
++    id_PACE_ECDH_GM_AES_CBC_CMAC_128,
++    id_PACE_ECDH_GM_AES_CBC_CMAC_192,
++    id_PACE_ECDH_GM_AES_CBC_CMAC_256,
++    id_PACE_DH_IM_3DES_CBC_CBC,
++    id_PACE_DH_IM_AES_CBC_CMAC_128,
++    id_PACE_DH_IM_AES_CBC_CMAC_192,
++    id_PACE_DH_IM_AES_CBC_CMAC_256,
++    id_PACE_ECDH_IM_3DES_CBC_CBC,
++    id_PACE_ECDH_IM_AES_CBC_CMAC_128,
++    id_PACE_ECDH_IM_AES_CBC_CMAC_192,
++    id_PACE_ECDH_IM_AES_CBC_CMAC_256,
++    id_PACE_AID_UNDEF,
++};
++/** Context structure used in all protocol steps. Encompasses information
++ * about cipher, message digest, key agreement scheme, mapping method. */
++typedef struct pace_ctx {
++    /** Object identifier */
++    enum ctx_type protocol;
++    /** BN_CTX object for various operations */
++    BN_CTX * bn_ctx;
++    /** Which hash function to use for Key Derivation */
++    const EVP_MD * md;
++    /** BN_CTX object for md */
++    EVP_MD_CTX * md_ctx;
++    /** ENGINE object for md */
++    ENGINE * md_engine;
++    /** EVP_CIPHER object to use for encryption/decryption */
++    const EVP_CIPHER * cipher;
++    /** EVP_CIPHER_CTX object for cipher */
++    EVP_CIPHER_CTX * cipher_ctx;
++    /** ENGINE object for cipher */
++    ENGINE * cipher_engine;
++    /** Initialisation vector for encryption/decryption */
++    unsigned char * iv;
++    /** Points to the implementation of a specific mapping
++     * @see PACE_STEP3A_map_generate_key() */
++    BUF_MEM * (*map_generate_key)(const PACE_DP * dp,
++            const struct pace_ctx * ctx);
++    /** Points to the implementation of a specific mapping
++     * @see PACE_STEP3A_map_compute_key() */
++    PACE_DP * (*map_compute_key)(const PACE_DP * dp_in,
++            const struct pace_ctx * ctx, const BUF_MEM * s,
++            const BUF_MEM * in);
++} PACE_CTX;
++
++/** see RFC 3280 */
++typedef struct AlgorithmIdentifier {
++    /** Object identifier */
++    enum ctx_type algorithm;
++    /** Depending on algorithm either a DH object or a EC_KEY object.
++     * NOTE: This differs from RFC 3280 */
++    void * parameters;
++} ALGORITHM_IDENTIFIER;
++// TODO define ECParameters for elliptic curves to use as parameters
++
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup manage              Data Managment
++ * @{ ************************************************************************/
++
++/**
++ * @brief frees a PACE_DP object
++ *
++ * @param dp Object to free (optional)
++ */
++void PACE_DP_free(PACE_DP * dp);
++/**
++ * @brief Frees a PACE_DP object and all of its components
++ *
++ * @param dp Object to free (optional)
++ */
++void PACE_DP_clear_free(PACE_DP * dp);
++/**
++ * @brief Creates a new PACE_DP object
++ *
++ * @return The new object or NULL if an error occurred
++ */
++PACE_DP * PACE_DP_new(void);
++/**
++ * @brief Duplicates a PACE_DP object without preserving private keys
++ *
++ * @param dp_in Object to duplicate
++ *
++ * @return Duplicate of dp_in without private and public keys or NULL if an
++ * error occurred
++ */
++PACE_DP * PACE_DP_dup(const PACE_DP * dp_in);
++/**
++ * @brief Frees a PACE_SEC object
++ *
++ * @param s PACE_SEC object to free (optional)
++ */
++void PACE_SEC_free(PACE_SEC * s);
++/**
++ * @brief Frees a PACE_SEC object and all its of components
++ *
++ * @param s Object to free (optional)
++ */
++void PACE_SEC_clear_free(PACE_SEC * s);
++/**
++ * @brief Creates a new PACE_SEC object
++ *
++ * @return The new object or NULL if an error occurred
++ */
++PACE_SEC * PACE_SEC_new(void);
++/**
++ * @brief Initializes a PACE_SEC object with a secret and its type
++ *
++ * @param s Object to initialize
++ * @param mem Secret
++ * @param type Type of secret
++ *
++ * @return 1 on success and 0 if an error occurred
++ */
++int PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type);
++/**
++ * @brief Frees a PACE_CTX object
++ *
++ * @param s Object to free (optional)
++ */
++void PACE_CTX_free(PACE_CTX * s);
++/**
++ * @brief Frees a PACE_CTX object and all its components
++ *
++ * @param s Object to free (optional)
++ */
++void PACE_CTX_clear_free(PACE_CTX * s);
++/**
++ * @brief Creates a new PACE_CTX object
++ *
++ * @return The new object or NULL if an error occurred
++ */
++PACE_CTX * PACE_CTX_new(void);
++/**
++ * @brief Initializes PACE_CTX/PACE_DP objects
++ *
++ * @param ctx Object to initialize
++ * @param dp Object to initialize
++ * @param id AlgorithmIdentifier, which specifies cipher, message digest, key
++ * agreement scheme, mapping method. See TR-3110 Table A.4/A.5.
++ *
++ * @return 1 on success and 0 if an error occurred
++ */
++int PACE_init(PACE_CTX * ctx, PACE_DP * dp, const ALGORITHM_IDENTIFIER * id);
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup kdf            Key Derivation Functions
++ * @{ ************************************************************************/
++
++/**
++ * @brief Key derivation function to derive encryption key
++ *
++ * @see kdf()
++ */
++#define kdf_enc(key, nonce, md, ctx, impl) \
++    kdf(key, nonce, __constant_cpu_to_be32(1), md, ctx, impl)
++/**
++ * @brief Key derivation function to derive authentication key
++ *
++ * @see kdf()
++ */
++#define kdf_mac(key, nonce, md, ctx, impl) \
++    kdf(key, nonce, __constant_cpu_to_be32(2), md, ctx, impl)
++/**
++ * @brief General key derivation function according to TR-3110 F.3.1
++ *
++ * @param key Shared secret
++ * @param nonce (optional)
++ * @param counter
++ * @param md Message digest to use
++ * @param ctx EVP_MD_CTX object to use (optional)
++ * @param impl ENGINE object to use for message digest (optional)
++ *
++ * @return derivated key or NULL if an error occurred
++ */
++BUF_MEM * kdf(const BUF_MEM * key, const BUF_MEM * nonce,
++        const __be32 counter, const EVP_MD * md, EVP_MD_CTX * ctx,
++        ENGINE * impl);
++/**
++ * @brief Key derivation function from a password pi
++ *
++ * @see kdf()
++ */
++BUF_MEM * kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce,
++        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl);
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup encoding               Encoding
++ * @{ ************************************************************************/
++
++/**
++ * @brief Checks if str is a character string according to TR-3110 D.2.1.4
++ *
++ * @param str BUF_MEM object with the string to check
++ *
++ * @return 1 if str is a character string or 0 if it is not
++ */
++int is_char_str(const BUF_MEM * str);
++/**
++ * @brief Encodes a shared secret according to TR-3110 Table F.2
++ *
++ * @param pi Password to encode
++ *
++ * @return BUF_MEM object containing the encoded password or NULL if an error occurred
++ *
++ * @note This function is automatically called during PACE, normally you should not need to use it.
++ */
++BUF_MEM * encoded_secret(const PACE_SEC * pi);
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup proto               Protocol Steps
++ * @{ ************************************************************************/
++
++/**
++ * @brief Generates and encrypts a nonce.
++ *
++ * @param pi        Shared secret for key derivation (see kdf_pi())
++ * @param ctx       PACE_CTX object
++ * @param nonce     Where to save the new object containing the nonce
++ * @param enc_nonce Where to save the new object containing the encrypted nonce
++ *
++ * @return          1 on success and 0 if an error occurred
++ */
++int PACE_STEP1_enc_nonce(const PACE_SEC * pi, const PACE_CTX * ctx,
++        BUF_MEM ** nonce, BUF_MEM ** enc_nonce);
++/**
++ * @brief Decrypt the Nonce from the other party.
++ *
++ * @param pi PACE secret used to derive the symmetric key
++ * @param enc_nonce Encrypted nonce
++ * @param ctx Context structure that contains information about encryption and
++ * hash algorithms to use
++ *
++ * @return Plaintext nonce or NULL if an error occurred
++ */
++BUF_MEM * PACE_STEP2_dec_nonce(const PACE_SEC * pi,
++        const BUF_MEM * enc_nonce, const PACE_CTX * ctx);
++/**
++ * @brief Generate a public keypair to perform the mapping to new domain
++ * parameters
++ *
++ * @param dp Domain parameters
++ * @param ctx PACE_CTX object
++ *
++ * @return Buffer to be transmitted to the other party or NULL if an error
++ * occurred
++ */
++BUF_MEM *
++PACE_STEP3A_map_generate_key(const PACE_DP * dp, const PACE_CTX * ctx);
++/**
++ * @brief Get the ephemeral domain parameters.
++ *
++ * Compute the shared secret from our own private key and the other
++ * parties public key. Then map the static domain parameters to new,
++ * ephemeral ones.
++ *
++ * @param dp_in Static domain parameters
++ * @param ctx
++ * @param s Nonce used for computing the ephemeral domain parameters
++ * @param in Public key from the other party
++ *
++ * @return Ephemeral domain parameters or NULL if an error occurred
++ */
++PACE_DP * PACE_STEP3A_map_compute_key(const PACE_DP * dp_in,
++        const PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Generate a keypair for key agreement
++ *
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param ctx PACE_CTX object
++ *
++ * @return Public key or NULL if an error occurred
++ */
++BUF_MEM * PACE_STEP3B_dh_generate_key(const PACE_DP * dp,
++        const PACE_CTX * ctx);
++/**
++ * @brief Compute the shared secret
++ *
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param ctx PACE_CTX object
++ * @param in Public key from the other party
++ *
++ * @return Shared secret or NULL if an error occurred
++ */
++BUF_MEM * PACE_STEP3B_dh_compute_key(const PACE_DP * dp,
++        const PACE_CTX * ctx, const BUF_MEM * in);
++/**
++ * @brief Derives encryption and authentication keys
++ *
++ * @param key Shared secret (computed in step 3B)
++ * @param ctx PACE_CTX object
++ * @param k_mac Where to store the authentication key
++ * @param k_enc Where to store the encryption key
++ *
++ * @return          1 on success and 0 if an error occurred
++ */
++int PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx,
++        BUF_MEM ** k_mac, BUF_MEM ** k_enc);
++/**
++ * @brief Compute the authentication token from domain parameters
++ *           and public key
++ *
++ * @param ctx PACE_CTX object
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param pub Public key from the other party (generated in step 3B)
++ * @param key Authentication key (computed in step 3C)
++ *
++ * @return Authentication token or NULL in case of error
++ */
++BUF_MEM * PACE_STEP4_compute_authentication_token(PACE_CTX * ctx,
++        PACE_DP * dp, BUF_MEM * pub, BUF_MEM * key);
++/** 
++ * @brief Verifies an authentication token.
++ * 
++ * @param ctx PACE_CTX object
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param pub Public key from the other party (generated in step 3B)
++ * @param key Authentication key (computed in step 3C)
++ * @param token Authentication token from the other party
++ * 
++ * @return 1 if the token has been verified, 0 if not, -1 if an error
++ * occurred.
++ */
++int PACE_STEP5_verify_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
++        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token);
++/** @} ***********************************************************************/
++
++#define bsi_de          "0.4.0.127.0.7"
++#define id_PACE         bsi_de  ".2.2.2"
++#define id_PACE_DH_GM   id_PACE ".1"
++#define id_PACE_ECDH_GM id_PACE ".2"
++#define id_PACE_DH_IM   id_PACE ".3"
++#define id_PACE_ECDH_IM id_PACE ".4"
++#define OID_DH "commonName"
++#define OID_ECDH "commonName"
++
++/* BEGIN ERROR CODES */
++/* The following lines are auto generated by the script mkerr.pl. Any changes
++ * made after this point may be overwritten when the script is next run.
++ */
++void ERR_load_PACE_strings(void);
++
++/* Error codes for the PACE functions. */
++
++/* Function codes. */
++#define PACE_F_PACE_STEP1_PROCESS             100
++
++/* Reason codes. */
++#define PACE_R_NONCE_GENERATION_FAILED             100
++
++#ifdef  __cplusplus
++}
++#endif
++#endif
+Index: openssl/crypto/pace/pace_err.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_err.c	2009-06-20 23:43:38.000000000 +0200
+@@ -0,0 +1,95 @@
++/* crypto/pace/pace_err.c */
++/* ====================================================================
++ * Copyright (c) 1999-2009 The OpenSSL Project.  All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer. 
++ *
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * 3. All advertising materials mentioning features or use of this
++ *    software must display the following acknowledgment:
++ *    "This product includes software developed by the OpenSSL Project
++ *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
++ *
++ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
++ *    endorse or promote products derived from this software without
++ *    prior written permission. For written permission, please contact
++ *    openssl-core@OpenSSL.org.
++ *
++ * 5. Products derived from this software may not be called "OpenSSL"
++ *    nor may "OpenSSL" appear in their names without prior written
++ *    permission of the OpenSSL Project.
++ *
++ * 6. Redistributions of any form whatsoever must retain the following
++ *    acknowledgment:
++ *    "This product includes software developed by the OpenSSL Project
++ *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
++ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
++ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
++ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
++ * OF THE POSSIBILITY OF SUCH DAMAGE.
++ * ====================================================================
++ *
++ * This product includes cryptographic software written by Eric Young
++ * (eay@cryptsoft.com).  This product includes software written by Tim
++ * Hudson (tjh@cryptsoft.com).
++ *
++ */
++
++/* NOTE: this file was auto generated by the mkerr.pl script: any changes
++ * made to it will be overwritten when the script next updates this file,
++ * only reason strings will be preserved.
++ */
++
++#include <stdio.h>
++#include <openssl/err.h>
++#include <openssl/pace.h>
++
++/* BEGIN ERROR CODES */
++#ifndef OPENSSL_NO_ERR
++
++#define ERR_FUNC(func) ERR_PACK(ERR_LIB_PACE,func,0)
++#define ERR_REASON(reason) ERR_PACK(ERR_LIB_PACE,0,reason)
++
++static ERR_STRING_DATA PACE_str_functs[]=
++	{
++{ERR_FUNC(PACE_F_PACE_STEP1_PROCESS),	"PACE_STEP1_PROCESS"},
++{0,NULL}
++	};
++
++static ERR_STRING_DATA PACE_str_reasons[]=
++	{
++{ERR_REASON(PACE_R_NONCE_GENERATION_FAILED),"nonce generation failed"},
++{0,NULL}
++	};
++
++#endif
++
++void ERR_load_PACE_strings(void)
++	{
++#ifndef OPENSSL_NO_ERR
++
++	if (ERR_func_error_string(PACE_str_functs[0].error) == NULL)
++		{
++		ERR_load_strings(0,PACE_str_functs);
++		ERR_load_strings(0,PACE_str_reasons);
++		}
++#endif
++	}
+Index: openssl/crypto/pace/pacetest.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pacetest.c	2009-10-14 13:21:11.000000000 +0200
+@@ -0,0 +1,681 @@
++#include <stdlib.h>
++#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
++#ifdef OPENSSL_NO_PACE
++int main(int argc, char *argv[])
++{
++    printf("No PACE support\n");
++    return(0);
++}
++#else
++#include <openssl/pace.h>
++#include <openssl/ec.h>
++#include <openssl/evp.h>
++#include <openssl/err.h>
++#include <openssl/objects.h>
++#include <string.h>
++/*#include <openssl/md2.h>*/
++#include <openssl/buffer.h>
++
++#define start() printf("%s\t", __FUNCTION__)
++#define errif(b) if (b) { \
++    printf(" line %d [Error]\n", __LINE__); \
++    return -1; } else { printf("."); } \
++fflush(stdout)
++#define end() printf(" [OK]\n"); return 0
++#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); return 1; }
++
++static void hexdump(const char *title,const BUF_MEM *s)
++    {
++    int n=0;
++
++    fprintf(stdout,"%s",title);
++    for( ; n < s->length ; ++n)
++		{
++		if((n%16) == 0)
++			fprintf(stdout,"\n    ");
++		fprintf(stdout,"%02x:",(unsigned char) s->data[n]);
++		}
++    fprintf(stdout,"\n");
++    }
++
++int PACE_DP_test()
++{
++    PACE_DP * dp;
++    EC_KEY * ecdh;
++
++    start();
++    dp = PACE_DP_new();
++    errif(!dp);
++    ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime192v1);
++    errif(!ecdh);
++    dp->ecdh = ecdh;
++    PACE_DP_free(dp);
++    errif(!EC_KEY_get0_group(ecdh));
++    dp = PACE_DP_new();
++    errif(!dp);
++    dp->ecdh = ecdh;
++    PACE_DP_clear_free(dp);
++    PACE_DP_clear_free(NULL);
++    PACE_DP_free(NULL);
++    end();
++}
++
++int PACE_SEC_test()
++{
++    PACE_SEC * s;
++    BUF_MEM * bm;
++
++    start();
++    s = PACE_SEC_new();
++    errif(!s);
++    bm = BUF_MEM_new();
++    errif(!bm);
++    s->mem = bm;
++    PACE_SEC_free(s);
++    errif(!BUF_MEM_grow(bm, 1));
++    s = PACE_SEC_new();
++    errif(!s);
++    s->mem = bm;
++    PACE_SEC_clear_free(s);
++    PACE_SEC_clear_free(NULL);
++    PACE_SEC_free(NULL);
++    end();
++}
++
++int pace_dh_test()
++{
++    start();
++    BUF_MEM * apub = NULL, * bpub = NULL, * akey = NULL, * bkey = NULL;
++    BIGNUM * apub_bn = NULL;
++    PACE_DP * dp = NULL;
++    DH * b = NULL;
++    PACE_CTX * ctx = PACE_CTX_new();
++    int i;
++
++    b = DH_generate_parameters(64, DH_GENERATOR_5, NULL, NULL);
++    errif(!b);
++    errif(!DH_check(b, &i));
++    errif((DH_CHECK_P_NOT_SAFE_PRIME & i) || (DH_NOT_SUITABLE_GENERATOR & i) ||
++            (DH_UNABLE_TO_CHECK_GENERATOR & i) || (i & DH_CHECK_P_NOT_PRIME));
++    errif(!b->p || !b->g);
++    dp = PACE_DP_new();
++    errif(!dp);
++    ALGORITHM_IDENTIFIER id;
++    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
++    id.parameters = NULL;
++    errif(!PACE_init(ctx, dp, &id));
++    errif(!dp->dh || !ctx->bn_ctx || dp->protocol != id_PACE_DH);
++    dp->dh->p=BN_dup(b->p);
++    dp->dh->g=BN_dup(b->g);
++
++    apub = PACE_STEP3B_dh_generate_key(dp, ctx);
++    errif(!apub);
++    errif(!DH_generate_key(b));
++
++    i = BN_num_bytes(b->pub_key);
++    bpub = BUF_MEM_new();
++    errif(!bpub);
++    errif(BUF_MEM_grow(bpub, i) < i);
++    bpub->length = BN_bn2bin(b->pub_key, (unsigned char *) bpub->data);
++
++    akey = PACE_STEP3B_dh_compute_key(dp, ctx, bpub);
++
++    bkey = BUF_MEM_new();
++    errif(!bkey);
++    errif(BUF_MEM_grow(bkey, i) < i);
++    apub_bn = BN_bin2bn((unsigned char *) apub->data, apub->length, apub_bn);
++    errif(!apub_bn);
++    bkey->length = DH_compute_key((unsigned char *) bkey->data, apub_bn, b);
++    errif(bkey->length < 0);
++
++    errif(bkey->length != akey->length ||
++            memcmp(bkey->data, akey->data, akey->length) != 0);
++    end();
++}
++
++int pace_ecdh_test()
++{
++    start();
++
++        BUF_MEM * apub = NULL, * bpub = NULL, * akey = NULL, * bkey = NULL;
++        EC_POINT * apub_ecp = NULL;
++        PACE_DP * dp = NULL;
++        EC_KEY * b = NULL;
++        EC_GROUP * group = NULL;
++        PACE_CTX * ctx = PACE_CTX_new();
++        int i;
++        ALGORITHM_IDENTIFIER id;
++        id.algorithm = id_PACE_ECDH_GM_3DES_CBC_CBC;
++        id.parameters = NULL;
++
++        dp = PACE_DP_new();
++        errif(!dp);
++        errif(!PACE_init(ctx, dp, &id));
++        errif(!dp->ecdh);
++        b = EC_KEY_dup(dp->ecdh);
++        errif(!b);
++
++        apub = PACE_STEP3B_dh_generate_key(dp, ctx);
++        errif(!apub);
++        errif(!EC_KEY_generate_key(b));
++
++        group = EC_GROUP_dup(EC_KEY_get0_group(b));
++        errif(!group);
++        bpub = BUF_MEM_new();
++        errif(!bpub);
++        i = EC_POINT_point2oct(group, EC_KEY_get0_public_key(b),
++                EC_KEY_get_conv_form(b), NULL, 0, ctx->bn_ctx);
++        errif(BUF_MEM_grow(bpub, i) < i);
++        bpub->length = EC_POINT_point2oct(group, EC_KEY_get0_public_key(b),
++                EC_KEY_get_conv_form(b), (unsigned char *) bpub->data, bpub->max,
++                ctx->bn_ctx);
++
++        akey = PACE_STEP3B_dh_compute_key(dp, ctx, bpub);
++        errif(!akey);
++
++        apub_ecp = EC_POINT_new(group);
++        errif(!apub_ecp);
++        errif(!EC_POINT_oct2point(group, apub_ecp, (unsigned char *) apub->data,
++                    apub->length, ctx->bn_ctx));
++        errif(!apub_ecp);
++        bkey = BUF_MEM_new();
++        errif(!bkey);
++        errif(BUF_MEM_grow(bkey, i) < i);
++        bkey->length = ECDH_compute_key(bkey->data, bkey->max, apub_ecp, b,
++                NULL);
++        errif(bkey->length < 0);
++
++        errif(bkey->length != akey->length);
++        errif(memcmp(bkey->data, akey->data, akey->length) != 0);
++
++        PACE_DP_clear_free(dp);
++        PACE_CTX_clear_free(ctx);
++        EC_KEY_free(b);
++        BUF_MEM_free(akey);
++        BUF_MEM_free(bkey);
++        BUF_MEM_free(apub);
++        BUF_MEM_free(bpub);
++        EC_POINT_free(apub_ecp);
++    end();
++}
++
++int map_dh_test()
++{
++    start();
++    BUF_MEM * apub = NULL, * s = NULL;
++    PACE_DP * dp = NULL, * dp_map = NULL;
++    PACE_SEC * secret = NULL;
++    PACE_CTX * ctx = PACE_CTX_new();
++    int i;
++
++    /*a = ;*/
++    /*errif(!a);*/
++    /*errif(!DH_check(a, &i));*/
++    /*errif((DH_CHECK_P_NOT_SAFE_PRIME & i) || (DH_NOT_SUITABLE_GENERATOR & i) ||*/
++            /*(DH_UNABLE_TO_CHECK_GENERATOR & i) || (i & DH_CHECK_P_NOT_PRIME));*/
++    /*errif(!a->p || !a->g);*/
++    dp = PACE_DP_new();
++    errif(!dp);
++    ALGORITHM_IDENTIFIER id;
++    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
++    id.parameters = NULL;
++    errif(!PACE_init(ctx, dp, &id));
++    DH_free(dp->dh);
++    dp->dh = DH_generate_parameters(64, DH_GENERATOR_5, NULL, NULL);
++    errif(!dp->dh || !ctx->bn_ctx || dp->protocol != id_PACE_DH);
++    /*dp->dh->p=BN_dup(a->p);*/
++    /*dp->dh->g=BN_dup(a->g);*/
++
++    apub = PACE_STEP3A_map_generate_key(dp, ctx);
++    errif(!apub);
++
++    secret = PACE_SEC_new();
++    errif(!secret);
++    secret->mem = BUF_MEM_new();
++    errif(!secret->mem);
++    secret->mem->data = "123456";
++    i = strlen("123456");
++    secret->mem->length = i;
++    secret->mem->max = i;
++    secret->type = PACE_RAW;
++    s = encoded_secret(secret);
++    errif(!s);
++    dp_map = PACE_STEP3A_map_compute_key(dp, ctx, s, apub);
++    errif(!dp_map);
++    errif(!dp_map->dh);
++    errif(BN_cmp(dp_map->dh->p, dp->dh->p) != 0);
++    errif(BN_cmp(dp_map->dh->g, dp->dh->g) == 0);
++
++    secret->mem->data = NULL;
++    BUF_MEM_free(s);
++    BUF_MEM_free(apub);
++    PACE_SEC_clear_free(secret);
++    PACE_DP_clear_free(dp);
++    PACE_DP_clear_free(dp_map);
++    PACE_CTX_clear_free(ctx);
++    end();
++}
++
++int map_ecdh_test()
++{
++    start();
++        BUF_MEM * apub = NULL, * s = NULL;
++        PACE_DP * dp = NULL, * dp_map = NULL;
++        PACE_SEC * secret = NULL;
++        PACE_CTX * ctx = PACE_CTX_new();
++        int i;
++        ALGORITHM_IDENTIFIER id;
++        id.algorithm = id_PACE_ECDH_IM_AES_CBC_CMAC_256;
++        id.parameters = NULL;
++
++        dp = PACE_DP_new();
++        errif(!dp);
++        errif(!PACE_init(ctx, dp, &id));
++        errif(!dp->ecdh || dp->protocol != id_PACE_ECDH);
++
++        apub = PACE_STEP3A_map_generate_key(dp, ctx);
++        errif(!apub);
++
++        secret = PACE_SEC_new();
++        errif(!secret);
++        secret->mem = BUF_MEM_new();
++        errif(!secret->mem);
++        secret->mem->data = "123456";
++        i = strlen("123456");
++        secret->mem->length = i;
++        secret->mem->max = i;
++        secret->type = PACE_RAW;
++        s = encoded_secret(secret);
++        errif(!s);
++        dp_map = PACE_STEP3A_map_compute_key(dp, ctx, s, apub);
++        errif(!dp_map);
++        errif(!dp_map->ecdh);
++        errif(EC_GROUP_cmp(EC_KEY_get0_group(dp->ecdh),
++                    EC_KEY_get0_group(dp_map->ecdh), ctx->bn_ctx) != 0);
++        errif(EC_POINT_cmp(EC_KEY_get0_group(dp->ecdh),
++                    EC_GROUP_get0_generator(EC_KEY_get0_group(dp->ecdh)),
++                    EC_GROUP_get0_generator(EC_KEY_get0_group(dp_map->ecdh)),
++                    ctx->bn_ctx) == 0);
++
++        secret->mem->data = NULL;
++        BUF_MEM_free(s);
++        BUF_MEM_free(apub);
++        PACE_SEC_clear_free(secret);
++        PACE_DP_clear_free(dp);
++        PACE_DP_clear_free(dp_map);
++        PACE_CTX_clear_free(ctx);
++    end();
++}
++
++int derive_key_test()
++{
++    start();
++    BUF_MEM * apub = NULL, * k_enc = NULL, * k_mac = NULL;
++    PACE_CTX * ctx = PACE_CTX_new();
++    PACE_DP * dp = PACE_DP_new();
++    errif(!ctx||!dp);
++    ALGORITHM_IDENTIFIER id;
++    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
++    id.parameters = NULL;
++    errif(!PACE_init(ctx, dp, &id));
++
++    apub = BUF_MEM_new();
++    errif(!apub);
++    apub->data = "jfdlak";
++    apub->length = strlen("jfdlak");
++    PACE_STEP3C_derive_keys(apub, ctx, &k_mac, &k_enc);
++    errif(!k_mac);
++    errif(!k_enc);
++    errif(k_mac->length != k_enc->length);
++    errif(memcmp(k_mac->data, k_enc->data, k_enc->length) == 0);
++
++    apub->data = NULL;
++    BUF_MEM_free(apub);
++    PACE_CTX_clear_free(ctx);
++    end();
++}
++
++int enc_dec_n_test()
++{
++    start();
++    char * str = "1234";
++    PACE_CTX * ctx = PACE_CTX_new();
++    PACE_DP * dp = PACE_DP_new();
++    errif(!ctx||!dp);
++    ALGORITHM_IDENTIFIER id;
++    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
++    id.parameters = NULL;
++    errif(!PACE_init(ctx, dp, &id));
++
++    BUF_MEM * s = BUF_MEM_new();
++    errif(!s);
++    errif(!BUF_MEM_grow(s, strlen(str)));
++    memcpy(s->data, str, strlen(str));
++    s->length = strlen(str);
++
++    PACE_SEC * sec = PACE_SEC_new();
++    errif(!sec);
++    errif(!PACE_SEC_init(sec, s, PACE_PIN));
++    EVP_CIPHER_CTX_set_key_length(ctx->cipher_ctx, (sec->mem)->length);
++
++    BUF_MEM * enc_nonce = NULL, *nonce = NULL;
++    PACE_STEP1_enc_nonce(sec, ctx, &nonce, &enc_nonce);
++    errif(!enc_nonce || !nonce);
++    BUF_MEM * nonce2 = PACE_STEP2_dec_nonce(sec, enc_nonce, ctx);
++    errif(!nonce2);
++    errif(nonce->length != nonce2->length);
++    errif(memcmp(nonce->data, nonce2->data, nonce2->length) != 0);
++
++    BUF_MEM_free(nonce);
++    BUF_MEM_free(nonce2);
++    BUF_MEM_free(enc_nonce);
++    PACE_CTX_clear_free(ctx);
++    end();
++}
++
++int real_life_test()
++{
++    printf("Starting a real life test\n");
++
++    enum s_type pace_sec_type [] = {
++        PACE_PUK,
++        PACE_CAN,
++        PACE_PIN,
++        PACE_MRZ,
++        PACE_RAW,
++        PACE_SEC_UNDEF,
++    };
++    enum s_type * sec_type = pace_sec_type;
++    char * pace_sec_str [] = {
++        "PUK",
++        "CAN",
++        "PIN",
++        "P<UTOERIKSSON<<ANNA<MARIX<<<<<<<<<<<<<<<<<<<L898902C<3UTO6908061F9406236ZE184226B<<<<<14",
++        "RAW",
++        NULL,
++    };
++    char ** sec_str = pace_sec_str;
++    enum ctx_type algorithm_type [] = {
++        id_PACE_DH_IM_3DES_CBC_CBC,
++        id_PACE_DH_IM_AES_CBC_CMAC_128,
++        id_PACE_DH_IM_AES_CBC_CMAC_192,
++        id_PACE_DH_IM_AES_CBC_CMAC_256,
++        id_PACE_DH_GM_3DES_CBC_CBC,
++        id_PACE_DH_GM_AES_CBC_CMAC_128,
++        id_PACE_DH_GM_AES_CBC_CMAC_192,
++        id_PACE_DH_GM_AES_CBC_CMAC_256,
++        id_PACE_ECDH_GM_3DES_CBC_CBC,
++        id_PACE_ECDH_GM_AES_CBC_CMAC_128,
++        id_PACE_ECDH_GM_AES_CBC_CMAC_192,
++        id_PACE_ECDH_GM_AES_CBC_CMAC_256,
++        id_PACE_AID_UNDEF,
++    };
++    enum ctx_type * algorithm = algorithm_type;
++
++    BUF_MEM s_mem;
++    ALGORITHM_IDENTIFIER alg_id;
++    alg_id.parameters = NULL;
++    PACE_SEC * s = PACE_SEC_new();
++    PACE_DP * dp_picc = PACE_DP_new();
++    PACE_CTX * ctx = PACE_CTX_new();
++    if (!s || !dp_picc || !ctx)
++        err("Error allocating memory");
++
++    while (*algorithm != id_PACE_AID_UNDEF) {
++        s_mem.data = *sec_str;
++        s_mem.length = strlen(*sec_str);
++        s_mem.max = strlen(*sec_str);
++        if (!PACE_SEC_init(s, &s_mem, *sec_type))
++            err("Error initializing PACE secret");
++        hexdump("Initialized PACE secret", &s_mem);
++        alg_id.algorithm = *algorithm;
++        if (!PACE_init(ctx, dp_picc, &alg_id))
++            err("Error initializing domain parameters and PACE_CTX object for PICC");
++        PACE_DP * dp_picc_at_pcd = PACE_DP_dup(dp_picc);
++        if (!dp_picc_at_pcd)
++            err("Error initializing domain parameters and PACE_CTX object for PCD");
++
++        switch (s->type) {
++            case PACE_PUK:
++                printf("Using PUK");
++                break;
++            case PACE_CAN:
++                printf("Using CAN");
++                break;
++            case PACE_PIN:
++                printf("Using PIN");
++                break;
++            case PACE_MRZ:
++                printf("Using MRZ");
++                break;
++            case PACE_RAW:
++                printf("Using RAW");
++                break;
++            default:
++                err("cannot happen");
++        }
++        switch (ctx->protocol) {
++            case id_PACE_DH_GM_3DES_CBC_CBC:
++                printf(" with id_PACE_DH_GM_3DES_CBC_CBC\n");
++                break;
++            case id_PACE_DH_GM_AES_CBC_CMAC_128:
++                printf(" with id_PACE_DH_GM_AES_CBC_CMAC_128\n");
++                break;
++            case id_PACE_DH_GM_AES_CBC_CMAC_192:
++                printf(" with id_PACE_DH_GM_AES_CBC_CMAC_192\n");
++                break;
++            case id_PACE_DH_GM_AES_CBC_CMAC_256:
++                printf(" with id_PACE_DH_GM_AES_CBC_CMAC_256\n");
++                break;
++            case id_PACE_ECDH_GM_3DES_CBC_CBC:
++                printf(" with id_PACE_ECDH_GM_3DES_CBC_CBC\n");
++                break;
++            case id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++                printf(" with id_PACE_ECDH_GM_AES_CBC_CMAC_128\n");
++                break;
++            case id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++                printf(" with id_PACE_ECDH_GM_AES_CBC_CMAC_192\n");
++                break;
++            case id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++                printf(" with id_PACE_ECDH_GM_AES_CBC_CMAC_256\n");
++                break;
++            case id_PACE_DH_IM_3DES_CBC_CBC:
++                printf(" with id_PACE_DH_IM_3DES_CBC_CBC\n");
++                break;
++            case id_PACE_DH_IM_AES_CBC_CMAC_128:
++                printf(" with id_PACE_DH_IM_AES_CBC_CMAC_128\n");
++                break;
++            case id_PACE_DH_IM_AES_CBC_CMAC_192:
++                printf(" with id_PACE_DH_IM_AES_CBC_CMAC_192\n");
++                break;
++            case id_PACE_DH_IM_AES_CBC_CMAC_256:
++                printf(" with id_PACE_DH_IM_AES_CBC_CMAC_256\n");
++                break;
++            case id_PACE_ECDH_IM_3DES_CBC_CBC:
++                printf(" with id_PACE_ECDH_IM_3DES_CBC_CBC\n");
++                break;
++            case id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++                printf(" with id_PACE_ECDH_IM_AES_CBC_CMAC_128\n");
++                break;
++            case id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++                printf(" with id_PACE_ECDH_IM_AES_CBC_CMAC_192\n");
++                break;
++            case id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                printf(" with id_PACE_ECDH_IM_AES_CBC_CMAC_256\n");
++                break;
++            default:
++                err("cannot happen");
++        }
++        switch (dp_picc->protocol) {
++            case id_PACE_DH:
++                DHparams_print_fp(stdout, dp_picc->dh);
++                break;
++            case id_PACE_ECDH:
++                ECParameters_print_fp(stdout, dp_picc->ecdh);
++                break;
++            default:
++                err("cannot happen");
++        }
++
++        printf("STEP1\n");
++        BUF_MEM * nonce_picc, * enc_nonce;
++        if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
++            err("Error generating or encrypting nonce");
++        hexdump("MRTD generated Nonce", nonce_picc);
++        hexdump("Encrypted nonce", enc_nonce);
++
++        printf("STEP2\n");
++        BUF_MEM * nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
++        if (!nonce_pcd)
++            err("Error decrypting nonce");
++        if (nonce_picc->length != nonce_pcd->length ||
++                memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
++            err("Error decrypting nonce (doesn't match nonce)");
++        printf("Terminal decrypted the correct nonce\n");
++
++        printf("STEP3A generate key\n");
++        BUF_MEM * map_pub_picc = PACE_STEP3A_map_generate_key(dp_picc, ctx);
++        BUF_MEM * map_pub_pcd = PACE_STEP3A_map_generate_key(dp_picc_at_pcd, ctx);
++        if(!map_pub_picc || !map_pub_pcd)
++            err("Error generating keypair to map domain parameters");
++        printf("Generated keypair on MRTD and Terminal for mapping\n");
++        hexdump("Public key MRTD", map_pub_picc);
++        hexdump("Public key Terminal", map_pub_pcd);
++
++        printf("STEP3A compute key\n");
++        PACE_DP * map_picc;
++        switch (ctx->protocol) {
++            case id_PACE_DH_IM_3DES_CBC_CBC:
++            case id_PACE_DH_IM_AES_CBC_CMAC_128:
++            case id_PACE_DH_IM_AES_CBC_CMAC_192:
++            case id_PACE_DH_IM_AES_CBC_CMAC_256:
++                // dh im is special, only mrtd generates the key
++                map_picc = PACE_STEP3A_map_compute_key(dp_picc, ctx,
++                        nonce_picc, map_pub_picc);
++                break;
++            default:
++                map_picc = PACE_STEP3A_map_compute_key(dp_picc, ctx,
++                        nonce_picc, map_pub_pcd);
++                break;
++        }
++        PACE_DP * map_pcd = PACE_STEP3A_map_compute_key(dp_picc_at_pcd,
++                ctx, nonce_pcd, map_pub_picc);
++        if(!map_pcd || !map_picc)
++            err("Error computing mapped domain parameters");
++        switch (map_picc->protocol) {
++            case id_PACE_DH:
++                if (BN_cmp(map_picc->dh->g, map_pcd->dh->g) != 0)
++                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
++                printf("Mapped domain parameters:\n");
++                DHparams_print_fp(stdout, map_picc->dh);
++                break;
++            case id_PACE_ECDH:
++                if(EC_GROUP_cmp(EC_KEY_get0_group(map_picc->ecdh),
++                            EC_KEY_get0_group(map_pcd->ecdh),
++                            ctx->bn_ctx) != 0)
++                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
++                printf("Mapped domain parameters on MRTD and Terminal:\n");
++                ECParameters_print_fp(stdout, map_picc->ecdh);
++                break;
++            default:
++                err("cannot happen");
++        }
++
++        printf("STEP3B\n");
++        BUF_MEM * pub_picc = PACE_STEP3B_dh_generate_key(map_picc, ctx);
++        BUF_MEM * pub_pcd = PACE_STEP3B_dh_generate_key(map_pcd, ctx);
++        if(!pub_picc || !pub_pcd)
++            err("Error generating keypair for key derivation");
++        printf("Generated keypair on MRTD and Terminal for key derivation\n");
++
++        BUF_MEM * key_picc = PACE_STEP3B_dh_compute_key(map_picc, ctx, pub_pcd);
++        BUF_MEM * key_pcd = PACE_STEP3B_dh_compute_key(map_pcd, ctx, pub_picc);
++        if(!key_picc || !key_pcd)
++            err("Error computing key for key derivation");
++        if (key_pcd->length != key_picc->length ||
++                memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
++            err("Error computing key for key derivation (MRTD and TERMINAL differ)");
++        printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
++
++        printf("STEP3C\n");
++        /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
++         * k_mac are the same, too */
++        BUF_MEM * k_mac, * k_enc;
++        if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
++            err("Error during key derivation");
++        hexdump("Derived authentication key", k_mac);
++        hexdump("Derived encryption key", k_enc);
++
++        printf("STEP4\n");
++        BUF_MEM * token_pcd, * token_picc;
++        token_pcd = PACE_STEP4_compute_authentication_token(ctx,map_pcd,
++                pub_picc, k_mac);
++        token_picc = PACE_STEP4_compute_authentication_token(ctx,map_picc,
++                pub_pcd, k_mac);
++        if ((!token_pcd) || (!token_picc)) {
++            err("Failed to compute authentication token");
++        } else {
++            hexdump("Authentication token from MRTD", token_picc);
++            hexdump("Authentication token from TERMINAL", token_pcd);
++        }
++
++        printf("STEP5\n");
++        if (!PACE_STEP5_verify_authentication_token(ctx,map_pcd, pub_picc,
++                    k_mac, token_picc) ||
++                !PACE_STEP5_verify_authentication_token(ctx,map_picc, pub_pcd,
++                    k_mac, token_pcd)) {
++            err("Could not verify authentication token.");
++        }
++        printf("Authentication token verified.\n");
++
++        BUF_MEM_free(token_picc);
++        BUF_MEM_free(token_pcd);
++        BUF_MEM_free(k_mac);
++        BUF_MEM_free(k_enc);
++        BUF_MEM_free(key_picc);
++        BUF_MEM_free(key_pcd);
++        BUF_MEM_free(pub_picc);
++        BUF_MEM_free(pub_pcd);
++        PACE_DP_clear_free(map_pcd);
++        PACE_DP_clear_free(map_picc);
++        BUF_MEM_free(map_pub_picc);
++        BUF_MEM_free(map_pub_pcd);
++        BUF_MEM_free(nonce_pcd);
++        BUF_MEM_free(nonce_picc);
++        BUF_MEM_free(enc_nonce);
++        PACE_DP_clear_free(dp_picc_at_pcd);
++
++        sec_str++;
++        sec_type++;
++        if (*sec_str == NULL || *sec_type == PACE_SEC_UNDEF) {
++            sec_str = pace_sec_str;
++            sec_type = pace_sec_type;
++        }
++        algorithm++;
++    }
++
++    PACE_CTX_free(ctx);
++    PACE_DP_clear_free(dp_picc);
++    /* clear_free is not used, because BUF_MEM member is local */
++    PACE_SEC_free(s);
++
++    return 0;
++}
++
++int main(int argc, char *argv[])
++{
++    /*printf("%s:%d\n", __FILE__, __LINE__);*/
++    int out = 0;
++    out += PACE_DP_test();
++    out += PACE_SEC_test();
++    out += pace_dh_test();
++    out += pace_ecdh_test();
++    out += map_dh_test();
++    out += map_ecdh_test();
++    out += derive_key_test();
++    out += enc_dec_n_test();
++    out += real_life_test();
++    return -out;
++}
++
++#endif /* OPENSSL_NO_PACE */
