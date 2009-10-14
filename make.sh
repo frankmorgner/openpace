@@ -1,6 +1,6 @@
 #!/bin/sh
 
-wget http://www.openssl.org/source/openssl-1.0.0-beta3.tar.gz
+wget http://www.openssl.org/source/openssl-1.0.0-beta2.tar.gz
 wget "http://marc.info/?l=openssl-dev&m=124340739803855&q=p3" -O ibm3.patch
 tar -xzf openssl-1.0.0-beta2.tar.gz
 
