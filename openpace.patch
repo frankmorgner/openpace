@@ -762,8 +762,8 @@ Index: openssl/crypto/pace/Makefile
 Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2009-10-14 20:51:53.000000000 +0200
-@@ -0,0 +1,2117 @@
++++ openssl/crypto/pace/pace.c	2009-10-20 10:56:06.000000000 +0200
+@@ -0,0 +1,2171 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -834,6 +834,7 @@ Index: openssl/crypto/pace/pace.c
 + *
 + * @param key authentication key
 + * @param in buffer to authenticate
++ * @param ssc Send sequence counter
 + *
 + * @return message authentication code or NULL if an error occurred
 + */
@@ -986,14 +987,15 @@ Index: openssl/crypto/pace/pace.c
 +dp_ecdh_new_generator_by_coordinates(const PACE_DP *template, const BIGNUM *x,
 +        const BIGNUM *y, BN_CTX *ctx);
 +/** 
-+ * @brief Duplicates a BUF_MEM object
++ * @brief Creates and initializes a BUF_MEM object
 + * 
-+ * @param buf Object to duplicate
++ * @param buf Initial data
++ * @param len Length of buf
 + * 
-+ * @return Duplicate of buf or NULL if an error occurred.
++ * @return Initialized BUF_MEM object or NULL if an error occurred
 + */
 +BUF_MEM *
-+buf_mem_dup(const BUF_MEM *buf);
++buf_mem_create(const void *buf, size_t len);
 +/**
 + * @brief converts an EC_POINT object to a BUF_MEM object
 + *
@@ -1187,7 +1189,7 @@ Index: openssl/crypto/pace/pace.c
 +    if (!out)
 +        return NULL;
 +
-+    out->protocol = id_PACE_AID_UNDEF;
++    out->protocol = CTX_id_PACE_AID_UNDEF;
 +    out->bn_ctx = NULL;
 +    out->md = NULL;
 +    out->md_ctx = NULL;
@@ -1209,7 +1211,7 @@ Index: openssl/crypto/pace/pace.c
 +    ctx->protocol = id->algorithm;
 +
 +    switch (id->algorithm) {
-+        case id_PACE_DH_GM_3DES_CBC_CBC:
++        case CTX_id_PACE_DH_GM_3DES_CBC_CBC:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
@@ -1217,7 +1219,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
-+        case id_PACE_DH_IM_3DES_CBC_CBC:
++        case CTX_id_PACE_DH_IM_3DES_CBC_CBC:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
@@ -1225,7 +1227,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
-+        case id_PACE_ECDH_GM_3DES_CBC_CBC:
++        case CTX_id_PACE_ECDH_GM_3DES_CBC_CBC:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1233,7 +1235,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
-+        case id_PACE_DH_GM_AES_CBC_CMAC_128:
++        case CTX_id_PACE_DH_GM_AES_CBC_CMAC_128:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
@@ -1241,7 +1243,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
-+        case id_PACE_DH_IM_AES_CBC_CMAC_128:
++        case CTX_id_PACE_DH_IM_AES_CBC_CMAC_128:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
@@ -1249,7 +1251,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
-+        case id_PACE_DH_GM_AES_CBC_CMAC_192:
++        case CTX_id_PACE_DH_GM_AES_CBC_CMAC_192:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
@@ -1257,7 +1259,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
-+        case id_PACE_DH_IM_AES_CBC_CMAC_192:
++        case CTX_id_PACE_DH_IM_AES_CBC_CMAC_192:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
@@ -1265,7 +1267,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
-+        case id_PACE_DH_GM_AES_CBC_CMAC_256:
++        case CTX_id_PACE_DH_GM_AES_CBC_CMAC_256:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
@@ -1273,7 +1275,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
-+        case id_PACE_DH_IM_AES_CBC_CMAC_256:
++        case CTX_id_PACE_DH_IM_AES_CBC_CMAC_256:
 +            if (!init_dh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
@@ -1281,7 +1283,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
-+        case id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++        case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1289,7 +1291,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
-+        case id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++        case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1297,7 +1299,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
-+        case id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++        case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1305,7 +1307,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
-+        case id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++        case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1313,7 +1315,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
-+        case id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++        case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1321,7 +1323,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
-+        case id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++        case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1329,7 +1331,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
-+        case id_PACE_ECDH_IM_3DES_CBC_CBC:
++        case CTX_id_PACE_ECDH_IM_3DES_CBC_CBC:
 +            if (!init_ecdh(dp, id->parameters))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -1647,7 +1649,6 @@ Index: openssl/crypto/pace/pace.c
 +    // iso padding
 +    memset(r->data + m->length, 0x80, 1);
 +    memset(r->data + m->length + 1 , 0, p_len - m->length - 1);
-+    r->length = p_len;
 +
 +    return r;
 +err:
@@ -1706,18 +1707,37 @@ Index: openssl/crypto/pace/pace.c
 +            /* Public value */
 +            y = BN_bn2hex(dp->dh->pub_key);
 +
-+            if (!y || !g || !q || !p ||
-+                    // FIXME how to avoid these errors? see TR-3110 D.2.1.1.
-+                    ((y[0] == '0') && (y[1] == '0')) ||
-+                    ((g[0] == '0') && (g[1] == '0')) ||
-+                    ((q[0] == '0') && (q[1] == '0')) ||
-+                    ((p[0] == '0') && (p[1] == '0')) ||
-+                    (BIO_printf(bio, "algorithm=OID:%s\n"
-+                                "p=IMPLICIT:1,FORMAT:HEX,OCTETSTRING:%s\n"
-+                                "q=IMPLICIT:2,FORMAT:HEX,OCTETSTRING:%s\n"
-+                                "g=IMPLICIT:3,FORMAT:HEX,OCTETSTRING:%s\n"
-+                                "y=IMPLICIT:4,FORMAT:HEX,OCTETSTRING:%s",
-+                                id_PACE, p, q, g, y) < 0))
++            if (is_no_valid_integer_hexstr(y) ||
++                    is_no_valid_integer_hexstr(g) ||
++                    is_no_valid_integer_hexstr(q) ||
++                    is_no_valid_integer_hexstr(p))
++                goto err;
++            switch (ctx->protocol) {
++                case CTX_id_PACE_DH_GM_3DES_CBC_CBC:
++                case CTX_id_PACE_DH_GM_AES_CBC_CMAC_128:
++                case CTX_id_PACE_DH_GM_AES_CBC_CMAC_192:
++                case CTX_id_PACE_DH_GM_AES_CBC_CMAC_256:
++                    if (BIO_printf(bio,
++                                "algorithm=OID:%s\n", id_PACE_DH_GM) < 0)
++                        goto err;
++                    break;
++                case CTX_id_PACE_DH_IM_3DES_CBC_CBC:
++                case CTX_id_PACE_DH_IM_AES_CBC_CMAC_128:
++                case CTX_id_PACE_DH_IM_AES_CBC_CMAC_192:
++                case CTX_id_PACE_DH_IM_AES_CBC_CMAC_256:
++                    if (BIO_printf(bio,
++                                "algorithm=OID:%s\n", id_PACE_DH_GM) < 0)
++                        goto err;
++                    break;
++                default:
++                    goto err;
++            }
++            if (BIO_printf(bio,
++                        "p=IMPLICIT:1C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "q=IMPLICIT:2C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "g=IMPLICIT:3C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "y=IMPLICIT:4C,FORMAT:HEX,OCTETSTRING:%s",
++                        p, q, g, y) < 0)
 +                goto err;
 +
 +            OPENSSL_free(y);
@@ -1764,23 +1784,41 @@ Index: openssl/crypto/pace/pace.c
 +                goto err;
 +            f = BN_bn2hex(bn);
 +
-+            if (!f || !Y || !r || !G || !b || !a || !p ||
-+                    // FIXME how to avoid these errors? see TR-3110 D.2.1.1.
-+                    ((f[0] == '0') && (f[1] == '0')) ||
-+                    ((r[0] == '0') && (r[1] == '0')) ||
-+                    ((b[0] == '0') && (b[1] == '0')) ||
-+                    ((a[0] == '0') && (a[1] == '0')) ||
-+                    ((p[0] == '0') && (p[1] == '0')))
++            if (is_no_valid_integer_hexstr(f) ||
++                    is_no_valid_integer_hexstr(r) ||
++                    is_no_valid_integer_hexstr(b) ||
++                    is_no_valid_integer_hexstr(a) ||
++                    is_no_valid_integer_hexstr(p))
 +                goto err;
-+            if (BIO_printf(bio, "algorithm=OID:%s\n"
-+                        "p=IMPLICIT:1,FORMAT:HEX,OCTETSTRING:%s\n"
-+                        "a=IMPLICIT:2,FORMAT:HEX,OCTETSTRING:%s\n"
-+                        "b=IMPLICIT:3,FORMAT:HEX,OCTETSTRING:%s\n"
-+                        "G=IMPLICIT:4,FORMAT:HEX,OCTETSTRING:%s\n"
-+                        "r=IMPLICIT:5,FORMAT:HEX,OCTETSTRING:%s\n"
-+                        "Y=IMPLICIT:6,FORMAT:HEX,OCTETSTRING:%s\n"
-+                        "f=IMPLICIT:7,FORMAT:HEX,OCTETSTRING:%s",
-+                        id_PACE, p, a, b, G, r, Y, f) < 0)
++            switch (ctx->protocol) {
++                case CTX_id_PACE_ECDH_IM_3DES_CBC_CBC:
++                case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++                case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++                case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                    if (BIO_printf(bio,
++                                "algorithm=OID:%s\n", id_PACE_ECDH_IM) < 0)
++                        goto err;
++                    break;
++                case CTX_id_PACE_ECDH_GM_3DES_CBC_CBC:
++                case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++                case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++                case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++                    if (BIO_printf(bio,
++                                "algorithm=OID:%s\n", id_PACE_ECDH_GM) < 0)
++                        goto err;
++                    break;
++                default:
++                    goto err;
++            }
++            if (BIO_printf(bio,
++                        "p=IMPLICIT:1C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "a=IMPLICIT:2C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "b=IMPLICIT:3C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "G=IMPLICIT:4C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "r=IMPLICIT:5C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "Y=IMPLICIT:6C,FORMAT:HEX,OCTETSTRING:%s\n"
++                        "f=IMPLICIT:7C,FORMAT:HEX,OCTETSTRING:%s",
++                        p, a, b, G, r, Y, f) < 0)
 +                goto err;
 +
 +            OPENSSL_free(f);
@@ -1894,18 +1932,12 @@ Index: openssl/crypto/pace/pace.c
 +    c_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, pad, 0);
 +    if (!c_tmp)
 +        goto err;
-+    block = BUF_MEM_new();
-+    if (!block ||
-+            (BUF_MEM_grow(block, EVP_CIPHER_block_size(EVP_des_cbc())) <
-+                EVP_CIPHER_block_size(EVP_des_cbc())))
-+        goto err;
-+    memcpy(block->data, c_tmp->data + c_tmp->length -
++    block = buf_mem_create(c_tmp->data + c_tmp->length -
 +            EVP_CIPHER_block_size(EVP_des_cbc()),
 +            EVP_CIPHER_block_size(EVP_des_cbc()));
-+    block->length = EVP_CIPHER_block_size(EVP_des_cbc());
 +
 +    // decrypt last block with the rest of the key
-+    // FIXME iv?
++    // IV is always NULL
 +    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL, (unsigned char *)
 +                key->data + EVP_CIPHER_block_size(EVP_des_cbc()), NULL, 0) ||
 +            !EVP_CIPHER_CTX_set_padding(ctx, 0))
@@ -2074,19 +2106,19 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +BUF_MEM *
-+buf_mem_dup(const BUF_MEM *buf)
++buf_mem_create(const void *buf, size_t len)
 +{
-+    if (!buf)
-+        return NULL;
-+    BUF_MEM *dup = BUF_MEM_new();
++    BUF_MEM *out = BUF_MEM_new();
 +
-+    if (!BUF_MEM_grow(dup, buf->length)) {
-+        BUF_MEM_free(dup);
++    if (!out)
++        return NULL;
++    if (!BUF_MEM_grow(out, len)) {
++        BUF_MEM_free(out);
 +        return NULL;
 +    }
-+    memcpy(dup->data, buf->data, buf->length);
++    memcpy(out->data, out->data, len);
 +
-+    return dup;
++    return out;
 +}
 +
 +BUF_MEM *
@@ -2147,6 +2179,16 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +int
++is_no_valid_integer_hexstr(const char * str)
++{
++    if ((str == NULL) || (strlen(str) < 2))
++        return 1;
++    // positive INTEGERs are forbidden (TR-3110 D.2.1.1.)
++    // but they shouldn't occurre anyway
++    return (str[0] == '0') && (str[1] == '0');
++}
++
++int
 +is_char_str(const BUF_MEM * str) {
 +    const unsigned char * s = (unsigned char *) str->data;
 +    int i = str->length;
@@ -2165,7 +2207,7 @@ Index: openssl/crypto/pace/pace.c
 +{
 +    BUF_MEM * out = NULL;
 +    if (!pi)
-+        goto err;
++        return NULL;
 +
 +    switch (pi->type) {
 +        case PACE_PUK:
@@ -2177,26 +2219,30 @@ Index: openssl/crypto/pace/pace.c
 +        case PACE_MRZ:
 +        case PACE_RAW:
 +            if (!is_char_str(pi->mem))
-+                goto err;
++                return NULL;
 +
-+            out = BUF_MEM_new();
-+            if (!out || !BUF_MEM_grow(out, pi->mem->length))
-+                goto err;
-+            memcpy(out->data, pi->mem->data, pi->mem->length);
-+            out->length = pi->mem->length;
++            out = buf_mem_create(pi->mem->data, pi->mem->length);
 +            break;
 +
 +        default:
-+            goto err;
++            return NULL;
 +    }
 +
 +    return out;
++}
 +
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
++BUF_MEM *
++encoded_ssc(const __be16 ssc, const PACE_CTX *ctx)
++{
++    BUF_MEM *out;
++    if (!ctx)
++        return NULL;
 +
-+    return NULL;
++    out = buf_mem_create(&ssc +
++            sizeof ssc - EVP_CIPHER_block_size(ctx->cipher),
++            EVP_CIPHER_block_size(ctx->cipher));
++
++    return out;
 +}
 +
 +BUF_MEM *
@@ -2768,42 +2814,50 @@ Index: openssl/crypto/pace/pace.c
 +
 +BUF_MEM *
 +PACE_STEP4_compute_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
-+        BUF_MEM * pub, BUF_MEM * key)
++        BUF_MEM * pub, BUF_MEM * key, const __be16 ssc)
 +{
-+    BUF_MEM *asn1 = NULL, *out;
++    BUF_MEM *asn1 = NULL, *ssc_asn1 = NULL, *out;
 +    asn1 = asn1_pubkey(ctx, dp);
-+        if (!asn1)
-+            goto err;
++    ssc_asn1 = encoded_ssc(ssc, ctx);
++    if (!asn1 || !ssc_asn1 ||
++            !BUF_MEM_grow(ssc_asn1, ssc_asn1->length + asn1->length) ||
++            // BUF_MEM_grow sets ssc_asn1->length
++            !memcpy(ssc_asn1->data + ssc_asn1->length - asn1->length, asn1->data,
++                asn1->length))
++        goto err;
 +
 +    switch (ctx->protocol) {
-+            case id_PACE_DH_GM_3DES_CBC_CBC:
-+            case id_PACE_ECDH_GM_3DES_CBC_CBC:
-+            case id_PACE_DH_IM_3DES_CBC_CBC:
-+            case id_PACE_ECDH_IM_3DES_CBC_CBC:
-+                out = retail_mac_des(key, asn1);
++            case CTX_id_PACE_DH_GM_3DES_CBC_CBC:
++            case CTX_id_PACE_ECDH_GM_3DES_CBC_CBC:
++            case CTX_id_PACE_DH_IM_3DES_CBC_CBC:
++            case CTX_id_PACE_ECDH_IM_3DES_CBC_CBC:
++                out = retail_mac_des(key, ssc_asn1);
 +                break;
-+            case id_PACE_DH_GM_AES_CBC_CMAC_128:
-+            case id_PACE_DH_GM_AES_CBC_CMAC_192:
-+            case id_PACE_DH_GM_AES_CBC_CMAC_256:
-+            case id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+            case id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+            case id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+            case id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            case id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            case id_PACE_DH_IM_AES_CBC_CMAC_256:
-+            case id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            case id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            case id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                out = cmac(key, asn1, ctx, PACE_AES_MAC_LENGTH);
++            case CTX_id_PACE_DH_GM_AES_CBC_CMAC_128:
++            case CTX_id_PACE_DH_GM_AES_CBC_CMAC_192:
++            case CTX_id_PACE_DH_GM_AES_CBC_CMAC_256:
++            case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_128:
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_192:
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_256:
++            case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                out = cmac(key, ssc_asn1, ctx, PACE_AES_MAC_LENGTH);
 +                break;
 +            default:
 +                goto err;
 +    }
 +
++    BUF_MEM_free(ssc_asn1);
 +    BUF_MEM_free(asn1);
 +    return out;
 +
 +err:
++    if (ssc_asn1)
++        BUF_MEM_free(ssc_asn1);
 +    if (asn1)
 +        BUF_MEM_free(asn1);
 +    return NULL;
@@ -2811,7 +2865,7 @@ Index: openssl/crypto/pace/pace.c
 +
 +int
 +PACE_STEP5_verify_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
-+        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token)
++        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token, const __be16 ssc)
 +{
 +    PACE_DP *dp_opp = NULL;
 +    BUF_MEM *token_verify = NULL, *pub_opp = NULL;
@@ -2854,7 +2908,7 @@ Index: openssl/crypto/pace/pace.c
 +    }
 +
 +    token_verify = PACE_STEP4_compute_authentication_token(ctx, dp_opp,
-+            pub_opp, key);
++            pub_opp, key, ssc);
 +    if (!token_verify || (token_verify->length != token->length))
 +        goto err;
 +
@@ -2884,8 +2938,8 @@ Index: openssl/crypto/pace/pace.c
 Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2009-10-14 20:52:49.000000000 +0200
-@@ -0,0 +1,447 @@
++++ openssl/crypto/pace/pace.h	2009-10-20 10:31:52.000000000 +0200
+@@ -0,0 +1,469 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -2970,23 +3024,23 @@ Index: openssl/crypto/pace/pace.h
 +#define PACE_AES_MAC_LENGTH 8
 +/** Object identifiers for PACE */
 +enum ctx_type {
-+    id_PACE_DH_GM_3DES_CBC_CBC,
-+    id_PACE_DH_GM_AES_CBC_CMAC_128,
-+    id_PACE_DH_GM_AES_CBC_CMAC_192,
-+    id_PACE_DH_GM_AES_CBC_CMAC_256,
-+    id_PACE_ECDH_GM_3DES_CBC_CBC,
-+    id_PACE_ECDH_GM_AES_CBC_CMAC_128,
-+    id_PACE_ECDH_GM_AES_CBC_CMAC_192,
-+    id_PACE_ECDH_GM_AES_CBC_CMAC_256,
-+    id_PACE_DH_IM_3DES_CBC_CBC,
-+    id_PACE_DH_IM_AES_CBC_CMAC_128,
-+    id_PACE_DH_IM_AES_CBC_CMAC_192,
-+    id_PACE_DH_IM_AES_CBC_CMAC_256,
-+    id_PACE_ECDH_IM_3DES_CBC_CBC,
-+    id_PACE_ECDH_IM_AES_CBC_CMAC_128,
-+    id_PACE_ECDH_IM_AES_CBC_CMAC_192,
-+    id_PACE_ECDH_IM_AES_CBC_CMAC_256,
-+    id_PACE_AID_UNDEF,
++    CTX_id_PACE_DH_GM_3DES_CBC_CBC,
++    CTX_id_PACE_DH_GM_AES_CBC_CMAC_128,
++    CTX_id_PACE_DH_GM_AES_CBC_CMAC_192,
++    CTX_id_PACE_DH_GM_AES_CBC_CMAC_256,
++    CTX_id_PACE_ECDH_GM_3DES_CBC_CBC,
++    CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128,
++    CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192,
++    CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256,
++    CTX_id_PACE_DH_IM_3DES_CBC_CBC,
++    CTX_id_PACE_DH_IM_AES_CBC_CMAC_128,
++    CTX_id_PACE_DH_IM_AES_CBC_CMAC_192,
++    CTX_id_PACE_DH_IM_AES_CBC_CMAC_256,
++    CTX_id_PACE_ECDH_IM_3DES_CBC_CBC,
++    CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128,
++    CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192,
++    CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256,
++    CTX_id_PACE_AID_UNDEF,
 +};
 +/** Context structure used in all protocol steps. Encompasses information
 + * about cipher, message digest, key agreement scheme, mapping method. */
@@ -3169,6 +3223,15 @@ Index: openssl/crypto/pace/pace.h
 + * @{ ************************************************************************/
 +
 +/**
++ * @brief Checks if str is NOT a INTEGER string in hex format according to TR-3110
++ * D.2.1.1.
++ *
++ * @param str hex string
++ *
++ * @return 1 if str is NOT a valid integer hex string or 0 if it is
++ */
++int is_no_valid_integer_hexstr(const char * str);
++/**
 + * @brief Checks if str is a character string according to TR-3110 D.2.1.4
 + *
 + * @param str BUF_MEM object with the string to check
@@ -3186,6 +3249,17 @@ Index: openssl/crypto/pace/pace.h
 + * @note This function is automatically called during PACE, normally you should not need to use it.
 + */
 +BUF_MEM * encoded_secret(const PACE_SEC * pi);
++/**
++ * @brief Encodes a send sequence counter according to TR-3110 F.3
++ *
++ * @param ssc Send sequence counter to encode
++ * @param ctx PACE_CTX object
++ *
++ * @return BUF_MEM object containing the send sequence counter or NULL if an error occurred
++ *
++ * @note This function is automatically called during PACE, normally you should not need to use it.
++ */
++BUF_MEM * encoded_ssc(const __be16 ssc, const PACE_CTX *ctx);
 +/** @} ***********************************************************************/
 +
 +/**
@@ -3285,11 +3359,12 @@ Index: openssl/crypto/pace/pace.h
 + * @param dp Ephemeral domain parameters (generated in step 3A)
 + * @param pub Public key from the other party (generated in step 3B)
 + * @param key Authentication key (computed in step 3C)
++ * @param ssc Send sequence counter
 + *
 + * @return Authentication token or NULL in case of error
 + */
 +BUF_MEM * PACE_STEP4_compute_authentication_token(PACE_CTX * ctx,
-+        PACE_DP * dp, BUF_MEM * pub, BUF_MEM * key);
++        PACE_DP * dp, BUF_MEM * pub, BUF_MEM * key, const __be16 ssc);
 +/** 
 + * @brief Verifies an authentication token.
 + * 
@@ -3298,12 +3373,13 @@ Index: openssl/crypto/pace/pace.h
 + * @param pub Public key from the other party (generated in step 3B)
 + * @param key Authentication key (computed in step 3C)
 + * @param token Authentication token from the other party
++ * @param ssc Send sequence counter
 + * 
 + * @return 1 if the token has been verified, 0 if not, -1 if an error
 + * occurred.
 + */
 +int PACE_STEP5_verify_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
-+        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token);
++        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token, const __be16 ssc);
 +/** @} ***********************************************************************/
 +
 +#define bsi_de          "0.4.0.127.0.7"
@@ -3436,8 +3512,8 @@ Index: openssl/crypto/pace/pace_err.c
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2009-10-14 13:21:11.000000000 +0200
-@@ -0,0 +1,681 @@
++++ openssl/crypto/pace/pacetest.c	2009-10-20 11:27:06.000000000 +0200
+@@ -0,0 +1,418 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#ifdef OPENSSL_NO_PACE
@@ -3457,12 +3533,10 @@ Index: openssl/crypto/pace/pacetest.c
 +#include <openssl/buffer.h>
 +
 +#define start() printf("%s\t", __FUNCTION__)
-+#define errif(b) if (b) { \
-+    printf(" line %d [Error]\n", __LINE__); \
-+    return -1; } else { printf("."); } \
-+fflush(stdout)
-+#define end() printf(" [OK]\n"); return 0
 +#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); return 1; }
++
++static int verbose=0;
++static int debug=0;
 +
 +static void hexdump(const char *title,const BUF_MEM *s)
 +    {
@@ -3477,341 +3551,6 @@ Index: openssl/crypto/pace/pacetest.c
 +		}
 +    fprintf(stdout,"\n");
 +    }
-+
-+int PACE_DP_test()
-+{
-+    PACE_DP * dp;
-+    EC_KEY * ecdh;
-+
-+    start();
-+    dp = PACE_DP_new();
-+    errif(!dp);
-+    ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime192v1);
-+    errif(!ecdh);
-+    dp->ecdh = ecdh;
-+    PACE_DP_free(dp);
-+    errif(!EC_KEY_get0_group(ecdh));
-+    dp = PACE_DP_new();
-+    errif(!dp);
-+    dp->ecdh = ecdh;
-+    PACE_DP_clear_free(dp);
-+    PACE_DP_clear_free(NULL);
-+    PACE_DP_free(NULL);
-+    end();
-+}
-+
-+int PACE_SEC_test()
-+{
-+    PACE_SEC * s;
-+    BUF_MEM * bm;
-+
-+    start();
-+    s = PACE_SEC_new();
-+    errif(!s);
-+    bm = BUF_MEM_new();
-+    errif(!bm);
-+    s->mem = bm;
-+    PACE_SEC_free(s);
-+    errif(!BUF_MEM_grow(bm, 1));
-+    s = PACE_SEC_new();
-+    errif(!s);
-+    s->mem = bm;
-+    PACE_SEC_clear_free(s);
-+    PACE_SEC_clear_free(NULL);
-+    PACE_SEC_free(NULL);
-+    end();
-+}
-+
-+int pace_dh_test()
-+{
-+    start();
-+    BUF_MEM * apub = NULL, * bpub = NULL, * akey = NULL, * bkey = NULL;
-+    BIGNUM * apub_bn = NULL;
-+    PACE_DP * dp = NULL;
-+    DH * b = NULL;
-+    PACE_CTX * ctx = PACE_CTX_new();
-+    int i;
-+
-+    b = DH_generate_parameters(64, DH_GENERATOR_5, NULL, NULL);
-+    errif(!b);
-+    errif(!DH_check(b, &i));
-+    errif((DH_CHECK_P_NOT_SAFE_PRIME & i) || (DH_NOT_SUITABLE_GENERATOR & i) ||
-+            (DH_UNABLE_TO_CHECK_GENERATOR & i) || (i & DH_CHECK_P_NOT_PRIME));
-+    errif(!b->p || !b->g);
-+    dp = PACE_DP_new();
-+    errif(!dp);
-+    ALGORITHM_IDENTIFIER id;
-+    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
-+    id.parameters = NULL;
-+    errif(!PACE_init(ctx, dp, &id));
-+    errif(!dp->dh || !ctx->bn_ctx || dp->protocol != id_PACE_DH);
-+    dp->dh->p=BN_dup(b->p);
-+    dp->dh->g=BN_dup(b->g);
-+
-+    apub = PACE_STEP3B_dh_generate_key(dp, ctx);
-+    errif(!apub);
-+    errif(!DH_generate_key(b));
-+
-+    i = BN_num_bytes(b->pub_key);
-+    bpub = BUF_MEM_new();
-+    errif(!bpub);
-+    errif(BUF_MEM_grow(bpub, i) < i);
-+    bpub->length = BN_bn2bin(b->pub_key, (unsigned char *) bpub->data);
-+
-+    akey = PACE_STEP3B_dh_compute_key(dp, ctx, bpub);
-+
-+    bkey = BUF_MEM_new();
-+    errif(!bkey);
-+    errif(BUF_MEM_grow(bkey, i) < i);
-+    apub_bn = BN_bin2bn((unsigned char *) apub->data, apub->length, apub_bn);
-+    errif(!apub_bn);
-+    bkey->length = DH_compute_key((unsigned char *) bkey->data, apub_bn, b);
-+    errif(bkey->length < 0);
-+
-+    errif(bkey->length != akey->length ||
-+            memcmp(bkey->data, akey->data, akey->length) != 0);
-+    end();
-+}
-+
-+int pace_ecdh_test()
-+{
-+    start();
-+
-+        BUF_MEM * apub = NULL, * bpub = NULL, * akey = NULL, * bkey = NULL;
-+        EC_POINT * apub_ecp = NULL;
-+        PACE_DP * dp = NULL;
-+        EC_KEY * b = NULL;
-+        EC_GROUP * group = NULL;
-+        PACE_CTX * ctx = PACE_CTX_new();
-+        int i;
-+        ALGORITHM_IDENTIFIER id;
-+        id.algorithm = id_PACE_ECDH_GM_3DES_CBC_CBC;
-+        id.parameters = NULL;
-+
-+        dp = PACE_DP_new();
-+        errif(!dp);
-+        errif(!PACE_init(ctx, dp, &id));
-+        errif(!dp->ecdh);
-+        b = EC_KEY_dup(dp->ecdh);
-+        errif(!b);
-+
-+        apub = PACE_STEP3B_dh_generate_key(dp, ctx);
-+        errif(!apub);
-+        errif(!EC_KEY_generate_key(b));
-+
-+        group = EC_GROUP_dup(EC_KEY_get0_group(b));
-+        errif(!group);
-+        bpub = BUF_MEM_new();
-+        errif(!bpub);
-+        i = EC_POINT_point2oct(group, EC_KEY_get0_public_key(b),
-+                EC_KEY_get_conv_form(b), NULL, 0, ctx->bn_ctx);
-+        errif(BUF_MEM_grow(bpub, i) < i);
-+        bpub->length = EC_POINT_point2oct(group, EC_KEY_get0_public_key(b),
-+                EC_KEY_get_conv_form(b), (unsigned char *) bpub->data, bpub->max,
-+                ctx->bn_ctx);
-+
-+        akey = PACE_STEP3B_dh_compute_key(dp, ctx, bpub);
-+        errif(!akey);
-+
-+        apub_ecp = EC_POINT_new(group);
-+        errif(!apub_ecp);
-+        errif(!EC_POINT_oct2point(group, apub_ecp, (unsigned char *) apub->data,
-+                    apub->length, ctx->bn_ctx));
-+        errif(!apub_ecp);
-+        bkey = BUF_MEM_new();
-+        errif(!bkey);
-+        errif(BUF_MEM_grow(bkey, i) < i);
-+        bkey->length = ECDH_compute_key(bkey->data, bkey->max, apub_ecp, b,
-+                NULL);
-+        errif(bkey->length < 0);
-+
-+        errif(bkey->length != akey->length);
-+        errif(memcmp(bkey->data, akey->data, akey->length) != 0);
-+
-+        PACE_DP_clear_free(dp);
-+        PACE_CTX_clear_free(ctx);
-+        EC_KEY_free(b);
-+        BUF_MEM_free(akey);
-+        BUF_MEM_free(bkey);
-+        BUF_MEM_free(apub);
-+        BUF_MEM_free(bpub);
-+        EC_POINT_free(apub_ecp);
-+    end();
-+}
-+
-+int map_dh_test()
-+{
-+    start();
-+    BUF_MEM * apub = NULL, * s = NULL;
-+    PACE_DP * dp = NULL, * dp_map = NULL;
-+    PACE_SEC * secret = NULL;
-+    PACE_CTX * ctx = PACE_CTX_new();
-+    int i;
-+
-+    /*a = ;*/
-+    /*errif(!a);*/
-+    /*errif(!DH_check(a, &i));*/
-+    /*errif((DH_CHECK_P_NOT_SAFE_PRIME & i) || (DH_NOT_SUITABLE_GENERATOR & i) ||*/
-+            /*(DH_UNABLE_TO_CHECK_GENERATOR & i) || (i & DH_CHECK_P_NOT_PRIME));*/
-+    /*errif(!a->p || !a->g);*/
-+    dp = PACE_DP_new();
-+    errif(!dp);
-+    ALGORITHM_IDENTIFIER id;
-+    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
-+    id.parameters = NULL;
-+    errif(!PACE_init(ctx, dp, &id));
-+    DH_free(dp->dh);
-+    dp->dh = DH_generate_parameters(64, DH_GENERATOR_5, NULL, NULL);
-+    errif(!dp->dh || !ctx->bn_ctx || dp->protocol != id_PACE_DH);
-+    /*dp->dh->p=BN_dup(a->p);*/
-+    /*dp->dh->g=BN_dup(a->g);*/
-+
-+    apub = PACE_STEP3A_map_generate_key(dp, ctx);
-+    errif(!apub);
-+
-+    secret = PACE_SEC_new();
-+    errif(!secret);
-+    secret->mem = BUF_MEM_new();
-+    errif(!secret->mem);
-+    secret->mem->data = "123456";
-+    i = strlen("123456");
-+    secret->mem->length = i;
-+    secret->mem->max = i;
-+    secret->type = PACE_RAW;
-+    s = encoded_secret(secret);
-+    errif(!s);
-+    dp_map = PACE_STEP3A_map_compute_key(dp, ctx, s, apub);
-+    errif(!dp_map);
-+    errif(!dp_map->dh);
-+    errif(BN_cmp(dp_map->dh->p, dp->dh->p) != 0);
-+    errif(BN_cmp(dp_map->dh->g, dp->dh->g) == 0);
-+
-+    secret->mem->data = NULL;
-+    BUF_MEM_free(s);
-+    BUF_MEM_free(apub);
-+    PACE_SEC_clear_free(secret);
-+    PACE_DP_clear_free(dp);
-+    PACE_DP_clear_free(dp_map);
-+    PACE_CTX_clear_free(ctx);
-+    end();
-+}
-+
-+int map_ecdh_test()
-+{
-+    start();
-+        BUF_MEM * apub = NULL, * s = NULL;
-+        PACE_DP * dp = NULL, * dp_map = NULL;
-+        PACE_SEC * secret = NULL;
-+        PACE_CTX * ctx = PACE_CTX_new();
-+        int i;
-+        ALGORITHM_IDENTIFIER id;
-+        id.algorithm = id_PACE_ECDH_IM_AES_CBC_CMAC_256;
-+        id.parameters = NULL;
-+
-+        dp = PACE_DP_new();
-+        errif(!dp);
-+        errif(!PACE_init(ctx, dp, &id));
-+        errif(!dp->ecdh || dp->protocol != id_PACE_ECDH);
-+
-+        apub = PACE_STEP3A_map_generate_key(dp, ctx);
-+        errif(!apub);
-+
-+        secret = PACE_SEC_new();
-+        errif(!secret);
-+        secret->mem = BUF_MEM_new();
-+        errif(!secret->mem);
-+        secret->mem->data = "123456";
-+        i = strlen("123456");
-+        secret->mem->length = i;
-+        secret->mem->max = i;
-+        secret->type = PACE_RAW;
-+        s = encoded_secret(secret);
-+        errif(!s);
-+        dp_map = PACE_STEP3A_map_compute_key(dp, ctx, s, apub);
-+        errif(!dp_map);
-+        errif(!dp_map->ecdh);
-+        errif(EC_GROUP_cmp(EC_KEY_get0_group(dp->ecdh),
-+                    EC_KEY_get0_group(dp_map->ecdh), ctx->bn_ctx) != 0);
-+        errif(EC_POINT_cmp(EC_KEY_get0_group(dp->ecdh),
-+                    EC_GROUP_get0_generator(EC_KEY_get0_group(dp->ecdh)),
-+                    EC_GROUP_get0_generator(EC_KEY_get0_group(dp_map->ecdh)),
-+                    ctx->bn_ctx) == 0);
-+
-+        secret->mem->data = NULL;
-+        BUF_MEM_free(s);
-+        BUF_MEM_free(apub);
-+        PACE_SEC_clear_free(secret);
-+        PACE_DP_clear_free(dp);
-+        PACE_DP_clear_free(dp_map);
-+        PACE_CTX_clear_free(ctx);
-+    end();
-+}
-+
-+int derive_key_test()
-+{
-+    start();
-+    BUF_MEM * apub = NULL, * k_enc = NULL, * k_mac = NULL;
-+    PACE_CTX * ctx = PACE_CTX_new();
-+    PACE_DP * dp = PACE_DP_new();
-+    errif(!ctx||!dp);
-+    ALGORITHM_IDENTIFIER id;
-+    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
-+    id.parameters = NULL;
-+    errif(!PACE_init(ctx, dp, &id));
-+
-+    apub = BUF_MEM_new();
-+    errif(!apub);
-+    apub->data = "jfdlak";
-+    apub->length = strlen("jfdlak");
-+    PACE_STEP3C_derive_keys(apub, ctx, &k_mac, &k_enc);
-+    errif(!k_mac);
-+    errif(!k_enc);
-+    errif(k_mac->length != k_enc->length);
-+    errif(memcmp(k_mac->data, k_enc->data, k_enc->length) == 0);
-+
-+    apub->data = NULL;
-+    BUF_MEM_free(apub);
-+    PACE_CTX_clear_free(ctx);
-+    end();
-+}
-+
-+int enc_dec_n_test()
-+{
-+    start();
-+    char * str = "1234";
-+    PACE_CTX * ctx = PACE_CTX_new();
-+    PACE_DP * dp = PACE_DP_new();
-+    errif(!ctx||!dp);
-+    ALGORITHM_IDENTIFIER id;
-+    id.algorithm = id_PACE_DH_GM_3DES_CBC_CBC;
-+    id.parameters = NULL;
-+    errif(!PACE_init(ctx, dp, &id));
-+
-+    BUF_MEM * s = BUF_MEM_new();
-+    errif(!s);
-+    errif(!BUF_MEM_grow(s, strlen(str)));
-+    memcpy(s->data, str, strlen(str));
-+    s->length = strlen(str);
-+
-+    PACE_SEC * sec = PACE_SEC_new();
-+    errif(!sec);
-+    errif(!PACE_SEC_init(sec, s, PACE_PIN));
-+    EVP_CIPHER_CTX_set_key_length(ctx->cipher_ctx, (sec->mem)->length);
-+
-+    BUF_MEM * enc_nonce = NULL, *nonce = NULL;
-+    PACE_STEP1_enc_nonce(sec, ctx, &nonce, &enc_nonce);
-+    errif(!enc_nonce || !nonce);
-+    BUF_MEM * nonce2 = PACE_STEP2_dec_nonce(sec, enc_nonce, ctx);
-+    errif(!nonce2);
-+    errif(nonce->length != nonce2->length);
-+    errif(memcmp(nonce->data, nonce2->data, nonce2->length) != 0);
-+
-+    BUF_MEM_free(nonce);
-+    BUF_MEM_free(nonce2);
-+    BUF_MEM_free(enc_nonce);
-+    PACE_CTX_clear_free(ctx);
-+    end();
-+}
 +
 +int real_life_test()
 +{
@@ -3836,19 +3575,23 @@ Index: openssl/crypto/pace/pacetest.c
 +    };
 +    char ** sec_str = pace_sec_str;
 +    enum ctx_type algorithm_type [] = {
-+        id_PACE_DH_IM_3DES_CBC_CBC,
-+        id_PACE_DH_IM_AES_CBC_CMAC_128,
-+        id_PACE_DH_IM_AES_CBC_CMAC_192,
-+        id_PACE_DH_IM_AES_CBC_CMAC_256,
-+        id_PACE_DH_GM_3DES_CBC_CBC,
-+        id_PACE_DH_GM_AES_CBC_CMAC_128,
-+        id_PACE_DH_GM_AES_CBC_CMAC_192,
-+        id_PACE_DH_GM_AES_CBC_CMAC_256,
-+        id_PACE_ECDH_GM_3DES_CBC_CBC,
-+        id_PACE_ECDH_GM_AES_CBC_CMAC_128,
-+        id_PACE_ECDH_GM_AES_CBC_CMAC_192,
-+        id_PACE_ECDH_GM_AES_CBC_CMAC_256,
-+        id_PACE_AID_UNDEF,
++        CTX_id_PACE_DH_IM_3DES_CBC_CBC,
++        CTX_id_PACE_DH_IM_AES_CBC_CMAC_128,
++        CTX_id_PACE_DH_IM_AES_CBC_CMAC_192,
++        CTX_id_PACE_DH_IM_AES_CBC_CMAC_256,
++        CTX_id_PACE_ECDH_IM_3DES_CBC_CBC,
++        CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128,
++        CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192,
++        CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256,
++        CTX_id_PACE_DH_GM_3DES_CBC_CBC,
++        CTX_id_PACE_DH_GM_AES_CBC_CMAC_128,
++        CTX_id_PACE_DH_GM_AES_CBC_CMAC_192,
++        CTX_id_PACE_DH_GM_AES_CBC_CMAC_256,
++        CTX_id_PACE_ECDH_GM_3DES_CBC_CBC,
++        CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128,
++        CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192,
++        CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256,
++        CTX_id_PACE_AID_UNDEF,
 +    };
 +    enum ctx_type * algorithm = algorithm_type;
 +
@@ -3861,13 +3604,14 @@ Index: openssl/crypto/pace/pacetest.c
 +    if (!s || !dp_picc || !ctx)
 +        err("Error allocating memory");
 +
-+    while (*algorithm != id_PACE_AID_UNDEF) {
++    while (*algorithm != CTX_id_PACE_AID_UNDEF) {
 +        s_mem.data = *sec_str;
 +        s_mem.length = strlen(*sec_str);
 +        s_mem.max = strlen(*sec_str);
 +        if (!PACE_SEC_init(s, &s_mem, *sec_type))
 +            err("Error initializing PACE secret");
-+        hexdump("Initialized PACE secret", &s_mem);
++        if (debug)
++            hexdump("Initialized PACE secret", &s_mem);
 +        alg_id.algorithm = *algorithm;
 +        if (!PACE_init(ctx, dp_picc, &alg_id))
 +            err("Error initializing domain parameters and PACE_CTX object for PICC");
@@ -3895,100 +3639,113 @@ Index: openssl/crypto/pace/pacetest.c
 +                err("cannot happen");
 +        }
 +        switch (ctx->protocol) {
-+            case id_PACE_DH_GM_3DES_CBC_CBC:
-+                printf(" with id_PACE_DH_GM_3DES_CBC_CBC\n");
++            case CTX_id_PACE_DH_GM_3DES_CBC_CBC:
++                printf(" with CTX_id_PACE_DH_GM_3DES_CBC_CBC\n");
 +                break;
-+            case id_PACE_DH_GM_AES_CBC_CMAC_128:
-+                printf(" with id_PACE_DH_GM_AES_CBC_CMAC_128\n");
++            case CTX_id_PACE_DH_GM_AES_CBC_CMAC_128:
++                printf(" with CTX_id_PACE_DH_GM_AES_CBC_CMAC_128\n");
 +                break;
-+            case id_PACE_DH_GM_AES_CBC_CMAC_192:
-+                printf(" with id_PACE_DH_GM_AES_CBC_CMAC_192\n");
++            case CTX_id_PACE_DH_GM_AES_CBC_CMAC_192:
++                printf(" with CTX_id_PACE_DH_GM_AES_CBC_CMAC_192\n");
 +                break;
-+            case id_PACE_DH_GM_AES_CBC_CMAC_256:
-+                printf(" with id_PACE_DH_GM_AES_CBC_CMAC_256\n");
++            case CTX_id_PACE_DH_GM_AES_CBC_CMAC_256:
++                printf(" with CTX_id_PACE_DH_GM_AES_CBC_CMAC_256\n");
 +                break;
-+            case id_PACE_ECDH_GM_3DES_CBC_CBC:
-+                printf(" with id_PACE_ECDH_GM_3DES_CBC_CBC\n");
++            case CTX_id_PACE_ECDH_GM_3DES_CBC_CBC:
++                printf(" with CTX_id_PACE_ECDH_GM_3DES_CBC_CBC\n");
 +                break;
-+            case id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+                printf(" with id_PACE_ECDH_GM_AES_CBC_CMAC_128\n");
++            case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++                printf(" with CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_128\n");
 +                break;
-+            case id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+                printf(" with id_PACE_ECDH_GM_AES_CBC_CMAC_192\n");
++            case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++                printf(" with CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_192\n");
 +                break;
-+            case id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+                printf(" with id_PACE_ECDH_GM_AES_CBC_CMAC_256\n");
++            case CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++                printf(" with CTX_id_PACE_ECDH_GM_AES_CBC_CMAC_256\n");
 +                break;
-+            case id_PACE_DH_IM_3DES_CBC_CBC:
-+                printf(" with id_PACE_DH_IM_3DES_CBC_CBC\n");
++            case CTX_id_PACE_DH_IM_3DES_CBC_CBC:
++                printf(" with CTX_id_PACE_DH_IM_3DES_CBC_CBC\n");
 +                break;
-+            case id_PACE_DH_IM_AES_CBC_CMAC_128:
-+                printf(" with id_PACE_DH_IM_AES_CBC_CMAC_128\n");
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_128:
++                printf(" with CTX_id_PACE_DH_IM_AES_CBC_CMAC_128\n");
 +                break;
-+            case id_PACE_DH_IM_AES_CBC_CMAC_192:
-+                printf(" with id_PACE_DH_IM_AES_CBC_CMAC_192\n");
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_192:
++                printf(" with CTX_id_PACE_DH_IM_AES_CBC_CMAC_192\n");
 +                break;
-+            case id_PACE_DH_IM_AES_CBC_CMAC_256:
-+                printf(" with id_PACE_DH_IM_AES_CBC_CMAC_256\n");
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_256:
++                printf(" with CTX_id_PACE_DH_IM_AES_CBC_CMAC_256\n");
 +                break;
-+            case id_PACE_ECDH_IM_3DES_CBC_CBC:
-+                printf(" with id_PACE_ECDH_IM_3DES_CBC_CBC\n");
++            case CTX_id_PACE_ECDH_IM_3DES_CBC_CBC:
++                printf(" with CTX_id_PACE_ECDH_IM_3DES_CBC_CBC\n");
 +                break;
-+            case id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+                printf(" with id_PACE_ECDH_IM_AES_CBC_CMAC_128\n");
++            case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++                printf(" with CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_128\n");
 +                break;
-+            case id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+                printf(" with id_PACE_ECDH_IM_AES_CBC_CMAC_192\n");
++            case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++                printf(" with CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_192\n");
 +                break;
-+            case id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                printf(" with id_PACE_ECDH_IM_AES_CBC_CMAC_256\n");
-+                break;
-+            default:
-+                err("cannot happen");
-+        }
-+        switch (dp_picc->protocol) {
-+            case id_PACE_DH:
-+                DHparams_print_fp(stdout, dp_picc->dh);
-+                break;
-+            case id_PACE_ECDH:
-+                ECParameters_print_fp(stdout, dp_picc->ecdh);
++            case CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                printf(" with CTX_id_PACE_ECDH_IM_AES_CBC_CMAC_256\n");
 +                break;
 +            default:
 +                err("cannot happen");
 +        }
++        if (debug)
++            switch (dp_picc->protocol) {
++                case id_PACE_DH:
++                    DHparams_print_fp(stdout, dp_picc->dh);
++                    break;
++                case id_PACE_ECDH:
++                    ECParameters_print_fp(stdout, dp_picc->ecdh);
++                    break;
++                default:
++                    err("cannot happen");
++            }
 +
-+        printf("STEP1\n");
++        if (verbose)
++            printf("STEP1\n");
 +        BUF_MEM * nonce_picc, * enc_nonce;
 +        if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
 +            err("Error generating or encrypting nonce");
-+        hexdump("MRTD generated Nonce", nonce_picc);
-+        hexdump("Encrypted nonce", enc_nonce);
++        if (verbose)
++            printf("MRTD generated and encrypted nonce.");
++        if (debug) {
++            hexdump("MRTD generated Nonce", nonce_picc);
++            hexdump("Encrypted nonce", enc_nonce);
++        }
 +
-+        printf("STEP2\n");
++        if (verbose)
++            printf("STEP2\n");
 +        BUF_MEM * nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
 +        if (!nonce_pcd)
 +            err("Error decrypting nonce");
 +        if (nonce_picc->length != nonce_pcd->length ||
 +                memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
 +            err("Error decrypting nonce (doesn't match nonce)");
-+        printf("Terminal decrypted the correct nonce\n");
++        if (verbose)
++            printf("Terminal decrypted the correct nonce\n");
 +
-+        printf("STEP3A generate key\n");
++        if (verbose)
++            printf("STEP3A generate key\n");
 +        BUF_MEM * map_pub_picc = PACE_STEP3A_map_generate_key(dp_picc, ctx);
 +        BUF_MEM * map_pub_pcd = PACE_STEP3A_map_generate_key(dp_picc_at_pcd, ctx);
 +        if(!map_pub_picc || !map_pub_pcd)
 +            err("Error generating keypair to map domain parameters");
-+        printf("Generated keypair on MRTD and Terminal for mapping\n");
-+        hexdump("Public key MRTD", map_pub_picc);
-+        hexdump("Public key Terminal", map_pub_pcd);
++        if (verbose)
++            printf("Generated keypair on MRTD and Terminal for mapping\n");
++        if (debug) {
++            hexdump("Public key MRTD", map_pub_picc);
++            hexdump("Public key Terminal", map_pub_pcd);
++        }
 +
-+        printf("STEP3A compute key\n");
++        if (verbose)
++            printf("STEP3A compute key\n");
 +        PACE_DP * map_picc;
 +        switch (ctx->protocol) {
-+            case id_PACE_DH_IM_3DES_CBC_CBC:
-+            case id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            case id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            case id_PACE_DH_IM_AES_CBC_CMAC_256:
++            case CTX_id_PACE_DH_IM_3DES_CBC_CBC:
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_128:
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_192:
++            case CTX_id_PACE_DH_IM_AES_CBC_CMAC_256:
 +                // dh im is special, only mrtd generates the key
 +                map_picc = PACE_STEP3A_map_compute_key(dp_picc, ctx,
 +                        nonce_picc, map_pub_picc);
@@ -4002,31 +3759,39 @@ Index: openssl/crypto/pace/pacetest.c
 +                ctx, nonce_pcd, map_pub_picc);
 +        if(!map_pcd || !map_picc)
 +            err("Error computing mapped domain parameters");
++        if (verbose)
++            printf("Computed mapped domain parameters on MRTD and Terminal\n");
 +        switch (map_picc->protocol) {
 +            case id_PACE_DH:
 +                if (BN_cmp(map_picc->dh->g, map_pcd->dh->g) != 0)
 +                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
-+                printf("Mapped domain parameters:\n");
-+                DHparams_print_fp(stdout, map_picc->dh);
++                if (debug) {
++                    printf("Mapped domain parameters:\n");
++                    DHparams_print_fp(stdout, map_picc->dh);
++                }
 +                break;
 +            case id_PACE_ECDH:
 +                if(EC_GROUP_cmp(EC_KEY_get0_group(map_picc->ecdh),
 +                            EC_KEY_get0_group(map_pcd->ecdh),
 +                            ctx->bn_ctx) != 0)
 +                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
-+                printf("Mapped domain parameters on MRTD and Terminal:\n");
-+                ECParameters_print_fp(stdout, map_picc->ecdh);
++                if (debug) {
++                    printf("Mapped domain parameters on MRTD and Terminal:\n");
++                    ECParameters_print_fp(stdout, map_picc->ecdh);
++                }
 +                break;
 +            default:
 +                err("cannot happen");
 +        }
 +
-+        printf("STEP3B\n");
++        if (verbose)
++            printf("STEP3B\n");
 +        BUF_MEM * pub_picc = PACE_STEP3B_dh_generate_key(map_picc, ctx);
 +        BUF_MEM * pub_pcd = PACE_STEP3B_dh_generate_key(map_pcd, ctx);
 +        if(!pub_picc || !pub_pcd)
 +            err("Error generating keypair for key derivation");
-+        printf("Generated keypair on MRTD and Terminal for key derivation\n");
++        if (verbose)
++            printf("Generated keypair on MRTD and Terminal for key derivation\n");
 +
 +        BUF_MEM * key_picc = PACE_STEP3B_dh_compute_key(map_picc, ctx, pub_pcd);
 +        BUF_MEM * key_pcd = PACE_STEP3B_dh_compute_key(map_pcd, ctx, pub_picc);
@@ -4035,38 +3800,52 @@ Index: openssl/crypto/pace/pacetest.c
 +        if (key_pcd->length != key_picc->length ||
 +                memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
 +            err("Error computing key for key derivation (MRTD and TERMINAL differ)");
-+        printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
++        if (verbose)
++            printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
 +
-+        printf("STEP3C\n");
++        if (verbose)
++            printf("STEP3C\n");
 +        /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
 +         * k_mac are the same, too */
 +        BUF_MEM * k_mac, * k_enc;
 +        if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
 +            err("Error during key derivation");
-+        hexdump("Derived authentication key", k_mac);
-+        hexdump("Derived encryption key", k_enc);
++        if (verbose)
++            printf("Derived authentication and encryption key\n");
++        if (debug) {
++            hexdump("Derived authentication key", k_mac);
++            hexdump("Derived encryption key", k_enc);
++        }
 +
-+        printf("STEP4\n");
++        if (verbose)
++            printf("STEP4\n");
 +        BUF_MEM * token_pcd, * token_picc;
 +        token_pcd = PACE_STEP4_compute_authentication_token(ctx,map_pcd,
-+                pub_picc, k_mac);
++                pub_picc, k_mac, 0);
 +        token_picc = PACE_STEP4_compute_authentication_token(ctx,map_picc,
-+                pub_pcd, k_mac);
++                pub_pcd, k_mac, 0);
 +        if ((!token_pcd) || (!token_picc)) {
 +            err("Failed to compute authentication token");
-+        } else {
++        }
++        if (verbose)
++            printf("Computed authentication token for MRTD and TERMINAL");
++        if (debug) {
 +            hexdump("Authentication token from MRTD", token_picc);
 +            hexdump("Authentication token from TERMINAL", token_pcd);
 +        }
 +
-+        printf("STEP5\n");
++        if (verbose)
++            printf("STEP5\n");
 +        if (!PACE_STEP5_verify_authentication_token(ctx,map_pcd, pub_picc,
-+                    k_mac, token_picc) ||
++                    k_mac, token_picc, 0) ||
 +                !PACE_STEP5_verify_authentication_token(ctx,map_picc, pub_pcd,
-+                    k_mac, token_pcd)) {
++                    k_mac, token_pcd, 0)) {
 +            err("Could not verify authentication token.");
 +        }
-+        printf("Authentication token verified.\n");
++        if (verbose)
++            printf("Authentication token verified.\n");
++        
++        printf("Everything works as expected.\n");
 +
 +        BUF_MEM_free(token_picc);
 +        BUF_MEM_free(token_pcd);
@@ -4104,16 +3883,50 @@ Index: openssl/crypto/pace/pacetest.c
 +
 +int main(int argc, char *argv[])
 +{
++    int i;
++    for (i=1; i<argc; i++)
++    {
++        if ((strcmp(argv[i], "--verbose") == 0) ||
++                (strcmp(argv[i], "-v") == 0)) {
++            verbose++;
++            continue;
++        }
++        if ((strcmp(argv[i], "--debug") == 0) ||
++                (strcmp(argv[i], "-d") == 0)) {
++            verbose++;
++            debug++;
++            continue;
++        }
++        if ((strcmp(argv[i], "--help") == 0) ||
++                (strcmp(argv[i], "-h") == 0)) {
++            fprintf(stderr,
++                    "%s tests the OpenSSL implementation of Password Authentication Connection Establishment (PACE)\n"
++                    "\n"
++                    "Usage: %s [Options]\n"
++                    "\n"
++                    "Options:\n"
++                    "  -h, --help              show this help message and exit\n"
++                    "  -v, --verbose           more verbosity\n"
++                    "      --version           print version information and exit\n"
++                    , argv[0], argv[0]
++                    );
++            return 0;
++        }
++        if (strcmp(argv[i], "--version") == 0) {
++            fprintf(stderr,
++                    "%s 0.1\n"
++                    "\n"
++                    "Written by Frank Morgner.\n"
++                    , argv[0]
++                   );
++            return 0;
++        }
++
++        fprintf(stderr, "unrecognized option \"%s\"\n", argv[i]);
++        return 1;
++    }
 +    /*printf("%s:%d\n", __FILE__, __LINE__);*/
 +    int out = 0;
-+    out += PACE_DP_test();
-+    out += PACE_SEC_test();
-+    out += pace_dh_test();
-+    out += pace_ecdh_test();
-+    out += map_dh_test();
-+    out += map_ecdh_test();
-+    out += derive_key_test();
-+    out += enc_dec_n_test();
 +    out += real_life_test();
 +    return -out;
 +}

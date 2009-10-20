@@ -6,7 +6,7 @@ tar -xzf openssl-1.0.0-beta2.tar.gz
 
 cd openssl-1.0.0-beta2
 patch -p1 < ../ibm3.patch
-patch -R -p1 < ../openpace.patch
+patch -p1 < ../openpace.patch
 ln crypto/cmac/cmac.h include/openssl/
 ln crypto/pace/pace.h include/openssl/
 
