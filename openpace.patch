@@ -762,8 +762,8 @@ Index: openssl/crypto/pace/Makefile
 Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2009-10-20 10:56:06.000000000 +0200
-@@ -0,0 +1,2171 @@
++++ openssl/crypto/pace/pace.c	2009-10-23 18:49:54.000000000 +0200
+@@ -0,0 +1,2184 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -2790,14 +2790,27 @@ Index: openssl/crypto/pace/pace.c
 +PACE_STEP3B_dh_compute_key(const PACE_DP * dp, const PACE_CTX * ctx,
 +        const BUF_MEM * in)
 +{
++    BUF_MEM *out = NULL;
++
 +    switch (dp->protocol) {
 +        case id_PACE_DH:
-+            return dh_compute_key(dp, ctx, in);
++            out = dh_compute_key(dp, ctx, in);
 +        case id_PACE_ECDH:
-+            return ecdh_compute_key(dp, ctx, in);
++            out = ecdh_compute_key(dp, ctx, in);
 +        default:
-+            return NULL;
++            goto err;
 +    }
++    if ((in->length == out->length) &&
++            (memcmp(in->data, out->data, out->length) == 0))
++        // PK_picc == PK_pcd
++        goto err;
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    return NULL;
 +}
 +
 +int
