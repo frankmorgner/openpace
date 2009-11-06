@@ -759,6 +759,7 @@ Index: openssl/crypto/pace/pace.c
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
 +
++#include <string.h>
 +#include <openssl/pace.h>
 +#include <openssl/bio.h>
 +#include <openssl/bn.h>
@@ -774,7 +775,6 @@ Index: openssl/crypto/pace/pace.c
 +#include <openssl/cmac.h>
 +#include <openssl/asn1.h>
 +#include <openssl/conf.h>
-+#include <string.h>
 +
 +/**
 + * @brief Wrapper for the OpenSSL hash functions.
@@ -3524,12 +3524,12 @@ Index: openssl/crypto/pace/pacetest.c
 +    return(0);
 +}
 +#else
++#include <string.h>
 +#include <openssl/pace.h>
 +#include <openssl/ec.h>
 +#include <openssl/evp.h>
 +#include <openssl/err.h>
 +#include <openssl/objects.h>
-+#include <string.h>
 +/*#include <openssl/md2.h>*/
 +#include <openssl/buffer.h>
 +
