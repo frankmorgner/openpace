@@ -2,7 +2,7 @@
 
 # downloading and extracting
 wget http://www.openssl.org/source/openssl-1.0.0-beta3.tar.gz
-#wget "http://marc.info/?l=openssl-dev&m=125730780821132&q=p3" -O ibm4.patch
+wget "http://marc.info/?l=openssl-dev&m=125730780821132&q=p3" -O ibm4.patch
 tar -xzf openssl-1.0.0-beta3.tar.gz
 
 # patching

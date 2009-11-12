@@ -3457,3 +3457,59 @@ Index: openssl/crypto/err/openssl.ec
  
  # additional header files to be scanned for function names
  L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/err/err.c
+===================================================================
+--- openssl.orig/crypto/err/err.c	2009-11-12 14:28:55.000000000 +0100
++++ openssl/crypto/err/err.c	2009-11-11 12:42:00.155375914 +0100
+@@ -156,6 +156,7 @@
+ {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
+ {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
+ {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
++{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
+ {0,NULL},
+ 	};
+ 
+Index: openssl/crypto/err/err.h
+===================================================================
+--- openssl.orig/crypto/err/err.h	2009-11-12 14:28:55.000000000 +0100
++++ openssl/crypto/err/err.h	2009-11-11 12:44:09.775373043 +0100
+@@ -198,6 +198,7 @@
+ #define ERR_LIB_TS		47
+ #define ERR_LIB_HMAC		48
+ #define ERR_LIB_JPAKE		49
++#define ERR_LIB_PACE		50
+ 
+ #define ERR_LIB_USER		128
+ 
+@@ -234,6 +235,7 @@
+ #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
+ #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
+ #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
++#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
+ 
+ /* Borland C seems too stupid to be able to shift and do longs in
+  * the pre-processor :-( */
+Index: openssl/crypto/err/err_all.c
+===================================================================
+--- openssl.orig/crypto/err/err_all.c	2009-11-12 14:28:55.000000000 +0100
++++ openssl/crypto/err/err_all.c	2009-11-11 12:47:20.985379445 +0100
+@@ -102,6 +102,10 @@
+ #ifndef OPENSSL_NO_JPAKE
+ #include <openssl/jpake.h>
+ #endif
++#ifndef OPENSSL_NO_PACE
++#include <openssl/pace.h>
++#endif
++
+ 
+ void ERR_load_crypto_strings(void)
+ 	{
+@@ -154,5 +158,8 @@
+ #ifndef OPENSSL_NO_JPAKE
+ 	ERR_load_JPAKE_strings();
+ #endif
++#ifndef OPENSSL_NO_PACE
++	ERR_load_PACE_strings();
++#endif
+ #endif
+ 	}
