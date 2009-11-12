@@ -1,8 +1,8 @@
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2009-11-10 11:03:49.382487086 +0100
-+++ openssl/Makefile.org	2009-11-09 12:07:58.049680959 +0100
-@@ -121,7 +121,7 @@
+--- openssl.orig/Makefile.org
++++ openssl/Makefile.org
+@@ -121,7 +121,7 @@ SDIRS=  \
  	cmac \
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
@@ -13,9 +13,9 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2009-11-10 11:03:49.462456399 +0100
-+++ openssl/crypto/ecdh/ecdh.h	2009-11-07 13:23:36.123842280 +0100
-@@ -86,6 +86,7 @@
+--- openssl.orig/crypto/ecdh/ecdh.h
++++ openssl/crypto/ecdh/ecdh.h
+@@ -86,6 +86,7 @@ extern "C" {
  #endif
  
  const ECDH_METHOD *ECDH_OpenSSL(void);
@@ -25,9 +25,9 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2009-11-10 11:03:49.472488400 +0100
-+++ openssl/crypto/ecdh/ech_ossl.c	2009-11-07 13:23:36.123842280 +0100
-@@ -211,3 +211,113 @@
+--- openssl.orig/crypto/ecdh/ech_ossl.c
++++ openssl/crypto/ecdh/ech_ossl.c
+@@ -211,3 +211,113 @@ err:
  	if (buf) OPENSSL_free(buf);
  	return(ret);
  	}
@@ -141,10 +141,78 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	if (buf) OPENSSL_free(buf);
 +	return(ret);
 +	}
+Index: openssl/crypto/err/err.c
+===================================================================
+--- openssl.orig/crypto/err/err.c
++++ openssl/crypto/err/err.c
+@@ -156,6 +156,7 @@ static ERR_STRING_DATA ERR_str_libraries
+ {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
+ {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
+ {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
++{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
+ {0,NULL},
+ 	};
+ 
+Index: openssl/crypto/err/err.h
+===================================================================
+--- openssl.orig/crypto/err/err.h
++++ openssl/crypto/err/err.h
+@@ -198,6 +198,7 @@ typedef struct err_state_st
+ #define ERR_LIB_TS		47
+ #define ERR_LIB_HMAC		48
+ #define ERR_LIB_JPAKE		49
++#define ERR_LIB_PACE		50
+ 
+ #define ERR_LIB_USER		128
+ 
+@@ -234,6 +235,7 @@ typedef struct err_state_st
+ #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
+ #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
+ #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
++#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
+ 
+ /* Borland C seems too stupid to be able to shift and do longs in
+  * the pre-processor :-( */
+Index: openssl/crypto/err/err_all.c
+===================================================================
+--- openssl.orig/crypto/err/err_all.c
++++ openssl/crypto/err/err_all.c
+@@ -102,6 +102,10 @@
+ #ifndef OPENSSL_NO_JPAKE
+ #include <openssl/jpake.h>
+ #endif
++#ifndef OPENSSL_NO_PACE
++#include <openssl/pace.h>
++#endif
++
+ 
+ void ERR_load_crypto_strings(void)
+ 	{
+@@ -154,5 +158,8 @@ void ERR_load_crypto_strings(void)
+ #ifndef OPENSSL_NO_JPAKE
+ 	ERR_load_JPAKE_strings();
+ #endif
++#ifndef OPENSSL_NO_PACE
++	ERR_load_PACE_strings();
++#endif
+ #endif
+ 	}
+Index: openssl/crypto/err/openssl.ec
+===================================================================
+--- openssl.orig/crypto/err/openssl.ec
++++ openssl/crypto/err/openssl.ec
+@@ -35,6 +35,7 @@ L TS		crypto/ts/ts.h			crypto/ts/ts_err.
+ L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
+ L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
+ L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
++L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
+ 
+ # additional header files to be scanned for function names
+ L NONE		crypto/x509/x509_vfy.h		NONE
 Index: openssl/crypto/pace/Makefile
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2009-11-07 13:20:59.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/Makefile
 @@ -0,0 +1,54 @@
 +DIR=pace
 +TOP=../..
@@ -202,8 +270,8 @@ Index: openssl/crypto/pace/Makefile
 +pace_err.o: pace_err.c
 Index: openssl/crypto/pace/pace.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2009-11-12 10:22:45.523850489 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace.c
 @@ -0,0 +1,2207 @@
 +/**
 + * @file pace.c
@@ -2414,8 +2482,8 @@ Index: openssl/crypto/pace/pace.c
 +}
 Index: openssl/crypto/pace/pace.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2009-11-11 15:58:47.839585645 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace.h
 @@ -0,0 +1,436 @@
 +/**
 + * @mainpage OpenPACE
@@ -2855,8 +2923,8 @@ Index: openssl/crypto/pace/pace.h
 +#endif
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2009-11-12 10:23:55.303743743 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_err.c
 @@ -0,0 +1,97 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
@@ -2957,8 +3025,8 @@ Index: openssl/crypto/pace/pace_err.c
 +	}
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2009-11-12 10:15:00.714981486 +0100
+--- /dev/null
++++ openssl/crypto/pace/pacetest.c
 @@ -0,0 +1,434 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
@@ -3394,122 +3462,3 @@ Index: openssl/crypto/pace/pacetest.c
 +}
 +
 +#endif /* OPENSSL_NO_PACE */
-Index: openssl/crypto/objects/objects.txt
-===================================================================
---- openssl.orig/crypto/objects/objects.txt	2009-11-10 11:03:49.402456314 +0100
-+++ openssl/crypto/objects/objects.txt	2009-11-11 11:47:42.517235371 +0100
-@@ -1309,16 +1309,6 @@
- 0 4 0 127 0 7 2 2 3 2 2 : id-CA-ECDH-AES-CBC-CMAC-128
- 0 4 0 127 0 7 2 2 3 2 3 : id-CA-ECDH-AES-CBC-CMAC-192
- 0 4 0 127 0 7 2 2 3 2 4 : id-CA-ECDH-AES-CBC-CMAC-256
--0 4 0 127 0 7 2 2 4 1 : id-PACE-DH
--0 4 0 127 0 7 2 2 4 1 1 : id-PACE-DH-3DES-CBC-CBC
--0 4 0 127 0 7 2 2 4 1 2 : id-PACE-DH-AES-CBC-CMAC-128
--0 4 0 127 0 7 2 2 4 1 3 : id-PACE-DH-AES-CBC-CMAC-192
--0 4 0 127 0 7 2 2 4 1 4 : id-PACE-DH-AES-CBC-CMAC-256
--0 4 0 127 0 7 2 2 4 2 : id-PACE-ECDH
--0 4 0 127 0 7 2 2 4 2 1 : id-PACE-ECDH-3DES-CBC-CBC
--0 4 0 127 0 7 2 2 4 2 2 : id-PACE-ECDH-AES-CBC-CMAC-128
--0 4 0 127 0 7 2 2 4 2 3 : id-PACE-ECDH-AES-CBC-CMAC-192
--0 4 0 127 0 7 2 2 4 2 4 : id-PACE-ECDH-AES-CBC-CMAC-256
- 0 4 0 127 0 7 2 2 5 1 : id-RI-DH
- 0 4 0 127 0 7 2 2 5 2 : id-RI-ECDH
- 0 4 0 127 0 7 3 1 1 1 : ePass-policy : e-Pass Policy
-@@ -1330,6 +1320,29 @@
- 0 4 0 127 0 7 3 1 4 1 4 1 : id-DateOfBirth
- 0 4 0 127 0 7 3 1 4 1 4 2 : id-DateOfExpiry
- 0 4 0 127 0 7 3 2 1 : id-SecurityObject
-+# BSI Extensions TR 3110 Version 2.01
-+!Alias bsi-de           0 4 0 127 0 7
-+!Alias id-PACE          bsi-de  2 2 4
-+!Alias id-PACE-DH-GM    id-PACE 1
-+id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
-+id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
-+id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
-+id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
-+!Alias id-PACE-ECDH-GM  id-PACE 2
-+id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
-+id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
-+id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
-+id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
-+!Alias id-PACE-DH-IM    id-PACE 3
-+id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
-+id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
-+id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
-+id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
-+!Alias id-PACE-ECDH-IM  id-PACE 4
-+id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
-+id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
-+id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
-+id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
- 
- # BSI Extensions TR 3111
- # bsi OBJECT IDENTIFIER ::= {
-Index: openssl/crypto/err/openssl.ec
-===================================================================
---- openssl.orig/crypto/err/openssl.ec	2009-11-12 14:13:16.000000000 +0100
-+++ openssl/crypto/err/openssl.ec	2009-11-11 15:56:56.918386786 +0100
-@@ -35,6 +35,7 @@
- L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
- L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
- L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
-+L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
- 
- # additional header files to be scanned for function names
- L NONE		crypto/x509/x509_vfy.h		NONE
-Index: openssl/crypto/err/err.c
-===================================================================
---- openssl.orig/crypto/err/err.c	2009-11-12 14:28:55.000000000 +0100
-+++ openssl/crypto/err/err.c	2009-11-11 12:42:00.155375914 +0100
-@@ -156,6 +156,7 @@
- {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
- {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
- {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
-+{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
- {0,NULL},
- 	};
- 
-Index: openssl/crypto/err/err.h
-===================================================================
---- openssl.orig/crypto/err/err.h	2009-11-12 14:28:55.000000000 +0100
-+++ openssl/crypto/err/err.h	2009-11-11 12:44:09.775373043 +0100
-@@ -198,6 +198,7 @@
- #define ERR_LIB_TS		47
- #define ERR_LIB_HMAC		48
- #define ERR_LIB_JPAKE		49
-+#define ERR_LIB_PACE		50
- 
- #define ERR_LIB_USER		128
- 
-@@ -234,6 +235,7 @@
- #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
- #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
- #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
-+#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
- 
- /* Borland C seems too stupid to be able to shift and do longs in
-  * the pre-processor :-( */
-Index: openssl/crypto/err/err_all.c
-===================================================================
---- openssl.orig/crypto/err/err_all.c	2009-11-12 14:28:55.000000000 +0100
-+++ openssl/crypto/err/err_all.c	2009-11-11 12:47:20.985379445 +0100
-@@ -102,6 +102,10 @@
- #ifndef OPENSSL_NO_JPAKE
- #include <openssl/jpake.h>
- #endif
-+#ifndef OPENSSL_NO_PACE
-+#include <openssl/pace.h>
-+#endif
-+
- 
- void ERR_load_crypto_strings(void)
- 	{
-@@ -154,5 +158,8 @@
- #ifndef OPENSSL_NO_JPAKE
- 	ERR_load_JPAKE_strings();
- #endif
-+#ifndef OPENSSL_NO_PACE
-+	ERR_load_PACE_strings();
-+#endif
- #endif
- 	}
