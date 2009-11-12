@@ -18,4 +18,4 @@ ln -v -s ../../crypto/cmac/cmac.h \
          .                    )
 # compiling
 sleep 1
-./config && make
+./config experimental-pace && make
