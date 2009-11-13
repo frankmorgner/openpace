@@ -467,7 +467,7 @@ Index: openssl/crypto/objects/objects.txt
 ===================================================================
 --- openssl.orig/crypto/objects/objects.txt
 +++ openssl/crypto/objects/objects.txt
-@@ -1257,3 +1257,115 @@ kisa 1 6                : SEED-OFB
+@@ -1257,3 +1257,19 @@ kisa 1 6                : SEED-OFB
  # There is no OID that just denotes "HMAC" oddly enough...
  
  			: HMAC				: hmac
@@ -490,96 +490,3 @@ Index: openssl/crypto/objects/objects.txt
 +1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
 +1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
 +1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
-+
-+# BSI Extensions TR 3110 Version 1.11
-+# bsi OBJECT IDENTIFIER ::= {
-+# itu-t(0) identified-organization(4) etsi(0) reserved(127)
-+# etsi-identified-organization(0) bsi-de(7) }
-+# bsi-protocol OBJECT IDENTIFIER ::= { bsi protocol(2) }
-+# bsi-application OBJECT IDENTIFIER ::= { bsi application(3) }
-+# smartcard OBJECT IDENTIFIER ::= { bsi-protocol smartcard(2) }
-+# bsi-PK OBJECT IDENTIFIER ::= { smartcard publicKey(1) }
-+# bsi-TA OBJECT IDENTIFIER ::= { smartcard terminalAuthentication(2) }
-+# bsi-CA OBJECT IDENTIFIER ::= { smartcard chipAuthentication(3) }
-+# bsi-EAC-ePassport OBJECT IDENTIFIER ::= { bsi-application
-+# mrtd(1) roles(2) EAC(1) }
-+0 4 0 127 0 7 2 2 1 1 : id-PK-DH
-+0 4 0 127 0 7 2 2 1 2 : id-PK-ECDH
-+0 4 0 127 0 7 2 2 2 1 1 : id-TA-RSA-v1-5-SHA-1
-+0 4 0 127 0 7 2 2 2 1 2 : id-TA-RSA-v1-5-SHA-256
-+0 4 0 127 0 7 2 2 2 1 3 : id-TA-RSA-PSS-SHA-1
-+0 4 0 127 0 7 2 2 2 1 4 : id-TA-RSA-PSS-SHA-256
-+0 4 0 127 0 7 2 2 2 2 1 : id-TA-ECDSA-SHA-1
-+0 4 0 127 0 7 2 2 2 2 2 : id-TA-ECDSA-SHA-224
-+0 4 0 127 0 7 2 2 2 2 3 : id-TA-ECDSA-SHA-256
-+0 4 0 127 0 7 2 2 3 1 1 : id-CA-DH-3DES-CBC-CBC
-+0 4 0 127 0 7 2 2 3 2 1 : id-CA-ECDH-3DES-CBC-CBC
-+0 4 0 127 0 7 3 1 2 1 : id-EAC-ePassport
-+
-+# BSI Extensions TR 3110 Version 2.0 RC1
-+0 4 0 127 0 7 2 2 3 1 2 : id-CA-DH-AES-CBC-CMAC-128
-+0 4 0 127 0 7 2 2 3 1 3 : id-CA-DH-AES-CBC-CMAC-192
-+0 4 0 127 0 7 2 2 3 1 4 : id-CA-DH-AES-CBC-CMAC-256
-+0 4 0 127 0 7 2 2 3 2 2 : id-CA-ECDH-AES-CBC-CMAC-128
-+0 4 0 127 0 7 2 2 3 2 3 : id-CA-ECDH-AES-CBC-CMAC-192
-+0 4 0 127 0 7 2 2 3 2 4 : id-CA-ECDH-AES-CBC-CMAC-256
-+0 4 0 127 0 7 2 2 5 1 : id-RI-DH
-+0 4 0 127 0 7 2 2 5 2 : id-RI-ECDH
-+0 4 0 127 0 7 3 1 1 1 : ePass-policy : e-Pass Policy
-+0 4 0 127 0 7 3 1 2 1 2 1 : id-IS
-+0 4 0 127 0 7 3 1 2 1 2 2 : id-AT
-+0 4 0 127 0 7 3 1 2 1 2 3 : id-ST
-+0 4 0 127 0 7 3 1 3 1 3 1 : id-description
-+0 4 0 127 0 7 3 1 3 1 3 2 : id-sector
-+0 4 0 127 0 7 3 1 4 1 4 1 : id-DateOfBirth
-+0 4 0 127 0 7 3 1 4 1 4 2 : id-DateOfExpiry
-+0 4 0 127 0 7 3 2 1 : id-SecurityObject
-+# BSI Extensions TR 3110 Version 2.01
-+!Alias bsi-de           0 4 0 127 0 7
-+!Alias id-PACE          bsi-de  2 2 4
-+!Alias id-PACE-DH-GM    id-PACE 1
-+id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
-+id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
-+id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
-+id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
-+!Alias id-PACE-ECDH-GM  id-PACE 2
-+id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
-+id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
-+id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
-+id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
-+!Alias id-PACE-DH-IM    id-PACE 3
-+id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
-+id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
-+id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
-+id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
-+!Alias id-PACE-ECDH-IM  id-PACE 4
-+id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
-+id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
-+id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
-+id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
-+
-+# BSI Extensions TR 3111
-+# bsi OBJECT IDENTIFIER ::= {
-+# itu-t(0) identified-organization(4) etsi(0) reserved(127)
-+# etsi-identified-organization(0) bsi-de(7) }
-+# ecc-keyType OBJECT IDENTIFIER ::= { bsi algorithms(1)
-+# id-ecc(1) keyType(2) }
-+# ecc-signatures OBJECT IDENTIFIER ::= { bsi algorithms(1)
-+# id-ecc(1) signatures(4) }
-+# ec-establishment OBJECT IDENTIFIER ::= { bsi algorithms(1)
-+# id-ecc(1) key-establishment(5) }
-+0 4 0 127 0 7 1 1 1 2 2 1 : id-ecTLVPublicKey
-+0 4 0 127 0 7 1 1 4 1 1 : ecdsa-plain-SHA1
-+0 4 0 127 0 7 1 1 4 1 2 : ecdsa-plain-SHA224
-+0 4 0 127 0 7 1 1 4 1 3 : ecdsa-plain-SHA256
-+0 4 0 127 0 7 1 1 4 1 4 : ecdsa-plain-SHA384
-+0 4 0 127 0 7 1 1 4 1 5 : ecdsa-plain-SHA512
-+0 4 0 127 0 7 1 1 4 1 6 : ecdsa-plain-RIPEMD160
-+0 4 0 127 0 7 1 1 5 1 1 : ec-kaeg-with-X963KDF
-+0 4 0 127 0 7 1 1 5 1 2 : ec-kaeg-with-Session-KDF
-+
-+# BSI OIDs
-+# bsi-policies OBJECT IDENTIFIER ::= {
-+# iso(1) identified-organization(3) dod(6) internet(1) private(4)
-+# enterprise(1) bsi(7924) 1 }
-+1 3 6 1 4 1 7924 1 1 : pki1-Verwaltung : PKI-1 Verwaltung
