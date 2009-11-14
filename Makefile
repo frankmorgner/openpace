@@ -19,12 +19,10 @@ patch: openssl-1.0.0-beta3
 	    echo Never mind.
 
 openssl-1.0.0-beta3: openssl-1.0.0-beta3.tar.gz
-	[ ! -d openssl-1.0.0-beta3 ] && \
-		tar xzf openssl-1.0.0-beta3.tar.gz
+	tar xzf openssl-1.0.0-beta3.tar.gz
 
 openssl-1.0.0-beta3.tar.gz:
-	[ ! -r openssl-1.0.0-beta3.tar.gz ] && \
-		wget http://www.openssl.org/source/openssl-1.0.0-beta3.tar.gz
+	wget http://www.openssl.org/source/openssl-1.0.0-beta3.tar.gz
 
 clean: 
 	rm -rf \
