@@ -1,7 +1,7 @@
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2009-11-13 16:24:56.000000000 +0100
-+++ openssl/Makefile.org	2009-11-13 14:38:37.313272935 +0100
+--- openssl.orig/Makefile.org	2009-11-13 16:24:56.013150921 +0100
++++ openssl/Makefile.org	2009-11-15 20:55:15.438731716 +0100
 @@ -121,7 +121,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
@@ -13,7 +13,7 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/crypto/ecdh/ecdh.h	2009-11-13 16:24:56.023153310 +0100
 +++ openssl/crypto/ecdh/ecdh.h	2009-11-07 13:23:36.123842280 +0100
 @@ -86,6 +86,7 @@
  #endif
@@ -25,7 +25,7 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2009-11-13 16:24:56.023153310 +0100
 +++ openssl/crypto/ecdh/ech_ossl.c	2009-11-07 13:23:36.123842280 +0100
 @@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
@@ -203,7 +203,7 @@ Index: openssl/crypto/pace/Makefile
 Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2009-11-13 13:20:02.000000000 +0100
++++ openssl/crypto/pace/pace.c	2009-11-13 13:20:02.133179315 +0100
 @@ -0,0 +1,2215 @@
 +/**
 + * @file pace.c
@@ -2423,7 +2423,7 @@ Index: openssl/crypto/pace/pace.c
 Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2009-11-13 13:20:02.000000000 +0100
++++ openssl/crypto/pace/pace.h	2009-11-13 13:20:02.133179315 +0100
 @@ -0,0 +1,436 @@
 +/**
 + * @mainpage OpenPACE
@@ -2864,7 +2864,7 @@ Index: openssl/crypto/pace/pace.h
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2009-11-13 13:20:02.000000000 +0100
++++ openssl/crypto/pace/pace_err.c	2009-11-13 13:20:02.133179315 +0100
 @@ -0,0 +1,100 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
@@ -3405,110 +3405,9 @@ Index: openssl/crypto/pace/pacetest.c
 +}
 +
 +#endif /* OPENSSL_NO_PACE */
-Index: openssl/crypto/objects/objects.txt
-===================================================================
---- openssl.orig/crypto/objects/objects.txt	2009-11-13 16:24:56.000000000 +0100
-+++ openssl/crypto/objects/objects.txt	2009-11-13 15:42:40.000000000 +0100
-@@ -1276,3 +1276,96 @@
- 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
- 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
- 1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
-+
-+# BSI Extensions TR 3110 Version 1.11
-+# bsi OBJECT IDENTIFIER ::= {
-+# itu-t(0) identified-organization(4) etsi(0) reserved(127)
-+# etsi-identified-organization(0) bsi-de(7) }
-+# bsi-protocol OBJECT IDENTIFIER ::= { bsi protocol(2) }
-+# bsi-application OBJECT IDENTIFIER ::= { bsi application(3) }
-+# smartcard OBJECT IDENTIFIER ::= { bsi-protocol smartcard(2) }
-+# bsi-PK OBJECT IDENTIFIER ::= { smartcard publicKey(1) }
-+# bsi-TA OBJECT IDENTIFIER ::= { smartcard terminalAuthentication(2) }
-+# bsi-CA OBJECT IDENTIFIER ::= { smartcard chipAuthentication(3) }
-+# bsi-EAC-ePassport OBJECT IDENTIFIER ::= { bsi-application
-+# mrtd(1) roles(2) EAC(1) }
-+0 4 0 127 0 7 2 2 1 1 : id-PK-DH
-+0 4 0 127 0 7 2 2 1 2 : id-PK-ECDH
-+0 4 0 127 0 7 2 2 2 1 1 : id-TA-RSA-v1-5-SHA-1
-+0 4 0 127 0 7 2 2 2 1 2 : id-TA-RSA-v1-5-SHA-256
-+0 4 0 127 0 7 2 2 2 1 3 : id-TA-RSA-PSS-SHA-1
-+0 4 0 127 0 7 2 2 2 1 4 : id-TA-RSA-PSS-SHA-256
-+0 4 0 127 0 7 2 2 2 2 1 : id-TA-ECDSA-SHA-1
-+0 4 0 127 0 7 2 2 2 2 2 : id-TA-ECDSA-SHA-224
-+0 4 0 127 0 7 2 2 2 2 3 : id-TA-ECDSA-SHA-256
-+0 4 0 127 0 7 2 2 3 1 1 : id-CA-DH-3DES-CBC-CBC
-+0 4 0 127 0 7 2 2 3 2 1 : id-CA-ECDH-3DES-CBC-CBC
-+0 4 0 127 0 7 3 1 2 1 : id-EAC-ePassport
-+
-+# BSI Extensions TR 3110 Version 2.0 RC1
-+0 4 0 127 0 7 2 2 3 1 2 : id-CA-DH-AES-CBC-CMAC-128
-+0 4 0 127 0 7 2 2 3 1 3 : id-CA-DH-AES-CBC-CMAC-192
-+0 4 0 127 0 7 2 2 3 1 4 : id-CA-DH-AES-CBC-CMAC-256
-+0 4 0 127 0 7 2 2 3 2 2 : id-CA-ECDH-AES-CBC-CMAC-128
-+0 4 0 127 0 7 2 2 3 2 3 : id-CA-ECDH-AES-CBC-CMAC-192
-+0 4 0 127 0 7 2 2 3 2 4 : id-CA-ECDH-AES-CBC-CMAC-256
-+0 4 0 127 0 7 2 2 5 1 : id-RI-DH
-+0 4 0 127 0 7 2 2 5 2 : id-RI-ECDH
-+0 4 0 127 0 7 3 1 1 1 : ePass-policy : e-Pass Policy
-+0 4 0 127 0 7 3 1 2 1 2 1 : id-IS
-+0 4 0 127 0 7 3 1 2 1 2 2 : id-AT
-+0 4 0 127 0 7 3 1 2 1 2 3 : id-ST
-+0 4 0 127 0 7 3 1 3 1 3 1 : id-description
-+0 4 0 127 0 7 3 1 3 1 3 2 : id-sector
-+0 4 0 127 0 7 3 1 4 1 4 1 : id-DateOfBirth
-+0 4 0 127 0 7 3 1 4 1 4 2 : id-DateOfExpiry
-+0 4 0 127 0 7 3 2 1 : id-SecurityObject
-+# BSI Extensions TR 3110 Version 2.01
-+!Alias bsi-de           0 4 0 127 0 7
-+!Alias id-PACE          bsi-de  2 2 4
-+!Alias id-PACE-DH-GM    id-PACE 1
-+id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
-+id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
-+id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
-+id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
-+!Alias id-PACE-ECDH-GM  id-PACE 2
-+id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
-+id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
-+id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
-+id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
-+!Alias id-PACE-DH-IM    id-PACE 3
-+id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
-+id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
-+id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
-+id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
-+!Alias id-PACE-ECDH-IM  id-PACE 4
-+id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
-+id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
-+id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
-+id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
-+
-+# BSI Extensions TR 3111
-+# bsi OBJECT IDENTIFIER ::= {
-+# itu-t(0) identified-organization(4) etsi(0) reserved(127)
-+# etsi-identified-organization(0) bsi-de(7) }
-+# ecc-keyType OBJECT IDENTIFIER ::= { bsi algorithms(1)
-+# id-ecc(1) keyType(2) }
-+# ecc-signatures OBJECT IDENTIFIER ::= { bsi algorithms(1)
-+# id-ecc(1) signatures(4) }
-+# ec-establishment OBJECT IDENTIFIER ::= { bsi algorithms(1)
-+# id-ecc(1) key-establishment(5) }
-+0 4 0 127 0 7 1 1 1 2 2 1 : id-ecTLVPublicKey
-+0 4 0 127 0 7 1 1 4 1 1 : ecdsa-plain-SHA1
-+0 4 0 127 0 7 1 1 4 1 2 : ecdsa-plain-SHA224
-+0 4 0 127 0 7 1 1 4 1 3 : ecdsa-plain-SHA256
-+0 4 0 127 0 7 1 1 4 1 4 : ecdsa-plain-SHA384
-+0 4 0 127 0 7 1 1 4 1 5 : ecdsa-plain-SHA512
-+0 4 0 127 0 7 1 1 4 1 6 : ecdsa-plain-RIPEMD160
-+0 4 0 127 0 7 1 1 5 1 1 : ec-kaeg-with-X963KDF
-+0 4 0 127 0 7 1 1 5 1 2 : ec-kaeg-with-Session-KDF
-+
-+# BSI OIDs
-+# bsi-policies OBJECT IDENTIFIER ::= {
-+# iso(1) identified-organization(3) dod(6) internet(1) private(4)
-+# enterprise(1) bsi(7924) 1 }
-+1 3 6 1 4 1 7924 1 1 : pki1-Verwaltung : PKI-1 Verwaltung
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/crypto/err/openssl.ec	2009-11-13 16:24:56.023153310 +0100
 +++ openssl/crypto/err/openssl.ec	2009-11-11 15:56:56.918386786 +0100
 @@ -35,6 +35,7 @@
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
@@ -3520,7 +3419,7 @@ Index: openssl/crypto/err/openssl.ec
  L NONE		crypto/x509/x509_vfy.h		NONE
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/crypto/err/err.c	2009-11-13 16:24:56.023153310 +0100
 +++ openssl/crypto/err/err.c	2009-11-11 12:42:00.155375914 +0100
 @@ -156,6 +156,7 @@
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
@@ -3532,7 +3431,7 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/crypto/err/err.h	2009-11-13 16:24:56.023153310 +0100
 +++ openssl/crypto/err/err.h	2009-11-11 12:44:09.775373043 +0100
 @@ -198,6 +198,7 @@
  #define ERR_LIB_TS		47
@@ -3552,7 +3451,7 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/crypto/err/err_all.c	2009-11-13 16:24:56.023153310 +0100
 +++ openssl/crypto/err/err_all.c	2009-11-11 12:47:20.985379445 +0100
 @@ -102,6 +102,10 @@
  #ifndef OPENSSL_NO_JPAKE
@@ -3576,7 +3475,7 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2009-11-13 16:24:56.000000000 +0100
+--- openssl.orig/test/Makefile	2009-11-13 16:24:56.013150921 +0100
 +++ openssl/test/Makefile	2009-11-10 11:01:33.622456897 +0100
 @@ -63,7 +63,7 @@
  GCMTESTA=  aesgcmtest
