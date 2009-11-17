@@ -14,7 +14,7 @@ patch: openssl-1.0.0-beta3
 	grep brainpool openssl-1.0.0-beta3/crypto/ec/ec_curve.c > /dev/null || \
 	    patch -d openssl-1.0.0-beta3 -p1 < BP.patch
 	[ ! -r openssl-1.0.0-beta3/crypto/pace/pace.h ] && \
-	    patch -d openssl-1.0.0-beta3 -p1 --verbose < OpenPACE.patch && \
+	    patch -d openssl-1.0.0-beta3 -p1 < OpenPACE.patch && \
 	    ln -s ../../crypto/pace/pace.h openssl-1.0.0-beta3/include/openssl || \
 	    echo Never mind.
 

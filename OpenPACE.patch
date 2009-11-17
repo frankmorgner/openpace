@@ -1,8 +1,8 @@
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2009-11-13 16:24:56.013150921 +0100
-+++ openssl/Makefile.org	2009-11-15 20:55:15.438731716 +0100
-@@ -121,7 +121,7 @@
+--- openssl.orig/Makefile.org
++++ openssl/Makefile.org
+@@ -121,7 +121,7 @@ SDIRS=  \
  	cmac \
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
@@ -13,9 +13,9 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2009-11-13 16:24:56.023153310 +0100
-+++ openssl/crypto/ecdh/ecdh.h	2009-11-07 13:23:36.123842280 +0100
-@@ -86,6 +86,7 @@
+--- openssl.orig/crypto/ecdh/ecdh.h
++++ openssl/crypto/ecdh/ecdh.h
+@@ -86,6 +86,7 @@ extern "C" {
  #endif
  
  const ECDH_METHOD *ECDH_OpenSSL(void);
@@ -25,9 +25,9 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2009-11-13 16:24:56.023153310 +0100
-+++ openssl/crypto/ecdh/ech_ossl.c	2009-11-07 13:23:36.123842280 +0100
-@@ -211,3 +211,113 @@
+--- openssl.orig/crypto/ecdh/ech_ossl.c
++++ openssl/crypto/ecdh/ech_ossl.c
+@@ -211,3 +211,113 @@ err:
  	if (buf) OPENSSL_free(buf);
  	return(ret);
  	}
@@ -141,10 +141,179 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	if (buf) OPENSSL_free(buf);
 +	return(ret);
 +	}
+Index: openssl/crypto/err/err.c
+===================================================================
+--- openssl.orig/crypto/err/err.c
++++ openssl/crypto/err/err.c
+@@ -156,6 +156,7 @@ static ERR_STRING_DATA ERR_str_libraries
+ {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
+ {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
+ {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
++{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
+ {0,NULL},
+ 	};
+ 
+Index: openssl/crypto/err/err.h
+===================================================================
+--- openssl.orig/crypto/err/err.h
++++ openssl/crypto/err/err.h
+@@ -198,6 +198,7 @@ typedef struct err_state_st
+ #define ERR_LIB_TS		47
+ #define ERR_LIB_HMAC		48
+ #define ERR_LIB_JPAKE		49
++#define ERR_LIB_PACE		50
+ 
+ #define ERR_LIB_USER		128
+ 
+@@ -234,6 +235,7 @@ typedef struct err_state_st
+ #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
+ #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
+ #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
++#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
+ 
+ /* Borland C seems too stupid to be able to shift and do longs in
+  * the pre-processor :-( */
+Index: openssl/crypto/err/err_all.c
+===================================================================
+--- openssl.orig/crypto/err/err_all.c
++++ openssl/crypto/err/err_all.c
+@@ -102,6 +102,10 @@
+ #ifndef OPENSSL_NO_JPAKE
+ #include <openssl/jpake.h>
+ #endif
++#ifndef OPENSSL_NO_PACE
++#include <openssl/pace.h>
++#endif
++
+ 
+ void ERR_load_crypto_strings(void)
+ 	{
+@@ -154,5 +158,8 @@ void ERR_load_crypto_strings(void)
+ #ifndef OPENSSL_NO_JPAKE
+ 	ERR_load_JPAKE_strings();
+ #endif
++#ifndef OPENSSL_NO_PACE
++	ERR_load_PACE_strings();
++#endif
+ #endif
+ 	}
+Index: openssl/crypto/err/openssl.ec
+===================================================================
+--- openssl.orig/crypto/err/openssl.ec
++++ openssl/crypto/err/openssl.ec
+@@ -35,6 +35,7 @@ L TS		crypto/ts/ts.h			crypto/ts/ts_err.
+ L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
+ L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
+ L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
++L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
+ 
+ # additional header files to be scanned for function names
+ L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/objects/objects.txt
+===================================================================
+--- openssl.orig/crypto/objects/objects.txt
++++ openssl/crypto/objects/objects.txt
+@@ -1276,3 +1276,96 @@ kisa 1 6                : SEED-OFB
+ 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
+ 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
+ 1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
++
++# BSI Extensions TR 3110 Version 1.11
++# bsi OBJECT IDENTIFIER ::= {
++# itu-t(0) identified-organization(4) etsi(0) reserved(127)
++# etsi-identified-organization(0) bsi-de(7) }
++# bsi-protocol OBJECT IDENTIFIER ::= { bsi protocol(2) }
++# bsi-application OBJECT IDENTIFIER ::= { bsi application(3) }
++# smartcard OBJECT IDENTIFIER ::= { bsi-protocol smartcard(2) }
++# bsi-PK OBJECT IDENTIFIER ::= { smartcard publicKey(1) }
++# bsi-TA OBJECT IDENTIFIER ::= { smartcard terminalAuthentication(2) }
++# bsi-CA OBJECT IDENTIFIER ::= { smartcard chipAuthentication(3) }
++# bsi-EAC-ePassport OBJECT IDENTIFIER ::= { bsi-application
++# mrtd(1) roles(2) EAC(1) }
++0 4 0 127 0 7 2 2 1 1 : id-PK-DH
++0 4 0 127 0 7 2 2 1 2 : id-PK-ECDH
++0 4 0 127 0 7 2 2 2 1 1 : id-TA-RSA-v1-5-SHA-1
++0 4 0 127 0 7 2 2 2 1 2 : id-TA-RSA-v1-5-SHA-256
++0 4 0 127 0 7 2 2 2 1 3 : id-TA-RSA-PSS-SHA-1
++0 4 0 127 0 7 2 2 2 1 4 : id-TA-RSA-PSS-SHA-256
++0 4 0 127 0 7 2 2 2 2 1 : id-TA-ECDSA-SHA-1
++0 4 0 127 0 7 2 2 2 2 2 : id-TA-ECDSA-SHA-224
++0 4 0 127 0 7 2 2 2 2 3 : id-TA-ECDSA-SHA-256
++0 4 0 127 0 7 2 2 3 1 1 : id-CA-DH-3DES-CBC-CBC
++0 4 0 127 0 7 2 2 3 2 1 : id-CA-ECDH-3DES-CBC-CBC
++0 4 0 127 0 7 3 1 2 1 : id-EAC-ePassport
++
++# BSI Extensions TR 3110 Version 2.0 RC1
++0 4 0 127 0 7 2 2 3 1 2 : id-CA-DH-AES-CBC-CMAC-128
++0 4 0 127 0 7 2 2 3 1 3 : id-CA-DH-AES-CBC-CMAC-192
++0 4 0 127 0 7 2 2 3 1 4 : id-CA-DH-AES-CBC-CMAC-256
++0 4 0 127 0 7 2 2 3 2 2 : id-CA-ECDH-AES-CBC-CMAC-128
++0 4 0 127 0 7 2 2 3 2 3 : id-CA-ECDH-AES-CBC-CMAC-192
++0 4 0 127 0 7 2 2 3 2 4 : id-CA-ECDH-AES-CBC-CMAC-256
++0 4 0 127 0 7 2 2 5 1 : id-RI-DH
++0 4 0 127 0 7 2 2 5 2 : id-RI-ECDH
++0 4 0 127 0 7 3 1 1 1 : ePass-policy : e-Pass Policy
++0 4 0 127 0 7 3 1 2 1 2 1 : id-IS
++0 4 0 127 0 7 3 1 2 1 2 2 : id-AT
++0 4 0 127 0 7 3 1 2 1 2 3 : id-ST
++0 4 0 127 0 7 3 1 3 1 3 1 : id-description
++0 4 0 127 0 7 3 1 3 1 3 2 : id-sector
++0 4 0 127 0 7 3 1 4 1 4 1 : id-DateOfBirth
++0 4 0 127 0 7 3 1 4 1 4 2 : id-DateOfExpiry
++0 4 0 127 0 7 3 2 1 : id-SecurityObject
++# BSI Extensions TR 3110 Version 2.01
++!Alias bsi-de           0 4 0 127 0 7
++!Alias id-PACE          bsi-de  2 2 4
++!Alias id-PACE-DH-GM    id-PACE 1
++id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
++id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
++id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
++id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
++!Alias id-PACE-ECDH-GM  id-PACE 2
++id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
++id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
++id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
++id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
++!Alias id-PACE-DH-IM    id-PACE 3
++id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
++id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
++id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
++id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
++!Alias id-PACE-ECDH-IM  id-PACE 4
++id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
++id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
++id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
++id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
++
++# BSI Extensions TR 3111
++# bsi OBJECT IDENTIFIER ::= {
++# itu-t(0) identified-organization(4) etsi(0) reserved(127)
++# etsi-identified-organization(0) bsi-de(7) }
++# ecc-keyType OBJECT IDENTIFIER ::= { bsi algorithms(1)
++# id-ecc(1) keyType(2) }
++# ecc-signatures OBJECT IDENTIFIER ::= { bsi algorithms(1)
++# id-ecc(1) signatures(4) }
++# ec-establishment OBJECT IDENTIFIER ::= { bsi algorithms(1)
++# id-ecc(1) key-establishment(5) }
++0 4 0 127 0 7 1 1 1 2 2 1 : id-ecTLVPublicKey
++0 4 0 127 0 7 1 1 4 1 1 : ecdsa-plain-SHA1
++0 4 0 127 0 7 1 1 4 1 2 : ecdsa-plain-SHA224
++0 4 0 127 0 7 1 1 4 1 3 : ecdsa-plain-SHA256
++0 4 0 127 0 7 1 1 4 1 4 : ecdsa-plain-SHA384
++0 4 0 127 0 7 1 1 4 1 5 : ecdsa-plain-SHA512
++0 4 0 127 0 7 1 1 4 1 6 : ecdsa-plain-RIPEMD160
++0 4 0 127 0 7 1 1 5 1 1 : ec-kaeg-with-X963KDF
++0 4 0 127 0 7 1 1 5 1 2 : ec-kaeg-with-Session-KDF
++
++# BSI OIDs
++# bsi-policies OBJECT IDENTIFIER ::= {
++# iso(1) identified-organization(3) dod(6) internet(1) private(4)
++# enterprise(1) bsi(7924) 1 }
++1 3 6 1 4 1 7924 1 1 : pki1-Verwaltung : PKI-1 Verwaltung
 Index: openssl/crypto/pace/Makefile
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2009-11-07 13:20:59.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/Makefile
 @@ -0,0 +1,54 @@
 +DIR=pace
 +TOP=../..
@@ -202,9 +371,9 @@ Index: openssl/crypto/pace/Makefile
 +pace_err.o: pace_err.c
 Index: openssl/crypto/pace/pace.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2009-11-13 13:20:02.133179315 +0100
-@@ -0,0 +1,2215 @@
+--- /dev/null
++++ openssl/crypto/pace/pace.c
+@@ -0,0 +1,2296 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -316,6 +485,21 @@ Index: openssl/crypto/pace/pace.c
 + */
 +static BUF_MEM *
 +add_iso_pad(const BUF_MEM * m, int block_size);
++/**
++ * @brief Public key validation method described in RFC 2631
++ *
++ * @param dh DH object to use
++ * @param ctx BN_CTX object
++ * @param ret Contains these flags on errors:
++ * DH_CHECK_PUBKEY_TOO_SMALL (smaller than 2)
++ * DH_CHECK_PUBKEY_TOO_LARGE (bigger than p-1)
++ * DH_CHECK_UNABLE_TO_CHECK_PUBKEY (because the Sophie Germain prime q could not be calculated)
++ * DH_CHECK_PUBKEY_INVALID (y^q mod p != 1)
++ *
++ * @return 1 on success or 0 if an error occurred
++ */
++int
++DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret);
 +/**
 + * @brief Encodes public key data objects of the domain parameters in ASN.1
 + * (see TR-3110 D.3)
@@ -458,6 +642,16 @@ Index: openssl/crypto/pace/pace.c
 + */
 +static BUF_MEM *
 +bn2buf(const BIGNUM *bn);
++/**
++ * @brief Computes the Sophie Germain prime matching the DH's modulus.
++ *
++ * @param dh DH object to use
++ * @param ctx BN_CTX object
++ *
++ * @return Sophie Germain prime or NULL if an error occurred
++ */
++static BIGNUM *
++dh_q(const DH *dh, BN_CTX *ctx);
 +/**
 + * @brief initializes a PACE_DP object with ECDH
 + *
@@ -858,11 +1052,7 @@ Index: openssl/crypto/pace/pace.c
 +                !DH_generate_parameters_ex(dp->dh, 64, DH_GENERATOR_5, NULL))
 +            goto err;
 +    }
-+    if (!DH_check(dp->dh, &i) ||
-+            (DH_CHECK_P_NOT_SAFE_PRIME & i) ||
-+            (DH_NOT_SUITABLE_GENERATOR & i) ||
-+            (DH_UNABLE_TO_CHECK_GENERATOR & i) ||
-+            (i & DH_CHECK_P_NOT_PRIME)) {
++    if (!DH_check(dp->dh, &i) || (i != 0)) {
 +        PACEerr(PACE_F_INIT_DH, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
 +        goto err;
 +    }
@@ -1101,6 +1291,49 @@ Index: openssl/crypto/pace/pace.c
 +    return NULL;
 +}
 +
++#define DH_CHECK_UNABLE_TO_CHECK_PUBKEY	0x04
++#define DH_CHECK_PUBKEY_INVALID		0x08
++int
++DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret)
++{
++    BIGNUM *q = NULL, *bn = NULL;
++    int ok = 0;
++    if (!dh)
++        goto end;
++
++    // Verify that y lies within the interval [2,p-1].
++    if (!DH_check_pub_key(dh, dh->pub_key, ret))
++        goto end;
++
++    // FIXME
++#if 0
++    // Compute y^q mod p. If the result == 1, the key is valid.
++    q = dh_q(dh, ctx);
++    if (!q) {
++        *ret |= DH_CHECK_UNABLE_TO_CHECK_PUBKEY;
++        goto end;
++    }
++    bn = BN_new();
++    if (!bn ||
++            !BN_mod_exp(bn, dh->pub_key, q, dh->p, ctx))
++        goto end;
++    if (!BN_is_one(bn)) {
++        *ret |= DH_CHECK_PUBKEY_INVALID;
++        goto end;
++    }
++#endif
++
++    ok = 1;
++
++end:
++    if (bn)
++        BN_clear_free(bn);
++    if (q)
++        BN_clear_free(q);
++
++    return ok;
++}
++
 +BUF_MEM *
 +asn1_pubkey(const PACE_CTX *ctx, const PACE_DP *dp)
 +{
@@ -1140,17 +1373,22 @@ Index: openssl/crypto/pace/pace.c
 +            p = BN_bn2hex(dp->dh->p);
 +
 +            /* Order of the subgroup */
-+            /* suppose the order (p-1)/2 */
-+            if (!BN_rshift1(bn, dp->dh->p) ||
++            /* suppose the order of g is order q */
++            bn = dh_q(dp->dh, ctx->bn_ctx);
++            if (!bn || !BN_sub_word(bn, 1) ||
 +                    !BN_mod_exp(a_bn, dp->dh->g, bn, dp->dh->p, ctx->bn_ctx))
 +                goto err;
-+            /* if a_bn != 1, (q-1)/2 is not the order */
++            /* if a_bn != 1, order q is not the order of g */
 +            if (BN_cmp(a_bn, BN_value_one()) != 0)
 +                /* FIXME is this really the second case?
 +                 * (see crypto/dh/dh_gen.c:151) */
 +                /* order should be p-1 */
 +                if (!BN_sub(bn, dp->dh->p, BN_value_one()))
 +                    goto err;
++            /* Final check */
++            if (!BN_mod_exp(a_bn, dp->dh->g, bn, dp->dh->p, ctx->bn_ctx) ||
++                    (BN_cmp(a_bn, BN_value_one()) != 0))
++                goto err;
 +            q = BN_bn2hex(bn);
 +
 +            /* Generator */
@@ -1548,30 +1786,24 @@ Index: openssl/crypto/pace/pace.c
 +point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
 +{
 +    BUF_MEM * out = NULL;
-+    EC_GROUP * group = NULL;
 +    size_t i;
 +
 +    /* get buffer in required size */
-+    group = EC_GROUP_dup(EC_KEY_get0_group(ecdh));
-+    if (!group)
-+        goto err;
-+    i = EC_POINT_point2oct(group, ecp, EC_KEY_get_conv_form(ecdh), NULL, 0,
-+            bn_ctx);
++    i = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
++            EC_KEY_get_conv_form(ecdh), NULL, 0, bn_ctx);
 +    out = BUF_MEM_new();
 +    if (!out || !BUF_MEM_grow(out, i))
 +        goto err;
 +
-+    out->length = EC_POINT_point2oct(group, ecp, EC_KEY_get_conv_form(ecdh),
-+            (unsigned char *) out->data, out->max, bn_ctx);
++    out->length = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
++            EC_KEY_get_conv_form(ecdh), (unsigned char *) out->data, out->max,
++            bn_ctx);
 +
-+    EC_GROUP_free(group);
 +    return out;
 +
 +err:
 +    if (out)
 +        BUF_MEM_free(out);
-+    if (group)
-+        EC_GROUP_free(group);
 +
 +    return NULL;
 +}
@@ -1601,6 +1833,33 @@ Index: openssl/crypto/pace/pace.c
 +    return NULL;
 +}
 +
++BIGNUM *
++dh_q(const DH *dh, BN_CTX *ctx)
++{
++    BIGNUM *q, *bn;
++
++    if (!dh->q) {
++        q = BN_new();
++        bn = BN_dup(dh->p);
++        /* DH primes should be strong, based on a Sophie Germain prime q
++         * p=(2*q)+1 or (p-1)/2=q */
++        if (!q || !bn ||
++                !BN_sub_word(bn, 1) ||
++                !BN_rshift1(q, bn) ||
++                (BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL) != 1)) {
++            if (bn)
++                BN_clear_free(bn);
++            if (q)
++                BN_clear_free(q);
++            return NULL;
++        }
++    } else {
++        q = BN_dup(dh->q);
++    }
++
++    return q;
++}
++
 +int
 +is_no_valid_integer_hexstr(const char * str)
 +{
@@ -1612,7 +1871,8 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +int
-+is_char_str(const BUF_MEM * str) {
++is_char_str(const BUF_MEM * str)
++{
 +    const unsigned char * s = (unsigned char *) str->data;
 +    int i = str->length;
 +    while (i) {
@@ -1624,7 +1884,6 @@ Index: openssl/crypto/pace/pace.c
 +    return 1;
 +}
 +
-+/* Encode the password (see Table F.2 in BSI TR-03110) */
 +BUF_MEM *
 +encoded_secret(const PACE_SEC * pi)
 +{
@@ -1671,10 +1930,19 @@ Index: openssl/crypto/pace/pace.c
 +BUF_MEM *
 +dh_generate_key(const PACE_DP * dp, const PACE_CTX * ctx)
 +{
++    int ret;
 +    if (!dp)
 +        return NULL;
 +    if (!DH_generate_key(dp->dh))
 +        return NULL;
++
++    if (!DH_check_pub_key_rfc(dp->dh, ctx->bn_ctx, &ret))
++        return NULL;
++    if (ret) {
++        PACEerr(PACE_F_DH_GM_COMPUTE_KEY, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
++        return NULL;
++    }
++
 +    return bn2buf(dp->dh->pub_key);
 +}
 +
@@ -1722,6 +1990,11 @@ Index: openssl/crypto/pace/pace.c
 +        return NULL;
 +    if (!EC_KEY_generate_key(dp->ecdh))
 +        return NULL;
++
++    // The key agreement algorithm ECKA prevents small subgroup attacks by
++    // using compatible cofactor multiplication.
++    // TODO Does OpenSSL use ECKA?
++
 +    return point2buf(dp->ecdh, ctx->bn_ctx, EC_KEY_get0_public_key(dp->ecdh));
 +}
 +
@@ -1730,23 +2003,20 @@ Index: openssl/crypto/pace/pace.c
 +{
 +    BUF_MEM * out = NULL;
 +    EC_POINT * ecp = NULL;
-+    EC_GROUP * group = NULL;
 +    int i;
 +    if (!dp || !ctx || !in)
 +        goto err;
 +	if(!dp->ecdh)
 +		printf("foo\n");
 +    /* decode public key */
-+    group = EC_GROUP_dup(EC_KEY_get0_group(dp->ecdh));
-+
-+    ecp = EC_POINT_new(group);
-+    if (!group || !ecp ||
-+            !EC_POINT_oct2point(group, ecp, (unsigned char *) in->data,
-+                in->length, ctx->bn_ctx))
++    ecp = EC_POINT_new(EC_KEY_get0_group(dp->ecdh));
++    if (!ecp ||
++            !EC_POINT_oct2point(EC_KEY_get0_group(dp->ecdh), ecp,
++                (unsigned char *) in->data, in->length, ctx->bn_ctx))
 +        goto err;
 +
 +    /* get buffer in required size */
-+    i = EC_POINT_point2oct(group, ecp, EC_KEY_get_conv_form(dp->ecdh),
++    i = EC_POINT_point2oct(EC_KEY_get0_group(dp->ecdh), ecp, EC_KEY_get_conv_form(dp->ecdh),
 +            NULL, 0, ctx->bn_ctx);
 +    out = BUF_MEM_new();
 +    if (!out || !BUF_MEM_grow(out, i))
@@ -1756,7 +2026,6 @@ Index: openssl/crypto/pace/pace.c
 +            NULL);
 +
 +    EC_POINT_free(ecp);
-+    EC_GROUP_free(group);
 +
 +    return out;
 +
@@ -1765,8 +2034,6 @@ Index: openssl/crypto/pace/pace.c
 +        BUF_MEM_free(out);
 +    if (ecp)
 +        EC_POINT_free(ecp);
-+    if (group)
-+        EC_GROUP_free(group);
 +
 +    return NULL;
 +}
@@ -1812,7 +2079,6 @@ Index: openssl/crypto/pace/pace.c
 +    BN_clear_free(bn_h);
 +    BN_clear_free(bn_g);
 +    BN_clear_free(bn_s);
-+    // FIXME public key validation method described in RFC 2631
 +
 +    return out;
 +
@@ -1863,27 +2129,11 @@ Index: openssl/crypto/pace/pace.c
 +        goto err;
 +
 +    a = BN_new();
-+    p_1 = BN_new();
-+    if (!a || !p_1 ||
++    q = dh_q(dp_in->dh, ctx->bn_ctx);
++    p_1 = BN_dup(dp_in->dh->p);
++    if (!a || !q || !p_1 ||
 +            /* p_1 = p-1 */
-+            !BN_sub(p_1, dp_in->dh->p, BN_value_one()))
-+        goto err;
-+
-+    if (!dp_in->dh->q) {
-+        q = BN_new();
-+        /* DH primes should be strong
-+         * (see crypto/dh/dh_gen.c:80 and crypto/dh/generate:20)
-+         * p=(2*q)+1 or (p-1)/2 = q */
-+        if (!BN_rshift1(q, p_1) ||
-+                (BN_is_prime(q, BN_prime_checks, NULL, ctx->bn_ctx, NULL) != 1)) {
-+            PACEerr(PACE_F_DH_IM_COMPUTE_KEY, PACE_R_GERMAIN_PRIME_CALC_FAILED);
-+            goto err;
-+        }
-+    } else {
-+        q = dp_in->dh->q;
-+    }
-+
-+    if (
++            !BN_sub_word(p_1, 1) ||
 +            /* a = p-1 / q */
 +            !BN_div(a, NULL, p_1, q, ctx->bn_ctx) ||
 +            // g~ = x^a mod p
@@ -2422,9 +2672,9 @@ Index: openssl/crypto/pace/pace.c
 +}
 Index: openssl/crypto/pace/pace.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2009-11-13 13:20:02.133179315 +0100
-@@ -0,0 +1,436 @@
+--- /dev/null
++++ openssl/crypto/pace/pace.h
+@@ -0,0 +1,434 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -2838,7 +3088,6 @@ Index: openssl/crypto/pace/pace.h
 + */
 +int PACE_STEP5_verify_authentication_token(PACE_CTX * ctx, PACE_DP * dp,
 +        BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token, const __be16 ssc);
-+/** @} ***********************************************************************/
 +/* The following lines are auto generated by the script mkerr.pl. Any changes
 + * made after this point may be overwritten when the script is next run.
 + */
@@ -2848,14 +3097,13 @@ Index: openssl/crypto/pace/pace.h
 +
 +/* Function codes. */
 +#define PACE_F_ASN1_PUBKEY				 100
-+#define PACE_F_DH_IM_COMPUTE_KEY			 101
++#define PACE_F_DH_GM_COMPUTE_KEY			 101
 +#define PACE_F_INIT_DH					 102
 +#define PACE_F_PACE_STEP3B_PROCESS			 103
 +
 +/* Reason codes. */
 +#define PACE_R_BAD_DH_OR_ECKEY_OBJECT			 100
 +#define PACE_R_BAD_FORMAT				 101
-+#define PACE_R_GERMAIN_PRIME_CALC_FAILED		 102
 +
 +#ifdef  __cplusplus
 +}
@@ -2863,9 +3111,9 @@ Index: openssl/crypto/pace/pace.h
 +#endif
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2009-11-13 13:20:02.133179315 +0100
-@@ -0,0 +1,100 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_err.c
+@@ -0,0 +1,99 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
 + * Copyright (c) 1999-2009 The OpenSSL Project.  All rights reserved.
@@ -2939,7 +3187,7 @@ Index: openssl/crypto/pace/pace_err.c
 +static ERR_STRING_DATA PACE_str_functs[]=
 +	{
 +{ERR_FUNC(PACE_F_ASN1_PUBKEY),	"ASN1_PUBKEY"},
-+{ERR_FUNC(PACE_F_DH_IM_COMPUTE_KEY),	"DH_IM_COMPUTE_KEY"},
++{ERR_FUNC(PACE_F_DH_GM_COMPUTE_KEY),	"DH_GM_COMPUTE_KEY"},
 +{ERR_FUNC(PACE_F_INIT_DH),	"INIT_DH"},
 +{ERR_FUNC(PACE_F_PACE_STEP3B_PROCESS),	"PACE_STEP3B_PROCESS"},
 +{0,NULL}
@@ -2949,7 +3197,6 @@ Index: openssl/crypto/pace/pace_err.c
 +	{
 +{ERR_REASON(PACE_R_BAD_DH_OR_ECKEY_OBJECT),"bad dh or eckey object"},
 +{ERR_REASON(PACE_R_BAD_FORMAT)           ,"bad format"},
-+{ERR_REASON(PACE_R_GERMAIN_PRIME_CALC_FAILED),"germain prime calc failed"},
 +{0,NULL}
 +	};
 +
@@ -2968,8 +3215,8 @@ Index: openssl/crypto/pace/pace_err.c
 +	}
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2009-11-12 10:15:00.714981486 +0100
+--- /dev/null
++++ openssl/crypto/pace/pacetest.c
 @@ -0,0 +1,434 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
@@ -3405,79 +3652,11 @@ Index: openssl/crypto/pace/pacetest.c
 +}
 +
 +#endif /* OPENSSL_NO_PACE */
-Index: openssl/crypto/err/openssl.ec
-===================================================================
---- openssl.orig/crypto/err/openssl.ec	2009-11-13 16:24:56.023153310 +0100
-+++ openssl/crypto/err/openssl.ec	2009-11-11 15:56:56.918386786 +0100
-@@ -35,6 +35,7 @@
- L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
- L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
- L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
-+L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
- 
- # additional header files to be scanned for function names
- L NONE		crypto/x509/x509_vfy.h		NONE
-Index: openssl/crypto/err/err.c
-===================================================================
---- openssl.orig/crypto/err/err.c	2009-11-13 16:24:56.023153310 +0100
-+++ openssl/crypto/err/err.c	2009-11-11 12:42:00.155375914 +0100
-@@ -156,6 +156,7 @@
- {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
- {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
- {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
-+{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
- {0,NULL},
- 	};
- 
-Index: openssl/crypto/err/err.h
-===================================================================
---- openssl.orig/crypto/err/err.h	2009-11-13 16:24:56.023153310 +0100
-+++ openssl/crypto/err/err.h	2009-11-11 12:44:09.775373043 +0100
-@@ -198,6 +198,7 @@
- #define ERR_LIB_TS		47
- #define ERR_LIB_HMAC		48
- #define ERR_LIB_JPAKE		49
-+#define ERR_LIB_PACE		50
- 
- #define ERR_LIB_USER		128
- 
-@@ -234,6 +235,7 @@
- #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
- #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
- #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
-+#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
- 
- /* Borland C seems too stupid to be able to shift and do longs in
-  * the pre-processor :-( */
-Index: openssl/crypto/err/err_all.c
-===================================================================
---- openssl.orig/crypto/err/err_all.c	2009-11-13 16:24:56.023153310 +0100
-+++ openssl/crypto/err/err_all.c	2009-11-11 12:47:20.985379445 +0100
-@@ -102,6 +102,10 @@
- #ifndef OPENSSL_NO_JPAKE
- #include <openssl/jpake.h>
- #endif
-+#ifndef OPENSSL_NO_PACE
-+#include <openssl/pace.h>
-+#endif
-+
- 
- void ERR_load_crypto_strings(void)
- 	{
-@@ -154,5 +158,8 @@
- #ifndef OPENSSL_NO_JPAKE
- 	ERR_load_JPAKE_strings();
- #endif
-+#ifndef OPENSSL_NO_PACE
-+	ERR_load_PACE_strings();
-+#endif
- #endif
- 	}
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2009-11-13 16:24:56.013150921 +0100
-+++ openssl/test/Makefile	2009-11-10 11:01:33.622456897 +0100
-@@ -63,7 +63,7 @@
+--- openssl.orig/test/Makefile
++++ openssl/test/Makefile
+@@ -63,7 +63,7 @@ IGETEST=	igetest
  GCMTESTA=  aesgcmtest
  CMACTESTA= cmac_test
  JPAKETEST=	jpaketest
@@ -3486,7 +3665,7 @@ Index: openssl/test/Makefile
  
  TESTS=		alltests
  
-@@ -75,7 +75,7 @@
+@@ -75,7 +75,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_
  	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
  	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
  	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(JPAKETEST)$(EXE_EXT) \
@@ -3495,7 +3674,7 @@ Index: openssl/test/Makefile
  
  # $(METHTEST)$(EXE_EXT)
  
-@@ -88,7 +88,7 @@
+@@ -88,7 +88,7 @@ OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATES
  	$(RANDTEST).o $(DHTEST).o $(ENGINETEST).o $(CASTTEST).o \
  	$(BFTEST).o  $(SSLTEST).o  $(DSATEST).o  $(EXPTEST).o $(RSATEST).o \
  	$(EVPTEST).o $(IGETEST).o $(JPAKETEST).o \
@@ -3504,7 +3683,7 @@ Index: openssl/test/Makefile
  SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
  	$(MD2TEST).c  $(MD4TEST).c $(MD5TEST).c \
  	$(HMACTEST).c $(WPTEST).c \
-@@ -97,7 +97,7 @@
+@@ -97,7 +97,7 @@ SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATES
  	$(RANDTEST).c $(DHTEST).c $(ENGINETEST).c $(CASTTEST).c \
  	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
  	$(EVPTEST).c $(IGETEST).c $(JPAKETEST).c \
@@ -3513,7 +3692,7 @@ Index: openssl/test/Makefile
  
  EXHEADER= 
  HEADER=	$(EXHEADER)
-@@ -140,7 +140,7 @@
+@@ -140,7 +140,7 @@ alltests: \
  	test_enc test_x509 test_rsa test_crl test_sid \
  	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
  	test_ss test_ca test_engine test_evp test_ssl test_tsa test_ige \
@@ -3522,7 +3701,7 @@ Index: openssl/test/Makefile
  
  test_evp:
  	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
-@@ -310,6 +310,16 @@
+@@ -310,6 +310,16 @@ test_jpake: $(JPAKETEST)$(EXE_EXT)
  	@echo "Test JPAKE"
  	../util/shlib_wrap.sh ./$(JPAKETEST)
  
@@ -3539,7 +3718,7 @@ Index: openssl/test/Makefile
  test_aes_gcm:  $(GCMTESTA)$(EXE_EXT)
  	@echo "Test AES GCM modes"
  	../util/shlib_wrap.sh ./aesgcmtest$(EXE_EXT)
-@@ -451,6 +461,9 @@
+@@ -451,6 +461,9 @@ $(IGETEST)$(EXE_EXT): $(IGETEST).o $(DLI
  $(JPAKETEST)$(EXE_EXT): $(JPAKETEST).o $(DLIBCRYPTO)
  	@target=$(JPAKETEST); $(BUILD_CMD)
  
@@ -3549,7 +3728,7 @@ Index: openssl/test/Makefile
  $(GCMTESTA)$(EXE_EXT): $(GCMTESTA).o  $(DLIBCRYPTO)
  	@target=$(GCMTESTA); $(BUILD_CMD)
  
-@@ -622,6 +635,16 @@
+@@ -622,6 +635,16 @@ mdc2test.o: ../include/openssl/e_os2.h .
  mdc2test.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
  mdc2test.o: ../include/openssl/safestack.h ../include/openssl/stack.h
  mdc2test.o: ../include/openssl/symhacks.h mdc2test.c
