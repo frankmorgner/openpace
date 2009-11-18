@@ -304,7 +304,7 @@ Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.c
-@@ -0,0 +1,2340 @@
+@@ -0,0 +1,2336 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -592,7 +592,7 @@ Index: openssl/crypto/pace/pace.c
 + * @return 1 on success or 0 if an error occurred
 + */
 +static int
-+init_ecdh(int algorithm, AID * dp, EC_KEY * ecdh);
++init_ecdh(AID * dp, EC_KEY * ecdh);
 +/**
 + * @brief initializes a AID object with DH
 + *
@@ -602,7 +602,7 @@ Index: openssl/crypto/pace/pace.c
 + * @return 1 on success or 0 if an error occurred
 + */
 +static int
-+init_dh(int algorithm, AID * dp, DH * dh);
++init_dh(AID * dp, DH * dh);
 +
 +void
 +AID_free(AID * dp)
@@ -812,17 +812,17 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +int
-+PACE_init(PACE_CTX * ctx, AID * dp, const AID * id)
++PACE_init(PACE_CTX * ctx, AID * dp, const AID * templ)
 +{
-+    if (!ctx || !id)
++    if (!ctx || !templ)
 +        return 0;
 +
 +    ctx->iv = NULL;
-+    dp->algorithm = id->algorithm;
++    dp->algorithm = templ->algorithm;
 +
-+    switch (id->algorithm) {
++    switch (templ->algorithm) {
 +        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
 +            ctx->map_compute_key = dh_gm_compute_key;
@@ -830,7 +830,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_des_ede();
 +            break;
 +        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
 +            ctx->map_compute_key = dh_im_compute_key;
@@ -838,7 +838,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_des_ede();
 +            break;
 +        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_gm_compute_key;
@@ -846,7 +846,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_des_ede();
 +            break;
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
 +            ctx->map_compute_key = dh_gm_compute_key;
@@ -854,7 +854,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
 +            ctx->map_compute_key = dh_im_compute_key;
@@ -862,7 +862,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
 +            ctx->map_compute_key = dh_gm_compute_key;
@@ -870,7 +870,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
 +            ctx->map_compute_key = dh_im_compute_key;
@@ -878,7 +878,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
 +            ctx->map_compute_key = dh_gm_compute_key;
@@ -886,7 +886,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+            if (!init_dh(id->algorithm, dp, id->parameters.dh))
++            if (!init_dh(dp, templ->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
 +            ctx->map_compute_key = dh_im_compute_key;
@@ -894,7 +894,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_gm_compute_key;
@@ -902,7 +902,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_gm_compute_key;
@@ -910,7 +910,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_gm_compute_key;
@@ -918,7 +918,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
@@ -926,7 +926,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
@@ -934,7 +934,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
@@ -942,7 +942,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
 +        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            if (!init_ecdh(id->algorithm, dp, id->parameters.ecdh))
++            if (!init_ecdh(dp, templ->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
@@ -995,7 +995,7 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +int
-+init_ecdh(int algorithm, AID * dp, EC_KEY * ecdh)
++init_ecdh(AID * dp, EC_KEY * ecdh)
 +{
 +    if (!dp)
 +        return 0;
@@ -1007,13 +1007,11 @@ Index: openssl/crypto/pace/pace.c
 +    if (!dp->parameters.ecdh)
 +        return 0;
 +
-+    dp->algorithm = algorithm;
-+
 +    return 1;
 +}
 +
 +int
-+init_dh(int algorithm, AID * dp, DH * dh)
++init_dh(AID * dp, DH * dh)
 +{
 +    int i;
 +    if (!dp)
@@ -1031,8 +1029,6 @@ Index: openssl/crypto/pace/pace.c
 +        PACEerr(PACE_F_INIT_DH, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
 +        goto err;
 +    }
-+
-+    dp->algorithm = algorithm;
 +
 +    return 1;
 +
@@ -2850,7 +2846,7 @@ Index: openssl/crypto/pace/pace.h
 + *
 + * @return 1 on success and 0 if an error occurred
 + */
-+int PACE_init(PACE_CTX * ctx, AID * dp, const AID * id);
++int PACE_init(PACE_CTX * ctx, AID * dp, const AID * templ);
 +/** @} ***********************************************************************/
 +
 +/**
@@ -3186,7 +3182,7 @@ Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pacetest.c
-@@ -0,0 +1,434 @@
+@@ -0,0 +1,436 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#ifdef OPENSSL_NO_PACE
@@ -3227,7 +3223,8 @@ Index: openssl/crypto/pace/pacetest.c
 +
 +int real_life_test()
 +{
-+    printf("Starting a real life test\n");
++    if (verbose)
++        printf("Starting a real life test\n");
 +
 +    enum s_type pace_sec_type [] = {
 +        PACE_PUK,
@@ -3292,32 +3289,33 @@ Index: openssl/crypto/pace/pacetest.c
 +        if (!dp_picc_at_pcd)
 +            err("Error initializing domain parameters and PACE_CTX object for PCD");
 +
++        printf("Using ");
 +        switch (s->type) {
 +            case PACE_PUK:
-+                printf("Using PUK");
++                printf("PUK");
 +                break;
 +            case PACE_CAN:
-+                printf("Using CAN");
++                printf("CAN");
 +                break;
 +            case PACE_PIN:
-+                printf("Using PIN");
++                printf("PIN");
 +                break;
 +            case PACE_MRZ:
-+                printf("Using MRZ");
++                printf("MRZ");
 +                break;
 +            case PACE_RAW:
-+                printf("Using RAW");
++                printf("RAW");
 +                break;
 +            default:
-+                err("cannot happen");
++                err("\ncannot happen");
 +        }
 +        const char *sn = OBJ_nid2sn(dp_picc->algorithm);
 +        if (!sn)
-+            err("Error generating short name from nid.");
++            err("\nError generating short name from nid.");
 +        if (verbose)
 +            printf(" with %s\n", sn);
 +        else
-+            printf(" with %s ", sn);
++            printf(" with %s\t", sn);
 +        if (debug)
 +            switch (dp_picc->algorithm) {
 +                case NID_id_PACE_DH_GM_3DES_CBC_CBC:
