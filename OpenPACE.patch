@@ -304,7 +304,7 @@ Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.c
-@@ -0,0 +1,2417 @@
+@@ -0,0 +1,2411 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -418,14 +418,18 @@ Index: openssl/crypto/pace/pace.c
 +static BUF_MEM *
 +add_iso_pad(const BUF_MEM * m, int block_size);
 +/**
-+ * @brief Public key validation method described in RFC 2631
++ * @brief Public key validation method described in RFC 2631.
++ *
++ * Verify that DH->pub_key lies within the interval [2,p-1]. If it does not,
++ * the key is invalid.
++ * If DH->q exists, compute y^q mod p. If the result == 1, the key is valid.
++ * Otherwise the key is invalid.
 + *
 + * @param dh DH object to use
 + * @param ctx BN_CTX object
-+ * @param ret Contains these flags on errors:
++ * @param ret Can contain these flags as result:
 + * DH_CHECK_PUBKEY_TOO_SMALL (smaller than 2)
 + * DH_CHECK_PUBKEY_TOO_LARGE (bigger than p-1)
-+ * DH_CHECK_UNABLE_TO_CHECK_PUBKEY (because the Sophie Germain prime q could not be calculated)
 + * DH_CHECK_PUBKEY_INVALID (y^q mod p != 1)
 + *
 + * @return 1 on success or 0 if an error occurred
@@ -1308,40 +1312,30 @@ Index: openssl/crypto/pace/pace.c
 +    return NULL;
 +}
 +
-+#define DH_CHECK_UNABLE_TO_CHECK_PUBKEY	0x04
-+#define DH_CHECK_PUBKEY_INVALID		0x08
++#define DH_CHECK_PUBKEY_INVALID		0x04
 +int
 +DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret)
 +{
 +    BIGNUM *q = NULL, *bn = NULL;
 +    int ok = 0;
 +    if (!dh)
-+        goto end;
++        goto err;
 +
 +    /* Verify that y lies within the interval [2,p-1]. */
 +    if (!DH_check_pub_key(dh, dh->pub_key, ret))
-+        goto end;
++        goto err;
 +
-+    // FIXME
-+#if 0
-+    /* Compute y^q mod p. If the result == 1, the key is valid. */
-+    q = DH_get_sg_prime(dh, ctx);
-+    if (!q) {
-+        *ret |= DH_CHECK_UNABLE_TO_CHECK_PUBKEY;
-+        goto end;
++    if (dh->q) {
++        /* Compute y^q mod p. If the result == 1, the key is valid. */
++        bn = BN_new();
++        if (!bn || !BN_mod_exp(bn, dh->pub_key, q, dh->p, ctx))
++            goto err;
++        if (!BN_is_one(bn))
++            *ret |= DH_CHECK_PUBKEY_INVALID;
 +    }
-+    bn = BN_new();
-+    if (!bn || !BN_mod_exp(bn, dh->pub_key, q, dh->p, ctx))
-+        goto end;
-+    if (!BN_is_one(bn)) {
-+        *ret |= DH_CHECK_PUBKEY_INVALID;
-+        goto end;
-+    }
-+#endif
-+
 +    ok = 1;
 +
-+end:
++err:
 +    if (bn)
 +        BN_clear_free(bn);
 +    if (q)
@@ -1865,6 +1859,7 @@ Index: openssl/crypto/pace/pace.c
 +    }
 +
 +    i = BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL);
++
 +    if (i <= 0) {
 +        if (i == 0)
 +            PACEerr(PACE_F_DH_GET_SG_PRIME, PACE_R_UNABLE_TO_GET_SG_PRIME);
@@ -2004,7 +1999,6 @@ Index: openssl/crypto/pace/pace.c
 +{
 +    BUF_MEM * out = NULL;
 +    BIGNUM * bn = NULL;
-+    int i;
 +    if (!dp || !ctx || !in)
 +        goto err;
 +
@@ -2304,7 +2298,7 @@ Index: openssl/crypto/pace/pace.c
 +    if (!a || !b || !p || !x || !y || !v || !tmp || !tmp2 || !bn_const ||
 +            !bn_inv)
 +        goto err;
-+    BN_init(a);
++    /*BN_init(a);
 +    BN_init(b);
 +    BN_init(p);
 +    BN_init(x);
@@ -2313,8 +2307,8 @@ Index: openssl/crypto/pace/pace.c
 +    BN_init(tmp);
 +    BN_init(tmp2);
 +    BN_init(bn_const);
-+    BN_init(bn_inv);
-+
++    BN_init(bn_inv);*/
++	//FIXME: BN_init not needed ?
 +    if (!EC_GROUP_get_curve_GFp(EC_KEY_get0_group(dp_in->parameters.ecdh), p, a, b,
 +            ctx->bn_ctx))
 +        goto err;
@@ -3710,7 +3704,7 @@ Index: openssl/test/Makefile
 ===================================================================
 --- openssl.orig/test/Makefile
 +++ openssl/test/Makefile
-@@ -63,7 +63,7 @@ IGETEST=	igetest
+@@ -63,11 +63,11 @@ IGETEST=	igetest
  GCMTESTA=  aesgcmtest
  CMACTESTA= cmac_test
  JPAKETEST=	jpaketest
@@ -3719,6 +3713,11 @@ Index: openssl/test/Makefile
  
  TESTS=		alltests
  
+-EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
++EXE=	$(PACETEST)$(EXE_EXT)#$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
+ 	$(MD2TEST)$(EXE_EXT)  $(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
+ 	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
+ 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
 @@ -75,7 +75,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_
  	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
  	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
