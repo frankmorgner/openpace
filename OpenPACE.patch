@@ -304,7 +304,7 @@ Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.c
-@@ -0,0 +1,2411 @@
+@@ -0,0 +1,2416 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -588,15 +588,18 @@ Index: openssl/crypto/pace/pace.c
 +static BUF_MEM *
 +bn2buf(const BIGNUM *bn);
 +/**
-+ * @brief Computes the Sophie Germain prime matching the DH's modulus.
++ * @brief Computes the prime on which the modulus is based.
++ *
++ * If DH->q does not exist, tries to guess a Sophie Germain prime matching the
++ * DH's modulus.
 + *
 + * @param dh DH object to use
 + * @param ctx BN_CTX object
 + *
-+ * @return Sophie Germain prime or NULL if an error occurred
++ * @return q or NULL if an error occurred
 + */
 +static BIGNUM *
-+DH_get_sg_prime(const DH *dh, BN_CTX *ctx);
++DH_get_q(const DH *dh, BN_CTX *ctx);
 +/**
 + * @brief Computes the order of the DH's generator.
 + *
@@ -1835,9 +1838,9 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +BIGNUM *
-+DH_get_sg_prime(const DH *dh, BN_CTX *ctx)
++DH_get_q(const DH *dh, BN_CTX *ctx)
 +{
-+    BIGNUM *q, *bn;
++    BIGNUM *q = NULL, *bn = NULL;
 +    int i;
 +
 +    if (!dh->q) {
@@ -1848,26 +1851,28 @@ Index: openssl/crypto/pace/pace.c
 +        if (!q || !bn ||
 +                !BN_sub_word(bn, 1) ||
 +                !BN_rshift1(q, bn)) {
-+            if (bn)
-+                BN_clear_free(bn);
-+            if (q)
-+                BN_clear_free(q);
-+            return NULL;
++            goto err;
 +        }
 +    } else {
 +        q = BN_dup(dh->q);
 +    }
 +
++    /* q should always be prime */
 +    i = BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL);
-+
 +    if (i <= 0) {
 +        if (i == 0)
 +            PACEerr(PACE_F_DH_GET_SG_PRIME, PACE_R_UNABLE_TO_GET_SG_PRIME);
-+        BN_clear_free(q);
-+        return NULL;
++        goto err;
 +    }
 +
 +    return q;
++
++err:
++    if (bn)
++        BN_clear_free(bn);
++    if (q)
++        BN_clear_free(q);
++    return NULL;
 +}
 +
 +BIGNUM *
@@ -1880,7 +1885,7 @@ Index: openssl/crypto/pace/pace.c
 +    bn = BN_new();
 +
 +    /* suppose the order of g is q-1 */
-+    order = DH_get_sg_prime(dh, ctx);
++    order = DH_get_q(dh, ctx);
 +    if (!order || !BN_sub_word(order, 1) ||
 +            !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
 +        goto err;
@@ -2175,7 +2180,7 @@ Index: openssl/crypto/pace/pace.c
 +        goto err;
 +
 +    a = BN_new();
-+    q = DH_get_sg_prime(dp_in->parameters.dh, ctx->bn_ctx);
++    q = DH_get_q(dp_in->parameters.dh, ctx->bn_ctx);
 +    p_1 = BN_dup(dp_in->parameters.dh->p);
 +    if (!a || !q || !p_1 ||
 +            /* p_1 = p-1 */
@@ -3704,7 +3709,7 @@ Index: openssl/test/Makefile
 ===================================================================
 --- openssl.orig/test/Makefile
 +++ openssl/test/Makefile
-@@ -63,11 +63,11 @@ IGETEST=	igetest
+@@ -63,7 +63,7 @@ IGETEST=	igetest
  GCMTESTA=  aesgcmtest
  CMACTESTA= cmac_test
  JPAKETEST=	jpaketest
@@ -3713,11 +3718,6 @@ Index: openssl/test/Makefile
  
  TESTS=		alltests
  
--EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
-+EXE=	$(PACETEST)$(EXE_EXT)#$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
- 	$(MD2TEST)$(EXE_EXT)  $(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
- 	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
- 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
 @@ -75,7 +75,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_
  	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
  	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
