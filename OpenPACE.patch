@@ -1319,7 +1319,7 @@ Index: openssl/crypto/pace/pace.c
 +int
 +DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret)
 +{
-+    BIGNUM *q = NULL, *bn = NULL;
++    BIGNUM *bn = NULL;
 +    int ok = 0;
 +    if (!dh)
 +        goto err;
@@ -1328,10 +1328,12 @@ Index: openssl/crypto/pace/pace.c
 +    if (!DH_check_pub_key(dh, dh->pub_key, ret))
 +        goto err;
 +
++    /* If the DH is conform to RFC 2631 it should have a non-NULL q.
++     * Others might have a problem with this check. */
 +    if (dh->q) {
 +        /* Compute y^q mod p. If the result == 1, the key is valid. */
 +        bn = BN_new();
-+        if (!bn || !BN_mod_exp(bn, dh->pub_key, q, dh->p, ctx))
++        if (!bn || !BN_mod_exp(bn, dh->pub_key, dh->q, dh->p, ctx))
 +            goto err;
 +        if (!BN_is_one(bn))
 +            *ret |= DH_CHECK_PUBKEY_INVALID;
@@ -1341,8 +1343,6 @@ Index: openssl/crypto/pace/pace.c
 +err:
 +    if (bn)
 +        BN_clear_free(bn);
-+    if (q)
-+        BN_clear_free(q);
 +
 +    return ok;
 +}
