@@ -8,7 +8,7 @@ all: patch
 patch: openssl-1.0.0-beta4
 	# see http://rt.openssl.org/Ticket/Display.html?id=2092&user=guest&pass=guest
 	[ ! -r openssl-1.0.0-beta4/crypto/cmac/cmac.h ] && \
-	    patch -d openssl-1.0.0-beta4 -p1 < ibm4.patch && \
+	    (patch -d openssl-1.0.0-beta4 -p1 < ibm4.patch || true) && \
 	    ln -s ../../crypto/cmac/cmac.h openssl-1.0.0-beta4/include/openssl || \
 	    echo Never mind.
 	grep brainpool openssl-1.0.0-beta4/crypto/ec/ec_curve.c > /dev/null || \
