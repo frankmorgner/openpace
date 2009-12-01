@@ -1,20 +1,8 @@
-Index: openssl/Configure
-===================================================================
---- openssl.orig/Configure
-+++ openssl/Configure
-@@ -668,6 +668,7 @@ my %disabled = ( # "what"         => "co
-                  "jpake"          => "experimental",
-                  "md2"            => "default",
-                  "rc5"            => "default",
-+                 "pace"		  => "experimental",
- 		 "rfc3779"	  => "default",
-                  "shared"         => "default",
- 		 "store"	  => "experimental",
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org
-+++ openssl/Makefile.org
-@@ -122,7 +122,7 @@ SDIRS=  \
+--- openssl.orig/Makefile.org	2009-12-01 18:32:36.000000000 +0100
++++ openssl/Makefile.org	2009-11-30 17:08:52.000000000 +0100
+@@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
@@ -25,9 +13,9 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h
-+++ openssl/crypto/ecdh/ecdh.h
-@@ -86,6 +86,7 @@ extern "C" {
+--- openssl.orig/crypto/ecdh/ecdh.h	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/ecdh/ecdh.h	2009-11-07 13:23:36.123842280 +0100
+@@ -86,6 +86,7 @@
  #endif
  
  const ECDH_METHOD *ECDH_OpenSSL(void);
@@ -37,9 +25,9 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c
-+++ openssl/crypto/ecdh/ech_ossl.c
-@@ -211,3 +211,113 @@ err:
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/ecdh/ech_ossl.c	2009-11-07 13:23:36.123842280 +0100
+@@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
  	return(ret);
  	}
@@ -153,123 +141,19 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	if (buf) OPENSSL_free(buf);
 +	return(ret);
 +	}
-Index: openssl/crypto/err/err.c
-===================================================================
---- openssl.orig/crypto/err/err.c
-+++ openssl/crypto/err/err.c
-@@ -156,6 +156,7 @@ static ERR_STRING_DATA ERR_str_libraries
- {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
- {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
- {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
-+{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
- {0,NULL},
- 	};
- 
-Index: openssl/crypto/err/err.h
-===================================================================
---- openssl.orig/crypto/err/err.h
-+++ openssl/crypto/err/err.h
-@@ -198,6 +198,7 @@ typedef struct err_state_st
- #define ERR_LIB_TS		47
- #define ERR_LIB_HMAC		48
- #define ERR_LIB_JPAKE		49
-+#define ERR_LIB_PACE		50
- 
- #define ERR_LIB_USER		128
- 
-@@ -234,6 +235,7 @@ typedef struct err_state_st
- #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
- #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
- #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
-+#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
- 
- /* Borland C seems too stupid to be able to shift and do longs in
-  * the pre-processor :-( */
-Index: openssl/crypto/err/err_all.c
-===================================================================
---- openssl.orig/crypto/err/err_all.c
-+++ openssl/crypto/err/err_all.c
-@@ -102,6 +102,9 @@
- #ifndef OPENSSL_NO_JPAKE
- #include <openssl/jpake.h>
- #endif
-+#ifndef OPENSSL_NO_PACE
-+#include <openssl/pace.h>
-+#endif
- #include <openssl/comp.h>
- 
- void ERR_load_crypto_strings(void)
-@@ -155,6 +158,9 @@ void ERR_load_crypto_strings(void)
- #ifndef OPENSSL_NO_JPAKE
- 	ERR_load_JPAKE_strings();
- #endif
-+#ifndef OPENSSL_NO_PACE
-+	ERR_load_PACE_strings();
-+#endif
- 	ERR_load_COMP_strings();
- #endif
- 	}
-Index: openssl/crypto/err/openssl.ec
-===================================================================
---- openssl.orig/crypto/err/openssl.ec
-+++ openssl/crypto/err/openssl.ec
-@@ -35,6 +35,7 @@ L TS		crypto/ts/ts.h			crypto/ts/ts_err.
- L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
- L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
- L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
-+L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
- 
- # additional header files to be scanned for function names
- L NONE		crypto/x509/x509_vfy.h		NONE
-Index: openssl/crypto/objects/objects.txt
-===================================================================
---- openssl.orig/crypto/objects/objects.txt
-+++ openssl/crypto/objects/objects.txt
-@@ -1276,3 +1276,31 @@ kisa 1 6                : SEED-OFB
- 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
- 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
- 1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
-+
-+# BSI Extensions TR 3110 Version 2.01
-+!Alias bsi-de           0 4 0 127 0 7
-+!Alias id-PACE          bsi-de  2 2 4
-+id-PACE 1 :             id-PACE-DH-GM
-+id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
-+id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
-+id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
-+id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
-+id-PACE 2 :             id-PACE-ECDH-GM
-+id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
-+id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
-+id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
-+id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
-+id-PACE 3 :             id-PACE-DH-IM
-+id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
-+id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
-+id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
-+id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
-+id-PACE 4 :             id-PACE-ECDH-IM
-+id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
-+id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
-+id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
-+id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
-+
-+ISO-US 10046 :          ansi-x942
-+!Alias x942_number-type ansi-x942 2
-+x942_number-type 1:     dhpublicnumber
 Index: openssl/crypto/pace/Makefile
 ===================================================================
---- /dev/null
-+++ openssl/crypto/pace/Makefile
-@@ -0,0 +1,56 @@
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/Makefile	2009-12-01 17:31:33.667475138 +0100
+@@ -0,0 +1,60 @@
 +DIR=pace
 +TOP=../..
 +
 +CFLAGS= $(INCLUDES) $(CFLAG)
 +
 +LIB=$(TOP)/libcrypto.a
-+LIBOBJ=pace_err.o pace_lib.o pace_util.o pace.o pace_buffer.o#pace_ka.o
-+LIBSRC=pace_err.c pace_lib.c pace_util.c pace.c pace_buffer.c#pace_ka.c
++LIBOBJ=pace_err.o pace_lib.o pace_util.o pace.o pace_buffer.o pace_dh.o pace_kdf.o pace_ecdh.o pace_mappings.o#pace_ka.o
++LIBSRC=pace_err.c pace_lib.c pace_util.c pace.c pace_buffer.c pace_dh.c pace_kdf.c pace_ecdh.c pace_mappings.c#pace_ka.c
 +
 +EXHEADER=pace.h
 +TEST=pacetest.c
@@ -317,12 +201,16 @@ Index: openssl/crypto/pace/Makefile
 +pace_lib.o: pace_lib.c
 +pace_util.o: pace_util.c pace_util.h
 +pace_buffer.o: pace_buffer.c pace_buffer.h
++pace_dh.o: pace_dh.c pace_dh.h
++pace_kdf.o: pace_kdf.c pace_kdf.h
++pace_ecdh.o: pace_ecdh.c pace_ecdh.h
++pace_mappings.o: pace_mappings.c pace_mappings.h
 +#pace_ka.o: pace_ka.c pace_ka.h
 Index: openssl/crypto/pace/pace.c
 ===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace.c
-@@ -0,0 +1,1722 @@
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace.c	2009-12-01 17:36:30.000000000 +0100
+@@ -0,0 +1,471 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -332,203 +220,18 @@ Index: openssl/crypto/pace/pace.c
 + */
 +
 +#include <string.h>
-+#include <openssl/bio.h>
 +#include <openssl/bn.h>
-+#include <openssl/buffer.h>
-+//#include <openssl/crypto.h>
 +#include <openssl/ec.h>
 +#include <openssl/evp.h>
 +#include <openssl/objects.h>
 +#include <openssl/err.h>
-+#include <openssl/asn1.h>
-+#include <openssl/conf.h>
 +#include <openssl/pace.h>
 +#include "pace_util.h"
 +#include "pace_buffer.h"
-+
-+/**
-+ * @brief Public key validation method described in RFC 2631.
-+ *
-+ * Verify that DH->pub_key lies within the interval [2,p-1]. If it does not,
-+ * the key is invalid.
-+ * If DH->q exists, compute y^q mod p. If the result == 1, the key is valid.
-+ * Otherwise the key is invalid.
-+ *
-+ * @param dh DH object to use
-+ * @param ctx BN_CTX object
-+ * @param ret Can contain these flags as result:
-+ * DH_CHECK_PUBKEY_TOO_SMALL (smaller than 2)
-+ * DH_CHECK_PUBKEY_TOO_LARGE (bigger than p-1)
-+ * DH_CHECK_PUBKEY_INVALID (y^q mod p != 1)
-+ *
-+ * @return 1 on success or 0 if an error occurred
-+ */
-+int
-+DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret);
-+/**
-+ * @brief Encodes public key data objects of the domain parameters in ASN.1
-+ * (see TR-3110 D.3)
-+ *
-+ * @param PACEDomainParameterInfo object containing an AlgorithmIdentifier, which
-+ * includes the DH or EC_KEY object
-+ * @param ctx
-+ *
-+ * @return ASN.1 encoded public key data objects or NULL if an error occurred
-+ */
-+static BUF_MEM *
-+asn1_pubkey(const PACE_CTX *ctx, const PACEDomainParameterInfo * dp);
-+/**
-+ * @brief Generates a DH keypair
-+ *
-+ * @param dp object containing the DH object
-+ * @param ctx
-+ *
-+ * @return public key of the generated keypair or NULL if an error occurred
-+ */
-+BUF_MEM *
-+dh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
-+/**
-+ * @brief Computes a DH key
-+ *
-+ * @see PACE_STEP3B_dh_compute_key()
-+ */
-+BUF_MEM *
-+dh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx,
-+		const BUF_MEM * in);
-+/**
-+ * @brief Generates an ECDH keypair
-+ *
-+ * @param dp object containing the EC_KEY object
-+ * @param ctx
-+ *
-+ * @return public key of the generated keypair or NULL if an error occurred
-+ */
-+BUF_MEM *
-+ecdh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
-+/**
-+ * @brief Computes an ECDH key
-+ *
-+ * @see PACE_STEP3B_dh_compute_key()
-+ */
-+BUF_MEM *
-+ecdh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx,
-+		const BUF_MEM * in);
-+/**
-+ * @brief Computes a key for DH Generic Mapping (see TR-3110 A.3.5.1)
-+ *
-+ * @see PACE_STEP3A_map_compute_key()
-+ */
-+PACEDomainParameterInfo *
-+dh_gm_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
-+        const BUF_MEM * s, const BUF_MEM * in);
-+/**
-+ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
-+ *
-+ * @see PACE_STEP3A_map_compute_key()
-+ */
-+BUF_MEM *
-+dh_im_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
-+/**
-+ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
-+ *
-+ * @see PACE_STEP3A_map_compute_key()
-+ */
-+PACEDomainParameterInfo *
-+dh_im_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
-+        const BUF_MEM * s, const BUF_MEM * in);
-+/**
-+ * @brief Computes a key for ECDH Generic Mapping (see TR-3110 A.3.4.1)
-+ *
-+ * @see PACE_STEP3A_map_compute_key()
-+ */
-+PACEDomainParameterInfo *
-+ecdh_gm_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
-+        const BUF_MEM * s, const BUF_MEM * in);
-+/**
-+ * @brief Computes a key for ECDH Integrated Mapping (see TR-3110 A.3.4.2)
-+ *
-+ * @see PACE_STEP3A_map_compute_key()
-+ */
-+PACEDomainParameterInfo *
-+ecdh_im_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
-+        const BUF_MEM * s, const BUF_MEM * in);
-+/**
-+ * @brief creates a duplicate of template and changes the generator of its
-+ * EC_KEY object
-+ *
-+ * @param template
-+ * @param g the generator to use
-+ * @param ctx (optional)
-+ *
-+ * @return the new and modified PACEDomainParameterInfo object or NULL if an
-+ * error occurred
-+ */
-+static PACEDomainParameterInfo *
-+dp_ecdh_new_generator(const PACEDomainParameterInfo *template, const EC_POINT *g,
-+		BN_CTX *ctx);
-+/**
-+ * @brief creates a duplicate of template and changes the generator of its
-+ * EC_KEY object
-+ *
-+ * @param template
-+ * @param x affine coordinate of the generator
-+ * @param y affine coordinate of the generator
-+ * @param ctx (optional)
-+ *
-+ * @return the new and modified PACEDomainParameterInfo object or NULL if an
-+ * error occurred
-+ *
-+ * @see dp_ecdh_new_generator()
-+ */
-+static PACEDomainParameterInfo *
-+dp_ecdh_new_generator_by_coordinates(const PACEDomainParameterInfo *template,
-+		const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx);
-+/**
-+ * @brief Computes the prime on which the modulus is based.
-+ *
-+ * If DH->q does not exist, tries to guess a Sophie Germain prime matching the
-+ * DH's modulus.
-+ *
-+ * @param dh DH object to use
-+ * @param ctx BN_CTX object
-+ *
-+ * @return q or NULL if an error occurred
-+ */
-+static BIGNUM *
-+DH_get_q(const DH *dh, BN_CTX *ctx);
-+/**
-+ * @brief Computes the order of the DH's generator.
-+ *
-+ * @param dh DH object to use
-+ * @param ctx BN_CTX object (optional)
-+ *
-+ * @return order of g or NULL if an error occurred
-+ *
-+ * @note This calculation is for DHs using a safe prime, which will generate
-+ * either an order-q or an order-2q group (see crypto/dh/dh_gen.c:151).
-+ */
-+static BIGNUM *
-+DH_get_order(const DH *dh, BN_CTX *ctx);
-+/**
-+ * @brief initializes a key for ECDH. If the object is already initialised,
-+ * nothing is don
-+ *
-+ * @param ecdh elliptic curve object to use
-+ *
-+ * @return 1 on success or 0 if an error occurred
-+ */
-+static int
-+init_ecdh(EC_KEY ** ecdh);
-+/**
-+ * @brief initializes a DH key structure. If the structure is already initialised,
-+ * nothing is done
-+ *
-+ * @param dh DH object to use
-+ *
-+ * @return 1 on success or 0 if an error occurred
-+ */
-+static int
-+init_dh(DH ** dh);
++#include "pace_dh.h"
++#include "pace_ecdh.h"
++#include "pace_kdf.h"
++#include "pace_mappings.h"
 +
 +int
 +PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp_info, PACEInfo info)
@@ -724,26 +427,1615 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +int
-+init_ecdh(EC_KEY ** ecdh)
++PACE_STEP1_enc_nonce(const PACE_SEC * pi, const PACE_CTX * ctx,
++        BUF_MEM ** nonce, BUF_MEM ** enc_nonce)
 +{
++    BUF_MEM * key = NULL;
++    if (!ctx)
++        goto err;
 +
-+	EC_KEY * tmp = NULL;
++    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
++    if (!key)
++        goto err;
 +
-+    if (!*ecdh)
-+    	tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1); //FIXME: What curve to use???
++    *nonce = randb(EVP_CIPHER_block_size(ctx->cipher));
++    if (!*nonce)
++        goto err;
 +
-+	if(!tmp)
-+		goto err;
++    *enc_nonce = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++            (unsigned char *) key->data, ctx->iv, 1, *nonce, 1);
 +
-+	if(!*ecdh)
-+		*ecdh = tmp;
 +    return 1;
 +
 +err:
-+	if (!*ecdh && tmp)
-+        EC_KEY_free(tmp);
++    if (key)
++        OPENSSL_free(key);
++
 +    return 0;
 +}
++
++BUF_MEM *
++PACE_STEP2_dec_nonce(const PACE_SEC * pi,
++        const BUF_MEM * enc_nonce, const PACE_CTX * ctx)
++{
++    BUF_MEM * nonce = NULL;
++    BUF_MEM * key = NULL;
++    if (!ctx)
++        goto err;
++
++    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
++    if (!key)
++        goto err;
++
++    nonce = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++            (unsigned char *) key->data, ctx->iv, 0, enc_nonce, 1);
++
++err:
++    if (key)
++        BUF_MEM_free(key);
++
++    return nonce;
++}
++
++BUF_MEM *
++PACE_STEP3A_map_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
++{
++    if (!ctx)
++        return NULL;
++
++    return ctx->map_generate_key(dp, ctx);
++}
++
++PACEDomainParameterInfo *
++PACE_STEP3A_map_compute_key(const PACEDomainParameterInfo * dp_in,
++		const PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in)
++{
++    PACEDomainParameterInfo * out = NULL;
++    if (!ctx)
++        return NULL;
++	out = ctx->map_compute_key(dp_in, ctx, s, in);
++	if(!out)
++		return NULL;
++	return out;
++}
++
++BUF_MEM *
++PACE_STEP3B_dh_generate_key(const PACEDomainParameterInfo * dp,
++		const PACE_CTX * ctx)
++{
++    if (!dp || !ctx)
++        return NULL;
++    switch (dp->domainParameter->algorithm) {
++        case NID_dhpublicnumber:
++            return dh_generate_key(dp, ctx);
++        case NID_X9_62_id_ecPublicKey:
++            return ecdh_generate_key(dp, ctx);
++        default:
++            return NULL;
++    }
++}
++
++BUF_MEM *
++PACE_STEP3B_dh_compute_key(const PACEDomainParameterInfo * dp,
++		const PACE_CTX * ctx, const BUF_MEM * in)
++{
++    BUF_MEM *out = NULL;
++
++    switch (dp->domainParameter->algorithm) {
++		case NID_dhpublicnumber:
++            out = dh_compute_key(dp, ctx, in);
++            break;
++        case NID_X9_62_id_ecPublicKey:
++            out = ecdh_compute_key(dp, ctx, in);
++            break;
++        default:
++            goto err;
++    }
++    if ((in->length == out->length) &&
++            (memcmp(in->data, out->data, out->length) == 0)) {
++        PACEerr(PACE_F_PACE_STEP3B_PROCESS, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
++        goto err;
++    }
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++int
++PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx, BUF_MEM ** k_mac,
++        BUF_MEM ** k_enc)
++{
++    * k_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
++    * k_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
++    if (!*k_mac || !*k_enc)
++        return 0;
++
++    return 1;
++}
++
++BUF_MEM *
++PACE_STEP3D_compute_authentication_token(PACE_CTX * ctx, PACEDomainParameterInfo * dp,
++        PACEInfo info, BUF_MEM * pub, BUF_MEM * key, const __be16 ssc)
++{
++    BUF_MEM *asn1 = NULL, *ssc_asn1 = NULL, *out;
++    asn1 = asn1_pubkey(ctx, dp);
++    ssc_asn1 = encoded_ssc(ssc, ctx);
++    if (!asn1 || !ssc_asn1 ||
++            !BUF_MEM_grow(ssc_asn1, ssc_asn1->length + asn1->length) ||
++            // BUF_MEM_grow sets ssc_asn1->length
++            !memcpy(ssc_asn1->data + ssc_asn1->length - asn1->length, asn1->data,
++                asn1->length))
++        goto err;
++
++    switch (info.protocol) {
++            case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++                out = retail_mac_des(key, ssc_asn1);
++                break;
++            case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++            case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++            case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                out = cmac(ctx->cmac_ctx, ctx->cipher, key, ssc_asn1, PACE_AES_MAC_LENGTH);
++                break;
++            default:
++                goto err;
++    }
++
++    BUF_MEM_free(ssc_asn1);
++    BUF_MEM_free(asn1);
++    return out;
++
++err:
++    if (ssc_asn1)
++        BUF_MEM_free(ssc_asn1);
++    if (asn1)
++        BUF_MEM_free(asn1);
++    return NULL;
++}
++
++int
++PACE_STEP3D_verify_authentication_token(PACE_CTX * ctx, PACEDomainParameterInfo * dp,
++		PACEInfo info, BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token, const __be16 ssc)
++{
++    PACEDomainParameterInfo *dp_opp = NULL;
++    BUF_MEM *token_verify = NULL, *pub_opp = NULL;
++    EC_POINT *ecp = NULL;
++    int rv;
++    if (!dp)
++        goto err;
++
++    dp_opp = PACEDomainParameterInfo_dup(dp);
++
++    switch (dp->domainParameter->algorithm) {
++		case NID_dhpublicnumber:
++            if (!dp_opp || !dp->domainParameter->parameters.dh)
++                goto err;
++
++            dp_opp->domainParameter->parameters.dh->pub_key =
++            		BN_bin2bn((unsigned char *) pub->data, pub->length,
++            		dp_opp->domainParameter->parameters.dh->pub_key);
++
++            pub_opp = bn2buf(dp->domainParameter->parameters.dh->pub_key);
++            break;
++		case NID_X9_62_id_ecPublicKey:
++            if (!dp_opp || !dp->domainParameter->parameters.ecdh)
++                goto err;
++
++            ecp = EC_POINT_new(EC_KEY_get0_group(dp_opp->domainParameter->parameters.ecdh));
++            if (!ecp ||
++                    !EC_POINT_oct2point(EC_KEY_get0_group(dp_opp->domainParameter->parameters.ecdh),
++                    	ecp, (unsigned char *) pub->data, pub->length, ctx->bn_ctx) ||
++                    !EC_KEY_set_public_key(dp_opp->domainParameter->parameters.ecdh, ecp))
++                goto err;
++            EC_POINT_free(ecp);
++
++            pub_opp = point2buf(dp->domainParameter->parameters.ecdh, ctx->bn_ctx,
++                    EC_KEY_get0_public_key(dp->domainParameter->parameters.ecdh));
++            break;
++
++        default:
++            goto err;
++    }
++
++    token_verify = PACE_STEP3D_compute_authentication_token(ctx, dp_opp, info,
++            pub_opp, key, ssc);
++    if (!token_verify)
++        goto err;
++
++    if ((token_verify->length != token->length) ||
++            (memcmp(token_verify->data, token->data, token->length) == 0))
++        rv = 1;
++    else
++        rv = 0;
++
++    BUF_MEM_free(token_verify);
++    BUF_MEM_free(pub_opp);
++    PACEDomainParameterInfo_clear_free(dp_opp);
++
++    return rv;
++
++err:
++    if (ecp)
++        EC_POINT_free(ecp);
++    if (token_verify)
++        BUF_MEM_free(token_verify);
++    if (pub_opp)
++        BUF_MEM_free(pub_opp);
++    if (dp_opp)
++        PACEDomainParameterInfo_clear_free(dp_opp);
++
++    return -1;
++}
+Index: openssl/crypto/pace/pace.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace.h	2009-12-01 17:38:07.000000000 +0100
+@@ -0,0 +1,397 @@
++/**
++ * @mainpage OpenPACE
++ * Implements the Password Authenticated Connection Establishment
++ * (PACE) protocol, as specified in BSI TR-03110 version 2.0.
++ *
++ * PACE is a protocol used to establish strong session keys based
++ * on a weak shared secret (password). The result of a PACE run
++ * are two symmetric keys, one for MAC computation and one for
++ * encryption. It was specfied for Extended Access Control (EAC)
++ * in Machine Readable Travel Documents (MRTD), but can also be
++ * used for securing any other communication channel.
++ *
++ * PACE can be used with different suites of algorithms and is not
++ * subject to any patents.
++ *
++ * @date 2009-04-29
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#ifndef PACE_H_
++#define PACE_H_
++
++#include <asm/byteorder.h>
++#include <openssl/dh.h>
++#include <openssl/ecdh.h>
++#include <openssl/cmac.h>
++#include <openssl/buffer.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/**
++ * @defgroup types                 Data Types
++ * @{ ************************************************************************/
++
++/** Enum for the type of the secret used. */
++enum s_type {
++    /** MRZ is the Machine Readable Zone, printed on the card, encoding
++     * the personal information of the user */
++    PACE_MRZ = 1,
++    /** CAN is the Card access number printed on the card */
++    PACE_CAN,
++    /** PIN is the Personal Identification Number, a secret known only
++     * to the user and not printed on the card */
++    PACE_PIN,
++    /** PUK is the Personal Unblocking key. This type of secret is used
++     * when the card is suspended due to too many incorrect PACE runs */
++    PACE_PUK,
++    /** This type of secret is not defined in BSI TR-03110. We use it as
++     * a generic type, so we can use PACE independent from a ID card */
++    PACE_RAW,
++    /** Undefined type, if nothing else matches */
++    PACE_SEC_UNDEF,
++};
++/** Shared secret */
++typedef struct pace_sec {
++    /** The type of the secret */
++    enum s_type type;
++    /** The secret itself */
++    BUF_MEM * mem;
++} PACE_SEC;
++
++typedef struct algorithmidentifier {
++    /** NID to identify the algorithms to be used */
++    int algorithm;
++    /** Depending on algorithm either a DH object or a EC_KEY object. */
++    union {
++        /** Classic Diffie-Hellman parameters */
++        DH * dh;
++        /** Elliptic curve Diffie-Hellman parameters */
++        EC_KEY * ecdh;
++    } parameters;
++} AlgorithmIdentifier;
++
++typedef struct paceinfo {
++	/** NID to identify the exact protocol to be used, including methods for
++	 *  key agreement, mapping of domain parameters, encryption and integrity
++	 *  protection */
++	int protocol;
++	/** Version of the protocol, MUST be 1 or 2 */
++	int version;
++	/** Used to indicate the local domain parameter identifier */
++	int parameterId;
++} PACEInfo;
++
++typedef struct pacedomainparameterinfo {
++	/** NID to identify the type of domain parameters */
++	int protocol;
++	/** Structure that contains the actual domain parameters */
++	AlgorithmIdentifier  * domainParameter;
++	/** Used to indicate the local domain parameter identifier */
++	int parameterId;
++} PACEDomainParameterInfo;
++
++/** AES message authentication: CMAC of 8 bytes length */
++#define PACE_AES_MAC_LENGTH 8
++
++/** Context structure used in all protocol steps. Encompasses information
++ * about cipher, message digest, key agreement scheme, mapping method. */
++typedef struct pace_ctx {
++    /** BN_CTX object for various operations */
++    BN_CTX * bn_ctx;
++    /** Which hash function to use for Key Derivation */
++    const EVP_MD * md;
++    /** BN_CTX object for md */
++    EVP_MD_CTX * md_ctx;
++    /** ENGINE object for md */
++    ENGINE * md_engine;
++    /** CMAC_CTX object for cmac */
++    CMAC_CTX * cmac_ctx;
++    /** EVP_CIPHER object to use for encryption/decryption */
++    const EVP_CIPHER * cipher;
++    /** EVP_CIPHER_CTX object for cipher */
++    EVP_CIPHER_CTX * cipher_ctx;
++    /** ENGINE object for cipher */
++    ENGINE * cipher_engine;
++    /** Initialisation vector for encryption/decryption */
++    unsigned char * iv;
++    /** Points to the implementation of a specific mapping
++     * @see PACE_STEP3A_map_generate_key() */
++    BUF_MEM * (*map_generate_key)(const PACEDomainParameterInfo * dp,
++            const struct pace_ctx * ctx);
++    /** Points to the implementation of a specific mapping
++     * @see PACE_STEP3A_map_compute_key() */
++    PACEDomainParameterInfo * (*map_compute_key)(const PACEDomainParameterInfo * dp_in,
++            const struct pace_ctx * ctx, const BUF_MEM * s,
++            const BUF_MEM * in);
++} PACE_CTX;
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup manage              Data Managment
++ * @{ ************************************************************************/
++
++/**
++ * @brief frees a AlgorithmIdentifier object
++ *
++ * @param dp Object to free (optional)
++ */
++void AlgorithmIdentifier_free(AlgorithmIdentifier * dp);
++/**
++ * @brief Frees a AlgorithmIdentifier object and all of its components
++ *
++ * @param dp Object to free (optional)
++ */
++void AlgorithmIdentifier_clear_free(AlgorithmIdentifier * dp);
++/**
++ * @brief Creates a new AlgorithmIdentifier object
++ *
++ * @return The new object or NULL if an error occurred
++ */
++AlgorithmIdentifier * AlgorithmIdentifier_new(void);
++/**
++ * @brief Duplicates a AlgorithmIdentifier object without preserving private keys
++ *
++ * @param dp_in Object to duplicate
++ *
++ * @return Duplicate of dp_in without private and public keys or NULL if an
++ * error occurred
++ */
++AlgorithmIdentifier * AlgorithmIdentifier_dup(const AlgorithmIdentifier * dp_in);
++/**
++ * @brief Frees a PACE_SEC object
++ *
++ * @param s PACE_SEC object to free (optional)
++ */
++void PACE_SEC_free(PACE_SEC * s);
++/**
++ * @brief Frees a PACE_SEC object and all its of components
++ *
++ * @param s Object to free (optional)
++ */
++void PACE_SEC_clear_free(PACE_SEC * s);
++/**
++ * @brief Creates a new PACE_SEC object
++ *
++ * @return The new object or NULL if an error occurred
++ */
++PACE_SEC * PACE_SEC_new(void);
++/**
++ * @brief Initializes a PACE_SEC object with a secret and its type
++ *
++ * @param s Object to initialize
++ * @param mem Secret
++ * @param type Type of secret
++ *
++ * @return 1 on success and 0 if an error occurred
++ */
++int PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type);
++/**
++ * @brief Frees a PACE_CTX object
++ *
++ * @param s Object to free (optional)
++ */
++void PACE_CTX_free(PACE_CTX * s);
++/**
++ * @brief Frees a PACE_CTX object and all its components
++ *
++ * @param s Object to free (optional)
++ */
++void PACE_CTX_clear_free(PACE_CTX * s);
++/**
++ * @brief Creates a new PACE_CTX object
++ *
++ * @return The new object or NULL if an error occurred
++ */
++PACE_CTX * PACE_CTX_new(void);
++/**
++ * @brief Frees a PACEDomainParameter object
++ *
++ * @param s Object to free (optional)
++ */
++void PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp);
++/**
++ * @brief Frees a PACEDomainParameterInfo object and all its components
++ *
++ * @param s Object to free (optional)
++ */
++void PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp);
++ /**
++  * @brief Creates a new PACEDomainParameterInfo object
++  *
++  * @return Pointer to the new object or NULL on error
++  */
++PACEDomainParameterInfo * PACEDomainParameterInfo_new(void);
++/**
++ * @brief Duplicates a PACEDomainParameterInfo structure
++ *
++ * @param dp_in PACEDomainParameterInfo structure to duplicate (optional)
++ * @return Pointer to the duplicated structure or NULL on error
++ */
++PACEDomainParameterInfo * PACEDomainParameterInfo_dup(const
++		PACEDomainParameterInfo * dp_in);
++/**
++ * @brief Initializes PACE_CTX/AlgorithmIdentifier objects
++ *
++ * @param ctx Object to initialize
++ * @param dp_info PaceDomainParameterInfo, which specifies the key agreement
++ * scheme and the domain parameters to use. See TR-3110 A.1.1.1
++ * @param info PACEInfo onject, which specifies cipher, message digest, key
++ * agreement scheme, mapping method and MAC method. See TR-3110 A.1.1.1
++ *
++ * @return 1 on success and 0 if an error occurred
++ */
++int PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp_info, PACEInfo info);
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup proto               Protocol Steps
++ * @{ ************************************************************************/
++
++/**
++ * @brief Generates and encrypts a nonce.
++ *
++ * @param pi        Shared secret for key derivation (see kdf_pi())
++ * @param ctx       PACE_CTX object
++ * @param nonce     Where to save the new object containing the nonce
++ * @param enc_nonce Where to save the new object containing the encrypted nonce
++ *
++ * @return          1 on success and 0 if an error occurred
++ */
++int PACE_STEP1_enc_nonce(const PACE_SEC * pi, const PACE_CTX * ctx,
++        BUF_MEM ** nonce, BUF_MEM ** enc_nonce);
++/**
++ * @brief Decrypt the Nonce from the other party.
++ *
++ * @param pi PACE secret used to derive the symmetric key
++ * @param enc_nonce Encrypted nonce
++ * @param ctx Context structure that contains information about encryption and
++ * hash algorithms to use
++ *
++ * @return Plaintext nonce or NULL if an error occurred
++ */
++BUF_MEM * PACE_STEP2_dec_nonce(const PACE_SEC * pi,
++        const BUF_MEM * enc_nonce, const PACE_CTX * ctx);
++/**
++ * @brief Generate a public keypair to perform the mapping to new domain
++ * parameters
++ *
++ * @param dp Domain parameters
++ * @param ctx PACE_CTX object
++ *
++ * @return Buffer to be transmitted to the other party or NULL if an error
++ * occurred
++ */
++BUF_MEM *
++PACE_STEP3A_map_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
++/**
++ * @brief Get the ephemeral domain parameters.
++ *
++ * Compute the shared secret from our own private key and the other
++ * parties public key. Then map the static domain parameters to new,
++ * ephemeral ones.
++ *
++ * @param dp_in Static domain parameters
++ * @param ctx
++ * @param s Nonce used for computing the ephemeral domain parameters
++ * @param in Public key from the other party
++ *
++ * @return Ephemeral domain parameters or NULL if an error occurred
++ */
++PACEDomainParameterInfo * PACE_STEP3A_map_compute_key(const PACEDomainParameterInfo * dp_in,
++        const PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Generate a keypair for key agreement
++ *
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param ctx PACE_CTX object
++ *
++ * @return Public key or NULL if an error occurred
++ */
++BUF_MEM * PACE_STEP3B_dh_generate_key(const PACEDomainParameterInfo * dp,
++		const PACE_CTX * ctx);
++/**
++ * @brief Compute the shared secret
++ *
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param ctx PACE_CTX object
++ * @param in Public key from the other party
++ *
++ * @return Shared secret or NULL if an error occurred
++ */
++BUF_MEM * PACE_STEP3B_dh_compute_key(const PACEDomainParameterInfo * dp,
++		const PACE_CTX * ctx, const BUF_MEM * in);
++/**
++ * @brief Derives encryption and authentication keys
++ *
++ * @param key Shared secret (computed in step 3B)
++ * @param ctx PACE_CTX object
++ * @param k_mac Where to store the authentication key
++ * @param k_enc Where to store the encryption key
++ *
++ * @return          1 on success and 0 if an error occurred
++ */
++int PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx,
++        BUF_MEM ** k_mac, BUF_MEM ** k_enc);
++/**
++ * @brief Compute the authentication token from domain parameters
++ *           and public key
++ *
++ * @param ctx PACE_CTX object
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param info PACEInfo containing information about the MAC to be used
++ * @param pub Public key from the other party (generated in step 3B)
++ * @param key Authentication key (computed in step 3C)
++ * @param ssc Send sequence counter
++ *
++ * @return Authentication token or NULL in case of error
++ */
++BUF_MEM * PACE_STEP3D_compute_authentication_token(PACE_CTX * ctx,
++		PACEDomainParameterInfo * dp, PACEInfo info, BUF_MEM * pub, BUF_MEM * key,
++		const __be16 ssc);
++/**
++ * @brief Verifies an authentication token.
++ *
++ * @param ctx PACE_CTX object
++ * @param dp Ephemeral domain parameters (generated in step 3A)
++ * @param pub Public key from the other party (generated in step 3B)
++ * @param key Authentication key (computed in step 3C)
++ * @param token Authentication token from the other party
++ * @param ssc Send sequence counter
++ *
++ * @return 1 if the token has been verified, 0 if not, -1 if an error
++ * occurred.
++ */
++int PACE_STEP3D_verify_authentication_token(PACE_CTX * ctx,
++		PACEDomainParameterInfo * dp, PACEInfo info, BUF_MEM * pub, BUF_MEM * key,
++		BUF_MEM * token, const __be16 ssc);
++/** @} ***********************************************************************/
++/* The following lines are auto generated by the script mkerr.pl. Any changes
++ * made after this point may be overwritten when the script is next run.
++ */
++void ERR_load_PACE_strings(void);
++
++/* Error codes for the PACE functions. */
++
++/* Function codes. */
++#define PACE_F_ASN1_PUBKEY				 100
++#define PACE_F_DH_GET_ORDER				 101
++#define PACE_F_DH_GET_SG_PRIME				 102
++#define PACE_F_DH_GM_COMPUTE_KEY			 103
++#define PACE_F_INIT_DH					 104
++#define PACE_F_PACE_STEP3B_PROCESS			 105
++
++/* Reason codes. */
++#define PACE_R_BAD_DH_OR_ECKEY_OBJECT			 100
++#define PACE_R_BAD_FORMAT				 101
++#define PACE_R_UNABLE_TO_GET_ORDER			 102
++#define PACE_R_UNABLE_TO_GET_SG_PRIME			 103
++
++#ifdef  __cplusplus
++}
++#endif
++#endif
+Index: openssl/crypto/pace/pace_err.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_err.c	2009-12-01 12:12:18.177498340 +0100
+@@ -0,0 +1,103 @@
++/* crypto/pace/pace_err.c */
++/* ====================================================================
++ * Copyright (c) 1999-2009 The OpenSSL Project.  All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * 3. All advertising materials mentioning features or use of this
++ *    software must display the following acknowledgment:
++ *    "This product includes software developed by the OpenSSL Project
++ *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
++ *
++ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
++ *    endorse or promote products derived from this software without
++ *    prior written permission. For written permission, please contact
++ *    openssl-core@OpenSSL.org.
++ *
++ * 5. Products derived from this software may not be called "OpenSSL"
++ *    nor may "OpenSSL" appear in their names without prior written
++ *    permission of the OpenSSL Project.
++ *
++ * 6. Redistributions of any form whatsoever must retain the following
++ *    acknowledgment:
++ *    "This product includes software developed by the OpenSSL Project
++ *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
++ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
++ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
++ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
++ * OF THE POSSIBILITY OF SUCH DAMAGE.
++ * ====================================================================
++ *
++ * This product includes cryptographic software written by Eric Young
++ * (eay@cryptsoft.com).  This product includes software written by Tim
++ * Hudson (tjh@cryptsoft.com).
++ *
++ */
++
++/* NOTE: this file was auto generated by the mkerr.pl script: any changes
++ * made to it will be overwritten when the script next updates this file,
++ * only reason strings will be preserved.
++ */
++
++#include <stdio.h>
++#include <openssl/err.h>
++#include <openssl/pace.h>
++
++/* BEGIN ERROR CODES */
++#ifndef OPENSSL_NO_ERR
++
++#define ERR_FUNC(func) ERR_PACK(ERR_LIB_PACE,func,0)
++#define ERR_REASON(reason) ERR_PACK(ERR_LIB_PACE,0,reason)
++
++static ERR_STRING_DATA PACE_str_functs[]=
++	{
++{ERR_FUNC(PACE_F_ASN1_PUBKEY),	"ASN1_PUBKEY"},
++{ERR_FUNC(PACE_F_DH_GET_ORDER),	"DH_GET_ORDER"},
++{ERR_FUNC(PACE_F_DH_GET_SG_PRIME),	"DH_GET_SG_PRIME"},
++{ERR_FUNC(PACE_F_DH_GM_COMPUTE_KEY),	"DH_GM_COMPUTE_KEY"},
++{ERR_FUNC(PACE_F_INIT_DH),	"INIT_DH"},
++{ERR_FUNC(PACE_F_PACE_STEP3B_PROCESS),	"PACE_STEP3B_PROCESS"},
++{0,NULL}
++	};
++
++static ERR_STRING_DATA PACE_str_reasons[]=
++	{
++{ERR_REASON(PACE_R_BAD_DH_OR_ECKEY_OBJECT),"bad dh or eckey object"},
++{ERR_REASON(PACE_R_BAD_FORMAT)           ,"bad format"},
++{ERR_REASON(PACE_R_UNABLE_TO_GET_ORDER)  ,"unable to get order"},
++{ERR_REASON(PACE_R_UNABLE_TO_GET_SG_PRIME),"unable to get sg prime"},
++{0,NULL}
++	};
++
++#endif
++
++void ERR_load_PACE_strings(void)
++	{
++#ifndef OPENSSL_NO_ERR
++
++	if (ERR_func_error_string(PACE_str_functs[0].error) == NULL)
++		{
++		ERR_load_strings(0,PACE_str_functs);
++		ERR_load_strings(0,PACE_str_reasons);
++		}
++#endif
++	}
+Index: openssl/crypto/pace/pacetest.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pacetest.c	2009-12-01 12:39:35.000000000 +0100
+@@ -0,0 +1,474 @@
++#include <stdlib.h>
++#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
++#ifdef OPENSSL_NO_PACE
++int main(int argc, char *argv[])
++{
++    printf("No PACE support\n");
++    return(0);
++}
++#else
++#include <openssl/pace.h>
++#include <openssl/ec.h>
++#include <openssl/evp.h>
++#include <openssl/err.h>
++#include <openssl/objects.h>
++#include <string.h>
++#include <openssl/buffer.h>
++
++#define start() printf("%s\t", __FUNCTION__)
++#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); return 1; }
++
++static int verbose=0;
++static int debug=0;
++
++static void hexdump(const char *title,const BUF_MEM *s)
++    {
++    int n=0;
++
++    fprintf(stdout,"%s",title);
++    for( ; n < s->length ; ++n)
++		{
++		if((n%16) == 0)
++			fprintf(stdout,"\n    ");
++		fprintf(stdout,"%02x:",(unsigned char) s->data[n]);
++		}
++    fprintf(stdout,"\n");
++    }
++
++int real_life_test()
++{
++    if (verbose)
++        printf("Starting a real life test\n");
++
++    enum s_type pace_sec_type [] = {
++        PACE_PUK,
++        PACE_CAN,
++        PACE_PIN,
++        PACE_MRZ,
++        PACE_RAW,
++        PACE_SEC_UNDEF,
++    };
++    enum s_type * sec_type = pace_sec_type;
++    char * pace_sec_str [] = {
++        "PUK",
++        "CAN",
++        "PIN",
++        "P<UTOERIKSSON<<ANNA<MARIX<<<<<<<<<<<<<<<<<<<L898902C<3UTO6908061F9406236ZE184226B<<<<<14",
++        "RAW",
++        NULL,
++    };
++    char ** sec_str = pace_sec_str;
++    int algorithm_type [] = {
++        NID_id_PACE_DH_IM_3DES_CBC_CBC,
++        NID_id_PACE_DH_IM_AES_CBC_CMAC_128,
++        NID_id_PACE_DH_IM_AES_CBC_CMAC_192,
++        NID_id_PACE_DH_IM_AES_CBC_CMAC_256,
++        NID_id_PACE_ECDH_IM_3DES_CBC_CBC,
++        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128,
++        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192,
++        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256,
++        NID_id_PACE_DH_GM_3DES_CBC_CBC,
++        NID_id_PACE_DH_GM_AES_CBC_CMAC_128,
++        NID_id_PACE_DH_GM_AES_CBC_CMAC_192,
++        NID_id_PACE_DH_GM_AES_CBC_CMAC_256,
++        NID_id_PACE_ECDH_GM_3DES_CBC_CBC,
++        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128,
++        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192,
++        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256,
++        NID_undef,
++    };
++    int * algorithm = algorithm_type;
++    int curve_type [] = {
++        NID_brainpoolP160r1,
++        NID_brainpoolP160t1,
++        NID_brainpoolP192r1,
++        NID_brainpoolP192t1,
++        NID_brainpoolP224r1,
++        NID_brainpoolP224t1,
++        NID_brainpoolP256r1,
++        NID_brainpoolP256t1,
++        NID_brainpoolP320r1,
++        NID_brainpoolP320t1,
++        NID_brainpoolP384r1,
++        NID_brainpoolP384t1,
++        NID_brainpoolP512r1,
++        NID_brainpoolP512t1,
++        NID_undef,
++    };
++    int * curve = curve_type;
++
++    BUF_MEM s_mem;
++    PACE_SEC * s = PACE_SEC_new();
++    PACE_CTX * ctx = PACE_CTX_new();
++    PACEInfo info;
++    PACEDomainParameterInfo * dp_info_picc, * dp_info_pcd;
++    dp_info_picc = PACEDomainParameterInfo_new();
++    dp_info_pcd = PACEDomainParameterInfo_new();
++	//dp_info_picc->domainParameter->parameters.dh = NULL;
++    if (!s || !ctx)
++        err("Error allocating memory");
++
++    while (*algorithm != NID_undef) {
++        s_mem.data = *sec_str;
++        s_mem.length = strlen(*sec_str);
++        s_mem.max = strlen(*sec_str);
++        if (!PACE_SEC_init(s, &s_mem, *sec_type))
++            err("Error initializing PACE secret");
++        if (debug)
++            hexdump("Initialized PACE secret", &s_mem);
++        info.protocol = *algorithm;
++        switch (*algorithm) {
++            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++	       		dp_info_picc->protocol = NID_id_PACE_ECDH_GM;
++    	   		dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
++       			dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(*curve);
++       			dp_info_picc->domainParameter->parameters.dh = NULL;
++       			break;
++            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++				dp_info_picc->protocol = NID_id_PACE_ECDH_IM;
++                dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
++                dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(*curve);
++                dp_info_picc->domainParameter->parameters.dh = NULL;
++                break;
++            case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++            case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++            case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++            case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++				dp_info_picc->protocol = NID_id_PACE_DH_GM;
++				dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
++                dp_info_picc->domainParameter->parameters.dh = NULL;
++                break;
++            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++				dp_info_picc->protocol = NID_id_PACE_DH_IM;
++				dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
++                dp_info_picc->domainParameter->parameters.dh = NULL;
++                break;
++            default:
++                err("Cannot happen\n");
++        }
++        if (!PACE_init(ctx, dp_info_picc, info))
++            err("Error initializing domain parameters and PACE_CTX object for PICC");
++        AlgorithmIdentifier * dp_picc_at_pcd = AlgorithmIdentifier_dup(dp_info_picc->domainParameter);
++        if (!dp_picc_at_pcd)
++            err("Error initializing domain parameters and PACE_CTX object for PCD");
++        dp_info_pcd->domainParameter = dp_picc_at_pcd;
++        dp_info_pcd->protocol = dp_info_picc->protocol;
++
++        printf("Using ");
++        switch (s->type) {
++            case PACE_PUK:
++                printf("PUK");
++                break;
++            case PACE_CAN:
++                printf("CAN");
++                break;
++            case PACE_PIN:
++                printf("PIN");
++                break;
++            case PACE_MRZ:
++                printf("MRZ");
++                break;
++            case PACE_RAW:
++                printf("RAW");
++                break;
++            default:
++                err("\ncannot happen");
++        }
++        const char *sn = OBJ_nid2sn(info.protocol);
++        if (!sn)
++            err("\nError generating short name from nid.");
++        if (verbose)
++            printf(" with %s\n", sn);
++        else
++            printf(" with %s\t", sn);
++        if (debug)
++            switch (dp_info_picc->domainParameter->algorithm) {
++                case NID_dhpublicnumber:
++                    DHparams_print_fp(stdout, dp_info_picc->domainParameter->parameters.dh);
++                    break;
++                case NID_X9_62_id_ecPublicKey:
++                    ECParameters_print_fp(stdout, dp_info_picc->domainParameter->parameters.ecdh);
++                    break;
++                default:
++                    err("cannot happen");
++            }
++
++        if (verbose)
++            printf("STEP1\n");
++        else
++            printf(".");
++        BUF_MEM * nonce_picc, * enc_nonce;
++        if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
++            err("Error generating or encrypting nonce");
++        if (verbose)
++            printf("MRTD generated and encrypted nonce.");
++        else
++            printf(".");
++        if (debug) {
++            hexdump("MRTD generated Nonce", nonce_picc);
++            hexdump("Encrypted nonce", enc_nonce);
++        }
++
++        if (verbose)
++            printf("STEP2\n");
++        else
++            printf(".");
++        BUF_MEM * nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
++        if (!nonce_pcd)
++            err("Error decrypting nonce");
++        if (nonce_picc->length != nonce_pcd->length ||
++                memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
++            err("Error decrypting nonce (doesn't match nonce)");
++        if (verbose)
++            printf("Terminal decrypted the correct nonce\n");
++        else
++            printf(".");
++
++        if (verbose)
++            printf("STEP3A generate key\n");
++        else
++            printf(".");
++        BUF_MEM * map_pub_picc = PACE_STEP3A_map_generate_key(dp_info_picc, ctx);
++        BUF_MEM * map_pub_pcd = PACE_STEP3A_map_generate_key(dp_info_pcd, ctx);
++        if(!map_pub_picc || !map_pub_pcd)
++            err("Error generating keypair to map domain parameters");
++        if (verbose)
++            printf("Generated keypair on MRTD and Terminal for mapping\n");
++        else
++            printf(".");
++        if (debug) {
++            hexdump("Public key MRTD", map_pub_picc);
++            hexdump("Public key Terminal", map_pub_pcd);
++        }
++
++        if (verbose)
++            printf("STEP3A compute key\n");
++        else
++            printf(".");
++        PACEDomainParameterInfo * map_picc;
++        switch (dp_info_picc->protocol) {
++            case NID_id_PACE_DH_IM:
++                // dh im is special, only mrtd generates the key
++                map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
++                        nonce_picc, map_pub_picc);
++                break;
++            default:
++                map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
++                        nonce_picc, map_pub_pcd);
++                break;
++        }
++        PACEDomainParameterInfo * map_pcd = PACE_STEP3A_map_compute_key(dp_info_pcd,
++                ctx, nonce_pcd, map_pub_picc);
++        if(!map_pcd || !map_picc)
++            err("Error computing mapped domain parameters");
++        if (verbose)
++            printf("Computed mapped domain parameters on MRTD and Terminal\n");
++        else
++            printf(".");
++        switch (map_picc->domainParameter->algorithm) {
++            case NID_dhpublicnumber:
++                if (BN_cmp(map_picc->domainParameter->parameters.dh->g,
++                		map_pcd->domainParameter->parameters.dh->g) != 0)
++                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
++                if (debug) {
++                    printf("Mapped domain parameters:\n");
++                    DHparams_print_fp(stdout, map_picc->domainParameter->parameters.dh);
++                }
++                break;
++            case NID_X9_62_id_ecPublicKey:
++                if(EC_GROUP_cmp(EC_KEY_get0_group(map_picc->domainParameter->parameters.ecdh),
++                            EC_KEY_get0_group(map_pcd->domainParameter->parameters.ecdh),
++                            ctx->bn_ctx) != 0)
++                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
++                if (debug) {
++                    printf("Mapped domain parameters on MRTD and Terminal:\n");
++                    ECParameters_print_fp(stdout, map_picc->domainParameter->parameters.ecdh);
++                }
++                break;
++            default:
++                err("cannot happen");
++        }
++
++        if (verbose)
++            printf("STEP3B\n");
++        else
++            printf(".");
++        BUF_MEM * pub_picc = PACE_STEP3B_dh_generate_key(map_picc, ctx);
++        BUF_MEM * pub_pcd = PACE_STEP3B_dh_generate_key(map_pcd, ctx);
++        if(!pub_picc || !pub_pcd)
++            err("Error generating keypair for key derivation");
++        if (verbose)
++            printf("Generated keypair on MRTD and Terminal for key derivation\n");
++        else
++            printf(".");
++        BUF_MEM * key_picc = PACE_STEP3B_dh_compute_key(map_picc, ctx, pub_pcd);
++        BUF_MEM * key_pcd = PACE_STEP3B_dh_compute_key(map_pcd, ctx, pub_picc);
++        if(!key_picc || !key_pcd)
++            err("Error computing key for key derivation");
++        if (key_pcd->length != key_picc->length ||
++                memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
++            err("Error computing key for key derivation (MRTD and TERMINAL differ)");
++        if (verbose)
++            printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
++        else
++            printf(".");
++
++        if (verbose)
++            printf("STEP3C\n");
++        else
++            printf(".");
++        /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
++         * k_mac are the same, too */
++        BUF_MEM * k_mac, * k_enc;
++        if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
++            err("Error during key derivation");
++        if (verbose)
++            printf("Derived authentication and encryption key\n");
++        else
++            printf(".");
++        if (debug) {
++            hexdump("Derived authentication key", k_mac);
++            hexdump("Derived encryption key", k_enc);
++        }
++
++        if (verbose)
++            printf("STEP3D\n");
++        else
++            printf(".");
++        BUF_MEM * token_pcd, * token_picc;
++        token_pcd = PACE_STEP3D_compute_authentication_token(ctx, map_pcd, info,
++        		pub_picc, k_mac, 0);
++        token_picc = PACE_STEP3D_compute_authentication_token(ctx, map_picc, info,
++        		pub_pcd, k_mac, 0);
++        if ((!token_pcd) || (!token_picc)) {
++            err("Failed to compute authentication token");
++        }
++        if (verbose)
++            printf("Computed authentication token for MRTD and TERMINAL");
++        else
++            printf(".");
++        if (debug) {
++            hexdump("Authentication token from MRTD", token_picc);
++            hexdump("Authentication token from TERMINAL", token_pcd);
++        }
++        if (!PACE_STEP3D_verify_authentication_token(ctx, map_pcd, info, pub_picc,
++        		k_mac, token_picc, 0) ||
++            !PACE_STEP3D_verify_authentication_token(ctx, map_picc, info, pub_pcd,
++            	k_mac, token_pcd, 0)) {
++            		err("Could not verify authentication token.");
++        }
++        if (verbose) {
++            printf("Authentication token verified.\n");
++            printf("Everything works as expected.\n");
++        } else {
++            printf(" ok\n");
++        }
++
++        BUF_MEM_free(token_picc);
++        BUF_MEM_free(token_pcd);
++        BUF_MEM_free(k_mac);
++        BUF_MEM_free(k_enc);
++        BUF_MEM_free(key_picc);
++        BUF_MEM_free(key_pcd);
++        BUF_MEM_free(pub_picc);
++        BUF_MEM_free(pub_pcd);
++        PACEDomainParameterInfo_clear_free(map_pcd);
++        PACEDomainParameterInfo_clear_free(map_picc);
++        BUF_MEM_free(map_pub_picc);
++        BUF_MEM_free(map_pub_pcd);
++        BUF_MEM_free(nonce_pcd);
++        BUF_MEM_free(nonce_picc);
++        BUF_MEM_free(enc_nonce);
++        AlgorithmIdentifier_clear_free(dp_picc_at_pcd);
++
++        sec_str++;
++        sec_type++;
++        if (*sec_str == NULL || *sec_type == PACE_SEC_UNDEF) {
++            sec_str = pace_sec_str;
++            sec_type = pace_sec_type;
++        }
++        switch (*algorithm) {
++            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                curve++;
++                break;
++            default:
++                break;
++        }
++        algorithm++;
++    }
++    PACEDomainParameterInfo_clear_free(dp_info_picc);
++    PACEDomainParameterInfo_clear_free(dp_info_pcd);
++    PACE_CTX_free(ctx);
++    /* clear_free is not used, because BUF_MEM member is local */
++    PACE_SEC_free(s);
++
++    return 0;
++}
++
++int main(int argc, char *argv[])
++{
++    int i;
++    for (i=1; i<argc; i++)
++    {
++        if ((strcmp(argv[i], "--verbose") == 0) ||
++                (strcmp(argv[i], "-v") == 0)) {
++            verbose++;
++            continue;
++        }
++        if ((strcmp(argv[i], "--debug") == 0) ||
++                (strcmp(argv[i], "-d") == 0)) {
++            verbose++;
++            debug++;
++            continue;
++        }
++        if ((strcmp(argv[i], "--help") == 0) ||
++                (strcmp(argv[i], "-h") == 0)) {
++            fprintf(stderr,
++                    "%s tests the OpenSSL implementation of Password Authentication Connection Establishment (PACE)\n"
++                    "\n"
++                    "Usage: %s [Options]\n"
++                    "\n"
++                    "Options:\n"
++                    "  -h, --help              show this help message and exit\n"
++                    "  -v, --verbose           more verbosity\n"
++                    "      --version           print version information and exit\n"
++                    , argv[0], argv[0]
++                    );
++            return 0;
++        }
++        if (strcmp(argv[i], "--version") == 0) {
++            fprintf(stderr,
++                    "%s 0.1\n"
++                    "\n"
++                    "Written by Frank Morgner.\n"
++                    , argv[0]
++                   );
++            return 0;
++        }
++
++        fprintf(stderr, "unrecognized option \"%s\"\n", argv[i]);
++        return 1;
++    }
++    /*printf("%s:%d\n", __FILE__, __LINE__);*/
++    int out = 0;
++    out += real_life_test();
++    return -out;
++}
++
++#endif /* OPENSSL_NO_PACE */
+Index: openssl/crypto/err/openssl.ec
+===================================================================
+--- openssl.orig/crypto/err/openssl.ec	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/err/openssl.ec	2009-11-11 15:56:56.918386786 +0100
+@@ -35,6 +35,7 @@
+ L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
+ L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
+ L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
++L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
+ 
+ # additional header files to be scanned for function names
+ L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/err/err.c
+===================================================================
+--- openssl.orig/crypto/err/err.c	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/err/err.c	2009-11-11 12:42:00.155375914 +0100
+@@ -156,6 +156,7 @@
+ {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
+ {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
+ {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
++{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
+ {0,NULL},
+ 	};
+ 
+Index: openssl/crypto/err/err.h
+===================================================================
+--- openssl.orig/crypto/err/err.h	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/err/err.h	2009-11-11 12:44:09.775373043 +0100
+@@ -198,6 +198,7 @@
+ #define ERR_LIB_TS		47
+ #define ERR_LIB_HMAC		48
+ #define ERR_LIB_JPAKE		49
++#define ERR_LIB_PACE		50
+ 
+ #define ERR_LIB_USER		128
+ 
+@@ -234,6 +235,7 @@
+ #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
+ #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
+ #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
++#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
+ 
+ /* Borland C seems too stupid to be able to shift and do longs in
+  * the pre-processor :-( */
+Index: openssl/crypto/err/err_all.c
+===================================================================
+--- openssl.orig/crypto/err/err_all.c	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/err/err_all.c	2009-11-30 17:08:51.000000000 +0100
+@@ -102,6 +102,9 @@
+ #ifndef OPENSSL_NO_JPAKE
+ #include <openssl/jpake.h>
+ #endif
++#ifndef OPENSSL_NO_PACE
++#include <openssl/pace.h>
++#endif
+ #include <openssl/comp.h>
+ 
+ void ERR_load_crypto_strings(void)
+@@ -155,6 +158,9 @@
+ #ifndef OPENSSL_NO_JPAKE
+ 	ERR_load_JPAKE_strings();
+ #endif
++#ifndef OPENSSL_NO_PACE
++	ERR_load_PACE_strings();
++#endif
+ 	ERR_load_COMP_strings();
+ #endif
+ 	}
+Index: openssl/test/Makefile
+===================================================================
+--- openssl.orig/test/Makefile	2009-12-01 18:32:36.000000000 +0100
++++ openssl/test/Makefile	2009-11-30 17:08:51.000000000 +0100
+@@ -63,11 +63,11 @@
+ GCMTESTA=  aesgcmtest
+ CMACTESTA= cmac_test
+ JPAKETEST=	jpaketest
+-
++PACETEST=	pacetest
+ 
+ TESTS=		alltests
+ 
+-EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
++EXE=	$(PACETEST)$(EXE_EXT)#$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
+ 	$(MD2TEST)$(EXE_EXT)  $(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
+ 	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
+ 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
+@@ -75,7 +75,7 @@
+ 	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
+ 	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
+ 	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(JPAKETEST)$(EXE_EXT) \
+-	$(GCMTESTA)$(EXE_EXT) $(CMACTESTA)$(EXE_EXT)
++        $(GCMTESTA)$(EXE_EXT) $(CMACTESTA)$(EXE_EXT) $(PACETEST)$(EXE_EXT)
+ 
+ # $(METHTEST)$(EXE_EXT)
+ 
+@@ -88,7 +88,7 @@
+ 	$(RANDTEST).o $(DHTEST).o $(ENGINETEST).o $(CASTTEST).o \
+ 	$(BFTEST).o  $(SSLTEST).o  $(DSATEST).o  $(EXPTEST).o $(RSATEST).o \
+ 	$(EVPTEST).o $(IGETEST).o $(JPAKETEST).o \
+-	$(GCMTESTA).o $(CMACTESTA).o
++        $(GCMTESTA).o $(CMACTESTA).o $(PACETEST).o
+ SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
+ 	$(MD2TEST).c  $(MD4TEST).c $(MD5TEST).c \
+ 	$(HMACTEST).c $(WPTEST).c \
+@@ -97,7 +97,7 @@
+ 	$(RANDTEST).c $(DHTEST).c $(ENGINETEST).c $(CASTTEST).c \
+ 	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
+ 	$(EVPTEST).c $(IGETEST).c $(JPAKETEST).c \
+-	$(GCMTESTA).c $(CMACTESTA).c
++        $(GCMTESTA).c $(CMACTESTA).c $(PACETEST).c
+ 
+ EXHEADER= 
+ HEADER=	$(EXHEADER)
+@@ -140,7 +140,7 @@
+ 	test_enc test_x509 test_rsa test_crl test_sid \
+ 	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
+ 	test_ss test_ca test_engine test_evp test_ssl test_tsa test_ige \
+-	test_jpake test_cms
++	test_jpake test_cms test_aes_gcm test_cmac test_pace
+ 
+ test_evp:
+ 	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
+@@ -314,6 +314,16 @@
+ 	@echo "CMS consistency test"
+ 	$(PERL) cms-test.pl
+ 
++test_pace: $(PACETEST)$(EXE_EXT)
++	@echo "Test PACE"
++	../util/shlib_wrap.sh ./$(PACETEST)
++
++#	TDES modes are known broken, the generated DES key needs parity fixed
++#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACGenTDES2.fax ;\
++#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACVerTDES2.fax ;\
++#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACVerTDES3.fax ;\
++#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACGenTDES3.fax ;\
++
+ test_aes_gcm:  $(GCMTESTA)$(EXE_EXT)
+ 	@echo "Test AES GCM modes"
+ 	../util/shlib_wrap.sh ./aesgcmtest$(EXE_EXT)
+@@ -455,6 +465,9 @@
+ $(JPAKETEST)$(EXE_EXT): $(JPAKETEST).o $(DLIBCRYPTO)
+ 	@target=$(JPAKETEST); $(BUILD_CMD)
+ 
++$(PACETEST)$(EXE_EXT): $(PACETEST).o $(DLIBCRYPTO)
++	@target=$(PACETEST); $(BUILD_CMD)
++
+ $(GCMTESTA)$(EXE_EXT): $(GCMTESTA).o  $(DLIBCRYPTO)
+ 	@target=$(GCMTESTA); $(BUILD_CMD)
+ 
+@@ -633,6 +646,15 @@
+ mdc2test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
+ mdc2test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
+ mdc2test.o: ../include/openssl/ui.h ../include/openssl/ui_compat.h mdc2test.c
++pacetest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
++pacetest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
++pacetest.o: ../include/openssl/dh.h ../include/openssl/e_os2.h
++pacetest.o: ../include/openssl/ec.h ../include/openssl/ecdh.h
++pacetest.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
++pacetest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++pacetest.o: ../include/openssl/ossl_typ.h ../include/openssl/pace.h
++pacetest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
++pacetest.o: ../include/openssl/symhacks.h pacetest.c
+ randtest.o: ../e_os.h ../include/openssl/e_os2.h
+ randtest.o: ../include/openssl/opensslconf.h ../include/openssl/ossl_typ.h
+ randtest.o: ../include/openssl/rand.h randtest.c
+Index: openssl/crypto/objects/objects.txt
+===================================================================
+--- openssl.orig/crypto/objects/objects.txt	2009-12-01 18:32:36.000000000 +0100
++++ openssl/crypto/objects/objects.txt	2009-11-27 18:05:24.122263817 +0100
+@@ -1276,3 +1276,31 @@
+ 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
+ 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
+ 1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
++
++# BSI Extensions TR 3110 Version 2.01
++!Alias bsi-de           0 4 0 127 0 7
++!Alias id-PACE          bsi-de  2 2 4
++id-PACE 1 :             id-PACE-DH-GM
++id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
++id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
++id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
++id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
++id-PACE 2 :             id-PACE-ECDH-GM
++id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
++id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
++id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
++id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
++id-PACE 3 :             id-PACE-DH-IM
++id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
++id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
++id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
++id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
++id-PACE 4 :             id-PACE-ECDH-IM
++id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
++id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
++id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
++id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
++
++ISO-US 10046 :          ansi-x942
++!Alias x942_number-type ansi-x942 2
++x942_number-type 1:     dhpublicnumber
+Index: openssl/crypto/pace/pace_buffer.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_buffer.c	2009-12-01 12:29:27.000000000 +0100
+@@ -0,0 +1,83 @@
++/**
++ * @date 2009-11-30
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <string.h>
++#include "pace_buffer.h"
++
++BUF_MEM *
++BUF_MEM_create(size_t len)
++{
++    BUF_MEM *out = BUF_MEM_new();
++
++    if (!out)
++        return NULL;
++    if (!BUF_MEM_grow(out, len)) {
++        BUF_MEM_free(out);
++        return NULL;
++    }
++
++    return out;
++}
++
++BUF_MEM *
++BUF_MEM_create_init(const void *buf, size_t len)
++{
++    BUF_MEM *out = BUF_MEM_create(len);
++
++    if (!out)
++        return NULL;
++    memcpy(out->data, out->data, len);
++
++    return out;
++}
++
++BUF_MEM *
++point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
++{
++    BUF_MEM * out = NULL;
++
++    /* get buffer in required size */
++    out = BUF_MEM_create(EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
++                EC_KEY_get_conv_form(ecdh), NULL, 0, bn_ctx));
++    if (!out)
++        goto err;
++
++    out->length = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
++            EC_KEY_get_conv_form(ecdh), (unsigned char *) out->data, out->max,
++            bn_ctx);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++BUF_MEM *
++bn2buf(const BIGNUM *bn)
++{
++    BUF_MEM * out = NULL;
++    if (!bn)
++        goto err;
++
++    /* get buffer in required size */
++    out = BUF_MEM_create(BN_num_bytes(bn));
++    if (!out)
++        goto err;
++
++    out->length = BN_bn2bin(bn, (unsigned char *) out->data);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
+Index: openssl/crypto/pace/pace_buffer.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_buffer.h	2009-12-01 12:30:04.000000000 +0100
+@@ -0,0 +1,54 @@
++/**
++ * @date 2009-11-30
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#ifndef PACE_BUFFER_H_
++#define PACE_BUFFER_H_
++
++#include <openssl/buffer.h>
++#include <openssl/ec.h>
++
++/**
++ * @brief Creates a BUF_MEM object
++ *
++ * @param len required length of the buffer
++ *
++ * @return Initialized BUF_MEM object or NULL if an error occurred
++ */
++BUF_MEM *
++BUF_MEM_create(size_t len);
++/**
++ * @brief Creates and initializes a BUF_MEM object
++ *
++ * @param buf Initial data
++ * @param len Length of buf
++ *
++ * @return Initialized BUF_MEM object or NULL if an error occurred
++ */
++BUF_MEM *
++BUF_MEM_create_init(const void *buf, size_t len);
++/**
++ * @brief converts an EC_POINT object to a BUF_MEM object
++ *
++ * @param ecdh EC_KEY object
++ * @param bn_ctx object (optional)
++ * @param ecp elliptic curve point to convert
++ *
++ * @return converted elliptic curve point or NULL if an error occurred
++ */
++BUF_MEM *
++point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
++/**
++ * @brief converts an BIGNUM object to a BUF_MEM object
++ *
++ * @param bn bignumber to convert
++ *
++ * @return converted bignumber or NULL if an error occurred
++ */
++BUF_MEM *
++bn2buf(const BIGNUM *bn);
++
++#endif /*PACE_BUFFER_H_*/
+\ No newline at end of file
+Index: openssl/crypto/pace/pace_dh.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_dh.c	2009-12-01 16:57:59.000000000 +0100
+@@ -0,0 +1,206 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <openssl/err.h>
++#include <openssl/pace.h>
++#include "pace_dh.h"
++#include "pace_buffer.h"
 +
 +int
 +init_dh(DH ** dh)
@@ -806,9 +2098,1017 @@ Index: openssl/crypto/pace/pace.c
 +    return ok;
 +}
 +
++
++BIGNUM *
++DH_get_q(const DH *dh, BN_CTX *ctx)
++{
++    BIGNUM *q = NULL, *bn = NULL;
++    int i;
++
++    if (!dh->q) {
++        q = BN_new();
++        bn = BN_dup(dh->p);
++        /* DH primes should be strong, based on a Sophie Germain prime q
++         * p=(2*q)+1 or (p-1)/2=q */
++        if (!q || !bn ||
++                !BN_sub_word(bn, 1) ||
++                !BN_rshift1(q, bn)) {
++            goto err;
++        }
++    } else {
++        q = BN_dup(dh->q);
++    }
++
++    /* q should always be prime */
++    i = BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL);
++    if (i <= 0) {
++        if (i == 0)
++            PACEerr(PACE_F_DH_GET_SG_PRIME, PACE_R_UNABLE_TO_GET_SG_PRIME);
++        goto err;
++    }
++
++    return q;
++
++err:
++    if (bn)
++        BN_clear_free(bn);
++    if (q)
++        BN_clear_free(q);
++    return NULL;
++}
++
++BIGNUM *
++DH_get_order(const DH *dh, BN_CTX *ctx)
++{
++    BIGNUM *order = NULL, *bn = NULL;
++    if (!dh)
++        goto err;
++
++    bn = BN_new();
++
++    /* suppose the order of g is q-1 */
++    order = DH_get_q(dh, ctx);
++    if (!order || !BN_sub_word(order, 1) ||
++            !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
++        goto err;
++
++    if (BN_cmp(bn, BN_value_one()) != 0) {
++        /* if bn != 1, then q-1 is not the order of g, but p-1 should be */
++        if (!BN_sub(order, dh->p, BN_value_one()) ||
++                !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
++            goto err;
++        if (BN_cmp(bn, BN_value_one()) != 0) {
++            PACEerr(PACE_F_DH_GET_ORDER, PACE_R_UNABLE_TO_GET_ORDER);
++            goto err;
++        }
++    }
++
++    BN_clear_free(bn);
++
++    return order;
++
++err:
++    if (order)
++        BN_clear_free(order);
++    if (bn)
++        BN_clear_free(bn);
++
++    return NULL;
++}
++
++BUF_MEM *
++dh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
++{
++    int ret;
++    if (!dp)
++        return NULL;
++    if (!DH_generate_key(dp->domainParameter->parameters.dh))
++        return NULL;
++
++    if (!DH_check_pub_key_rfc(dp->domainParameter->parameters.dh, ctx->bn_ctx, &ret))
++        return NULL;
++    if (ret) {
++        PACEerr(PACE_F_DH_GM_COMPUTE_KEY, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
++        return NULL;
++    }
++
++    return bn2buf(dp->domainParameter->parameters.dh->pub_key);
++}
++
++BUF_MEM *
++dh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx, const BUF_MEM * in)
++{
++    BUF_MEM * out = NULL;
++    BIGNUM * bn = NULL;
++    if (!dp->domainParameter->parameters.dh || !ctx || !in)
++        goto err;
++
++    /* decode public key */
++    bn = BN_bin2bn((unsigned char *) in->data, in->length, bn);
++    if (!bn)
++        goto err;
++
++    /* get buffer in required size */
++    out = BUF_MEM_create(DH_size(dp->domainParameter->parameters.dh));
++    if (!out)
++        goto err;
++
++    out->length = DH_compute_key((unsigned char *) out->data, bn,
++    		dp->domainParameter->parameters.dh);
++    if (out->length < 0)
++        goto err;
++
++    BN_clear_free(bn);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (bn)
++        BN_clear_free(bn);
++
++    return NULL;
++}
++
+Index: openssl/crypto/pace/pace_dh.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_dh.h	2009-12-01 16:56:49.000000000 +0100
+@@ -0,0 +1,90 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#ifndef PACE_DH_H_
++#define PACE_DH_H_
++
++#include <openssl/bn.h>
++#include <openssl/dh.h>
++#include <openssl/buffer.h>
++
++/**
++ * @brief initializes a DH key structure. If the structure is already initialised,
++ * nothing is done
++ *
++ * @param dh DH object to use
++ *
++ * @return 1 on success or 0 if an error occurred
++ */
++int
++init_dh(DH ** dh);
++/**
++ * @brief Computes the prime on which the modulus is based.
++ *
++ * If DH->q does not exist, tries to guess a Sophie Germain prime matching the
++ * DH's modulus.
++ *
++ * @param dh DH object to use
++ * @param ctx BN_CTX object
++ *
++ * @return q or NULL if an error occurred
++ */
++BIGNUM *
++DH_get_q(const DH *dh, BN_CTX *ctx);
++/**
++ * @brief Computes the order of the DH's generator.
++ *
++ * @param dh DH object to use
++ * @param ctx BN_CTX object (optional)
++ *
++ * @return order of g or NULL if an error occurred
++ *
++ * @note This calculation is for DHs using a safe prime, which will generate
++ * either an order-q or an order-2q group (see crypto/dh/dh_gen.c:151).
++ */
++BIGNUM *
++DH_get_order(const DH *dh, BN_CTX *ctx);
++/**
++ * @brief Public key validation method described in RFC 2631.
++ *
++ * Verify that DH->pub_key lies within the interval [2,p-1]. If it does not,
++ * the key is invalid.
++ * If DH->q exists, compute y^q mod p. If the result == 1, the key is valid.
++ * Otherwise the key is invalid.
++ *
++ * @param dh DH object to use
++ * @param ctx BN_CTX object
++ * @param ret Can contain these flags as result:
++ * DH_CHECK_PUBKEY_TOO_SMALL (smaller than 2)
++ * DH_CHECK_PUBKEY_TOO_LARGE (bigger than p-1)
++ * DH_CHECK_PUBKEY_INVALID (y^q mod p != 1)
++ *
++ * @return 1 on success or 0 if an error occurred
++ */
++int
++DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret);
++
++/**
++ * @brief Generates a DH keypair
++ *
++ * @param dp object containing the DH object
++ * @param ctx
++ *
++ * @return public key of the generated keypair or NULL if an error occurred
++ */
++BUF_MEM *
++dh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
++/**
++ * @brief Computes a DH key
++ *
++ * @see PACE_STEP3B_dh_compute_key()
++ */
++BUF_MEM *
++dh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx,
++		const BUF_MEM * in);
++
++#endif /*PACE_DH_H_*/
+Index: openssl/crypto/pace/pace_kdf.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_kdf.c	2009-12-01 14:23:08.000000000 +0100
+@@ -0,0 +1,75 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <string.h>
++#include "pace_kdf.h"
++#include "pace_util.h"
++
++BUF_MEM *
++kdf(const BUF_MEM * key, const BUF_MEM * nonce, const __be32 counter,
++        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl)
++{
++    int inlen;
++    BUF_MEM * in = NULL, * out = NULL;
++    if (!key || !md)
++        goto err;
++
++    /* Concatenate secret || nonce || counter */
++    in = BUF_MEM_new();
++    if (!in)
++        goto err;
++    if (nonce) {
++        inlen = key->length + nonce->length + sizeof counter;
++        if (!BUF_MEM_grow(in, inlen))
++            goto err;
++        memcpy(in->data, key->data, key->length);
++        memcpy(in->data + key->length, nonce->data, nonce->length);
++        memcpy(in->data + key->length + nonce->length, &counter, sizeof counter);
++    } else {
++        inlen = key->length + sizeof counter;
++        if (!BUF_MEM_grow(in, inlen))
++            goto err;
++        memcpy(in->data, key->data, key->length);
++        memcpy(in->data + key->length, &counter, sizeof counter);
++    }
++
++    out = hash(md, ctx, impl, in);
++
++    BUF_MEM_free(in);
++    return out;
++
++err:
++    if (in)
++        BUF_MEM_free(in);
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++BUF_MEM *
++kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce, const EVP_MD * md,
++        EVP_MD_CTX * ctx, ENGINE * impl)
++{
++    BUF_MEM * enc = encoded_secret(pi), * out = NULL;
++    if (!enc)
++        goto err;
++
++    out = kdf(enc, nonce, __constant_cpu_to_be32(3), md, ctx, impl);
++
++    BUF_MEM_free(enc);
++
++    return out;
++
++err:
++    if (enc)
++        BUF_MEM_free(enc);
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
+\ No newline at end of file
+Index: openssl/crypto/pace/pace_kdf.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_kdf.h	2009-12-01 14:16:42.000000000 +0100
+@@ -0,0 +1,57 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#ifndef PACE_KDF_H_
++#define PACE_KDF_H_
++
++#include <openssl/buffer.h>
++#include <openssl/pace.h> //For PACE_SEC. FIXME
++#include <openssl/evp.h>
++
++/**
++ * @defgroup kdf            Key Derivation Functions
++ * @{ ************************************************************************/
++
++/**
++ * @brief Key derivation function to derive encryption key
++ *
++ * @see kdf()
++ */
++#define kdf_enc(key, nonce, md, ctx, impl) \
++    kdf(key, nonce, __constant_cpu_to_be32(1), md, ctx, impl)
++/**
++ * @brief Key derivation function to derive authentication key
++ *
++ * @see kdf()
++ */
++#define kdf_mac(key, nonce, md, ctx, impl) \
++    kdf(key, nonce, __constant_cpu_to_be32(2), md, ctx, impl)
++/**
++ * @brief General key derivation function according to TR-3110 F.3.1
++ *
++ * @param key Shared secret
++ * @param nonce (optional)
++ * @param counter
++ * @param md Message digest to use
++ * @param ctx EVP_MD_CTX object to use (optional)
++ * @param impl ENGINE object to use for message digest (optional)
++ *
++ * @return derivated key or NULL if an error occurred
++ */
++BUF_MEM * kdf(const BUF_MEM * key, const BUF_MEM * nonce,
++        const __be32 counter, const EVP_MD * md, EVP_MD_CTX * ctx,
++        ENGINE * impl);
++/**
++ * @brief Key derivation function from a password pi
++ *
++ * @see kdf()
++ */
++BUF_MEM * kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce,
++        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl);
++/** @} ***********************************************************************/
++
++#endif /*PACE_KDF_H_*/
+Index: openssl/crypto/pace/pace_lib.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_lib.c	2009-12-01 12:12:18.177498340 +0100
+@@ -0,0 +1,256 @@
++/**
++ * @date 2009-11-30
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++//#include <openssl/bio.h>
++#include <openssl/bn.h>
++#include <openssl/buffer.h>
++#include <openssl/evp.h>
++#include <openssl/objects.h>
++#include <openssl/pace.h>
++
++
++void
++AlgorithmIdentifier_free(AlgorithmIdentifier * dp)
++{
++    if (dp) {
++        OPENSSL_free(dp);
++    }
++}
++
++void
++AlgorithmIdentifier_clear_free(AlgorithmIdentifier * dp)
++{
++    if (dp) {
++        switch (dp->algorithm) {
++            case NID_dhpublicnumber:
++                if (dp->parameters.dh)
++                    DH_free(dp->parameters.dh);
++                break;
++            case NID_X9_62_id_ecPublicKey:
++                if (dp->parameters.ecdh)
++                    EC_KEY_free(dp->parameters.ecdh);
++                break;
++            default:
++                break;
++        }
++        OPENSSL_free(dp);
++    }
++}
++
++AlgorithmIdentifier *
++AlgorithmIdentifier_new(void)
++{
++    AlgorithmIdentifier * out = (AlgorithmIdentifier *) OPENSSL_malloc(sizeof(AlgorithmIdentifier));
++    if (!out)
++        return NULL;
++
++    out->algorithm = NID_undef;
++    out->parameters.dh = NULL;
++    out->parameters.ecdh = NULL;
++
++    return out;
++}
++
++AlgorithmIdentifier *
++AlgorithmIdentifier_dup(const AlgorithmIdentifier * dp_in)
++{
++    AlgorithmIdentifier * out = NULL;
++    if (!dp_in)
++        goto err;
++
++    out = AlgorithmIdentifier_new();
++    if (!out)
++        goto err;
++    out->algorithm = dp_in->algorithm;
++    switch (dp_in->algorithm) {
++    	case NID_dhpublicnumber:
++            if (dp_in->parameters.dh) {
++                out->parameters.dh = DHparams_dup(dp_in->parameters.dh);
++                if (!out->parameters.dh)
++                    goto err;
++                BN_clear_free(out->parameters.dh->priv_key);
++                BN_clear_free(out->parameters.dh->pub_key);
++            }
++            break;
++        case NID_X9_62_id_ecPublicKey:
++            if (dp_in->parameters.ecdh) {
++                out->parameters.ecdh = EC_KEY_dup(dp_in->parameters.ecdh);
++                if (!out->parameters.ecdh)
++                    goto err;
++                /* Note: functions will return error, but clear the keys anyway */
++                EC_KEY_set_private_key(out->parameters.ecdh, NULL);
++                EC_KEY_set_public_key(out->parameters.ecdh, NULL);
++            }
++            break;
++        default:
++		printf("Error: AlgorithmIdentifier structure not correctly initialised\n");
++        	goto err;
++            break;
++    }
++
++    return out;
++
++err:
++    if (out)
++        AlgorithmIdentifier_clear_free(out);
++
++    return NULL;
++}
++
++void
++PACE_SEC_free(PACE_SEC * s)
++{
++    if (s) {
++        OPENSSL_free(s);
++    }
++}
++
++void
++PACE_SEC_clear_free(PACE_SEC * s)
++{
++    if (s) {
++        if (s->mem)
++            BUF_MEM_free(s->mem);
++        OPENSSL_free(s);
++    }
++}
++
++PACE_SEC *
++PACE_SEC_new(void)
++{
++    PACE_SEC * out = (PACE_SEC *) OPENSSL_malloc(sizeof(PACE_SEC));
++    if (!out)
++        return NULL;
++
++    out->mem = NULL;
++    out->type = PACE_SEC_UNDEF;
++
++    return out;
++}
++
++int
++PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type)
++{
++    if (!s || !mem)
++        return 0;
++    s->mem = mem;
++
++    switch (type) {
++        case PACE_PUK:
++        case PACE_CAN:
++        case PACE_PIN:
++        case PACE_MRZ:
++        case PACE_RAW:
++            s->type = type;
++            break;
++
++        default:
++            return 0;
++    }
++
++    return 1;
++}
++
++void
++PACE_CTX_clear_free(PACE_CTX * ctx)
++{
++    if (ctx) {
++        if (ctx->bn_ctx)
++            BN_CTX_free(ctx->bn_ctx);
++        if (ctx->md_ctx) {
++            EVP_MD_CTX_destroy(ctx->md_ctx);
++        }
++        OPENSSL_free(ctx);
++    }
++}
++
++void
++PACE_CTX_free(PACE_CTX * ctx)
++{
++    if (ctx) {
++        OPENSSL_free(ctx);
++    }
++}
++
++PACE_CTX *
++PACE_CTX_new(void)
++{
++    PACE_CTX * out = (PACE_CTX *) OPENSSL_malloc(sizeof(PACE_CTX));
++    if (!out)
++        return NULL;
++
++    out->bn_ctx = NULL;
++    out->md = NULL;
++    out->md_ctx = NULL;
++    out->md_engine = NULL;
++    out->cmac_ctx = NULL;
++    out->cipher_ctx = NULL;
++    out->cipher_engine = NULL;
++    out->iv = NULL;
++
++    return out;
++}
++
++void
++PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp)
++{
++	if(dp)
++		OPENSSL_free(dp);
++}
++
++void
++PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp)
++{
++	if(dp) {
++		if(dp->domainParameter)
++			AlgorithmIdentifier_clear_free(dp->domainParameter);
++		PACEDomainParameterInfo_free(dp);
++	}
++}
++
++PACEDomainParameterInfo *
++PACEDomainParameterInfo_new(void)
++{
++	PACEDomainParameterInfo * out = (PACEDomainParameterInfo *) OPENSSL_malloc(
++			sizeof(PACEDomainParameterInfo));
++	if(!out)
++		return NULL;
++
++	out->domainParameter = AlgorithmIdentifier_new();
++	if(!out->domainParameter)
++		goto err;
++	//FIXME: Are these safe defaults?
++	out->parameterId = 0;
++	out->protocol = 0;
++	return out;
++
++err:
++	if(out && !out->domainParameter)
++		OPENSSL_free(out);
++	return NULL;
++}
++
++PACEDomainParameterInfo *
++PACEDomainParameterInfo_dup(const PACEDomainParameterInfo * dp_in)
++{
++	PACEDomainParameterInfo * dp_out = NULL;
++	dp_out = PACEDomainParameterInfo_new();
++	if(dp_in) {
++		if(!dp_out)
++			goto err;
++		dp_out->domainParameter = AlgorithmIdentifier_dup(dp_in->domainParameter);
++		if(!dp_out->domainParameter)
++			goto err;
++		dp_out->protocol = dp_in->protocol;
++		dp_out->parameterId = dp_in->parameterId;
++	}
++	return dp_out;
++err:
++	if(dp_out && !dp_out->domainParameter)
++		OPENSSL_free(dp_out);
++	return NULL;
++}
+Index: openssl/crypto/pace/pace_util.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_util.c	2009-12-01 14:32:33.000000000 +0100
+@@ -0,0 +1,577 @@
++/**
++ * @date 2009-11-30
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <string.h>
++#include <openssl/rand.h>
++#include <openssl/asn1.h>
++#include <openssl/conf.h>
++#include <openssl/err.h>
++#include "pace_util.h"
++#include "pace_buffer.h"
++#include "pace_dh.h"
++
++BUF_MEM *
++hash(const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl,
++        const BUF_MEM * in)
++{
++    BUF_MEM * out = NULL;
++    EVP_MD_CTX * tmp_ctx = NULL;
++    unsigned int tmp_len;
++    if (!md || !in)
++        goto err;
++
++    if (ctx)
++        tmp_ctx = ctx;
++    else {
++        tmp_ctx = EVP_MD_CTX_create();
++        if (!tmp_ctx)
++            goto err;
++    }
++
++    /* get buffer in required size */
++    out = BUF_MEM_create(EVP_MD_size(md));
++    if (!out)
++        goto err;
++	tmp_len = out->length;
++    if (!EVP_DigestInit_ex(tmp_ctx, md, impl) ||
++            !EVP_DigestUpdate(tmp_ctx, in->data, in->length) ||
++            !EVP_DigestFinal_ex(tmp_ctx, (unsigned char *) out->data, &tmp_len))
++
++    if (!ctx)
++        EVP_MD_CTX_destroy(tmp_ctx);
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (tmp_ctx && !ctx) {
++        EVP_MD_CTX_destroy(tmp_ctx);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
++        unsigned char *key, unsigned char *iv, int enc, const BUF_MEM * in,
++        int init)
++{
++    BUF_MEM * out = NULL;
++    EVP_CIPHER_CTX * tmp_ctx = NULL;
++    int i;
++    if (!in)
++        goto err;
++
++    if (ctx)
++        tmp_ctx = ctx;
++    else {
++        tmp_ctx = EVP_CIPHER_CTX_new();
++        if (!tmp_ctx)
++            goto err;
++        EVP_CIPHER_CTX_init(tmp_ctx);
++    }
++
++    i = in->length;
++    i += EVP_CIPHER_block_size(type);
++    /* get buffer in required size */
++    out = BUF_MEM_create(i);
++    if (!out)
++        goto err;
++
++    /* get cipher */
++    if (ctx && init)
++        if (!EVP_CipherInit_ex(tmp_ctx, type, impl, key, iv, enc))
++            goto err;
++    if (!EVP_CipherUpdate(ctx, (unsigned char *) out->data, &i,
++                (unsigned char *) in->data, in->length))
++        goto err;
++    out->length = i;
++    if(!EVP_CipherFinal_ex(ctx, (unsigned char *) (out->data + out->length),
++                &i))
++        goto err;
++    out->length += i;
++
++    if (!ctx) {
++        EVP_CIPHER_CTX_cleanup(tmp_ctx);
++        EVP_CIPHER_CTX_free(tmp_ctx);
++    }
++
++    return out;
++
++err:
++    if (out)
++        BUF_MEM_free(out);
++    if (!ctx && tmp_ctx) {
++        EVP_CIPHER_CTX_cleanup(tmp_ctx);
++        EVP_CIPHER_CTX_free(tmp_ctx);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++base64(const BUF_MEM * in)
++{
++    BIO *bmem = NULL, *b64 = NULL;
++    BUF_MEM *out = NULL;
++    if (!in)
++        goto err;
++
++    b64 = BIO_new(BIO_f_base64());
++    if (!b64)
++        goto err;
++    /* usually base64 adds newline */
++    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
++
++    bmem = BIO_new(BIO_s_mem());
++    if (!bmem)
++        goto err;
++    /* So BIO_free() leaves BUF_MEM alone */
++    BIO_set_close(bmem, BIO_NOCLOSE);
++    BIO_push(b64, bmem);
++
++    if ((BIO_write(b64, in->data, in->length) < 0) ||
++            (BIO_flush(b64) <= 0))
++        goto err;
++    BIO_get_mem_ptr(b64, &out);
++
++    BIO_free_all(b64);
++
++    return out;
++
++err:
++    if (b64)
++        BIO_free(b64);
++    if (bmem)
++        BIO_free(bmem);
++    if (out)
++        BUF_MEM_free(out);
++
++    return NULL;
++}
++
++BUF_MEM *
++cmac(CMAC_CTX *ctx, const EVP_CIPHER *type, const BUF_MEM * key,
++        const BUF_MEM * in, unsigned int maclen)
++{
++    CMAC_CTX * cmac_ctx = NULL;
++    BUF_MEM * rv = NULL;
++    if (!key || !ctx || !in || !type ||
++            (key->length < EVP_CIPHER_key_length(type)))
++        goto err;
++
++    if (ctx)
++        cmac_ctx = ctx;
++    else {
++        cmac_ctx = CMAC_CTX_new();
++    }
++
++    /* get buffer in required size */
++    rv = BUF_MEM_create(maclen);
++    if (!rv)
++        goto err;
++
++    if (!cmac_ctx ||
++            !CMAC_Init(cmac_ctx, type, (unsigned char*) key->data,
++                EVP_CIPHER_key_length(type)*8) ||
++            !CMAC_Update(cmac_ctx, (unsigned char*) in->data, in->length) ||
++            !CMAC_Final(cmac_ctx, (unsigned char*) rv->data, maclen))
++        goto err;
++
++    if (!ctx)
++        CMAC_CTX_free(cmac_ctx);
++
++    return rv;
++
++err:
++    if (cmac_ctx && !ctx) {
++        CMAC_CTX_free(cmac_ctx);
++    }
++    if (rv) {
++        BUF_MEM_free(rv);
++    }
++
++    return NULL;
++}
++
++BUF_MEM *
++randb(int numbytes)
++{
++    BUF_MEM * r = BUF_MEM_new();
++    if (!r || !BUF_MEM_grow(r, numbytes) ||
++            !RAND_bytes((unsigned char *) r->data, numbytes))
++        goto err;
++
++    return r;
++
++err:
++    if (r)
++        BUF_MEM_free(r);
++
++    return NULL;
++}
++
++BUF_MEM *
++add_iso_pad(const BUF_MEM * m, int block_size)
++{
++    BUF_MEM * r = NULL;
++    int p_len;
++    if (!m)
++        goto err;
++
++    p_len = (m->length / block_size) * block_size + block_size;
++
++    r = BUF_MEM_new();
++    if (!r || !BUF_MEM_grow(r, p_len))
++        goto err;
++    memcpy(r->data, m->data, m->length);
++
++    /* now add iso padding */
++    memset(r->data + m->length, 0x80, 1);
++    memset(r->data + m->length + 1 , 0, p_len - m->length - 1);
++
++    return r;
++err:
++    if (r)
++        BUF_MEM_free(r);
++
++    return NULL;
++}
++
++BUF_MEM *
++retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
++{
++    BUF_MEM * c_tmp = NULL, * mac = NULL, * block = NULL, * pad = NULL;
++    EVP_CIPHER_CTX * ctx = NULL;
++    if (!key)
++        goto err;
++
++    pad = add_iso_pad(in, EVP_CIPHER_block_size(EVP_des_cbc()));
++    if (!pad)
++        goto err;
++
++    /* get last block of des_cbc encrypted input */
++    ctx = EVP_CIPHER_CTX_new();
++    if (!ctx)
++        goto err;
++    EVP_CIPHER_CTX_init(ctx);
++    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
++                (unsigned char *) key->data, NULL, 1) ||
++            !EVP_CIPHER_CTX_set_padding(ctx, 0))
++        goto err;
++    c_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, pad, 0);
++    if (!c_tmp)
++        goto err;
++    block = BUF_MEM_create_init(c_tmp->data + c_tmp->length -
++            EVP_CIPHER_block_size(EVP_des_cbc()),
++            EVP_CIPHER_block_size(EVP_des_cbc()));
++
++    /* decrypt last block with the rest of the key */
++    /* IV is always NULL */
++    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL, (unsigned char *)
++                key->data + EVP_CIPHER_block_size(EVP_des_cbc()), NULL, 0) ||
++            !EVP_CIPHER_CTX_set_padding(ctx, 0))
++        goto err;
++    mac = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 0, block, 0);
++
++    BUF_MEM_free(block);
++    BUF_MEM_free(c_tmp);
++    BUF_MEM_free(pad);
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
++
++    return mac;
++
++err:
++    if (block)
++        BUF_MEM_free(block);
++    if (c_tmp)
++        BUF_MEM_free(c_tmp);
++    if (pad)
++        BUF_MEM_free(pad);
++    if (ctx) {
++        EVP_CIPHER_CTX_cleanup(ctx);
++        EVP_CIPHER_CTX_free(ctx);
++    }
++
++    return NULL;
++}
++
++int
++is_no_valid_integer_hexstr(const char * str)
++{
++    if ((str == NULL) || (strlen(str) < 2))
++        return 1;
++    /* positive INTEGERs are forbidden (TR-3110 D.2.1.1.), but they shouldn't occurre anyway */
++    return (str[0] == '0') && (str[1] == '0');
++}
++
++int
++is_char_str(const BUF_MEM * str)
++{
++    const unsigned char * s = (unsigned char *) str->data;
++    int i = str->length;
++    while (i) {
++        if (*s <= 0x1f || (0x7f < *s && *s < 0x9f))
++            return 0;
++        s++;
++        i--;
++    }
++    return 1;
++}
++
++BUF_MEM *
++encoded_secret(const PACE_SEC * pi)
++{
++    BUF_MEM * out;
++    if (!pi)
++        return NULL;
++
++    switch (pi->type) {
++        case PACE_PUK:
++            out = base64(pi->mem);
++            break;
++
++        case PACE_CAN:
++        case PACE_PIN:
++        case PACE_MRZ:
++        case PACE_RAW:
++            if (!is_char_str(pi->mem))
++                return NULL;
++
++            out = BUF_MEM_create_init(pi->mem->data, pi->mem->length);
++            break;
++
++        default:
++            return NULL;
++    }
++
++    return out;
++}
++
++BUF_MEM *
++encoded_ssc(const __be16 ssc, const PACE_CTX *ctx)
++{
++    BUF_MEM *out;
++    if (!ctx)
++        return NULL;
++
++    out = BUF_MEM_create_init(&ssc +
++            sizeof ssc - EVP_CIPHER_block_size(ctx->cipher),
++            EVP_CIPHER_block_size(ctx->cipher));
++
++    return out;
++}
++
 +BUF_MEM *
 +asn1_pubkey(const PACE_CTX *ctx, const PACEDomainParameterInfo *dp)
 +{
++	//FIXME: ctx is only needed for bn_ctx. Is this necessary?
 +    BUF_MEM *out = NULL;
 +    BIO *bio = NULL;
 +    CONF *conf = NULL;
@@ -1012,127 +3312,272 @@ Index: openssl/crypto/pace/pace.c
 +
 +    return NULL;
 +}
+\ No newline at end of file
+Index: openssl/crypto/pace/pace_util.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_util.h	2009-12-01 15:39:02.000000000 +0100
+@@ -0,0 +1,172 @@
++/**
++ * @date 2009-11-30
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
 +
++#ifndef PACE_UTIL_H_
++#define PACE_UTIL_H_
++
++#include <openssl/buffer.h>
++#include <openssl/evp.h>
++#include <openssl/cmac.h>
++#include <openssl/ec.h>
++#include <openssl/pace.h>
++/**
++ * @brief Wrapper for the OpenSSL hash functions.
++ *
++ * @param md
++ * @param ctx (optional)
++ * @param impl (optional)
++ * @param in
++ *
++ * @return message digest or NULL if an error occurred
++ */
 +BUF_MEM *
-+retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
++hash(const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl, const BUF_MEM * in);
++/**
++ * @brief Wrapper to the OpenSSL encryption functions.
++ *
++ * @param ctx (optional)
++ * @param type
++ * @param impl only evaluated if init is 1. (optional)
++ * @param key only evaluated if init is 1.
++ * @param iv only evaluated if init is 1. (optional)
++ * @param enc only evaluated if init is 1.
++ * @param in
++ * @param init whether to initialize (1) the given ctx or not (0).
++ *
++ * @return cipher of in or NULL if an error occurred
++ */
++BUF_MEM *
++cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
++        unsigned char *key, unsigned char *iv, int enc, const BUF_MEM * in,
++        const int init);
++/**
++ * @brief Wrapper to the OpenSSL pseudo-random number generator.
++ *
++ * @param numbytes number of bytes to randomize
++ *
++ * @return a buffer of randomized bytes or NULL if an error occurred
++ */
++BUF_MEM *
++randb(int numbytes);
++/**
++ * @brief Computes message authentication code in retail-mode according to
++ * ISO/IEC 9797-1 MAC algorithm 3 / padding method 2 with block cipher DES and
++ * IV=0.
++ *
++ * @param key authentication key
++ * @param in buffer to authenticate
++ * @param ssc Send sequence counter
++ *
++ * @return message authentication code or NULL if an error occurred
++ */
++BUF_MEM *
++retail_mac_des(const BUF_MEM * key, const BUF_MEM * in);
++/**
++ * @brief Compute a CMAC of the input buffer using the encryption algorithm
++ *           specified in the PACE context structure
++ *
++ * @param ctx EVP_CIPHER_CTX object (optional)
++ * @param type contains the encryption algorithm to use
++ * @param key the symmetric key used for the computation. The key must have
++ *           the correct length for the encryption algorithm used
++ * @param in buffer that contains the data to for CMAC computation
++ * @param maclen length in number of bytes of the MAC
++ *
++ * @return buffer containing the CMAC or NULL in case of error
++ */
++BUF_MEM *
++cmac(CMAC_CTX *ctx, const EVP_CIPHER *type, const BUF_MEM * key,
++        const BUF_MEM * in, unsigned int maclen);
++/**
++ * @brief encodes a buffer in base64
++ *
++ * @param in buffer to encode
++ *
++ * @return base 64 encoded buffer or NULL if an error occurred
++ */
++BUF_MEM *
++base64(const BUF_MEM * in);
++/**
++ * @brief Padds a buffer using ISO/IEC 9797-1 padding method 2.
++ *
++ * @param m buffer to padd
++ * @param block_size pad to this block size
++ *
++ * @return new buffer with the padded input or NULL if an error occurred
++ */
++BUF_MEM *
++add_iso_pad(const BUF_MEM * m, int block_size);
++
++/**
++ * @brief Computes a MAC for a given input using a given key
++ *
++ * @param key Key used for MAC computation
++ * @param in Input
++ *
++ * @return Message authentication code
++ */
++BUF_MEM *
++retail_mac_des(const BUF_MEM * key, const BUF_MEM * in);
++
++/**
++ * @defgroup encoding               Encoding
++ * @{ ************************************************************************/
++
++/**
++ * @brief Checks if str is NOT a INTEGER string in hex format according to TR-3110
++ * D.2.1.1.
++ *
++ * @param str hex string
++ *
++ * @return 1 if str is NOT a valid integer hex string or 0 if it is
++ */
++int is_no_valid_integer_hexstr(const char * str);
++/**
++ * @brief Checks if str is a character string according to TR-3110 D.2.1.4
++ *
++ * @param str BUF_MEM object with the string to check
++ *
++ * @return 1 if str is a character string or 0 if it is not
++ */
++int is_char_str(const BUF_MEM * str);
++/**
++ * @brief Encodes a shared secret according to TR-3110 Table F.2
++ *
++ * @param pi Password to encode
++ *
++ * @return BUF_MEM object containing the encoded password or NULL if an error occurred
++ *
++ * @note This function is automatically called during PACE, normally you should not need to use it.
++ */
++BUF_MEM * encoded_secret(const PACE_SEC * pi);
++/**
++ * @brief Encodes a send sequence counter according to TR-3110 F.3
++ *
++ * @param ssc Send sequence counter to encode
++ * @param ctx PACE_CTX object
++ *
++ * @return BUF_MEM object containing the send sequence counter or NULL if an error occurred
++ *
++ * @note This function is automatically called during PACE, normally you should not need to use it.
++ */
++BUF_MEM * encoded_ssc(const __be16 ssc, const PACE_CTX *ctx);
++/** @} ***********************************************************************/
++
++/**
++ * @brief Encodes public key data objects of the domain parameters in ASN.1
++ * (see TR-3110 D.3)
++ *
++ * @param PACEDomainParameterInfo object containing an AlgorithmIdentifier, which
++ * includes the DH or EC_KEY object
++ * @param ctx
++ *
++ * @return ASN.1 encoded public key data objects or NULL if an error occurred
++ */
++BUF_MEM *
++asn1_pubkey(const PACE_CTX *ctx, const PACEDomainParameterInfo *dp);
++
++#endif /*PACE_DH_H_*/
+Index: openssl/crypto/pace/pace_ecdh.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_ecdh.c	2009-12-01 17:12:06.000000000 +0100
+@@ -0,0 +1,159 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <openssl/objects.h>
++#include "pace_ecdh.h"
++#include "pace_buffer.h"
++ 
++int
++init_ecdh(EC_KEY ** ecdh)
 +{
-+    BUF_MEM * c_tmp = NULL, * mac = NULL, * block = NULL, * pad = NULL;
-+    EVP_CIPHER_CTX * ctx = NULL;
-+    if (!key)
-+        goto err;
 +
-+    pad = add_iso_pad(in, EVP_CIPHER_block_size(EVP_des_cbc()));
-+    if (!pad)
-+        goto err;
++	EC_KEY * tmp = NULL;
 +
-+    /* get last block of des_cbc encrypted input */
-+    ctx = EVP_CIPHER_CTX_new();
-+    if (!ctx)
-+        goto err;
-+    EVP_CIPHER_CTX_init(ctx);
-+    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
-+                (unsigned char *) key->data, NULL, 1) ||
-+            !EVP_CIPHER_CTX_set_padding(ctx, 0))
-+        goto err;
-+    c_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, pad, 0);
-+    if (!c_tmp)
-+        goto err;
-+    block = BUF_MEM_create_init(c_tmp->data + c_tmp->length -
-+            EVP_CIPHER_block_size(EVP_des_cbc()),
-+            EVP_CIPHER_block_size(EVP_des_cbc()));
++    if (!*ecdh)
++    	tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1); //FIXME: What curve to use???
 +
-+    /* decrypt last block with the rest of the key */
-+    /* IV is always NULL */
-+    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL, (unsigned char *)
-+                key->data + EVP_CIPHER_block_size(EVP_des_cbc()), NULL, 0) ||
-+            !EVP_CIPHER_CTX_set_padding(ctx, 0))
-+        goto err;
-+    mac = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 0, block, 0);
++	if(!tmp)
++		goto err;
 +
-+    BUF_MEM_free(block);
-+    BUF_MEM_free(c_tmp);
-+    BUF_MEM_free(pad);
-+    EVP_CIPHER_CTX_cleanup(ctx);
-+    EVP_CIPHER_CTX_free(ctx);
-+
-+    return mac;
++	if(!*ecdh)
++		*ecdh = tmp;
++    return 1;
 +
 +err:
-+    if (block)
-+        BUF_MEM_free(block);
-+    if (c_tmp)
-+        BUF_MEM_free(c_tmp);
-+    if (pad)
-+        BUF_MEM_free(pad);
-+    if (ctx) {
-+        EVP_CIPHER_CTX_cleanup(ctx);
-+        EVP_CIPHER_CTX_free(ctx);
-+    }
-+
-+    return NULL;
++	if (!*ecdh && tmp)
++        EC_KEY_free(tmp);
++    return 0;
 +}
 +
 +BUF_MEM *
-+kdf(const BUF_MEM * key, const BUF_MEM * nonce, const __be32 counter,
-+        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl)
++ecdh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
 +{
-+    int inlen;
-+    BUF_MEM * in = NULL, * out = NULL;
-+    if (!key || !md)
-+        goto err;
++    if (!dp || !ctx)
++        return NULL;
++    if (!EC_KEY_generate_key(dp->domainParameter->parameters.ecdh))
++        return NULL;
 +
-+    /* Concatenate secret || nonce || counter */
-+    in = BUF_MEM_new();
-+    if (!in)
-+        goto err;
-+    if (nonce) {
-+        inlen = key->length + nonce->length + sizeof counter;
-+        if (!BUF_MEM_grow(in, inlen))
-+            goto err;
-+        memcpy(in->data, key->data, key->length);
-+        memcpy(in->data + key->length, nonce->data, nonce->length);
-+        memcpy(in->data + key->length + nonce->length, &counter, sizeof counter);
-+    } else {
-+        inlen = key->length + sizeof counter;
-+        if (!BUF_MEM_grow(in, inlen))
-+            goto err;
-+        memcpy(in->data, key->data, key->length);
-+        memcpy(in->data + key->length, &counter, sizeof counter);
-+    }
++    // The key agreement algorithm ECKA prevents small subgroup attacks by
++    // using compatible cofactor multiplication.
 +
-+    out = hash(md, ctx, impl, in);
-+
-+    BUF_MEM_free(in);
-+    return out;
-+
-+err:
-+    if (in)
-+        BUF_MEM_free(in);
-+    if (out)
-+        BUF_MEM_free(out);
-+
-+    return NULL;
++    return point2buf(dp->domainParameter->parameters.ecdh, ctx->bn_ctx,
++    		EC_KEY_get0_public_key(dp->domainParameter->parameters.ecdh));
 +}
 +
 +BUF_MEM *
-+kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce, const EVP_MD * md,
-+        EVP_MD_CTX * ctx, ENGINE * impl)
++ecdh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx,
++		const BUF_MEM * in)
 +{
-+    BUF_MEM * enc = encoded_secret(pi), * out = NULL;
-+    if (!enc)
++    BUF_MEM * out = NULL;
++    EC_POINT * ecp = NULL;
++    if (!dp->domainParameter->parameters.ecdh || !ctx || !in)
++        goto err;
++    /* decode public key */
++    ecp = EC_POINT_new(EC_KEY_get0_group(dp->domainParameter->parameters.ecdh));
++    if (!ecp ||
++            !EC_POINT_oct2point(EC_KEY_get0_group(dp->domainParameter->parameters.ecdh),
++            	ecp, (unsigned char *) in->data, in->length, ctx->bn_ctx))
 +        goto err;
 +
-+    out = kdf(enc, nonce, __constant_cpu_to_be32(3), md, ctx, impl);
++    /* get buffer in required size */
++    out = BUF_MEM_create(EC_POINT_point2oct(
++                EC_KEY_get0_group(dp->domainParameter->parameters.ecdh), ecp,
++                EC_KEY_get_conv_form(dp->domainParameter->parameters.ecdh), NULL, 0,
++                ctx->bn_ctx));
++    if (!out)
++        goto err;
 +
-+    BUF_MEM_free(enc);
++    out->length = ECDH_compute_key(out->data, out->max, ecp,
++    		dp->domainParameter->parameters.ecdh, NULL);
++
++    EC_POINT_free(ecp);
 +
 +    return out;
 +
 +err:
-+    if (enc)
-+        BUF_MEM_free(enc);
 +    if (out)
 +        BUF_MEM_free(out);
++    if (ecp)
++        EC_POINT_free(ecp);
 +
 +    return NULL;
 +}
@@ -1209,258 +3654,106 @@ Index: openssl/crypto/pace/pace.c
 +
 +    return out;
 +}
+\ No newline at end of file
+Index: openssl/crypto/pace/pace_ecdh.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_ecdh.h	2009-12-01 17:11:10.000000000 +0100
+@@ -0,0 +1,76 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
 +
-+BIGNUM *
-+DH_get_q(const DH *dh, BN_CTX *ctx)
-+{
-+    BIGNUM *q = NULL, *bn = NULL;
-+    int i;
++#ifndef PACE_ECDH_H_
++#define PACE_ECDH_H_
 +
-+    if (!dh->q) {
-+        q = BN_new();
-+        bn = BN_dup(dh->p);
-+        /* DH primes should be strong, based on a Sophie Germain prime q
-+         * p=(2*q)+1 or (p-1)/2=q */
-+        if (!q || !bn ||
-+                !BN_sub_word(bn, 1) ||
-+                !BN_rshift1(q, bn)) {
-+            goto err;
-+        }
-+    } else {
-+        q = BN_dup(dh->q);
-+    }
-+
-+    /* q should always be prime */
-+    i = BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL);
-+    if (i <= 0) {
-+        if (i == 0)
-+            PACEerr(PACE_F_DH_GET_SG_PRIME, PACE_R_UNABLE_TO_GET_SG_PRIME);
-+        goto err;
-+    }
-+
-+    return q;
-+
-+err:
-+    if (bn)
-+        BN_clear_free(bn);
-+    if (q)
-+        BN_clear_free(q);
-+    return NULL;
-+}
-+
-+BIGNUM *
-+DH_get_order(const DH *dh, BN_CTX *ctx)
-+{
-+    BIGNUM *order = NULL, *bn = NULL;
-+    if (!dh)
-+        goto err;
-+
-+    bn = BN_new();
-+
-+    /* suppose the order of g is q-1 */
-+    order = DH_get_q(dh, ctx);
-+    if (!order || !BN_sub_word(order, 1) ||
-+            !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
-+        goto err;
-+
-+    if (BN_cmp(bn, BN_value_one()) != 0) {
-+        /* if bn != 1, then q-1 is not the order of g, but p-1 should be */
-+        if (!BN_sub(order, dh->p, BN_value_one()) ||
-+                !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
-+            goto err;
-+        if (BN_cmp(bn, BN_value_one()) != 0) {
-+            PACEerr(PACE_F_DH_GET_ORDER, PACE_R_UNABLE_TO_GET_ORDER);
-+            goto err;
-+        }
-+    }
-+
-+    BN_clear_free(bn);
-+
-+    return order;
-+
-+err:
-+    if (order)
-+        BN_clear_free(order);
-+    if (bn)
-+        BN_clear_free(bn);
-+
-+    return NULL;
-+}
-+
++#include <openssl/ec.h>
++#include <openssl/pace.h>
++#include <openssl/buffer.h>
++#include <openssl/bn.h>
++/**
++ * @brief initializes a key for ECDH. If the object is already initialised,
++ * nothing is don
++ *
++ * @param ecdh elliptic curve object to use
++ *
++ * @return 1 on success or 0 if an error occurred
++ */
 +int
-+is_no_valid_integer_hexstr(const char * str)
-+{
-+    if ((str == NULL) || (strlen(str) < 2))
-+        return 1;
-+    /* positive INTEGERs are forbidden (TR-3110 D.2.1.1.), but they shouldn't occurre anyway */
-+    return (str[0] == '0') && (str[1] == '0');
-+}
-+
-+int
-+is_char_str(const BUF_MEM * str)
-+{
-+    const unsigned char * s = (unsigned char *) str->data;
-+    int i = str->length;
-+    while (i) {
-+        if (*s <= 0x1f || (0x7f < *s && *s < 0x9f))
-+            return 0;
-+        s++;
-+        i--;
-+    }
-+    return 1;
-+}
-+
++init_ecdh(EC_KEY ** ecdh);
++/**
++ * @brief Generates an ECDH keypair
++ *
++ * @param dp object containing the EC_KEY object
++ * @param ctx
++ *
++ * @return public key of the generated keypair or NULL if an error occurred
++ */
 +BUF_MEM *
-+encoded_secret(const PACE_SEC * pi)
-+{
-+    BUF_MEM * out;
-+    if (!pi)
-+        return NULL;
-+
-+    switch (pi->type) {
-+        case PACE_PUK:
-+            out = base64(pi->mem);
-+            break;
-+
-+        case PACE_CAN:
-+        case PACE_PIN:
-+        case PACE_MRZ:
-+        case PACE_RAW:
-+            if (!is_char_str(pi->mem))
-+                return NULL;
-+
-+            out = BUF_MEM_create_init(pi->mem->data, pi->mem->length);
-+            break;
-+
-+        default:
-+            return NULL;
-+    }
-+
-+    return out;
-+}
-+
-+BUF_MEM *
-+encoded_ssc(const __be16 ssc, const PACE_CTX *ctx)
-+{
-+    BUF_MEM *out;
-+    if (!ctx)
-+        return NULL;
-+
-+    out = BUF_MEM_create_init(&ssc +
-+            sizeof ssc - EVP_CIPHER_block_size(ctx->cipher),
-+            EVP_CIPHER_block_size(ctx->cipher));
-+
-+    return out;
-+}
-+
-+BUF_MEM *
-+dh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
-+{
-+    int ret;
-+    if (!dp)
-+        return NULL;
-+    if (!DH_generate_key(dp->domainParameter->parameters.dh))
-+        return NULL;
-+
-+    if (!DH_check_pub_key_rfc(dp->domainParameter->parameters.dh, ctx->bn_ctx, &ret))
-+        return NULL;
-+    if (ret) {
-+        PACEerr(PACE_F_DH_GM_COMPUTE_KEY, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
-+        return NULL;
-+    }
-+
-+    return bn2buf(dp->domainParameter->parameters.dh->pub_key);
-+}
-+
-+BUF_MEM *
-+dh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx, const BUF_MEM * in)
-+{
-+    BUF_MEM * out = NULL;
-+    BIGNUM * bn = NULL;
-+    if (!dp->domainParameter->parameters.dh || !ctx || !in)
-+        goto err;
-+
-+    /* decode public key */
-+    bn = BN_bin2bn((unsigned char *) in->data, in->length, bn);
-+    if (!bn)
-+        goto err;
-+
-+    /* get buffer in required size */
-+    out = BUF_MEM_create(DH_size(dp->domainParameter->parameters.dh));
-+    if (!out)
-+        goto err;
-+
-+    out->length = DH_compute_key((unsigned char *) out->data, bn,
-+    		dp->domainParameter->parameters.dh);
-+    if (out->length < 0)
-+        goto err;
-+
-+    BN_clear_free(bn);
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+    if (bn)
-+        BN_clear_free(bn);
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+ecdh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
-+{
-+    if (!dp || !ctx)
-+        return NULL;
-+    if (!EC_KEY_generate_key(dp->domainParameter->parameters.ecdh))
-+        return NULL;
-+
-+    // The key agreement algorithm ECKA prevents small subgroup attacks by
-+    // using compatible cofactor multiplication.
-+
-+    return point2buf(dp->domainParameter->parameters.ecdh, ctx->bn_ctx,
-+    		EC_KEY_get0_public_key(dp->domainParameter->parameters.ecdh));
-+}
-+
++ecdh_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
++/**
++ * @brief Computes an ECDH key
++ *
++ * @see PACE_STEP3B_dh_compute_key()
++ */
 +BUF_MEM *
 +ecdh_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx,
-+		const BUF_MEM * in)
-+{
-+    BUF_MEM * out = NULL;
-+    EC_POINT * ecp = NULL;
-+    if (!dp->domainParameter->parameters.ecdh || !ctx || !in)
-+        goto err;
-+    /* decode public key */
-+    ecp = EC_POINT_new(EC_KEY_get0_group(dp->domainParameter->parameters.ecdh));
-+    if (!ecp ||
-+            !EC_POINT_oct2point(EC_KEY_get0_group(dp->domainParameter->parameters.ecdh),
-+            	ecp, (unsigned char *) in->data, in->length, ctx->bn_ctx))
-+        goto err;
++		const BUF_MEM * in);
 +
-+    /* get buffer in required size */
-+    out = BUF_MEM_create(EC_POINT_point2oct(
-+                EC_KEY_get0_group(dp->domainParameter->parameters.ecdh), ecp,
-+                EC_KEY_get_conv_form(dp->domainParameter->parameters.ecdh), NULL, 0,
-+                ctx->bn_ctx));
-+    if (!out)
-+        goto err;
++/**
++ * @brief creates a duplicate of template and changes the generator of its
++ * EC_KEY object
++ *
++ * @param template
++ * @param g the generator to use
++ * @param ctx (optional)
++ *
++ * @return the new and modified PACEDomainParameterInfo object or NULL if an
++ * error occurred
++ */
++PACEDomainParameterInfo *
++dp_ecdh_new_generator(const PACEDomainParameterInfo *template, const EC_POINT *g,
++		BN_CTX *ctx);
++/**
++ * @brief creates a duplicate of template and changes the generator of its
++ * EC_KEY object
++ *
++ * @param template
++ * @param x affine coordinate of the generator
++ * @param y affine coordinate of the generator
++ * @param ctx (optional)
++ *
++ * @return the new and modified PACEDomainParameterInfo object or NULL if an
++ * error occurred
++ *
++ * @see dp_ecdh_new_generator()
++ */
++PACEDomainParameterInfo *
++dp_ecdh_new_generator_by_coordinates(const PACEDomainParameterInfo *template,
++		const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx);
 +
-+    out->length = ECDH_compute_key(out->data, out->max, ecp,
-+    		dp->domainParameter->parameters.ecdh, NULL);
++#endif /*PACE_ECDH_H_*/
+Index: openssl/crypto/pace/pace_mappings.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_mappings.c	2009-12-01 17:32:14.000000000 +0100
+@@ -0,0 +1,339 @@
++/**
++ * @date 2009-12-01
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
 +
-+    EC_POINT_free(ecp);
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+    if (ecp)
-+        EC_POINT_free(ecp);
-+
-+    return NULL;
-+}
++#include <openssl/bn.h>
++#include <openssl/ec.h>
++#include "pace_mappings.h"
++#include "pace_util.h"
++#include "pace_dh.h"
++#include "pace_ecdh.h"
 +
 +PACEDomainParameterInfo *
 +dh_gm_compute_key(const PACEDomainParameterInfo * dp_info, const PACE_CTX * ctx,
@@ -1787,2170 +4080,89 @@ Index: openssl/crypto/pace/pace.c
 +
 +    return NULL;
 +}
-+
-+
-+int
-+PACE_STEP1_enc_nonce(const PACE_SEC * pi, const PACE_CTX * ctx,
-+        BUF_MEM ** nonce, BUF_MEM ** enc_nonce)
-+{
-+    BUF_MEM * key = NULL;
-+    if (!ctx)
-+        goto err;
-+
-+    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
-+    if (!key)
-+        goto err;
-+
-+    *nonce = randb(EVP_CIPHER_block_size(ctx->cipher));
-+    if (!*nonce)
-+        goto err;
-+
-+    *enc_nonce = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
-+            (unsigned char *) key->data, ctx->iv, 1, *nonce, 1);
-+
-+    return 1;
-+
-+err:
-+    if (key)
-+        OPENSSL_free(key);
-+
-+    return 0;
-+}
-+
-+BUF_MEM *
-+PACE_STEP2_dec_nonce(const PACE_SEC * pi,
-+        const BUF_MEM * enc_nonce, const PACE_CTX * ctx)
-+{
-+    BUF_MEM * nonce = NULL;
-+    BUF_MEM * key = NULL;
-+    if (!ctx)
-+        goto err;
-+
-+    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
-+    if (!key)
-+        goto err;
-+
-+    nonce = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
-+            (unsigned char *) key->data, ctx->iv, 0, enc_nonce, 1);
-+
-+err:
-+    if (key)
-+        BUF_MEM_free(key);
-+
-+    return nonce;
-+}
-+
-+BUF_MEM *
-+PACE_STEP3A_map_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
-+{
-+    if (!ctx)
-+        return NULL;
-+
-+    return ctx->map_generate_key(dp, ctx);
-+}
-+
-+PACEDomainParameterInfo *
-+PACE_STEP3A_map_compute_key(const PACEDomainParameterInfo * dp_in,
-+		const PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in)
-+{
-+    PACEDomainParameterInfo * out = NULL;
-+    if (!ctx)
-+        return NULL;
-+	out = ctx->map_compute_key(dp_in, ctx, s, in);
-+	if(!out)
-+		return NULL;
-+	return out;
-+}
-+
-+BUF_MEM *
-+PACE_STEP3B_dh_generate_key(const PACEDomainParameterInfo * dp,
-+		const PACE_CTX * ctx)
-+{
-+    if (!dp || !ctx)
-+        return NULL;
-+    switch (dp->domainParameter->algorithm) {
-+        case NID_dhpublicnumber:
-+            return dh_generate_key(dp, ctx);
-+        case NID_X9_62_id_ecPublicKey:
-+            return ecdh_generate_key(dp, ctx);
-+        default:
-+            return NULL;
-+    }
-+}
-+
-+BUF_MEM *
-+PACE_STEP3B_dh_compute_key(const PACEDomainParameterInfo * dp,
-+		const PACE_CTX * ctx, const BUF_MEM * in)
-+{
-+    BUF_MEM *out = NULL;
-+
-+    switch (dp->domainParameter->algorithm) {
-+		case NID_dhpublicnumber:
-+            out = dh_compute_key(dp, ctx, in);
-+            break;
-+        case NID_X9_62_id_ecPublicKey:
-+            out = ecdh_compute_key(dp, ctx, in);
-+            break;
-+        default:
-+            goto err;
-+    }
-+    if ((in->length == out->length) &&
-+            (memcmp(in->data, out->data, out->length) == 0)) {
-+        PACEerr(PACE_F_PACE_STEP3B_PROCESS, PACE_R_BAD_DH_OR_ECKEY_OBJECT);
-+        goto err;
-+    }
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+
-+    return NULL;
-+}
-+
-+int
-+PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx, BUF_MEM ** k_mac,
-+        BUF_MEM ** k_enc)
-+{
-+    * k_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
-+    * k_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
-+    if (!*k_mac || !*k_enc)
-+        return 0;
-+
-+    return 1;
-+}
-+
-+BUF_MEM *
-+PACE_STEP3D_compute_authentication_token(PACE_CTX * ctx, PACEDomainParameterInfo * dp,
-+        PACEInfo info, BUF_MEM * pub, BUF_MEM * key, const __be16 ssc)
-+{
-+    BUF_MEM *asn1 = NULL, *ssc_asn1 = NULL, *out;
-+    asn1 = asn1_pubkey(ctx, dp);
-+    ssc_asn1 = encoded_ssc(ssc, ctx);
-+    if (!asn1 || !ssc_asn1 ||
-+            !BUF_MEM_grow(ssc_asn1, ssc_asn1->length + asn1->length) ||
-+            // BUF_MEM_grow sets ssc_asn1->length
-+            !memcpy(ssc_asn1->data + ssc_asn1->length - asn1->length, asn1->data,
-+                asn1->length))
-+        goto err;
-+
-+    switch (info.protocol) {
-+            case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+                out = retail_mac_des(key, ssc_asn1);
-+                break;
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                out = cmac(ctx->cmac_ctx, ctx->cipher, key, ssc_asn1, PACE_AES_MAC_LENGTH);
-+                break;
-+            default:
-+                goto err;
-+    }
-+
-+    BUF_MEM_free(ssc_asn1);
-+    BUF_MEM_free(asn1);
-+    return out;
-+
-+err:
-+    if (ssc_asn1)
-+        BUF_MEM_free(ssc_asn1);
-+    if (asn1)
-+        BUF_MEM_free(asn1);
-+    return NULL;
-+}
-+
-+int
-+PACE_STEP3D_verify_authentication_token(PACE_CTX * ctx, PACEDomainParameterInfo * dp,
-+		PACEInfo info, BUF_MEM * pub, BUF_MEM * key, BUF_MEM * token, const __be16 ssc)
-+{
-+    PACEDomainParameterInfo *dp_opp = NULL;
-+    BUF_MEM *token_verify = NULL, *pub_opp = NULL;
-+    EC_POINT *ecp = NULL;
-+    int rv;
-+    if (!dp)
-+        goto err;
-+
-+    dp_opp = PACEDomainParameterInfo_dup(dp);
-+
-+    switch (dp->domainParameter->algorithm) {
-+		case NID_dhpublicnumber:
-+            if (!dp_opp || !dp->domainParameter->parameters.dh)
-+                goto err;
-+
-+            dp_opp->domainParameter->parameters.dh->pub_key =
-+            		BN_bin2bn((unsigned char *) pub->data, pub->length,
-+            		dp_opp->domainParameter->parameters.dh->pub_key);
-+
-+            pub_opp = bn2buf(dp->domainParameter->parameters.dh->pub_key);
-+            break;
-+		case NID_X9_62_id_ecPublicKey:
-+            if (!dp_opp || !dp->domainParameter->parameters.ecdh)
-+                goto err;
-+
-+            ecp = EC_POINT_new(EC_KEY_get0_group(dp_opp->domainParameter->parameters.ecdh));
-+            if (!ecp ||
-+                    !EC_POINT_oct2point(EC_KEY_get0_group(dp_opp->domainParameter->parameters.ecdh),
-+                    	ecp, (unsigned char *) pub->data, pub->length, ctx->bn_ctx) ||
-+                    !EC_KEY_set_public_key(dp_opp->domainParameter->parameters.ecdh, ecp))
-+                goto err;
-+            EC_POINT_free(ecp);
-+
-+            pub_opp = point2buf(dp->domainParameter->parameters.ecdh, ctx->bn_ctx,
-+                    EC_KEY_get0_public_key(dp->domainParameter->parameters.ecdh));
-+            break;
-+
-+        default:
-+            goto err;
-+    }
-+
-+    token_verify = PACE_STEP3D_compute_authentication_token(ctx, dp_opp, info,
-+            pub_opp, key, ssc);
-+    if (!token_verify)
-+        goto err;
-+
-+    if ((token_verify->length != token->length) ||
-+            (memcmp(token_verify->data, token->data, token->length) == 0))
-+        rv = 1;
-+    else
-+        rv = 0;
-+
-+    BUF_MEM_free(token_verify);
-+    BUF_MEM_free(pub_opp);
-+    PACEDomainParameterInfo_clear_free(dp_opp);
-+
-+    return rv;
-+
-+err:
-+    if (ecp)
-+        EC_POINT_free(ecp);
-+    if (token_verify)
-+        BUF_MEM_free(token_verify);
-+    if (pub_opp)
-+        BUF_MEM_free(pub_opp);
-+    if (dp_opp)
-+        PACEDomainParameterInfo_clear_free(dp_opp);
-+
-+    return -1;
-+}
-Index: openssl/crypto/pace/pace.h
-===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace.h
-@@ -0,0 +1,530 @@
-+/**
-+ * @mainpage OpenPACE
-+ * Implements the Password Authenticated Connection Establishment
-+ * (PACE) protocol, as specified in BSI TR-03110 version 2.0.
-+ *
-+ * PACE is a protocol used to establish strong session keys based
-+ * on a weak shared secret (password). The result of a PACE run
-+ * are two symmetric keys, one for MAC computation and one for
-+ * encryption. It was specfied for Extended Access Control (EAC)
-+ * in Machine Readable Travel Documents (MRTD), but can also be
-+ * used for securing any other communication channel.
-+ *
-+ * PACE can be used with different suites of algorithms and is not
-+ * subject to any patents.
-+ *
-+ * @date 2009-04-29
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#ifndef PACE_H_
-+#define PACE_H_
-+
-+#include <asm/byteorder.h>
-+#include <openssl/dh.h>
-+#include <openssl/ecdh.h>
-+#include <openssl/cmac.h>
-+#include <openssl/buffer.h>
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+/**
-+ * @defgroup types                 Data Types
-+ * @{ ************************************************************************/
-+
-+/** Enum for the type of the secret used. */
-+enum s_type {
-+    /** MRZ is the Machine Readable Zone, printed on the card, encoding
-+     * the personal information of the user */
-+    PACE_MRZ = 1,
-+    /** CAN is the Card access number printed on the card */
-+    PACE_CAN,
-+    /** PIN is the Personal Identification Number, a secret known only
-+     * to the user and not printed on the card */
-+    PACE_PIN,
-+    /** PUK is the Personal Unblocking key. This type of secret is used
-+     * when the card is suspended due to too many incorrect PACE runs */
-+    PACE_PUK,
-+    /** This type of secret is not defined in BSI TR-03110. We use it as
-+     * a generic type, so we can use PACE independent from a ID card */
-+    PACE_RAW,
-+    /** Undefined type, if nothing else matches */
-+    PACE_SEC_UNDEF,
-+};
-+/** Shared secret */
-+typedef struct pace_sec {
-+    /** The type of the secret */
-+    enum s_type type;
-+    /** The secret itself */
-+    BUF_MEM * mem;
-+} PACE_SEC;
-+
-+typedef struct algorithmidentifier {
-+    /** NID to identify the algorithms to be used */
-+    int algorithm;
-+    /** Depending on algorithm either a DH object or a EC_KEY object. */
-+    union {
-+        /** Classic Diffie-Hellman parameters */
-+        DH * dh;
-+        /** Elliptic curve Diffie-Hellman parameters */
-+        EC_KEY * ecdh;
-+    } parameters;
-+} AlgorithmIdentifier;
-+
-+typedef struct paceinfo {
-+	/** NID to identify the exact protocol to be used, including methods for
-+	 *  key agreement, mapping of domain parameters, encryption and integrity
-+	 *  protection */
-+	int protocol;
-+	/** Version of the protocol, MUST be 1 or 2 */
-+	int version;
-+	/** Used to indicate the local domain parameter identifier */
-+	int parameterId;
-+} PACEInfo;
-+
-+typedef struct pacedomainparameterinfo {
-+	/** NID to identify the type of domain parameters */
-+	int protocol;
-+	/** Structure that contains the actual domain parameters */
-+	AlgorithmIdentifier  * domainParameter;
-+	/** Used to indicate the local domain parameter identifier */
-+	int parameterId;
-+} PACEDomainParameterInfo;
-+
-+/** AES message authentication: CMAC of 8 bytes length */
-+#define PACE_AES_MAC_LENGTH 8
-+
-+/** Context structure used in all protocol steps. Encompasses information
-+ * about cipher, message digest, key agreement scheme, mapping method. */
-+typedef struct pace_ctx {
-+    /** BN_CTX object for various operations */
-+    BN_CTX * bn_ctx;
-+    /** Which hash function to use for Key Derivation */
-+    const EVP_MD * md;
-+    /** BN_CTX object for md */
-+    EVP_MD_CTX * md_ctx;
-+    /** ENGINE object for md */
-+    ENGINE * md_engine;
-+    /** CMAC_CTX object for cmac */
-+    CMAC_CTX * cmac_ctx;
-+    /** EVP_CIPHER object to use for encryption/decryption */
-+    const EVP_CIPHER * cipher;
-+    /** EVP_CIPHER_CTX object for cipher */
-+    EVP_CIPHER_CTX * cipher_ctx;
-+    /** ENGINE object for cipher */
-+    ENGINE * cipher_engine;
-+    /** Initialisation vector for encryption/decryption */
-+    unsigned char * iv;
-+    /** Points to the implementation of a specific mapping
-+     * @see PACE_STEP3A_map_generate_key() */
-+    BUF_MEM * (*map_generate_key)(const PACEDomainParameterInfo * dp,
-+            const struct pace_ctx * ctx);
-+    /** Points to the implementation of a specific mapping
-+     * @see PACE_STEP3A_map_compute_key() */
-+    PACEDomainParameterInfo * (*map_compute_key)(const PACEDomainParameterInfo * dp_in,
-+            const struct pace_ctx * ctx, const BUF_MEM * s,
-+            const BUF_MEM * in);
-+} PACE_CTX;
-+// TODO define ECParameters for elliptic curves to use as parameters
-+
-+void
-+AlgorithmIdentifier_free(AlgorithmIdentifier * dp);
-+
-+void
-+AlgorithmIdentifier_clear_free(AlgorithmIdentifier * dp);;
-+
-+AlgorithmIdentifier *
-+AlgorithmIdentifier_new(void);
-+
-+AlgorithmIdentifier *
-+AlgorithmIdentifier_dup(const AlgorithmIdentifier * dp_in);
-+
-+void
-+PACE_SEC_free(PACE_SEC * s);
-+
-+void
-+PACE_SEC_clear_free(PACE_SEC * s);
-+
-+PACE_SEC *
-+PACE_SEC_new(void);
-+
-+int
-+PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type);
-+
-+void
-+PACE_CTX_clear_free(PACE_CTX * ctx);
-+
-+void
-+PACE_CTX_free(PACE_CTX * ctx);
-+
-+PACE_CTX *
-+PACE_CTX_new(void);
-+
-+void
-+PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp);
-+
-+void
-+PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp);
-+
-+PACEDomainParameterInfo *
-+PACEDomainParameterInfo_new(void);
-+
-+PACEDomainParameterInfo *
-+PACEDomainParameterInfo_dup(const PACEDomainParameterInfo * dp_in);
-+
-+/** @} ***********************************************************************/
-+
-+/**
-+ * @defgroup manage              Data Managment
-+ * @{ ************************************************************************/
-+
-+/**
-+ * @brief frees a AlgorithmIdentifier object
-+ *
-+ * @param dp Object to free (optional)
-+ */
-+void AlgorithmIdentifier_free(AlgorithmIdentifier * dp);
-+/**
-+ * @brief Frees a AlgorithmIdentifier object and all of its components
-+ *
-+ * @param dp Object to free (optional)
-+ */
-+void AlgorithmIdentifier_clear_free(AlgorithmIdentifier * dp);
-+/**
-+ * @brief Creates a new AlgorithmIdentifier object
-+ *
-+ * @return The new object or NULL if an error occurred
-+ */
-+AlgorithmIdentifier * AlgorithmIdentifier_new(void);
-+/**
-+ * @brief Duplicates a AlgorithmIdentifier object without preserving private keys
-+ *
-+ * @param dp_in Object to duplicate
-+ *
-+ * @return Duplicate of dp_in without private and public keys or NULL if an
-+ * error occurred
-+ */
-+AlgorithmIdentifier * AlgorithmIdentifier_dup(const AlgorithmIdentifier * dp_in);
-+/**
-+ * @brief Frees a PACE_SEC object
-+ *
-+ * @param s PACE_SEC object to free (optional)
-+ */
-+void PACE_SEC_free(PACE_SEC * s);
-+/**
-+ * @brief Frees a PACE_SEC object and all its of components
-+ *
-+ * @param s Object to free (optional)
-+ */
-+void PACE_SEC_clear_free(PACE_SEC * s);
-+/**
-+ * @brief Creates a new PACE_SEC object
-+ *
-+ * @return The new object or NULL if an error occurred
-+ */
-+PACE_SEC * PACE_SEC_new(void);
-+/**
-+ * @brief Initializes a PACE_SEC object with a secret and its type
-+ *
-+ * @param s Object to initialize
-+ * @param mem Secret
-+ * @param type Type of secret
-+ *
-+ * @return 1 on success and 0 if an error occurred
-+ */
-+int PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type);
-+/**
-+ * @brief Frees a PACE_CTX object
-+ *
-+ * @param s Object to free (optional)
-+ */
-+void PACE_CTX_free(PACE_CTX * s);
-+/**
-+ * @brief Frees a PACE_CTX object and all its components
-+ *
-+ * @param s Object to free (optional)
-+ */
-+void PACE_CTX_clear_free(PACE_CTX * s);
-+/**
-+ * @brief Creates a new PACE_CTX object
-+ *
-+ * @return The new object or NULL if an error occurred
-+ */
-+PACE_CTX * PACE_CTX_new(void);
-+/**
-+ * @brief Frees a PACEDomainParameter object
-+ *
-+ * @param s Object to free (optional)
-+ */
-+void PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp);
-+/**
-+ * @brief Frees a PACEDomainParameterInfo object and all its components
-+ *
-+ * @param s Object to free (optional)
-+ */
-+void PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp);
-+ /**
-+  * @brief Creates a new PACEDomainParameterInfo object
-+  *
-+  * @return Pointer to the new object or NULL on error
-+  */
-+PACEDomainParameterInfo * PACEDomainParameterInfo_new(void);
-+/**
-+ * @brief Duplicates a PACEDomainParameterInfo structure
-+ *
-+ * @param dp_in PACEDomainParameterInfo structure to duplicate (optional)
-+ * @return Pointer to the duplicated structure or NULL on error
-+ */
-+PACEDomainParameterInfo * PACEDomainParameterInfo_dup(const
-+		PACEDomainParameterInfo * dp_in);
-+/**
-+ * @brief Initializes PACE_CTX/AlgorithmIdentifier objects
-+ *
-+ * @param ctx Object to initialize
-+ * @param dp_info PaceDomainParameterInfo, which specifies the key agreement
-+ * scheme and the domain parameters to use. See TR-3110 A.1.1.1
-+ * @param info PACEInfo onject, which specifies cipher, message digest, key
-+ * agreement scheme, mapping method and MAC method. See TR-3110 A.1.1.1
-+ *
-+ * @return 1 on success and 0 if an error occurred
-+ */
-+int PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp_info, PACEInfo info);
-+/** @} ***********************************************************************/
-+
-+/**
-+ * @defgroup kdf            Key Derivation Functions
-+ * @{ ************************************************************************/
-+
-+/**
-+ * @brief Key derivation function to derive encryption key
-+ *
-+ * @see kdf()
-+ */
-+#define kdf_enc(key, nonce, md, ctx, impl) \
-+    kdf(key, nonce, __constant_cpu_to_be32(1), md, ctx, impl)
-+/**
-+ * @brief Key derivation function to derive authentication key
-+ *
-+ * @see kdf()
-+ */
-+#define kdf_mac(key, nonce, md, ctx, impl) \
-+    kdf(key, nonce, __constant_cpu_to_be32(2), md, ctx, impl)
-+/**
-+ * @brief General key derivation function according to TR-3110 F.3.1
-+ *
-+ * @param key Shared secret
-+ * @param nonce (optional)
-+ * @param counter
-+ * @param md Message digest to use
-+ * @param ctx EVP_MD_CTX object to use (optional)
-+ * @param impl ENGINE object to use for message digest (optional)
-+ *
-+ * @return derivated key or NULL if an error occurred
-+ */
-+BUF_MEM * kdf(const BUF_MEM * key, const BUF_MEM * nonce,
-+        const __be32 counter, const EVP_MD * md, EVP_MD_CTX * ctx,
-+        ENGINE * impl);
-+/**
-+ * @brief Key derivation function from a password pi
-+ *
-+ * @see kdf()
-+ */
-+BUF_MEM * kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce,
-+        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl);
-+/** @} ***********************************************************************/
-+
-+/**
-+ * @defgroup encoding               Encoding
-+ * @{ ************************************************************************/
-+
-+/**
-+ * @brief Checks if str is NOT a INTEGER string in hex format according to TR-3110
-+ * D.2.1.1.
-+ *
-+ * @param str hex string
-+ *
-+ * @return 1 if str is NOT a valid integer hex string or 0 if it is
-+ */
-+int is_no_valid_integer_hexstr(const char * str);
-+/**
-+ * @brief Checks if str is a character string according to TR-3110 D.2.1.4
-+ *
-+ * @param str BUF_MEM object with the string to check
-+ *
-+ * @return 1 if str is a character string or 0 if it is not
-+ */
-+int is_char_str(const BUF_MEM * str);
-+/**
-+ * @brief Encodes a shared secret according to TR-3110 Table F.2
-+ *
-+ * @param pi Password to encode
-+ *
-+ * @return BUF_MEM object containing the encoded password or NULL if an error occurred
-+ *
-+ * @note This function is automatically called during PACE, normally you should not need to use it.
-+ */
-+BUF_MEM * encoded_secret(const PACE_SEC * pi);
-+/**
-+ * @brief Encodes a send sequence counter according to TR-3110 F.3
-+ *
-+ * @param ssc Send sequence counter to encode
-+ * @param ctx PACE_CTX object
-+ *
-+ * @return BUF_MEM object containing the send sequence counter or NULL if an error occurred
-+ *
-+ * @note This function is automatically called during PACE, normally you should not need to use it.
-+ */
-+BUF_MEM * encoded_ssc(const __be16 ssc, const PACE_CTX *ctx);
-+/** @} ***********************************************************************/
-+
-+/**
-+ * @defgroup proto               Protocol Steps
-+ * @{ ************************************************************************/
-+
-+/**
-+ * @brief Generates and encrypts a nonce.
-+ *
-+ * @param pi        Shared secret for key derivation (see kdf_pi())
-+ * @param ctx       PACE_CTX object
-+ * @param nonce     Where to save the new object containing the nonce
-+ * @param enc_nonce Where to save the new object containing the encrypted nonce
-+ *
-+ * @return          1 on success and 0 if an error occurred
-+ */
-+int PACE_STEP1_enc_nonce(const PACE_SEC * pi, const PACE_CTX * ctx,
-+        BUF_MEM ** nonce, BUF_MEM ** enc_nonce);
-+/**
-+ * @brief Decrypt the Nonce from the other party.
-+ *
-+ * @param pi PACE secret used to derive the symmetric key
-+ * @param enc_nonce Encrypted nonce
-+ * @param ctx Context structure that contains information about encryption and
-+ * hash algorithms to use
-+ *
-+ * @return Plaintext nonce or NULL if an error occurred
-+ */
-+BUF_MEM * PACE_STEP2_dec_nonce(const PACE_SEC * pi,
-+        const BUF_MEM * enc_nonce, const PACE_CTX * ctx);
-+/**
-+ * @brief Generate a public keypair to perform the mapping to new domain
-+ * parameters
-+ *
-+ * @param dp Domain parameters
-+ * @param ctx PACE_CTX object
-+ *
-+ * @return Buffer to be transmitted to the other party or NULL if an error
-+ * occurred
-+ */
-+BUF_MEM *
-+PACE_STEP3A_map_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
-+/**
-+ * @brief Get the ephemeral domain parameters.
-+ *
-+ * Compute the shared secret from our own private key and the other
-+ * parties public key. Then map the static domain parameters to new,
-+ * ephemeral ones.
-+ *
-+ * @param dp_in Static domain parameters
-+ * @param ctx
-+ * @param s Nonce used for computing the ephemeral domain parameters
-+ * @param in Public key from the other party
-+ *
-+ * @return Ephemeral domain parameters or NULL if an error occurred
-+ */
-+PACEDomainParameterInfo * PACE_STEP3A_map_compute_key(const PACEDomainParameterInfo * dp_in,
-+        const PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in);
-+/**
-+ * @brief Generate a keypair for key agreement
-+ *
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param ctx PACE_CTX object
-+ *
-+ * @return Public key or NULL if an error occurred
-+ */
-+BUF_MEM * PACE_STEP3B_dh_generate_key(const PACEDomainParameterInfo * dp,
-+		const PACE_CTX * ctx);
-+/**
-+ * @brief Compute the shared secret
-+ *
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param ctx PACE_CTX object
-+ * @param in Public key from the other party
-+ *
-+ * @return Shared secret or NULL if an error occurred
-+ */
-+BUF_MEM * PACE_STEP3B_dh_compute_key(const PACEDomainParameterInfo * dp,
-+		const PACE_CTX * ctx, const BUF_MEM * in);
-+/**
-+ * @brief Derives encryption and authentication keys
-+ *
-+ * @param key Shared secret (computed in step 3B)
-+ * @param ctx PACE_CTX object
-+ * @param k_mac Where to store the authentication key
-+ * @param k_enc Where to store the encryption key
-+ *
-+ * @return          1 on success and 0 if an error occurred
-+ */
-+int PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx,
-+        BUF_MEM ** k_mac, BUF_MEM ** k_enc);
-+/**
-+ * @brief Compute the authentication token from domain parameters
-+ *           and public key
-+ *
-+ * @param ctx PACE_CTX object
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param info PACEInfo containing information about the MAC to be used
-+ * @param pub Public key from the other party (generated in step 3B)
-+ * @param key Authentication key (computed in step 3C)
-+ * @param ssc Send sequence counter
-+ *
-+ * @return Authentication token or NULL in case of error
-+ */
-+BUF_MEM * PACE_STEP3D_compute_authentication_token(PACE_CTX * ctx,
-+		PACEDomainParameterInfo * dp, PACEInfo info, BUF_MEM * pub, BUF_MEM * key,
-+		const __be16 ssc);
-+/**
-+ * @brief Verifies an authentication token.
-+ *
-+ * @param ctx PACE_CTX object
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param pub Public key from the other party (generated in step 3B)
-+ * @param key Authentication key (computed in step 3C)
-+ * @param token Authentication token from the other party
-+ * @param ssc Send sequence counter
-+ *
-+ * @return 1 if the token has been verified, 0 if not, -1 if an error
-+ * occurred.
-+ */
-+int PACE_STEP3D_verify_authentication_token(PACE_CTX * ctx,
-+		PACEDomainParameterInfo * dp, PACEInfo info, BUF_MEM * pub, BUF_MEM * key,
-+		BUF_MEM * token, const __be16 ssc);
-+/** @} ***********************************************************************/
-+/* The following lines are auto generated by the script mkerr.pl. Any changes
-+ * made after this point may be overwritten when the script is next run.
-+ */
-+void ERR_load_PACE_strings(void);
-+
-+/* Error codes for the PACE functions. */
-+
-+/* Function codes. */
-+#define PACE_F_ASN1_PUBKEY				 100
-+#define PACE_F_DH_GET_ORDER				 101
-+#define PACE_F_DH_GET_SG_PRIME				 102
-+#define PACE_F_DH_GM_COMPUTE_KEY			 103
-+#define PACE_F_INIT_DH					 104
-+#define PACE_F_PACE_STEP3B_PROCESS			 105
-+
-+/* Reason codes. */
-+#define PACE_R_BAD_DH_OR_ECKEY_OBJECT			 100
-+#define PACE_R_BAD_FORMAT				 101
-+#define PACE_R_UNABLE_TO_GET_ORDER			 102
-+#define PACE_R_UNABLE_TO_GET_SG_PRIME			 103
-+
-+#ifdef  __cplusplus
-+}
-+#endif
-+#endif
-Index: openssl/crypto/pace/pace_buffer.c
-===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace_buffer.c
-@@ -0,0 +1,36 @@
-+/**
-+ * @date 2009-11-30
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#include <string.h>
-+#include "pace_buffer.h"
-+
-+BUF_MEM *
-+BUF_MEM_create(size_t len)
-+{
-+    BUF_MEM *out = BUF_MEM_new();
-+
-+    if (!out)
-+        return NULL;
-+    if (!BUF_MEM_grow(out, len)) {
-+        BUF_MEM_free(out);
-+        return NULL;
-+    }
-+
-+    return out;
-+}
-+
-+BUF_MEM *
-+BUF_MEM_create_init(const void *buf, size_t len)
-+{
-+    BUF_MEM *out = BUF_MEM_create(len);
-+
-+    if (!out)
-+        return NULL;
-+    memcpy(out->data, out->data, len);
-+
-+    return out;
-+}
-Index: openssl/crypto/pace/pace_buffer.h
-===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace_buffer.h
-@@ -0,0 +1,33 @@
-+/**
-+ * @date 2009-11-30
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#ifndef PACE_BUFFER_H_
-+#define PACE_BUFFER_H_
-+
-+#include <openssl/buffer.h>
-+
-+/**
-+ * @brief Creates a BUF_MEM object
-+ *
-+ * @param len required length of the buffer
-+ *
-+ * @return Initialized BUF_MEM object or NULL if an error occurred
-+ */
-+BUF_MEM *
-+BUF_MEM_create(size_t len);
-+/**
-+ * @brief Creates and initializes a BUF_MEM object
-+ *
-+ * @param buf Initial data
-+ * @param len Length of buf
-+ *
-+ * @return Initialized BUF_MEM object or NULL if an error occurred
-+ */
-+BUF_MEM *
-+BUF_MEM_create_init(const void *buf, size_t len);
-+
-+#endif
 \ No newline at end of file
-Index: openssl/crypto/pace/pace_err.c
+Index: openssl/crypto/pace/pace_mappings.h
 ===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace_err.c
-@@ -0,0 +1,103 @@
-+/* crypto/pace/pace_err.c */
-+/* ====================================================================
-+ * Copyright (c) 1999-2009 The OpenSSL Project.  All rights reserved.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ *
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ *
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in
-+ *    the documentation and/or other materials provided with the
-+ *    distribution.
-+ *
-+ * 3. All advertising materials mentioning features or use of this
-+ *    software must display the following acknowledgment:
-+ *    "This product includes software developed by the OpenSSL Project
-+ *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
-+ *
-+ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
-+ *    endorse or promote products derived from this software without
-+ *    prior written permission. For written permission, please contact
-+ *    openssl-core@OpenSSL.org.
-+ *
-+ * 5. Products derived from this software may not be called "OpenSSL"
-+ *    nor may "OpenSSL" appear in their names without prior written
-+ *    permission of the OpenSSL Project.
-+ *
-+ * 6. Redistributions of any form whatsoever must retain the following
-+ *    acknowledgment:
-+ *    "This product includes software developed by the OpenSSL Project
-+ *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
-+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
-+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-+ * OF THE POSSIBILITY OF SUCH DAMAGE.
-+ * ====================================================================
-+ *
-+ * This product includes cryptographic software written by Eric Young
-+ * (eay@cryptsoft.com).  This product includes software written by Tim
-+ * Hudson (tjh@cryptsoft.com).
-+ *
-+ */
-+
-+/* NOTE: this file was auto generated by the mkerr.pl script: any changes
-+ * made to it will be overwritten when the script next updates this file,
-+ * only reason strings will be preserved.
-+ */
-+
-+#include <stdio.h>
-+#include <openssl/err.h>
-+#include <openssl/pace.h>
-+
-+/* BEGIN ERROR CODES */
-+#ifndef OPENSSL_NO_ERR
-+
-+#define ERR_FUNC(func) ERR_PACK(ERR_LIB_PACE,func,0)
-+#define ERR_REASON(reason) ERR_PACK(ERR_LIB_PACE,0,reason)
-+
-+static ERR_STRING_DATA PACE_str_functs[]=
-+	{
-+{ERR_FUNC(PACE_F_ASN1_PUBKEY),	"ASN1_PUBKEY"},
-+{ERR_FUNC(PACE_F_DH_GET_ORDER),	"DH_GET_ORDER"},
-+{ERR_FUNC(PACE_F_DH_GET_SG_PRIME),	"DH_GET_SG_PRIME"},
-+{ERR_FUNC(PACE_F_DH_GM_COMPUTE_KEY),	"DH_GM_COMPUTE_KEY"},
-+{ERR_FUNC(PACE_F_INIT_DH),	"INIT_DH"},
-+{ERR_FUNC(PACE_F_PACE_STEP3B_PROCESS),	"PACE_STEP3B_PROCESS"},
-+{0,NULL}
-+	};
-+
-+static ERR_STRING_DATA PACE_str_reasons[]=
-+	{
-+{ERR_REASON(PACE_R_BAD_DH_OR_ECKEY_OBJECT),"bad dh or eckey object"},
-+{ERR_REASON(PACE_R_BAD_FORMAT)           ,"bad format"},
-+{ERR_REASON(PACE_R_UNABLE_TO_GET_ORDER)  ,"unable to get order"},
-+{ERR_REASON(PACE_R_UNABLE_TO_GET_SG_PRIME),"unable to get sg prime"},
-+{0,NULL}
-+	};
-+
-+#endif
-+
-+void ERR_load_PACE_strings(void)
-+	{
-+#ifndef OPENSSL_NO_ERR
-+
-+	if (ERR_func_error_string(PACE_str_functs[0].error) == NULL)
-+		{
-+		ERR_load_strings(0,PACE_str_functs);
-+		ERR_load_strings(0,PACE_str_reasons);
-+		}
-+#endif
-+	}
-Index: openssl/crypto/pace/pace_lib.c
-===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace_lib.c
-@@ -0,0 +1,256 @@
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/pace/pace_mappings.h	2009-12-01 17:27:33.000000000 +0100
+@@ -0,0 +1,60 @@
 +/**
-+ * @date 2009-11-30
++ * @date 2009-12-01
 + * @version 0.1
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
 +
-+//#include <openssl/bio.h>
-+#include <openssl/bn.h>
-+#include <openssl/buffer.h>
-+#include <openssl/evp.h>
-+#include <openssl/objects.h>
++#ifndef PACE_MAPPINGS_H_
++#define PACE_MAPPINGS_H_
++
 +#include <openssl/pace.h>
++#include <openssl/buffer.h>
 +
++/**
++ * @defgroup encoding               Mapping
++ * @{ ************************************************************************/
 +
-+void
-+AlgorithmIdentifier_free(AlgorithmIdentifier * dp)
-+{
-+    if (dp) {
-+        OPENSSL_free(dp);
-+    }
-+}
-+
-+void
-+AlgorithmIdentifier_clear_free(AlgorithmIdentifier * dp)
-+{
-+    if (dp) {
-+        switch (dp->algorithm) {
-+            case NID_dhpublicnumber:
-+                if (dp->parameters.dh)
-+                    DH_free(dp->parameters.dh);
-+                break;
-+            case NID_X9_62_id_ecPublicKey:
-+                if (dp->parameters.ecdh)
-+                    EC_KEY_free(dp->parameters.ecdh);
-+                break;
-+            default:
-+                break;
-+        }
-+        OPENSSL_free(dp);
-+    }
-+}
-+
-+AlgorithmIdentifier *
-+AlgorithmIdentifier_new(void)
-+{
-+    AlgorithmIdentifier * out = (AlgorithmIdentifier *) OPENSSL_malloc(sizeof(AlgorithmIdentifier));
-+    if (!out)
-+        return NULL;
-+
-+    out->algorithm = NID_undef;
-+    out->parameters.dh = NULL;
-+    out->parameters.ecdh = NULL;
-+
-+    return out;
-+}
-+
-+AlgorithmIdentifier *
-+AlgorithmIdentifier_dup(const AlgorithmIdentifier * dp_in)
-+{
-+    AlgorithmIdentifier * out = NULL;
-+    if (!dp_in)
-+        goto err;
-+
-+    out = AlgorithmIdentifier_new();
-+    if (!out)
-+        goto err;
-+    out->algorithm = dp_in->algorithm;
-+    switch (dp_in->algorithm) {
-+    	case NID_dhpublicnumber:
-+            if (dp_in->parameters.dh) {
-+                out->parameters.dh = DHparams_dup(dp_in->parameters.dh);
-+                if (!out->parameters.dh)
-+                    goto err;
-+                BN_clear_free(out->parameters.dh->priv_key);
-+                BN_clear_free(out->parameters.dh->pub_key);
-+            }
-+            break;
-+        case NID_X9_62_id_ecPublicKey:
-+            if (dp_in->parameters.ecdh) {
-+                out->parameters.ecdh = EC_KEY_dup(dp_in->parameters.ecdh);
-+                if (!out->parameters.ecdh)
-+                    goto err;
-+                /* Note: functions will return error, but clear the keys anyway */
-+                EC_KEY_set_private_key(out->parameters.ecdh, NULL);
-+                EC_KEY_set_public_key(out->parameters.ecdh, NULL);
-+            }
-+            break;
-+        default:
-+		printf("Error: AlgorithmIdentifier structure not correctly initialised\n");
-+        	goto err;
-+            break;
-+    }
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        AlgorithmIdentifier_clear_free(out);
-+
-+    return NULL;
-+}
-+
-+void
-+PACE_SEC_free(PACE_SEC * s)
-+{
-+    if (s) {
-+        OPENSSL_free(s);
-+    }
-+}
-+
-+void
-+PACE_SEC_clear_free(PACE_SEC * s)
-+{
-+    if (s) {
-+        if (s->mem)
-+            BUF_MEM_free(s->mem);
-+        OPENSSL_free(s);
-+    }
-+}
-+
-+PACE_SEC *
-+PACE_SEC_new(void)
-+{
-+    PACE_SEC * out = (PACE_SEC *) OPENSSL_malloc(sizeof(PACE_SEC));
-+    if (!out)
-+        return NULL;
-+
-+    out->mem = NULL;
-+    out->type = PACE_SEC_UNDEF;
-+
-+    return out;
-+}
-+
-+int
-+PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type)
-+{
-+    if (!s || !mem)
-+        return 0;
-+    s->mem = mem;
-+
-+    switch (type) {
-+        case PACE_PUK:
-+        case PACE_CAN:
-+        case PACE_PIN:
-+        case PACE_MRZ:
-+        case PACE_RAW:
-+            s->type = type;
-+            break;
-+
-+        default:
-+            return 0;
-+    }
-+
-+    return 1;
-+}
-+
-+void
-+PACE_CTX_clear_free(PACE_CTX * ctx)
-+{
-+    if (ctx) {
-+        if (ctx->bn_ctx)
-+            BN_CTX_free(ctx->bn_ctx);
-+        if (ctx->md_ctx) {
-+            EVP_MD_CTX_destroy(ctx->md_ctx);
-+        }
-+        OPENSSL_free(ctx);
-+    }
-+}
-+
-+void
-+PACE_CTX_free(PACE_CTX * ctx)
-+{
-+    if (ctx) {
-+        OPENSSL_free(ctx);
-+    }
-+}
-+
-+PACE_CTX *
-+PACE_CTX_new(void)
-+{
-+    PACE_CTX * out = (PACE_CTX *) OPENSSL_malloc(sizeof(PACE_CTX));
-+    if (!out)
-+        return NULL;
-+
-+    out->bn_ctx = NULL;
-+    out->md = NULL;
-+    out->md_ctx = NULL;
-+    out->md_engine = NULL;
-+    out->cmac_ctx = NULL;
-+    out->cipher_ctx = NULL;
-+    out->cipher_engine = NULL;
-+    out->iv = NULL;
-+
-+    return out;
-+}
-+
-+void
-+PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp)
-+{
-+	if(dp)
-+		OPENSSL_free(dp);
-+}
-+
-+void
-+PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp)
-+{
-+	if(dp) {
-+		if(dp->domainParameter)
-+			AlgorithmIdentifier_clear_free(dp->domainParameter);
-+		PACEDomainParameterInfo_free(dp);
-+	}
-+}
-+
++/**
++ * @brief Computes a key for DH Generic Mapping (see TR-3110 A.3.5.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
 +PACEDomainParameterInfo *
-+PACEDomainParameterInfo_new(void)
-+{
-+	PACEDomainParameterInfo * out = (PACEDomainParameterInfo *) OPENSSL_malloc(
-+			sizeof(PACEDomainParameterInfo));
-+	if(!out)
-+		return NULL;
-+
-+	out->domainParameter = AlgorithmIdentifier_new();
-+	if(!out->domainParameter)
-+		goto err;
-+	//FIXME: Are these safe defaults?
-+	out->parameterId = 0;
-+	out->protocol = 0;
-+	return out;
-+
-+err:
-+	if(out && !out->domainParameter)
-+		OPENSSL_free(out);
-+	return NULL;
-+}
-+
++dh_gm_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++BUF_MEM *
++dh_im_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
++/**
++ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
 +PACEDomainParameterInfo *
-+PACEDomainParameterInfo_dup(const PACEDomainParameterInfo * dp_in)
-+{
-+	PACEDomainParameterInfo * dp_out = NULL;
-+	dp_out = PACEDomainParameterInfo_new();
-+	if(dp_in) {
-+		if(!dp_out)
-+			goto err;
-+		dp_out->domainParameter = AlgorithmIdentifier_dup(dp_in->domainParameter);
-+		if(!dp_out->domainParameter)
-+			goto err;
-+		dp_out->protocol = dp_in->protocol;
-+		dp_out->parameterId = dp_in->parameterId;
-+	}
-+	return dp_out;
-+err:
-+	if(dp_out && !dp_out->domainParameter)
-+		OPENSSL_free(dp_out);
-+	return NULL;
-+}
-Index: openssl/crypto/pace/pace_util.c
++dh_im_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Computes a key for ECDH Generic Mapping (see TR-3110 A.3.4.1)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++PACEDomainParameterInfo *
++ecdh_gm_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++/**
++ * @brief Computes a key for ECDH Integrated Mapping (see TR-3110 A.3.4.2)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++PACEDomainParameterInfo *
++ecdh_im_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
++        const BUF_MEM * s, const BUF_MEM * in);
++ 
++/** @} ***********************************************************************/
++
++#endif /*PACE_MAPPINGS_H_*/
+Index: openssl/Configure
 ===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace_util.c
-@@ -0,0 +1,287 @@
-+/**
-+ * @date 2009-11-30
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#include <string.h>
-+#include <openssl/rand.h>
-+#include "pace_util.h"
-+#include "pace_buffer.h"
-+
-+BUF_MEM *
-+hash(const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl,
-+        const BUF_MEM * in)
-+{
-+    BUF_MEM * out = NULL;
-+    EVP_MD_CTX * tmp_ctx = NULL;
-+    unsigned int tmp_len;
-+    if (!md || !in)
-+        goto err;
-+
-+    if (ctx)
-+        tmp_ctx = ctx;
-+    else {
-+        tmp_ctx = EVP_MD_CTX_create();
-+        if (!tmp_ctx)
-+            goto err;
-+    }
-+
-+    /* get buffer in required size */
-+    out = BUF_MEM_create(EVP_MD_size(md));
-+    if (!out)
-+        goto err;
-+	tmp_len = out->length;
-+    if (!EVP_DigestInit_ex(tmp_ctx, md, impl) ||
-+            !EVP_DigestUpdate(tmp_ctx, in->data, in->length) ||
-+            !EVP_DigestFinal_ex(tmp_ctx, (unsigned char *) out->data, &tmp_len))
-+
-+    if (!ctx)
-+        EVP_MD_CTX_destroy(tmp_ctx);
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+    if (tmp_ctx && !ctx) {
-+        EVP_MD_CTX_destroy(tmp_ctx);
-+    }
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
-+        unsigned char *key, unsigned char *iv, int enc, const BUF_MEM * in,
-+        int init)
-+{
-+    BUF_MEM * out = NULL;
-+    EVP_CIPHER_CTX * tmp_ctx = NULL;
-+    int i;
-+    if (!in)
-+        goto err;
-+
-+    if (ctx)
-+        tmp_ctx = ctx;
-+    else {
-+        tmp_ctx = EVP_CIPHER_CTX_new();
-+        if (!tmp_ctx)
-+            goto err;
-+        EVP_CIPHER_CTX_init(tmp_ctx);
-+    }
-+
-+    i = in->length;
-+    i += EVP_CIPHER_block_size(type);
-+    /* get buffer in required size */
-+    out = BUF_MEM_create(i);
-+    if (!out)
-+        goto err;
-+
-+    /* get cipher */
-+    if (ctx && init)
-+        if (!EVP_CipherInit_ex(tmp_ctx, type, impl, key, iv, enc))
-+            goto err;
-+    if (!EVP_CipherUpdate(ctx, (unsigned char *) out->data, &i,
-+                (unsigned char *) in->data, in->length))
-+        goto err;
-+    out->length = i;
-+    if(!EVP_CipherFinal_ex(ctx, (unsigned char *) (out->data + out->length),
-+                &i))
-+        goto err;
-+    out->length += i;
-+
-+    if (!ctx) {
-+        EVP_CIPHER_CTX_cleanup(tmp_ctx);
-+        EVP_CIPHER_CTX_free(tmp_ctx);
-+    }
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+    if (!ctx && tmp_ctx) {
-+        EVP_CIPHER_CTX_cleanup(tmp_ctx);
-+        EVP_CIPHER_CTX_free(tmp_ctx);
-+    }
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+base64(const BUF_MEM * in)
-+{
-+    BIO *bmem = NULL, *b64 = NULL;
-+    BUF_MEM *out = NULL;
-+    if (!in)
-+        goto err;
-+
-+    b64 = BIO_new(BIO_f_base64());
-+    if (!b64)
-+        goto err;
-+    /* usually base64 adds newline */
-+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-+
-+    bmem = BIO_new(BIO_s_mem());
-+    if (!bmem)
-+        goto err;
-+    /* So BIO_free() leaves BUF_MEM alone */
-+    BIO_set_close(bmem, BIO_NOCLOSE);
-+    BIO_push(b64, bmem);
-+
-+    if ((BIO_write(b64, in->data, in->length) < 0) ||
-+            (BIO_flush(b64) <= 0))
-+        goto err;
-+    BIO_get_mem_ptr(b64, &out);
-+
-+    BIO_free_all(b64);
-+
-+    return out;
-+
-+err:
-+    if (b64)
-+        BIO_free(b64);
-+    if (bmem)
-+        BIO_free(bmem);
-+    if (out)
-+        BUF_MEM_free(out);
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+cmac(CMAC_CTX *ctx, const EVP_CIPHER *type, const BUF_MEM * key,
-+        const BUF_MEM * in, unsigned int maclen)
-+{
-+    CMAC_CTX * cmac_ctx = NULL;
-+    BUF_MEM * rv = NULL;
-+    if (!key || !ctx || !in || !type ||
-+            (key->length < EVP_CIPHER_key_length(type)))
-+        goto err;
-+
-+    if (ctx)
-+        cmac_ctx = ctx;
-+    else {
-+        cmac_ctx = CMAC_CTX_new();
-+    }
-+
-+    /* get buffer in required size */
-+    rv = BUF_MEM_create(maclen);
-+    if (!rv)
-+        goto err;
-+
-+    if (!cmac_ctx ||
-+            !CMAC_Init(cmac_ctx, type, (unsigned char*) key->data,
-+                EVP_CIPHER_key_length(type)*8) ||
-+            !CMAC_Update(cmac_ctx, (unsigned char*) in->data, in->length) ||
-+            !CMAC_Final(cmac_ctx, (unsigned char*) rv->data, maclen))
-+        goto err;
-+
-+    if (!ctx)
-+        CMAC_CTX_free(cmac_ctx);
-+
-+    return rv;
-+
-+err:
-+    if (cmac_ctx && !ctx) {
-+        CMAC_CTX_free(cmac_ctx);
-+    }
-+    if (rv) {
-+        BUF_MEM_free(rv);
-+    }
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+randb(int numbytes)
-+{
-+    BUF_MEM * r = BUF_MEM_new();
-+    if (!r || !BUF_MEM_grow(r, numbytes) ||
-+            !RAND_bytes((unsigned char *) r->data, numbytes))
-+        goto err;
-+
-+    return r;
-+
-+err:
-+    if (r)
-+        BUF_MEM_free(r);
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+add_iso_pad(const BUF_MEM * m, int block_size)
-+{
-+    BUF_MEM * r = NULL;
-+    int p_len;
-+    if (!m)
-+        goto err;
-+
-+    p_len = (m->length / block_size) * block_size + block_size;
-+
-+    r = BUF_MEM_new();
-+    if (!r || !BUF_MEM_grow(r, p_len))
-+        goto err;
-+    memcpy(r->data, m->data, m->length);
-+
-+    /* now add iso padding */
-+    memset(r->data + m->length, 0x80, 1);
-+    memset(r->data + m->length + 1 , 0, p_len - m->length - 1);
-+
-+    return r;
-+err:
-+    if (r)
-+        BUF_MEM_free(r);
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
-+{
-+    BUF_MEM * out = NULL;
-+
-+    /* get buffer in required size */
-+    out = BUF_MEM_create(EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
-+                EC_KEY_get_conv_form(ecdh), NULL, 0, bn_ctx));
-+    if (!out)
-+        goto err;
-+
-+    out->length = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
-+            EC_KEY_get_conv_form(ecdh), (unsigned char *) out->data, out->max,
-+            bn_ctx);
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
-+bn2buf(const BIGNUM *bn)
-+{
-+    BUF_MEM * out = NULL;
-+    if (!bn)
-+        goto err;
-+
-+    /* get buffer in required size */
-+    out = BUF_MEM_create(BN_num_bytes(bn));
-+    if (!out)
-+        goto err;
-+
-+    out->length = BN_bn2bin(bn, (unsigned char *) out->data);
-+
-+    return out;
-+
-+err:
-+    if (out)
-+        BUF_MEM_free(out);
-+
-+    return NULL;
-+}
-Index: openssl/crypto/pace/pace_util.h
-===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pace_util.h
-@@ -0,0 +1,124 @@
-+/**
-+ * @date 2009-11-30
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#ifndef PACE_UTIL_H_
-+#define PACE_UTIL_H_
-+
-+#include <openssl/buffer.h>
-+#include <openssl/evp.h>
-+#include <openssl/cmac.h>
-+#include <openssl/ec.h>
-+
-+/**
-+ * @brief Wrapper for the OpenSSL hash functions.
-+ *
-+ * @param md
-+ * @param ctx (optional)
-+ * @param impl (optional)
-+ * @param in
-+ *
-+ * @return message digest or NULL if an error occurred
-+ */
-+BUF_MEM *
-+hash(const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl, const BUF_MEM * in);
-+/**
-+ * @brief Wrapper to the OpenSSL encryption functions.
-+ *
-+ * @param ctx (optional)
-+ * @param type
-+ * @param impl only evaluated if init is 1. (optional)
-+ * @param key only evaluated if init is 1.
-+ * @param iv only evaluated if init is 1. (optional)
-+ * @param enc only evaluated if init is 1.
-+ * @param in
-+ * @param init whether to initialize (1) the given ctx or not (0).
-+ *
-+ * @return cipher of in or NULL if an error occurred
-+ */
-+BUF_MEM *
-+cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
-+        unsigned char *key, unsigned char *iv, int enc, const BUF_MEM * in,
-+        const int init);
-+/**
-+ * @brief Wrapper to the OpenSSL pseudo-random number generator.
-+ *
-+ * @param numbytes number of bytes to randomize
-+ *
-+ * @return a buffer of randomized bytes or NULL if an error occurred
-+ */
-+BUF_MEM *
-+randb(int numbytes);
-+/**
-+ * @brief Computes message authentication code in retail-mode according to
-+ * ISO/IEC 9797-1 MAC algorithm 3 / padding method 2 with block cipher DES and
-+ * IV=0.
-+ *
-+ * @param key authentication key
-+ * @param in buffer to authenticate
-+ * @param ssc Send sequence counter
-+ *
-+ * @return message authentication code or NULL if an error occurred
-+ */
-+BUF_MEM *
-+retail_mac_des(const BUF_MEM * key, const BUF_MEM * in);
-+/**
-+ * @brief Compute a CMAC of the input buffer using the encryption algorithm
-+ *           specified in the PACE context structure
-+ *
-+ * @param ctx EVP_CIPHER_CTX object (optional)
-+ * @param type contains the encryption algorithm to use
-+ * @param key the symmetric key used for the computation. The key must have
-+ *           the correct length for the encryption algorithm used
-+ * @param in buffer that contains the data to for CMAC computation
-+ * @param maclen length in number of bytes of the MAC
-+ *
-+ * @return buffer containing the CMAC or NULL in case of error
-+ */
-+BUF_MEM *
-+cmac(CMAC_CTX *ctx, const EVP_CIPHER *type, const BUF_MEM * key,
-+        const BUF_MEM * in, unsigned int maclen);
-+/**
-+ * @brief encodes a buffer in base64
-+ *
-+ * @param in buffer to encode
-+ *
-+ * @return base 64 encoded buffer or NULL if an error occurred
-+ */
-+BUF_MEM *
-+base64(const BUF_MEM * in);
-+/**
-+ * @brief Padds a buffer using ISO/IEC 9797-1 padding method 2.
-+ *
-+ * @param m buffer to padd
-+ * @param block_size pad to this block size
-+ *
-+ * @return new buffer with the padded input or NULL if an error occurred
-+ */
-+BUF_MEM *
-+add_iso_pad(const BUF_MEM * m, int block_size);
-+/**
-+ * @brief converts an EC_POINT object to a BUF_MEM object
-+ *
-+ * @param ecdh EC_KEY object
-+ * @param bn_ctx object (optional)
-+ * @param ecp elliptic curve point to convert
-+ *
-+ * @return converted elliptic curve point or NULL if an error occurred
-+ */
-+BUF_MEM *
-+point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
-+/**
-+ * @brief converts an BIGNUM object to a BUF_MEM object
-+ *
-+ * @param bn bignumber to convert
-+ *
-+ * @return converted bignumber or NULL if an error occurred
-+ */
-+BUF_MEM *
-+bn2buf(const BIGNUM *bn);
-+
-+#endif
-Index: openssl/crypto/pace/pacetest.c
-===================================================================
---- /dev/null
-+++ openssl/crypto/pace/pacetest.c
-@@ -0,0 +1,491 @@
-+#include <stdlib.h>
-+#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
-+#ifdef OPENSSL_NO_PACE
-+int main(int argc, char *argv[])
-+{
-+    printf("No PACE support\n");
-+    return(0);
-+}
-+#else
-+#include <openssl/pace.h>
-+#include <openssl/ec.h>
-+#include <openssl/evp.h>
-+#include <openssl/err.h>
-+#include <openssl/objects.h>
-+#include <string.h>
-+#include <openssl/buffer.h>
-+
-+#define start() printf("%s\t", __FUNCTION__)
-+#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); return 1; }
-+
-+static int verbose=0;
-+static int debug=0;
-+
-+static void hexdump(const char *title,const BUF_MEM *s)
-+    {
-+    int n=0;
-+
-+    fprintf(stdout,"%s",title);
-+    for( ; n < s->length ; ++n)
-+		{
-+		if((n%16) == 0)
-+			fprintf(stdout,"\n    ");
-+		fprintf(stdout,"%02x:",(unsigned char) s->data[n]);
-+		}
-+    fprintf(stdout,"\n");
-+    }
-+
-+int real_life_test()
-+{
-+    if (verbose)
-+        printf("Starting a real life test\n");
-+
-+    enum s_type pace_sec_type [] = {
-+        PACE_PUK,
-+        PACE_CAN,
-+        PACE_PIN,
-+        PACE_MRZ,
-+        PACE_RAW,
-+        PACE_SEC_UNDEF,
-+    };
-+    enum s_type * sec_type = pace_sec_type;
-+    char * pace_sec_str [] = {
-+        "PUK",
-+        "CAN",
-+        "PIN",
-+        "P<UTOERIKSSON<<ANNA<MARIX<<<<<<<<<<<<<<<<<<<L898902C<3UTO6908061F9406236ZE184226B<<<<<14",
-+        "RAW",
-+        NULL,
-+    };
-+    char ** sec_str = pace_sec_str;
-+    int algorithm_type [] = {
-+        NID_id_PACE_DH_IM_3DES_CBC_CBC,
-+        NID_id_PACE_DH_IM_AES_CBC_CMAC_128,
-+        NID_id_PACE_DH_IM_AES_CBC_CMAC_192,
-+        NID_id_PACE_DH_IM_AES_CBC_CMAC_256,
-+        NID_id_PACE_ECDH_IM_3DES_CBC_CBC,
-+        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128,
-+        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192,
-+        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256,
-+        NID_id_PACE_DH_GM_3DES_CBC_CBC,
-+        NID_id_PACE_DH_GM_AES_CBC_CMAC_128,
-+        NID_id_PACE_DH_GM_AES_CBC_CMAC_192,
-+        NID_id_PACE_DH_GM_AES_CBC_CMAC_256,
-+        NID_id_PACE_ECDH_GM_3DES_CBC_CBC,
-+        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128,
-+        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192,
-+        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256,
-+        NID_undef,
-+    };
-+    int * algorithm = algorithm_type;
-+    int curve_type [] = {
-+        NID_brainpoolP160r1,
-+        NID_brainpoolP160t1,
-+        NID_brainpoolP192r1,
-+        NID_brainpoolP192t1,
-+        NID_brainpoolP224r1,
-+        NID_brainpoolP224t1,
-+        NID_brainpoolP256r1,
-+        NID_brainpoolP256t1,
-+        NID_brainpoolP320r1,
-+        NID_brainpoolP320t1,
-+        NID_brainpoolP384r1,
-+        NID_brainpoolP384t1,
-+        NID_brainpoolP512r1,
-+        NID_brainpoolP512t1,
-+        NID_undef,
-+    };
-+    int * curve = curve_type;
-+
-+    BUF_MEM s_mem;
-+    PACE_SEC * s = PACE_SEC_new();
-+    PACE_CTX * ctx = PACE_CTX_new();
-+    PACEInfo info;
-+    PACEDomainParameterInfo * dp_info_picc, * dp_info_pcd;
-+    dp_info_picc = PACEDomainParameterInfo_new();
-+    dp_info_pcd = PACEDomainParameterInfo_new();
-+	//dp_info_picc->domainParameter->parameters.dh = NULL;
-+    if (!s || !ctx)
-+        err("Error allocating memory");
-+
-+    while (*algorithm != NID_undef) {
-+        s_mem.data = *sec_str;
-+        s_mem.length = strlen(*sec_str);
-+        s_mem.max = strlen(*sec_str);
-+        if (!PACE_SEC_init(s, &s_mem, *sec_type))
-+            err("Error initializing PACE secret");
-+        if (debug)
-+            hexdump("Initialized PACE secret", &s_mem);
-+        info.protocol = *algorithm;
-+        switch (*algorithm) {
-+            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+	       		dp_info_picc->protocol = NID_id_PACE_ECDH_GM;
-+    	   		dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
-+       			dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(*curve);
-+       			dp_info_picc->domainParameter->parameters.dh = NULL;
-+       			break;
-+            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+				dp_info_picc->protocol = NID_id_PACE_ECDH_IM;
-+                dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
-+                dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(*curve);
-+                dp_info_picc->domainParameter->parameters.dh = NULL;
-+                break;
-+            case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+				dp_info_picc->protocol = NID_id_PACE_DH_GM;
-+				dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
-+                dp_info_picc->domainParameter->parameters.dh = NULL;
-+                break;
-+            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+				dp_info_picc->protocol = NID_id_PACE_DH_IM;
-+				dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
-+                dp_info_picc->domainParameter->parameters.dh = NULL;
-+                break;
-+            default:
-+                err("Cannot happen\n");
-+        }
-+        if (!PACE_init(ctx, dp_info_picc, info))
-+            err("Error initializing domain parameters and PACE_CTX object for PICC");
-+        AlgorithmIdentifier * dp_picc_at_pcd = AlgorithmIdentifier_dup(dp_info_picc->domainParameter);
-+        if (!dp_picc_at_pcd)
-+            err("Error initializing domain parameters and PACE_CTX object for PCD");
-+        dp_info_pcd->domainParameter = dp_picc_at_pcd;
-+        dp_info_pcd->protocol = dp_info_picc->protocol;
-+
-+        printf("Using ");
-+        switch (s->type) {
-+            case PACE_PUK:
-+                printf("PUK");
-+                break;
-+            case PACE_CAN:
-+                printf("CAN");
-+                break;
-+            case PACE_PIN:
-+                printf("PIN");
-+                break;
-+            case PACE_MRZ:
-+                printf("MRZ");
-+                break;
-+            case PACE_RAW:
-+                printf("RAW");
-+                break;
-+            default:
-+                err("\ncannot happen");
-+        }
-+        const char *sn = OBJ_nid2sn(info.protocol);
-+        if (!sn)
-+            err("\nError generating short name from nid.");
-+        if (verbose)
-+            printf(" with %s\n", sn);
-+        else
-+            printf(" with %s\t", sn);
-+        if (debug)
-+            switch (info.protocol) {
-+                case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+                case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+                case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+                case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+                    DHparams_print_fp(stdout, dp_info_picc->domainParameter->parameters.dh);
-+                    break;
-+                case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+                case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                    ECParameters_print_fp(stdout, dp_info_picc->domainParameter->parameters.ecdh);
-+                    break;
-+                default:
-+                    err("cannot happen");
-+            }
-+
-+        if (verbose)
-+            printf("STEP1\n");
-+        else
-+            printf(".");
-+        BUF_MEM * nonce_picc, * enc_nonce;
-+        if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
-+            err("Error generating or encrypting nonce");
-+        if (verbose)
-+            printf("MRTD generated and encrypted nonce.");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("MRTD generated Nonce", nonce_picc);
-+            hexdump("Encrypted nonce", enc_nonce);
-+        }
-+
-+        if (verbose)
-+            printf("STEP2\n");
-+        else
-+            printf(".");
-+        BUF_MEM * nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
-+        if (!nonce_pcd)
-+            err("Error decrypting nonce");
-+        if (nonce_picc->length != nonce_pcd->length ||
-+                memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
-+            err("Error decrypting nonce (doesn't match nonce)");
-+        if (verbose)
-+            printf("Terminal decrypted the correct nonce\n");
-+        else
-+            printf(".");
-+
-+        if (verbose)
-+            printf("STEP3A generate key\n");
-+        else
-+            printf(".");
-+        BUF_MEM * map_pub_picc = PACE_STEP3A_map_generate_key(dp_info_picc, ctx);
-+        BUF_MEM * map_pub_pcd = PACE_STEP3A_map_generate_key(dp_info_pcd, ctx);
-+        if(!map_pub_picc || !map_pub_pcd)
-+            err("Error generating keypair to map domain parameters");
-+        if (verbose)
-+            printf("Generated keypair on MRTD and Terminal for mapping\n");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("Public key MRTD", map_pub_picc);
-+            hexdump("Public key Terminal", map_pub_pcd);
-+        }
-+
-+        if (verbose)
-+            printf("STEP3A compute key\n");
-+        else
-+            printf(".");
-+        PACEDomainParameterInfo * map_picc;
-+        switch (info.protocol) {
-+            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+                // dh im is special, only mrtd generates the key
-+                map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
-+                        nonce_picc, map_pub_picc);
-+                break;
-+            default:
-+                map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
-+                        nonce_picc, map_pub_pcd);
-+                break;
-+        }
-+        PACEDomainParameterInfo * map_pcd = PACE_STEP3A_map_compute_key(dp_info_pcd,
-+                ctx, nonce_pcd, map_pub_picc);
-+        if(!map_pcd || !map_picc)
-+            err("Error computing mapped domain parameters");
-+        if (verbose)
-+            printf("Computed mapped domain parameters on MRTD and Terminal\n");
-+        else
-+            printf(".");
-+        switch (map_picc->domainParameter->algorithm) {
-+            case NID_dhpublicnumber:
-+                if (BN_cmp(map_picc->domainParameter->parameters.dh->g,
-+                		map_pcd->domainParameter->parameters.dh->g) != 0)
-+                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
-+                if (debug) {
-+                    printf("Mapped domain parameters:\n");
-+                    DHparams_print_fp(stdout, map_picc->domainParameter->parameters.dh);
-+                }
-+                break;
-+            case NID_X9_62_id_ecPublicKey:
-+                if(EC_GROUP_cmp(EC_KEY_get0_group(map_picc->domainParameter->parameters.ecdh),
-+                            EC_KEY_get0_group(map_pcd->domainParameter->parameters.ecdh),
-+                            ctx->bn_ctx) != 0)
-+                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
-+                if (debug) {
-+                    printf("Mapped domain parameters on MRTD and Terminal:\n");
-+                    ECParameters_print_fp(stdout, map_picc->domainParameter->parameters.ecdh);
-+                }
-+                break;
-+            default:
-+                err("cannot happen");
-+        }
-+
-+        if (verbose)
-+            printf("STEP3B\n");
-+        else
-+            printf(".");
-+        BUF_MEM * pub_picc = PACE_STEP3B_dh_generate_key(map_picc, ctx);
-+        BUF_MEM * pub_pcd = PACE_STEP3B_dh_generate_key(map_pcd, ctx);
-+        if(!pub_picc || !pub_pcd)
-+            err("Error generating keypair for key derivation");
-+        if (verbose)
-+            printf("Generated keypair on MRTD and Terminal for key derivation\n");
-+        else
-+            printf(".");
-+        BUF_MEM * key_picc = PACE_STEP3B_dh_compute_key(map_picc, ctx, pub_pcd);
-+        BUF_MEM * key_pcd = PACE_STEP3B_dh_compute_key(map_pcd, ctx, pub_picc);
-+        if(!key_picc || !key_pcd)
-+            err("Error computing key for key derivation");
-+        if (key_pcd->length != key_picc->length ||
-+                memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
-+            err("Error computing key for key derivation (MRTD and TERMINAL differ)");
-+        if (verbose)
-+            printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
-+        else
-+            printf(".");
-+
-+        if (verbose)
-+            printf("STEP3C\n");
-+        else
-+            printf(".");
-+        /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
-+         * k_mac are the same, too */
-+        BUF_MEM * k_mac, * k_enc;
-+        if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
-+            err("Error during key derivation");
-+        if (verbose)
-+            printf("Derived authentication and encryption key\n");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("Derived authentication key", k_mac);
-+            hexdump("Derived encryption key", k_enc);
-+        }
-+
-+        if (verbose)
-+            printf("STEP3D\n");
-+        else
-+            printf(".");
-+        BUF_MEM * token_pcd, * token_picc;
-+        token_pcd = PACE_STEP3D_compute_authentication_token(ctx, map_pcd, info,
-+        		pub_picc, k_mac, 0);
-+        token_picc = PACE_STEP3D_compute_authentication_token(ctx, map_picc, info,
-+        		pub_pcd, k_mac, 0);
-+        if ((!token_pcd) || (!token_picc)) {
-+            err("Failed to compute authentication token");
-+        }
-+        if (verbose)
-+            printf("Computed authentication token for MRTD and TERMINAL");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("Authentication token from MRTD", token_picc);
-+            hexdump("Authentication token from TERMINAL", token_pcd);
-+        }
-+        if (!PACE_STEP3D_verify_authentication_token(ctx, map_pcd, info, pub_picc,
-+        		k_mac, token_picc, 0) ||
-+            !PACE_STEP3D_verify_authentication_token(ctx, map_picc, info, pub_pcd,
-+            	k_mac, token_pcd, 0)) {
-+            		err("Could not verify authentication token.");
-+        }
-+        if (verbose) {
-+            printf("Authentication token verified.\n");
-+            printf("Everything works as expected.\n");
-+        } else {
-+            printf(" ok\n");
-+        }
-+
-+        BUF_MEM_free(token_picc);
-+        BUF_MEM_free(token_pcd);
-+        BUF_MEM_free(k_mac);
-+        BUF_MEM_free(k_enc);
-+        BUF_MEM_free(key_picc);
-+        BUF_MEM_free(key_pcd);
-+        BUF_MEM_free(pub_picc);
-+        BUF_MEM_free(pub_pcd);
-+        PACEDomainParameterInfo_clear_free(map_pcd);
-+        PACEDomainParameterInfo_clear_free(map_picc);
-+        BUF_MEM_free(map_pub_picc);
-+        BUF_MEM_free(map_pub_pcd);
-+        BUF_MEM_free(nonce_pcd);
-+        BUF_MEM_free(nonce_picc);
-+        BUF_MEM_free(enc_nonce);
-+        AlgorithmIdentifier_clear_free(dp_picc_at_pcd);
-+
-+        sec_str++;
-+        sec_type++;
-+        if (*sec_str == NULL || *sec_type == PACE_SEC_UNDEF) {
-+            sec_str = pace_sec_str;
-+            sec_type = pace_sec_type;
-+        }
-+        switch (*algorithm) {
-+            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                curve++;
-+                break;
-+            default:
-+                break;
-+        }
-+        algorithm++;
-+    }
-+    PACEDomainParameterInfo_clear_free(dp_info_picc);
-+    PACEDomainParameterInfo_clear_free(dp_info_pcd);
-+    PACE_CTX_free(ctx);
-+    /* clear_free is not used, because BUF_MEM member is local */
-+    PACE_SEC_free(s);
-+
-+    return 0;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+    int i;
-+    for (i=1; i<argc; i++)
-+    {
-+        if ((strcmp(argv[i], "--verbose") == 0) ||
-+                (strcmp(argv[i], "-v") == 0)) {
-+            verbose++;
-+            continue;
-+        }
-+        if ((strcmp(argv[i], "--debug") == 0) ||
-+                (strcmp(argv[i], "-d") == 0)) {
-+            verbose++;
-+            debug++;
-+            continue;
-+        }
-+        if ((strcmp(argv[i], "--help") == 0) ||
-+                (strcmp(argv[i], "-h") == 0)) {
-+            fprintf(stderr,
-+                    "%s tests the OpenSSL implementation of Password Authentication Connection Establishment (PACE)\n"
-+                    "\n"
-+                    "Usage: %s [Options]\n"
-+                    "\n"
-+                    "Options:\n"
-+                    "  -h, --help              show this help message and exit\n"
-+                    "  -v, --verbose           more verbosity\n"
-+                    "      --version           print version information and exit\n"
-+                    , argv[0], argv[0]
-+                    );
-+            return 0;
-+        }
-+        if (strcmp(argv[i], "--version") == 0) {
-+            fprintf(stderr,
-+                    "%s 0.1\n"
-+                    "\n"
-+                    "Written by Frank Morgner.\n"
-+                    , argv[0]
-+                   );
-+            return 0;
-+        }
-+
-+        fprintf(stderr, "unrecognized option \"%s\"\n", argv[i]);
-+        return 1;
-+    }
-+    /*printf("%s:%d\n", __FILE__, __LINE__);*/
-+    int out = 0;
-+    out += real_life_test();
-+    return -out;
-+}
-+
-+#endif /* OPENSSL_NO_PACE */
+--- openssl.orig/Configure	2009-12-01 18:32:36.000000000 +0100
++++ openssl/Configure	2009-11-30 17:08:51.000000000 +0100
+@@ -668,6 +668,7 @@
+                  "jpake"          => "experimental",
+                  "md2"            => "default",
+                  "rc5"            => "default",
++                 "pace"		  => "experimental",
+ 		 "rfc3779"	  => "default",
+                  "shared"         => "default",
+ 		 "store"	  => "experimental",
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com
-+++ openssl/makevms.com
-@@ -525,6 +525,7 @@ $ EXHEADER_CMS := cms.h
+--- openssl.orig/makevms.com	2009-12-01 18:32:36.000000000 +0100
++++ openssl/makevms.com	2009-11-30 17:08:51.000000000 +0100
+@@ -525,6 +525,7 @@
  $ EXHEADER_PQUEUE := pqueue.h
  $ EXHEADER_TS := ts.h
  $ EXHEADER_JPAKE := jpake.h
@@ -3958,108 +4170,11 @@ Index: openssl/makevms.com
  $
  $ I = 0
  $ LOOP_SDIRS: 
-Index: openssl/test/Makefile
-===================================================================
---- openssl.orig/test/Makefile
-+++ openssl/test/Makefile
-@@ -63,11 +63,11 @@ IGETEST=	igetest
- GCMTESTA=  aesgcmtest
- CMACTESTA= cmac_test
- JPAKETEST=	jpaketest
--
-+PACETEST=	pacetest
- 
- TESTS=		alltests
- 
--EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
-+EXE=	$(PACETEST)$(EXE_EXT)#$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_EXT)  $(ECDSATEST)$(EXE_EXT) $(ECDHTEST)$(EXE_EXT) $(IDEATEST)$(EXE_EXT) \
- 	$(MD2TEST)$(EXE_EXT)  $(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
- 	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
- 	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
-@@ -75,7 +75,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_
- 	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
- 	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
- 	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(JPAKETEST)$(EXE_EXT) \
--	$(GCMTESTA)$(EXE_EXT) $(CMACTESTA)$(EXE_EXT)
-+        $(GCMTESTA)$(EXE_EXT) $(CMACTESTA)$(EXE_EXT) $(PACETEST)$(EXE_EXT)
- 
- # $(METHTEST)$(EXE_EXT)
- 
-@@ -88,7 +88,7 @@ OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATES
- 	$(RANDTEST).o $(DHTEST).o $(ENGINETEST).o $(CASTTEST).o \
- 	$(BFTEST).o  $(SSLTEST).o  $(DSATEST).o  $(EXPTEST).o $(RSATEST).o \
- 	$(EVPTEST).o $(IGETEST).o $(JPAKETEST).o \
--	$(GCMTESTA).o $(CMACTESTA).o
-+        $(GCMTESTA).o $(CMACTESTA).o $(PACETEST).o
- SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
- 	$(MD2TEST).c  $(MD4TEST).c $(MD5TEST).c \
- 	$(HMACTEST).c $(WPTEST).c \
-@@ -97,7 +97,7 @@ SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATES
- 	$(RANDTEST).c $(DHTEST).c $(ENGINETEST).c $(CASTTEST).c \
- 	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
- 	$(EVPTEST).c $(IGETEST).c $(JPAKETEST).c \
--	$(GCMTESTA).c $(CMACTESTA).c
-+        $(GCMTESTA).c $(CMACTESTA).c $(PACETEST).c
- 
- EXHEADER= 
- HEADER=	$(EXHEADER)
-@@ -140,7 +140,7 @@ alltests: \
- 	test_enc test_x509 test_rsa test_crl test_sid \
- 	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
- 	test_ss test_ca test_engine test_evp test_ssl test_tsa test_ige \
--	test_jpake test_cms
-+	test_jpake test_cms test_aes_gcm test_cmac test_pace
- 
- test_evp:
- 	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
-@@ -314,6 +314,16 @@ test_cms:
- 	@echo "CMS consistency test"
- 	$(PERL) cms-test.pl
- 
-+test_pace: $(PACETEST)$(EXE_EXT)
-+	@echo "Test PACE"
-+	../util/shlib_wrap.sh ./$(PACETEST)
-+
-+#	TDES modes are known broken, the generated DES key needs parity fixed
-+#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACGenTDES2.fax ;\
-+#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACVerTDES2.fax ;\
-+#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACVerTDES3.fax ;\
-+#		../util/shlib_wrap.sh ./$(CMACTESTB) testdata/CMAC/fax/CMACGenTDES3.fax ;\
-+
- test_aes_gcm:  $(GCMTESTA)$(EXE_EXT)
- 	@echo "Test AES GCM modes"
- 	../util/shlib_wrap.sh ./aesgcmtest$(EXE_EXT)
-@@ -455,6 +465,9 @@ $(IGETEST)$(EXE_EXT): $(IGETEST).o $(DLI
- $(JPAKETEST)$(EXE_EXT): $(JPAKETEST).o $(DLIBCRYPTO)
- 	@target=$(JPAKETEST); $(BUILD_CMD)
- 
-+$(PACETEST)$(EXE_EXT): $(PACETEST).o $(DLIBCRYPTO)
-+	@target=$(PACETEST); $(BUILD_CMD)
-+
- $(GCMTESTA)$(EXE_EXT): $(GCMTESTA).o  $(DLIBCRYPTO)
- 	@target=$(GCMTESTA); $(BUILD_CMD)
- 
-@@ -633,6 +646,15 @@ mdc2test.o: ../include/openssl/opensslco
- mdc2test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
- mdc2test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
- mdc2test.o: ../include/openssl/ui.h ../include/openssl/ui_compat.h mdc2test.c
-+pacetest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
-+pacetest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
-+pacetest.o: ../include/openssl/dh.h ../include/openssl/e_os2.h
-+pacetest.o: ../include/openssl/ec.h ../include/openssl/ecdh.h
-+pacetest.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
-+pacetest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
-+pacetest.o: ../include/openssl/ossl_typ.h ../include/openssl/pace.h
-+pacetest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-+pacetest.o: ../include/openssl/symhacks.h pacetest.c
- randtest.o: ../e_os.h ../include/openssl/e_os2.h
- randtest.o: ../include/openssl/opensslconf.h ../include/openssl/ossl_typ.h
- randtest.o: ../include/openssl/rand.h randtest.c
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com
-+++ openssl/test/tests.com
-@@ -32,7 +32,7 @@ $	    tests := -
+--- openssl.orig/test/tests.com	2009-12-01 18:32:36.000000000 +0100
++++ openssl/test/tests.com	2009-11-30 17:08:51.000000000 +0100
+@@ -32,7 +32,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
  	test_ss,test_ca,test_engine,test_evp,test_ssl,test_tsa,test_ige,-
@@ -4068,7 +4183,7 @@ Index: openssl/test/tests.com
  $	endif
  $	tests = f$edit(tests,"COLLAPSE")
  $
-@@ -67,6 +67,7 @@ $	ENGINETEST :=	enginetest
+@@ -67,6 +67,7 @@
  $	EVPTEST :=	evp_test
  $	IGETEST :=	igetest
  $	JPAKETEST :=	jpaketest
