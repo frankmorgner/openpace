@@ -1,13 +1,7 @@
 #MAKEFLAGS         += -rR --no-print-directory
 
-### Which patch Binary tu use:-------------
-#default:
-  PATCH=patch
-#Solaris
-ifeq ($(SYSTEM),Solaris)
-  PATCH:=gpatch
-endif
-#-----------------------------------------
+# workaround for old patch versions on Solaris
+PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
 
 all: patch
 	$(MAKE) Makefile -C openssl-1.0.0-beta4 || \
