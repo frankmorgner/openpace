@@ -2,7 +2,7 @@
 
 # workaround for old patch versions on Solaris
 PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
-# you might also want to put the directories of the gnu-utils first in the path:
+# On Solaris you might also want to put the directories of the gnu-utils first in the path:
 # export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/ssl/bin:/usr/sfw/sbin/:/usr/sfw/bin:/usr/sbin:/usr/bin:/usr/ccs/bin
 
 all: patch
