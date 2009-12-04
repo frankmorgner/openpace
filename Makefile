@@ -30,7 +30,8 @@ openssl-1.0.0-beta4: openssl-1.0.0-beta4.tar.gz
 openssl-1.0.0-beta4.tar.gz:
 	wget http://www.openssl.org/source/openssl-1.0.0-beta4.tar.gz
 
-clean: 
-	rm -rf \
-	    openssl-1.0.0-beta4.tar.gz \
-	    openssl-1.0.0-beta4
+clean:
+	rm -rf openssl-1.0.0-beta4
+
+veryclean:  clean
+	rm -rf openssl-1.0.0-beta4.tar.gz
