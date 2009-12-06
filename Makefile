@@ -14,7 +14,7 @@ all: patch
 patch: openssl-1.0.0-beta4
 	# see http://rt.openssl.org/Ticket/Display.html?id=2092&user=guest&pass=guest
 	[ ! -r openssl-1.0.0-beta4/crypto/cmac/cmac.h ] && \
-	    ($(PATCH) -d openssl-1.0.0-beta4 -p1 < ibm4.patch || true) && \
+	    ($(PATCH) -d openssl-1.0.0-beta4 -p1 < ibm4_1.patch || true) && \
 	    ln -s ../../crypto/cmac/cmac.h openssl-1.0.0-beta4/include/openssl || \
 	    echo Never mind.
 	grep brainpool openssl-1.0.0-beta4/crypto/ec/ec_curve.c > /dev/null || \
@@ -25,7 +25,7 @@ patch: openssl-1.0.0-beta4
 	    echo Never mind.
 
 openssl-1.0.0-beta4: openssl-1.0.0-beta4.tar.gz
-	gunzip -c openssl-1.0.0-beta4.tar.gz | tar xvf -
+	gunzip -c openssl-1.0.0-beta4.tar.gz | tar xf -
 
 openssl-1.0.0-beta4.tar.gz:
 	wget http://www.openssl.org/source/openssl-1.0.0-beta4.tar.gz
