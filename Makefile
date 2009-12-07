@@ -5,14 +5,16 @@ PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
 # On Solaris you might also want to put the directories of the gnu-utils first
 # in the path (see http://www.cozmanova.com/node/10)
 # export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/ssl/bin:/usr/sfw/sbin/:/usr/sfw/bin:/usr/sbin:/usr/bin:/usr/ccs/bin
+CONFIG := ./config -g
 
 all: patch
 	$(MAKE) Makefile -C openssl-1.0.0-beta4 || \
-	    (cd openssl-1.0.0-beta4 && sleep 1 && ./config experimental-pace -g)
+	    (cd openssl-1.0.0-beta4 && sleep 1 && $(CONFIG) experimental-pace)
 	$(MAKE) -C openssl-1.0.0-beta4
 
 patch: openssl-1.0.0-beta4
 	# see http://rt.openssl.org/Ticket/Display.html?id=2092&user=guest&pass=guest
+	# This patch is modified to be compliant with beta4
 	[ ! -r openssl-1.0.0-beta4/crypto/cmac/cmac.h ] && \
 	    ($(PATCH) -d openssl-1.0.0-beta4 -p1 < ibm4_1.patch || true) && \
 	    ln -s ../../crypto/cmac/cmac.h openssl-1.0.0-beta4/include/openssl || \

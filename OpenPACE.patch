@@ -419,7 +419,7 @@ Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.c
-@@ -0,0 +1,537 @@
+@@ -0,0 +1,521 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -817,7 +817,7 @@ Index: openssl/crypto/pace/pace.c
 +{
 +    BUF_MEM *asn1 = NULL, *ssc_asn1 = NULL, *out;
 +
-+    asn1 = asn1_pubkey(ctx, dp);
++    asn1 = asn1_pubkey(ctx->bn_ctx, dp);
 +    ssc_asn1 = encoded_ssc(ssc, ctx);
 +    if (!asn1 || !ssc_asn1 || !ctx ||
 +            !BUF_MEM_grow(ssc_asn1, ssc_asn1->length + asn1->length))
@@ -851,22 +851,6 @@ Index: openssl/crypto/pace/pace.c
 +        default:
 +            goto err;
 +    }
-+
-+    /* FIXME: Can we use the information in PACE_CTX instead?
-+     * Proposed solution would be:
-+     *
-+     * if (ctx->cmac_ctx)
-+     *     out = cmac(ctx->cmac_ctx, ctx->cipher, key, ssc_asn1,
-+     *                       PACE_AES_MAC_LENGTH);
-+     * else
-+     *     out = retail_mac_des(key, ssc_asn1);
-+     *
-+     *
-+     * Pro: We can remove the PACEInfo parameter in PACE_STEP3D* and the huge
-+     *      switch statement above
-+     * Con: Relies on ctx being correctly initialized (no cmac_ctx when retail
-+     *      MAC is used)
-+     */
 +
 +    BUF_MEM_free(ssc_asn1);
 +    BUF_MEM_free(asn1);
@@ -1348,7 +1332,7 @@ Index: openssl/crypto/pace/pace_buffer.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace_buffer.c
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,103 @@
 +/**
 + * @version 0.1
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
@@ -1417,7 +1401,6 @@ Index: openssl/crypto/pace/pace_buffer.c
 +{
 +    BUF_MEM * out;
 +
-+    // FIXME Leave bn alone and let BN_num_bytes do the check?
 +    if (!bn)
 +        return NULL;
 +
@@ -1526,7 +1509,7 @@ Index: openssl/crypto/pace/pace_dh.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace_dh.c
-@@ -0,0 +1,211 @@
+@@ -0,0 +1,210 @@
 +/**
 + * @version 0.1
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
@@ -1590,7 +1573,7 @@ Index: openssl/crypto/pace/pace_dh.c
 +        bn = BN_new();
 +        if (!bn || !BN_mod_exp(bn, dh->pub_key, dh->q, dh->p, ctx))
 +            goto err;
-+        if (!BN_is_one(bn)) //FIXME: Shouldn't we just goto err instead?
++        if (!BN_is_one(bn))
 +            *ret |= DH_CHECK_PUBKEY_INVALID;
 +    }
 +    ok = 1;
@@ -1706,7 +1689,6 @@ Index: openssl/crypto/pace/pace_dh.c
 +    BUF_MEM * out = NULL;
 +    BIGNUM * bn = NULL;
 +
-+    // FIXME Leave dp->domainParameter->parameters.dh alone and let DH_size/DH_compute_key do the check?
 +    if (!dp || !dp->domainParameter || !dp->domainParameter->parameters.dh ||
 +            !ctx || !in)
 +        goto err;
@@ -2694,7 +2676,7 @@ Index: openssl/crypto/pace/pace_mappings.c
 +            !BN_sub_word(p_1, 1) ||
 +            /* a = p-1 / q */
 +            !BN_div(a, NULL, p_1, q, ctx->bn_ctx) ||
-+            // g~ = x^a mod p
++            /* g~ = x^a mod p */
 +            !BN_mod_exp(out->domainParameter->parameters.dh->g, x_bn, a,
 +                dp->domainParameter->parameters.dh->p, ctx->bn_ctx))
 +        goto err;
@@ -3121,7 +3103,8 @@ Index: openssl/crypto/pace/pace_util.c
 +    if (!bmem)
 +        goto err;
 +    /* So BIO_free() leaves BUF_MEM alone */
-+    BIO_set_close(bmem, BIO_NOCLOSE);
++    if (!BIO_set_close(bmem, BIO_NOCLOSE))
++        goto err;
 +    BIO_push(b64, bmem);
 +
 +    if ((BIO_write(b64, in->data, in->length) < 0) || (BIO_flush(b64) <= 0))
@@ -3148,7 +3131,7 @@ Index: openssl/crypto/pace/pace_util.c
 +        const BUF_MEM * in, unsigned int maclen)
 +{
 +    CMAC_CTX * cmac_ctx = NULL;
-+    BUF_MEM * rv = NULL;
++    BUF_MEM * out = NULL;
 +
 +    if (!key || !in || !type ||
 +            (key->length < EVP_CIPHER_key_length(type)))
@@ -3161,28 +3144,28 @@ Index: openssl/crypto/pace/pace_util.c
 +    }
 +
 +    /* get buffer in required size */
-+    rv = BUF_MEM_create(maclen);
-+    if (!rv)
++    out = BUF_MEM_create(maclen);
++    if (!out)
 +        goto err;
 +
 +    if (!cmac_ctx ||
 +            !CMAC_Init(cmac_ctx, type, (unsigned char*) key->data,
 +                EVP_CIPHER_key_length(type) * 8) ||
 +            !CMAC_Update(cmac_ctx, (unsigned char*) in->data, in->length) ||
-+            !CMAC_Final(cmac_ctx, (unsigned char*) rv->data, maclen))
++            !CMAC_Final(cmac_ctx, (unsigned char*) out->data, maclen))
 +        goto err;
 +
 +    if (!ctx)
 +        CMAC_CTX_free(cmac_ctx);
 +
-+    return rv;
++    return out;
 +
 +err:
 +    if (cmac_ctx && !ctx) {
 +        CMAC_CTX_free(cmac_ctx);
 +    }
-+    if (rv) {
-+        BUF_MEM_free(rv);
++    if (out) {
++        BUF_MEM_free(out);
 +    }
 +
 +    return NULL;
@@ -3208,29 +3191,30 @@ Index: openssl/crypto/pace/pace_util.c
 +BUF_MEM *
 +add_iso_pad(const BUF_MEM * m, int block_size)
 +{
-+    BUF_MEM * r = NULL;
++    BUF_MEM * out = NULL;
 +    int p_len;
 +
 +    if (!m)
 +        goto err;
 +
++    /* calculate length of padded message */
 +    p_len = (m->length / block_size) * block_size + block_size;
 +
-+    r = BUF_MEM_create(p_len);
-+    if (!r)
++    out = BUF_MEM_create(p_len);
++    if (!out)
 +        goto err;
 +
-+    memcpy(r->data, m->data, m->length);
++    memcpy(out->data, m->data, m->length);
 +
 +    /* now add iso padding */
-+    memset(r->data + m->length, 0x80, 1);
-+    memset(r->data + m->length + 1, 0, p_len - m->length - 1);
++    memset(out->data + m->length, 0x80, 1);
++    memset(out->data + m->length + 1, 0, p_len - m->length - 1);
 +
-+    return r;
++    return out;
 +
 +err:
-+    if (r)
-+        BUF_MEM_free(r);
++    if (out)
++        BUF_MEM_free(out);
 +
 +    return NULL;
 +}
@@ -3380,9 +3364,8 @@ Index: openssl/crypto/pace/pace_util.c
 +}
 +
 +BUF_MEM *
-+asn1_pubkey(const PACE_CTX *ctx, const PACEDomainParameterInfo *dp)
++asn1_pubkey(BN_CTX *ctx, const PACEDomainParameterInfo *dp)
 +{
-+    //FIXME: ctx is only needed for bn_ctx. Is this necessary?
 +    BUF_MEM *out = NULL;
 +    BIO *bio = NULL;
 +    CONF *conf = NULL;
@@ -3392,7 +3375,7 @@ Index: openssl/crypto/pace/pace_util.c
 +            NULL, *G = NULL, *r = NULL, *Y = NULL, *f = NULL;
 +    const char *sn;
 +
-+    if (!dp || !ctx)
++    if (!dp)
 +        goto err;
 +
 +    bn = BN_new();
@@ -3412,8 +3395,7 @@ Index: openssl/crypto/pace/pace_util.c
 +                p = BN_bn2hex(dp->domainParameter->parameters.dh->p);
 +
 +                /* Order of the subgroup */
-+                bn = DH_get_order(dp->domainParameter->parameters.dh,
-+                        ctx->bn_ctx);
++                bn = DH_get_order(dp->domainParameter->parameters.dh, ctx);
 +                q = BN_bn2hex(bn);
 +
 +                /* Generator */
@@ -3450,7 +3432,7 @@ Index: openssl/crypto/pace/pace_util.c
 +                if (!a_bn || !b_bn
 +                        || !EC_GROUP_get_curve_GFp(EC_KEY_get0_group(
 +                                dp->domainParameter->parameters.ecdh), bn,
-+                                a_bn, b_bn, ctx->bn_ctx))
++                                a_bn, b_bn, ctx))
 +                    goto err;
 +                /* Prime modulus */
 +                p = BN_bn2hex(bn);
@@ -3466,11 +3448,11 @@ Index: openssl/crypto/pace/pace_util.c
 +                                dp->domainParameter->parameters.ecdh)),
 +                        EC_KEY_get_conv_form(
 +                                dp->domainParameter->parameters.ecdh),
-+                        ctx->bn_ctx);
++                        ctx);
 +
 +                /* Order of the base point */
 +                if (!EC_GROUP_get_order(EC_KEY_get0_group(
-+                        dp->domainParameter->parameters.ecdh), bn, ctx->bn_ctx))
++                        dp->domainParameter->parameters.ecdh), bn, ctx))
 +                    goto err;
 +                r = BN_bn2hex(bn);
 +
@@ -3481,11 +3463,11 @@ Index: openssl/crypto/pace/pace_util.c
 +                                dp->domainParameter->parameters.ecdh),
 +                        EC_KEY_get_conv_form(
 +                                dp->domainParameter->parameters.ecdh),
-+                        ctx->bn_ctx);
++                        ctx);
 +
 +                /* Cofactor */
 +                if (!EC_GROUP_get_cofactor(EC_KEY_get0_group(
-+                        dp->domainParameter->parameters.ecdh), bn, ctx->bn_ctx))
++                        dp->domainParameter->parameters.ecdh), bn, ctx))
 +                    goto err;
 +                f = BN_bn2hex(bn);
 +
@@ -3721,7 +3703,7 @@ Index: openssl/crypto/pace/pace_util.h
 + * @brief Checks if str is NOT a INTEGER string in hex format according to TR-3110
 + * D.2.1.1.
 + *
-+ * @param str hex string
++ * @param str hex string (must be NULL terminated)
 + *
 + * @return 1 if str is NOT a valid integer hex string or 0 if it is
 + */
@@ -3768,14 +3750,14 @@ Index: openssl/crypto/pace/pace_util.h
 + * @return ASN.1 encoded public key data objects or NULL if an error occurred
 + */
 +BUF_MEM *
-+asn1_pubkey(const PACE_CTX *ctx, const PACEDomainParameterInfo *dp);
++asn1_pubkey(BN_CTX  *ctx, const PACEDomainParameterInfo *dp);
 +
 +#endif /*PACE_DH_H_*/
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pacetest.c
-@@ -0,0 +1,478 @@
+@@ -0,0 +1,479 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#ifdef OPENSSL_NO_PACE
@@ -3857,21 +3839,22 @@ Index: openssl/crypto/pace/pacetest.c
 +        NID_undef,
 +    };
 +    int * algorithm = algorithm_type;
-+    int curve_type [] = { //FIXME: Only some curves work with IM, but all should work with GM
-+        /*NID_brainpoolP160r1,
-+         NID_brainpoolP160t1,
-+         NID_brainpoolP192r1,
-+         NID_brainpoolP192t1,
-+         NID_brainpoolP224r1,
-+         NID_brainpoolP224t1,*/
++    int curve_type [] = {
++        /* Note: Only some curves work with IM, but all should work with GM */
 +        NID_brainpoolP256r1,
 +        NID_brainpoolP256t1,
 +        NID_brainpoolP320r1,
 +        NID_brainpoolP320t1,
-+        /*NID_brainpoolP384r1,
-+         NID_brainpoolP384t1,*/
 +        NID_brainpoolP512r1,
 +        NID_brainpoolP512t1,
++        NID_brainpoolP160r1,
++        NID_brainpoolP160t1,
++        NID_brainpoolP192r1,
++        NID_brainpoolP192t1,
++        NID_brainpoolP224r1,
++        NID_brainpoolP224t1,
++        NID_brainpoolP384r1,
++        NID_brainpoolP384t1,
 +        NID_undef,
 +    };
 +    int * curve = curve_type;
