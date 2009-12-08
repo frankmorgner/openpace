@@ -945,7 +945,7 @@ Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.h
-@@ -0,0 +1,382 @@
+@@ -0,0 +1,383 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -1111,21 +1111,15 @@ Index: openssl/crypto/pace/pace.h
 + */
 +void PACE_SEC_clear_free(PACE_SEC * s);
 +/**
-+ * @brief Creates a new PACE_SEC object
++ * @brief Creates a new PACE_SEC object and initializes it with a secret
++ * @param sec Secret
++ * @param sec_len Length of secret in bytes
++ * @param type Type of secret
 + *
 + * @return The new object or NULL if an error occurred
 + */
-+PACE_SEC * PACE_SEC_new(void);
-+/**
-+ * @brief Initializes a PACE_SEC object with a secret and its type
-+ *
-+ * @param s Object to initialize
-+ * @param mem Secret
-+ * @param type Type of secret
-+ *
-+ * @return 1 on success and 0 if an error occurred
-+ */
-+int PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type);
++PACE_SEC *
++PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type);
 +/**
 + * @brief Frees a PACE_CTX object
 + *
@@ -1145,9 +1139,16 @@ Index: openssl/crypto/pace/pace.h
 + */
 +PACE_CTX * PACE_CTX_new(void);
 +/**
++ * @brief Frees a PACEDomainParameterInfo object
++ *
++ * @param dp Object to free (optional)
++ */
++void
++PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp);
++/**
 + * @brief Frees a PACEDomainParameterInfo object and all its components
 + *
-+ * @param s Object to free (optional)
++ * @param dp Object to free (optional)
 + */
 +void PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp);
 + /**
@@ -2321,7 +2322,7 @@ Index: openssl/crypto/pace/pace_lib.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace_lib.c
-@@ -0,0 +1,238 @@
+@@ -0,0 +1,234 @@
 +/**
 + * @date 2009-11-30
 + * @version 0.1
@@ -2430,25 +2431,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +}
 +
 +PACE_SEC *
-+PACE_SEC_new(void)
++PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type)
 +{
 +    PACE_SEC * out = (PACE_SEC *) OPENSSL_malloc(sizeof(PACE_SEC));
 +    if (!out)
-+        return NULL;
-+
-+    out->mem = NULL;
-+    out->type = PACE_SEC_UNDEF;
-+
-+    return out;
-+}
-+
-+int
-+PACE_SEC_init(PACE_SEC * s, BUF_MEM * mem, enum s_type type)
-+{
-+    if (!s || !mem)
-+        return 0;
-+
-+    s->mem = BUF_MEM_dup(mem);
++        goto err;
 +
 +    switch (type) {
 +        case PACE_PUK:
@@ -2456,14 +2443,23 @@ Index: openssl/crypto/pace/pace_lib.c
 +        case PACE_PIN:
 +        case PACE_MRZ:
 +        case PACE_RAW:
-+            s->type = type;
++            out->type = type;
 +            break;
 +
 +        default:
-+            return 0;
++            goto err;
 +    }
 +
-+    return 1;
++    out->mem = BUF_MEM_create_init(sec, sec_len);
++    if (!out->mem)
++        goto err;
++
++    return out;
++
++err:
++    PACE_SEC_clear_free(out);
++
++    return NULL;
 +}
 +
 +void
@@ -2501,9 +2497,17 @@ Index: openssl/crypto/pace/pace_lib.c
 +void
 +PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp)
 +{
++    if (dp && dp->domainParameter) {
++        AlgorithmIdentifier_clear_free(dp->domainParameter);
++    }
++
++    PACEDomainParameterInfo_free(dp);
++}
++
++void
++PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp)
++{
 +    if (dp) {
-+        if (dp->domainParameter)
-+            AlgorithmIdentifier_clear_free(dp->domainParameter);
 +        OPENSSL_free(dp);
 +    }
 +}
@@ -2514,49 +2518,42 @@ Index: openssl/crypto/pace/pace_lib.c
 +    PACEDomainParameterInfo * out = (PACEDomainParameterInfo *) OPENSSL_malloc(
 +            sizeof(PACEDomainParameterInfo));
 +    if (!out)
-+        goto err;
++        return NULL;
 +
-+    out->domainParameter = AlgorithmIdentifier_new();
-+    if (!out->domainParameter)
-+        goto err;
-+
-+    out->parameterId = NULL;
++    out->domainParameter = NULL;
++    out->parameterId = 0;
 +    out->protocol = NID_undef;
 +
 +    return out;
-+
-+err:
-+    if (out) {
-+        if (out->domainParameter)
-+            AlgorithmIdentifier_clear_free(out->domainParameter);
-+        OPENSSL_free(out);
-+    }
-+
-+    return NULL;
 +}
 +
 +PACEDomainParameterInfo *
 +PACEDomainParameterInfo_dup(const PACEDomainParameterInfo * dp_in)
 +{
-+    PACEDomainParameterInfo * dp_out = PACEDomainParameterInfo_new();
++    PACEDomainParameterInfo * dp_out = NULL;
 +
-+    if (dp_in) {
-+        if (!dp_out)
-+            goto err;
++    if (!dp_in) {
++        goto err;
++    }
++
++    dp_out = PACEDomainParameterInfo_new();
++    if (!dp_out)
++        goto err;
++
++    if (dp_in->domainParameter) {
 +        dp_out->domainParameter = AlgorithmIdentifier_dup(
 +                dp_in->domainParameter);
 +        if (!dp_out->domainParameter)
 +            goto err;
-+        dp_out->protocol = dp_in->protocol;
-+        dp_out->parameterId = dp_in->parameterId;
 +    }
++
++    dp_out->protocol = dp_in->protocol;
++    dp_out->parameterId = dp_in->parameterId;
 +
 +    return dp_out;
 +
 +err:
-+    if (dp_out) {
-+        OPENSSL_free(dp_out);
-+    }
++    PACEDomainParameterInfo_clear_free(dp_out);
 +
 +    return NULL;
 +}
@@ -3757,7 +3754,7 @@ Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pacetest.c
-@@ -0,0 +1,479 @@
+@@ -0,0 +1,523 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#ifdef OPENSSL_NO_PACE
@@ -3777,7 +3774,7 @@ Index: openssl/crypto/pace/pacetest.c
 +#include <openssl/buffer.h>
 +
 +#define start() printf("%s\t", __FUNCTION__)
-+#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); return 1; }
++#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); goto err; }
 +
 +static int verbose=0;
 +static int debug=0;
@@ -3796,8 +3793,348 @@ Index: openssl/crypto/pace/pacetest.c
 +    fprintf(stdout,"\n");
 +}
 +
++int do_test(char *sec_str, int sec_type, int curve, int algorithm)
++{
++    int ok = 1;
++    PACE_SEC *s = NULL;
++    PACE_CTX * ctx = NULL;
++    PACEInfo info;
++    PACEDomainParameterInfo * dp_info_picc = NULL, * dp_info_pcd = NULL;
++    AlgorithmIdentifier * dp_picc_at_pcd = NULL;
++    BUF_MEM * nonce_picc = NULL, * enc_nonce = NULL;
++    BUF_MEM * nonce_pcd = NULL;
++    BUF_MEM * map_pub_picc = NULL;
++    BUF_MEM * map_pub_pcd = NULL;
++    PACEDomainParameterInfo * map_picc = NULL;
++    PACEDomainParameterInfo * map_pcd = NULL;
++    BUF_MEM * pub_picc = NULL;
++    BUF_MEM * pub_pcd = NULL;
++    BUF_MEM * key_picc = NULL;
++    BUF_MEM * key_pcd = NULL;
++    BUF_MEM * k_mac = NULL, * k_enc = NULL;
++    BUF_MEM * token_pcd = NULL, * token_picc = NULL;
++
++    ctx = PACE_CTX_new();
++    dp_info_picc = PACEDomainParameterInfo_new();
++    dp_info_pcd = PACEDomainParameterInfo_new();
++    if (!ctx || !dp_info_picc || !dp_info_pcd)
++        err("Error allocating memory");
++    dp_info_picc->domainParameter = AlgorithmIdentifier_new();
++    if (!dp_info_picc->domainParameter)
++        err("Error allocating memory");
++
++    s = PACE_SEC_new(sec_str, strlen(sec_str), sec_type);
++    if (!s)
++        err("Error initializing PACE secret");
++    if (debug)
++        hexdump("Initialized PACE secret", s->mem);
++    info.protocol = algorithm;
++
++    switch (algorithm) {
++        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            dp_info_picc->protocol = NID_id_PACE_ECDH_GM;
++            dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
++            dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(curve);
++            break;
++        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++            dp_info_picc->protocol = NID_id_PACE_ECDH_IM;
++            dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
++            dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(curve);
++            break;
++        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++            dp_info_picc->protocol = NID_id_PACE_DH_GM;
++            dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
++            dp_info_picc->domainParameter->parameters.dh = NULL;
++            break;
++        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++            dp_info_picc->protocol = NID_id_PACE_DH_IM;
++            dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
++            dp_info_picc->domainParameter->parameters.dh = NULL;
++            break;
++        default:
++            err("Cannot happen\n");
++    }
++    if (!PACE_init(ctx, dp_info_picc, info))
++        err("Error initializing domain parameters and PACE_CTX object for PICC");
++    dp_picc_at_pcd = AlgorithmIdentifier_dup(dp_info_picc->domainParameter);
++    if (!dp_picc_at_pcd)
++        err("Error initializing domain parameters and PACE_CTX object for PCD");
++    dp_info_pcd->domainParameter = dp_picc_at_pcd;
++    dp_info_pcd->protocol = dp_info_picc->protocol;
++
++    printf("Using ");
++    switch (s->type) {
++        case PACE_PUK:
++            printf("PUK");
++            break;
++        case PACE_CAN:
++            printf("CAN");
++            break;
++        case PACE_PIN:
++            printf("PIN");
++            break;
++        case PACE_MRZ:
++            printf("MRZ");
++            break;
++        case PACE_RAW:
++            printf("RAW");
++            break;
++        default:
++            err("\ncannot happen");
++    }
++    const char *sn = OBJ_nid2sn(info.protocol);
++    if (!sn)
++        err("\nError generating short name from nid.");
++    if (verbose)
++        printf(" with %s\n", sn);
++    else
++        printf(" with %s\t", sn);
++    if (debug)
++        switch (dp_info_picc->domainParameter->algorithm) {
++            case NID_dhpublicnumber:
++                DHparams_print_fp(stdout, dp_info_picc->domainParameter->parameters.dh);
++                break;
++            case NID_X9_62_id_ecPublicKey:
++                printf("Using curve: %s\n", OBJ_nid2sn(curve));
++                ECParameters_print_fp(stdout, dp_info_picc->domainParameter->parameters.ecdh);
++                break;
++            default:
++                err("cannot happen");
++        }
++
++    if (verbose)
++        printf("STEP1\n");
++    else
++        printf(".");
++    if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
++        err("Error generating or encrypting nonce");
++    if (verbose)
++        printf("MRTD generated and encrypted nonce.");
++    else
++        printf(".");
++    if (debug) {
++        hexdump("MRTD generated Nonce", nonce_picc);
++        hexdump("Encrypted nonce", enc_nonce);
++    }
++
++    if (verbose)
++        printf("STEP2\n");
++    else
++        printf(".");
++    nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
++    if (!nonce_pcd)
++        err("Error decrypting nonce");
++    if (nonce_picc->length != nonce_pcd->length ||
++            memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
++        err("Error decrypting nonce (doesn't match nonce)");
++    if (verbose)
++        printf("Terminal decrypted the correct nonce\n");
++    else
++        printf(".");
++
++    if (verbose)
++        printf("STEP3A generate key\n");
++    else
++        printf(".");
++    map_pub_picc = PACE_STEP3A_map_generate_key(dp_info_picc, ctx);
++    map_pub_pcd = PACE_STEP3A_map_generate_key(dp_info_pcd, ctx);
++    if(!map_pub_picc || !map_pub_pcd)
++        err("Error generating keypair to map domain parameters");
++    if (verbose)
++        printf("Generated keypair on MRTD and Terminal for mapping\n");
++    else
++        printf(".");
++    if (debug) {
++        hexdump("Public key MRTD", map_pub_picc);
++        hexdump("Public key Terminal", map_pub_pcd);
++    }
++
++    if (verbose)
++        printf("STEP3A compute key\n");
++    else
++        printf(".");
++    switch (dp_info_picc->protocol) {
++        case NID_id_PACE_DH_IM:
++            /* dh im is special, only mrtd generates the key */
++            map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
++                    nonce_picc, map_pub_picc);
++            break;
++        default:
++            map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
++                    nonce_picc, map_pub_pcd);
++            break;
++    }
++    map_pcd = PACE_STEP3A_map_compute_key(dp_info_pcd,
++            ctx, nonce_pcd, map_pub_picc);
++    if(!map_pcd || !map_picc)
++        err("Error computing mapped domain parameters");
++    if (verbose)
++        printf("Computed mapped domain parameters on MRTD and Terminal\n");
++    else
++        printf(".");
++    switch (map_picc->domainParameter->algorithm) {
++        case NID_dhpublicnumber:
++            if (BN_cmp(map_picc->domainParameter->parameters.dh->g,
++                        map_pcd->domainParameter->parameters.dh->g) != 0)
++                err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
++            if (debug) {
++                printf("Mapped domain parameters:\n");
++                DHparams_print_fp(stdout, map_picc->domainParameter->parameters.dh);
++            }
++            break;
++        case NID_X9_62_id_ecPublicKey:
++            if(EC_GROUP_cmp(EC_KEY_get0_group(map_picc->domainParameter->parameters.ecdh),
++                        EC_KEY_get0_group(map_pcd->domainParameter->parameters.ecdh),
++                        ctx->bn_ctx) != 0)
++                err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
++            if (debug) {
++                printf("Mapped domain parameters on MRTD and Terminal:\n");
++                ECParameters_print_fp(stdout, map_picc->domainParameter->parameters.ecdh);
++            }
++            break;
++        default:
++            err("cannot happen");
++    }
++
++    if (verbose)
++        printf("STEP3B\n");
++    else
++        printf(".");
++    pub_picc = PACE_STEP3B_dh_generate_key(map_picc, ctx);
++    pub_pcd = PACE_STEP3B_dh_generate_key(map_pcd, ctx);
++    if(!pub_picc || !pub_pcd)
++        err("Error generating keypair for key derivation");
++    if (verbose)
++        printf("Generated keypair on MRTD and Terminal for key derivation\n");
++    else
++        printf(".");
++    key_picc = PACE_STEP3B_dh_compute_key(map_picc, ctx, pub_pcd);
++    key_pcd = PACE_STEP3B_dh_compute_key(map_pcd, ctx, pub_picc);
++    if(!key_picc || !key_pcd)
++        err("Error computing key for key derivation");
++    if (key_pcd->length != key_picc->length ||
++            memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
++        err("Error computing key for key derivation (MRTD and TERMINAL differ)");
++    if (verbose)
++        printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
++    else
++        printf(".");
++
++    if (verbose)
++        printf("STEP3C\n");
++    else
++        printf(".");
++    /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
++     * k_mac are the same, too */
++    if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
++        err("Error during key derivation");
++    if (verbose)
++        printf("Derived authentication and encryption key\n");
++    else
++        printf(".");
++    if (debug) {
++        hexdump("Derived authentication key", k_mac);
++        hexdump("Derived encryption key", k_enc);
++    }
++
++    if (verbose)
++        printf("STEP3D\n");
++    else
++        printf(".");
++    token_pcd = PACE_STEP3D_compute_authentication_token(ctx, map_pcd, info,
++            pub_picc, k_mac, 1);
++    token_picc = PACE_STEP3D_compute_authentication_token(ctx, map_picc, info,
++            pub_pcd, k_mac, 1);
++    if ((!token_pcd) || (!token_picc)) {
++        err("Failed to compute authentication token");
++    }
++    if (verbose)
++        printf("Computed authentication token for MRTD and TERMINAL");
++    else
++        printf(".");
++    if (debug) {
++        hexdump("Authentication token from MRTD", token_picc);
++        hexdump("Authentication token from TERMINAL", token_pcd);
++    }
++    if (!PACE_STEP3D_verify_authentication_token(ctx, map_pcd, info, pub_picc,
++                k_mac, token_picc, 1) ||
++            !PACE_STEP3D_verify_authentication_token(ctx, map_picc, info, pub_pcd,
++                k_mac, token_pcd, 1)) {
++        err("Could not verify authentication token.");
++    }
++    if (verbose) {
++        printf("Authentication token verified.\n");
++    } else {
++        printf(".");
++    }
++
++    ok = 0;
++
++err:
++    if (token_picc)
++        BUF_MEM_free(token_picc);
++    if (token_pcd)
++        BUF_MEM_free(token_pcd);
++    if (k_mac)
++        BUF_MEM_free(k_mac);
++    if (k_enc)
++        BUF_MEM_free(k_enc);
++    if (key_picc)
++        BUF_MEM_free(key_picc);
++    if (key_pcd)
++        BUF_MEM_free(key_pcd);
++    if (pub_picc)
++        BUF_MEM_free(pub_picc);
++    if (pub_pcd)
++        BUF_MEM_free(pub_pcd);
++    if (map_pub_picc)
++        BUF_MEM_free(map_pub_picc);
++    if (map_pub_pcd)
++        BUF_MEM_free(map_pub_pcd);
++    if (nonce_pcd)
++        BUF_MEM_free(nonce_pcd);
++    if (nonce_picc)
++        BUF_MEM_free(nonce_picc);
++    if (enc_nonce)
++        BUF_MEM_free(enc_nonce);
++    PACEDomainParameterInfo_clear_free(map_pcd);
++    PACEDomainParameterInfo_clear_free(map_picc);
++    AlgorithmIdentifier_clear_free(dp_picc_at_pcd);
++    PACEDomainParameterInfo_free(dp_info_pcd);
++    PACEDomainParameterInfo_clear_free(dp_info_picc);
++    PACE_CTX_clear_free(ctx);
++    PACE_SEC_clear_free(s);
++
++    if (verbose) {
++        if (ok == 0)
++            printf("Everything works as expected.\n");
++        else
++            printf("Some error occurred.\n");
++    } else {
++        if (ok == 0)
++            printf(" ok\n");
++        else
++            printf(" error\n");
++    }
++
++    return ok;
++}
++
 +int real_life_test()
 +{
++    int r = 0;
 +    if (verbose)
 +    printf("Starting a real life test\n");
 +
@@ -3859,298 +4196,9 @@ Index: openssl/crypto/pace/pacetest.c
 +    };
 +    int * curve = curve_type;
 +
-+    BUF_MEM s_mem;
-+    PACE_SEC * s = PACE_SEC_new();
-+    PACE_CTX * ctx = PACE_CTX_new();
-+    PACEInfo info;
-+    PACEDomainParameterInfo * dp_info_picc, * dp_info_pcd;
-+    dp_info_picc = PACEDomainParameterInfo_new();
-+    dp_info_pcd = PACEDomainParameterInfo_new();
-+    dp_info_picc->domainParameter->parameters.dh = NULL;
-+    if (!s || !ctx)
-+    err("Error allocating memory");
 +
 +    while (*algorithm != NID_undef) {
-+        s_mem.data = *sec_str;
-+        s_mem.length = strlen(*sec_str);
-+        s_mem.max = strlen(*sec_str);
-+        if (!PACE_SEC_init(s, &s_mem, *sec_type))
-+        err("Error initializing PACE secret");
-+        if (debug)
-+        hexdump("Initialized PACE secret", &s_mem);
-+        info.protocol = *algorithm;
-+
-+        switch (*algorithm) {
-+            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+                dp_info_picc->protocol = NID_id_PACE_ECDH_GM;
-+                dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
-+                dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(*curve);
-+                break;
-+            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                dp_info_picc->protocol = NID_id_PACE_ECDH_IM;
-+                dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
-+                dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(*curve);
-+                break;
-+            case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+                dp_info_picc->protocol = NID_id_PACE_DH_GM;
-+                dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
-+                dp_info_picc->domainParameter->parameters.dh = NULL;
-+                break;
-+            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+                dp_info_picc->protocol = NID_id_PACE_DH_IM;
-+                dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
-+                dp_info_picc->domainParameter->parameters.dh = NULL;
-+                break;
-+            default:
-+                err("Cannot happen\n");
-+        }
-+        if (!PACE_init(ctx, dp_info_picc, info))
-+            err("Error initializing domain parameters and PACE_CTX object for PICC");
-+        AlgorithmIdentifier * dp_picc_at_pcd = AlgorithmIdentifier_dup(dp_info_picc->domainParameter);
-+        if (!dp_picc_at_pcd)
-+            err("Error initializing domain parameters and PACE_CTX object for PCD");
-+        dp_info_pcd->domainParameter = dp_picc_at_pcd;
-+        dp_info_pcd->protocol = dp_info_picc->protocol;
-+
-+        printf("Using ");
-+        switch (s->type) {
-+            case PACE_PUK:
-+                printf("PUK");
-+                break;
-+            case PACE_CAN:
-+                printf("CAN");
-+                break;
-+            case PACE_PIN:
-+                printf("PIN");
-+                break;
-+            case PACE_MRZ:
-+                printf("MRZ");
-+                break;
-+            case PACE_RAW:
-+                printf("RAW");
-+                break;
-+            default:
-+                err("\ncannot happen");
-+        }
-+        const char *sn = OBJ_nid2sn(info.protocol);
-+        if (!sn)
-+        err("\nError generating short name from nid.");
-+        if (verbose)
-+        printf(" with %s\n", sn);
-+        else
-+        printf(" with %s\t", sn);
-+        if (debug)
-+        switch (dp_info_picc->domainParameter->algorithm) {
-+            case NID_dhpublicnumber:
-+                DHparams_print_fp(stdout, dp_info_picc->domainParameter->parameters.dh);
-+                break;
-+            case NID_X9_62_id_ecPublicKey:
-+                printf("Using curve: %s\n", OBJ_nid2sn(*curve));
-+                ECParameters_print_fp(stdout, dp_info_picc->domainParameter->parameters.ecdh);
-+                break;
-+            default:
-+                err("cannot happen");
-+        }
-+
-+        if (verbose)
-+            printf("STEP1\n");
-+        else
-+        printf(".");
-+        BUF_MEM * nonce_picc, * enc_nonce;
-+        if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
-+            err("Error generating or encrypting nonce");
-+        if (verbose)
-+            printf("MRTD generated and encrypted nonce.");
-+        else
-+        printf(".");
-+        if (debug) {
-+            hexdump("MRTD generated Nonce", nonce_picc);
-+            hexdump("Encrypted nonce", enc_nonce);
-+        }
-+
-+        if (verbose)
-+            printf("STEP2\n");
-+        else
-+        printf(".");
-+        BUF_MEM * nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
-+        if (!nonce_pcd)
-+            err("Error decrypting nonce");
-+        if (nonce_picc->length != nonce_pcd->length ||
-+                memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
-+            err("Error decrypting nonce (doesn't match nonce)");
-+        if (verbose)
-+            printf("Terminal decrypted the correct nonce\n");
-+        else
-+            printf(".");
-+
-+        if (verbose)
-+            printf("STEP3A generate key\n");
-+        else
-+            printf(".");
-+        BUF_MEM * map_pub_picc = PACE_STEP3A_map_generate_key(dp_info_picc, ctx);
-+        BUF_MEM * map_pub_pcd = PACE_STEP3A_map_generate_key(dp_info_pcd, ctx);
-+        if(!map_pub_picc || !map_pub_pcd)
-+            err("Error generating keypair to map domain parameters");
-+        if (verbose)
-+            printf("Generated keypair on MRTD and Terminal for mapping\n");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("Public key MRTD", map_pub_picc);
-+            hexdump("Public key Terminal", map_pub_pcd);
-+        }
-+
-+        if (verbose)
-+            printf("STEP3A compute key\n");
-+        else
-+            printf(".");
-+        PACEDomainParameterInfo * map_picc;
-+        switch (dp_info_picc->protocol) {
-+            case NID_id_PACE_DH_IM:
-+                /* dh im is special, only mrtd generates the key */
-+                map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
-+                        nonce_picc, map_pub_picc);
-+                break;
-+            default:
-+                map_picc = PACE_STEP3A_map_compute_key(dp_info_picc, ctx,
-+                        nonce_picc, map_pub_pcd);
-+                break;
-+        }
-+        PACEDomainParameterInfo * map_pcd = PACE_STEP3A_map_compute_key(dp_info_pcd,
-+                ctx, nonce_pcd, map_pub_picc);
-+        if(!map_pcd || !map_picc)
-+            err("Error computing mapped domain parameters");
-+        if (verbose)
-+            printf("Computed mapped domain parameters on MRTD and Terminal\n");
-+        else
-+            printf(".");
-+        switch (map_picc->domainParameter->algorithm) {
-+            case NID_dhpublicnumber:
-+                if (BN_cmp(map_picc->domainParameter->parameters.dh->g,
-+                        map_pcd->domainParameter->parameters.dh->g) != 0)
-+                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
-+            if (debug) {
-+                printf("Mapped domain parameters:\n");
-+                DHparams_print_fp(stdout, map_picc->domainParameter->parameters.dh);
-+            }
-+            break;
-+            case NID_X9_62_id_ecPublicKey:
-+                if(EC_GROUP_cmp(EC_KEY_get0_group(map_picc->domainParameter->parameters.ecdh),
-+                        EC_KEY_get0_group(map_pcd->domainParameter->parameters.ecdh),
-+                        ctx->bn_ctx) != 0)
-+                    err("Error computing mapped domain parameters (MRTD and TERMINAL differ)");
-+                if (debug) {
-+                    printf("Mapped domain parameters on MRTD and Terminal:\n");
-+                    ECParameters_print_fp(stdout, map_picc->domainParameter->parameters.ecdh);
-+                }
-+                break;
-+            default:
-+                err("cannot happen");
-+        }
-+
-+        if (verbose)
-+            printf("STEP3B\n");
-+        else
-+            printf(".");
-+        BUF_MEM * pub_picc = PACE_STEP3B_dh_generate_key(map_picc, ctx);
-+        BUF_MEM * pub_pcd = PACE_STEP3B_dh_generate_key(map_pcd, ctx);
-+        if(!pub_picc || !pub_pcd)
-+            err("Error generating keypair for key derivation");
-+        if (verbose)
-+            printf("Generated keypair on MRTD and Terminal for key derivation\n");
-+        else
-+            printf(".");
-+        BUF_MEM * key_picc = PACE_STEP3B_dh_compute_key(map_picc, ctx, pub_pcd);
-+        BUF_MEM * key_pcd = PACE_STEP3B_dh_compute_key(map_pcd, ctx, pub_picc);
-+        if(!key_picc || !key_pcd)
-+            err("Error computing key for key derivation");
-+        if (key_pcd->length != key_picc->length ||
-+                memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
-+            err("Error computing key for key derivation (MRTD and TERMINAL differ)");
-+        if (verbose)
-+            printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
-+        else
-+            printf(".");
-+
-+        if (verbose)
-+            printf("STEP3C\n");
-+        else
-+            printf(".");
-+        /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
-+         * k_mac are the same, too */
-+        BUF_MEM * k_mac, * k_enc;
-+        if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
-+            err("Error during key derivation");
-+        if (verbose)
-+            printf("Derived authentication and encryption key\n");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("Derived authentication key", k_mac);
-+            hexdump("Derived encryption key", k_enc);
-+        }
-+
-+        if (verbose)
-+            printf("STEP3D\n");
-+        else
-+            printf(".");
-+        BUF_MEM * token_pcd, * token_picc;
-+        token_pcd = PACE_STEP3D_compute_authentication_token(ctx, map_pcd, info,
-+                pub_picc, k_mac, 1);
-+        token_picc = PACE_STEP3D_compute_authentication_token(ctx, map_picc, info,
-+                pub_pcd, k_mac, 1);
-+        if ((!token_pcd) || (!token_picc)) {
-+            err("Failed to compute authentication token");
-+        }
-+        if (verbose)
-+            printf("Computed authentication token for MRTD and TERMINAL");
-+        else
-+            printf(".");
-+        if (debug) {
-+            hexdump("Authentication token from MRTD", token_picc);
-+            hexdump("Authentication token from TERMINAL", token_pcd);
-+        }
-+        if (!PACE_STEP3D_verify_authentication_token(ctx, map_pcd, info, pub_picc,
-+                        k_mac, token_picc, 1) ||
-+                !PACE_STEP3D_verify_authentication_token(ctx, map_picc, info, pub_pcd,
-+                        k_mac, token_pcd, 1)) {
-+            err("Could not verify authentication token.");
-+        }
-+        if (verbose) {
-+            printf("Authentication token verified.\n");
-+            printf("Everything works as expected.\n");
-+        } else {
-+            printf(" ok\n");
-+        }
-+
-+        BUF_MEM_free(token_picc);
-+        BUF_MEM_free(token_pcd);
-+        BUF_MEM_free(k_mac);
-+        BUF_MEM_free(k_enc);
-+        BUF_MEM_free(key_picc);
-+        BUF_MEM_free(key_pcd);
-+        BUF_MEM_free(pub_picc);
-+        BUF_MEM_free(pub_pcd);
-+        PACEDomainParameterInfo_clear_free(map_pcd);
-+        PACEDomainParameterInfo_clear_free(map_picc);
-+        BUF_MEM_free(map_pub_picc);
-+        BUF_MEM_free(map_pub_pcd);
-+        BUF_MEM_free(nonce_pcd);
-+        BUF_MEM_free(nonce_picc);
-+        BUF_MEM_free(enc_nonce);
-+        AlgorithmIdentifier_clear_free(dp_picc_at_pcd);
++        r += do_test(*sec_str, *sec_type, *curve, *algorithm);
 +
 +        sec_str++;
 +        sec_type++;
@@ -4175,15 +4223,8 @@ Index: openssl/crypto/pace/pacetest.c
 +        }
 +        algorithm++;
 +    }
-+    PACEDomainParameterInfo_clear_free(dp_info_picc);
-+    /* dp_info_pcd->domainParameter has already been freed, since we did not
-+     * use AlgorithmIdentifier_dup in the first place */
-+    dp_info_pcd->domainParameter = NULL;
-+    PACEDomainParameterInfo_clear_free(dp_info_pcd);
-+    PACE_CTX_clear_free(ctx);
-+    PACE_SEC_clear_free(s);
 +
-+    return 0;
++    return r;
 +}
 +
 +int main(int argc, char *argv[])
