@@ -419,7 +419,7 @@ Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.c
-@@ -0,0 +1,565 @@
+@@ -0,0 +1,646 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -443,7 +443,8 @@ Index: openssl/crypto/pace/pace.c
 +#include "pace_mappings.h"
 +
 +int
-+PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp, PACEInfo * info)
++PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp, PACEInfo * info,
++        int nid, void *ka_obj)
 +{
 +    EVP_MD_CTX *md_ctx = NULL;
 +    EVP_CIPHER_CTX *cipher_ctx = NULL;
@@ -451,11 +452,30 @@ Index: openssl/crypto/pace/pace.c
 +    CMAC_CTX *cmac_ctx = NULL;
 +
 +    if (!ctx || !dp || !info)
-+        return 0;
++        goto err;
++
++    /* Always use the first (and only) set of domain parameters */
++    info->parameterId = 1;
++    dp->parameterId = 1;
++
++    info->protocol = nid;
 +
 +    ctx->iv = NULL;
-+    switch (info->protocol) {
++
++    /* Always clear domain parameters to remove the old DH/EC_KEY object */
++    AlgorithmIdentifier_clear_free(dp->domainParameter);
++    dp->domainParameter = AlgorithmIdentifier_new();
++    if (!dp->domainParameter)
++        goto err;
++    /* Note: This is equivalent to 
++     * dp->domainParameter->parameters.ecdh = ka_obj; */
++    dp->domainParameter->parameters.dh = ka_obj;
++
++    switch (nid) {
 +        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_DH_GM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!init_dh(&dp->domainParameter->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_generate_key;
@@ -463,7 +483,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
++
 +        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_DH_IM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!init_dh(&dp->domainParameter->parameters.dh))
 +                goto err;
 +            ctx->map_generate_key = dh_im_generate_key;
@@ -471,7 +495,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
++
 +        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_ECDH_GM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!init_ecdh(&dp->domainParameter->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -479,7 +507,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
++
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_DH_GM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -492,7 +524,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
++
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_DH_IM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -505,7 +541,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
++
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_DH_GM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -518,7 +558,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
++
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_DH_IM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -531,7 +575,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
++
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_DH_GM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -544,7 +592,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
++
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_DH_IM;
++            dp->domainParameter->algorithm = NID_dhpublicnumber;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -557,7 +609,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_ECDH_GM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -570,7 +626,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_ECDH_GM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -583,7 +643,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            info->version = 1;
++            dp->protocol = NID_id_PACE_ECDH_GM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -596,7 +660,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_ECDH_IM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -609,7 +677,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_ECDH_IM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -622,7 +694,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_ECDH_IM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -635,7 +711,11 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
++
 +        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++            info->version = 2;
++            dp->protocol = NID_id_PACE_ECDH_IM;
++            dp->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
 +            if (!init_ecdh(&dp->domainParameter->parameters.ecdh))
 +                goto err;
 +            ctx->map_generate_key = ecdh_generate_key;
@@ -643,6 +723,7 @@ Index: openssl/crypto/pace/pace.c
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede();
 +            break;
++
 +        default:
 +            goto err;
 +    }
@@ -989,7 +1070,7 @@ Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pace.h
-@@ -0,0 +1,383 @@
+@@ -0,0 +1,385 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -1210,17 +1291,19 @@ Index: openssl/crypto/pace/pace.h
 +PACEDomainParameterInfo * PACEDomainParameterInfo_dup(const
 +		PACEDomainParameterInfo * dp_in);
 +/**
-+ * @brief Initializes PACE_CTX/AlgorithmIdentifier objects
++ * @brief Initializes PACE_CTX, PACEDomainParameterInfo and PACEInfo objects
 + *
 + * @param ctx Object to initialize
-+ * @param dp_info PaceDomainParameterInfo, which specifies the key agreement
-+ * scheme and the domain parameters to use. See TR-3110 A.1.1.1
-+ * @param info PACEInfo onject, which specifies cipher, message digest, key
-+ * agreement scheme, mapping method and MAC method. See TR-3110 A.1.1.1
++ * @param dp_info Object to initialize
++ * @param info Object to initialize
++ * @param nid Identifier to use for PACEInfo->protocol
++ * @param ka_obj Depending on nid either a DH or a EC_KEY object (optional)
 + *
 + * @return 1 on success and 0 if an error occurred
 + */
-+int PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp_info, PACEInfo * info);
++int
++PACE_init(PACE_CTX * ctx, PACEDomainParameterInfo * dp, PACEInfo * info,
++        int nid, void *ka_obj);
 +/** @} ***********************************************************************/
 +
 +/**
@@ -3805,7 +3888,7 @@ Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null
 +++ openssl/crypto/pace/pacetest.c
-@@ -0,0 +1,511 @@
+@@ -0,0 +1,475 @@
 +#include <stdlib.h>
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#ifdef OPENSSL_NO_PACE
@@ -3856,13 +3939,11 @@ Index: openssl/crypto/pace/pacetest.c
 +            *pub_pcd = NULL, *key_picc = NULL, *key_pcd = NULL, *k_mac = NULL,
 +            *k_enc = NULL, *token_pcd = NULL, * token_picc = NULL;
 +    PACEDomainParameterInfo *map_dp_info_picc = NULL, *map_dp_info_pcd = NULL;
++    void *ka_obj = NULL;
 +
 +    ctx = PACE_CTX_new();
 +    dp_info_picc = PACEDomainParameterInfo_new();
 +    if (!ctx || !dp_info_picc)
-+        err("Error allocating memory");
-+    dp_info_picc->domainParameter = AlgorithmIdentifier_new();
-+    if (!dp_info_picc->domainParameter)
 +        err("Error allocating memory");
 +
 +    s = PACE_SEC_new(sec_str, strlen(sec_str), sec_type);
@@ -3870,45 +3951,10 @@ Index: openssl/crypto/pace/pacetest.c
 +        err("Error initializing PACE secret");
 +    if (debug)
 +        hexdump("Initialized PACE secret", s->mem);
-+    info.protocol = algorithm;
 +
-+    switch (algorithm) {
-+        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+            dp_info_picc->protocol = NID_id_PACE_ECDH_GM;
-+            dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
-+            dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(curve);
-+            break;
-+        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+            dp_info_picc->protocol = NID_id_PACE_ECDH_IM;
-+            dp_info_picc->domainParameter->algorithm = NID_X9_62_id_ecPublicKey;
-+            dp_info_picc->domainParameter->parameters.ecdh = EC_KEY_new_by_curve_name(curve);
-+            break;
-+        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+            dp_info_picc->protocol = NID_id_PACE_DH_GM;
-+            dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
-+            dp_info_picc->domainParameter->parameters.dh = NULL;
-+            break;
-+        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+            dp_info_picc->protocol = NID_id_PACE_DH_IM;
-+            dp_info_picc->domainParameter->algorithm = NID_dhpublicnumber;
-+            dp_info_picc->domainParameter->parameters.dh = NULL;
-+            break;
-+        default:
-+            err("Cannot happen\n");
-+    }
-+    if (!PACE_init(ctx, dp_info_picc, &info))
++    if (curve != NID_undef)
++        ka_obj = EC_KEY_new_by_curve_name(curve);
++    if (!PACE_init(ctx, dp_info_picc, &info, algorithm, ka_obj))
 +        err("Error initializing domain parameters and PACE_CTX object for PICC");
 +    dp_info_pcd = PACEDomainParameterInfo_dup(dp_info_picc);
 +    if (!dp_info_pcd)
@@ -4237,14 +4283,6 @@ Index: openssl/crypto/pace/pacetest.c
 +
 +
 +    while (*algorithm != NID_undef) {
-+        r += do_test(*sec_str, *sec_type, *curve, *algorithm);
-+
-+        sec_str++;
-+        sec_type++;
-+        if (*sec_str == NULL || *sec_type == PACE_SEC_UNDEF) {
-+            sec_str = pace_sec_str;
-+            sec_type = pace_sec_type;
-+        }
 +        switch (*algorithm) {
 +            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
 +            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
@@ -4254,11 +4292,20 @@ Index: openssl/crypto/pace/pacetest.c
 +            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
 +            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
 +            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                r += do_test(*sec_str, *sec_type, *curve, *algorithm);
 +                if(*curve != NID_undef)
 +                    curve++;
 +                break;
 +            default:
++                r += do_test(*sec_str, *sec_type, NID_undef, *algorithm);
 +                break;
++        }
++
++        sec_str++;
++        sec_type++;
++        if (*sec_str == NULL || *sec_type == PACE_SEC_UNDEF) {
++            sec_str = pace_sec_str;
++            sec_type = pace_sec_type;
 +        }
 +        algorithm++;
 +    }
