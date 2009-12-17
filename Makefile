@@ -8,7 +8,7 @@ PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
 
 all: patch
 	$(MAKE) Makefile -C openssl-1.0.0-beta4 || \
-	    (cd openssl-1.0.0-beta4 && ./config experimental-pace)
+	    (cd openssl-1.0.0-beta4 && sleep 1 && ./config experimental-pace)
 	$(MAKE) -C openssl-1.0.0-beta4
 
 patch: openssl-1.0.0-beta4
