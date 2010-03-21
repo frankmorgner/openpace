@@ -1,8 +1,8 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/Configure	2010-02-13 13:59:35.000000000 +0100
-@@ -668,6 +668,7 @@
+--- openssl.orig/Configure
++++ openssl/Configure
+@@ -668,6 +668,7 @@ my %disabled = ( # "what"         => "co
                   "jpake"          => "experimental",
                   "md2"            => "default",
                   "rc5"            => "default",
@@ -12,9 +12,9 @@ Index: openssl/Configure
  		 "store"	  => "experimental",
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/Makefile.org	2010-02-13 13:59:35.000000000 +0100
-@@ -122,7 +122,7 @@
+--- openssl.orig/Makefile.org
++++ openssl/Makefile.org
+@@ -122,7 +122,7 @@ SDIRS=  \
  	cmac \
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
@@ -25,9 +25,9 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/ecdh/ecdh.h	2010-02-13 13:59:34.000000000 +0100
-@@ -86,6 +86,7 @@
+--- openssl.orig/crypto/ecdh/ecdh.h
++++ openssl/crypto/ecdh/ecdh.h
+@@ -86,6 +86,7 @@ extern "C" {
  #endif
  
  const ECDH_METHOD *ECDH_OpenSSL(void);
@@ -37,9 +37,9 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/ecdh/ech_ossl.c	2010-02-13 13:59:34.000000000 +0100
-@@ -211,3 +211,113 @@
+--- openssl.orig/crypto/ecdh/ech_ossl.c
++++ openssl/crypto/ecdh/ech_ossl.c
+@@ -211,3 +211,113 @@ err:
  	if (buf) OPENSSL_free(buf);
  	return(ret);
  	}
@@ -155,9 +155,9 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	}
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/err/err.c	2010-02-13 13:59:34.000000000 +0100
-@@ -156,6 +156,7 @@
+--- openssl.orig/crypto/err/err.c
++++ openssl/crypto/err/err.c
+@@ -156,6 +156,7 @@ static ERR_STRING_DATA ERR_str_libraries
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
  {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
  {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
@@ -167,9 +167,9 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/err/err.h	2010-02-13 13:59:34.000000000 +0100
-@@ -198,6 +198,7 @@
+--- openssl.orig/crypto/err/err.h
++++ openssl/crypto/err/err.h
+@@ -198,6 +198,7 @@ typedef struct err_state_st
  #define ERR_LIB_TS		47
  #define ERR_LIB_HMAC		48
  #define ERR_LIB_JPAKE		49
@@ -177,7 +177,7 @@ Index: openssl/crypto/err/err.h
  
  #define ERR_LIB_USER		128
  
-@@ -234,6 +235,7 @@
+@@ -234,6 +235,7 @@ typedef struct err_state_st
  #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
  #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
  #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
@@ -187,8 +187,8 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/err/err_all.c	2010-02-13 13:59:34.000000000 +0100
+--- openssl.orig/crypto/err/err_all.c
++++ openssl/crypto/err/err_all.c
 @@ -102,6 +102,9 @@
  #ifndef OPENSSL_NO_JPAKE
  #include <openssl/jpake.h>
@@ -199,7 +199,7 @@ Index: openssl/crypto/err/err_all.c
  #include <openssl/comp.h>
  
  void ERR_load_crypto_strings(void)
-@@ -155,6 +158,9 @@
+@@ -155,6 +158,9 @@ void ERR_load_crypto_strings(void)
  #ifndef OPENSSL_NO_JPAKE
  	ERR_load_JPAKE_strings();
  #endif
@@ -211,9 +211,9 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/err/openssl.ec	2010-02-13 13:59:34.000000000 +0100
-@@ -35,6 +35,7 @@
+--- openssl.orig/crypto/err/openssl.ec
++++ openssl/crypto/err/openssl.ec
+@@ -35,6 +35,7 @@ L TS		crypto/ts/ts.h			crypto/ts/ts_err.
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
  L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
  L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
@@ -223,9 +223,9 @@ Index: openssl/crypto/err/openssl.ec
  L NONE		crypto/x509/x509_vfy.h		NONE
 Index: openssl/crypto/objects/objects.txt
 ===================================================================
---- openssl.orig/crypto/objects/objects.txt	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/crypto/objects/objects.txt	2010-02-13 13:59:35.000000000 +0100
-@@ -1276,3 +1276,40 @@
+--- openssl.orig/crypto/objects/objects.txt
++++ openssl/crypto/objects/objects.txt
+@@ -1276,3 +1276,40 @@ kisa 1 6                : SEED-OFB
  1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
  1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
  1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
@@ -268,8 +268,8 @@ Index: openssl/crypto/objects/objects.txt
 +ecka-dh 2 4 :        ecka-dh-SessionKDF-AES256
 Index: openssl/crypto/pace/Makefile
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/Makefile
 @@ -0,0 +1,158 @@
 +DIR=pace
 +TOP=../..
@@ -425,15 +425,15 @@ Index: openssl/crypto/pace/Makefile
 +pace_util.o: ../../include/openssl/symhacks.h pace_buffer.h pace_dh.h
 +pace_util.o: pace_util.c pace_util.h
 +pace_asn1.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
-+pace_asn1.o: ../../include/openssl/objects.h ../../include/openssl/ec.h 
++pace_asn1.o: ../../include/openssl/objects.h ../../include/openssl/ec.h
 +pace_asn1.o: ../../include/openssl/dh.h ../../include/openssl/bn.h
 +pace_asn1.o: ../../include/openssl/pace.h
 +pace_asn1.o: pace_asn1.c pace_asn1.h
 Index: openssl/crypto/pace/pace.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2010-03-10 10:03:19.000000000 +0100
-@@ -0,0 +1,535 @@
+--- /dev/null
++++ openssl/crypto/pace/pace.c
+@@ -0,0 +1,517 @@
 +/**
 + * @file pace.c
 + * @version 0.1
@@ -629,7 +629,7 @@ Index: openssl/crypto/pace/pace.c
 +    if (!ctx || !nonce || !enc_nonce)
 +        goto err;
 +
-+    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
++    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL, ctx->cipher->key_len);
 +    if (!key)
 +        goto err;
 +
@@ -681,7 +681,7 @@ Index: openssl/crypto/pace/pace.c
 +    if (!ctx)
 +        goto err;
 +
-+    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL);
++    key = kdf_pi(pi, NULL, ctx->md, NULL, NULL, ctx->cipher->key_len);
 +    if (!key)
 +        goto err;
 +
@@ -760,6 +760,7 @@ Index: openssl/crypto/pace/pace.c
 +        const PACE_CTX * ctx, const BUF_MEM * in)
 +{
 +    BUF_MEM *out = NULL;
++    const ECDH_METHOD * default_method;
 +
 +    if (!dp || !dp->domainParameter || !ctx || !in)
 +        goto err;
@@ -775,7 +776,10 @@ Index: openssl/crypto/pace/pace.c
 +        case NID_ecka_dh_SessionKDF_AES128:
 +        case NID_ecka_dh_SessionKDF_AES192:
 +        case NID_ecka_dh_SessionKDF_AES256:
++            default_method = ECDH_get_default_method();
++            ECDH_set_default_method(ECDH_OpenSSL());
 +            out = ecdh_compute_key(dp, ctx, in);
++            ECDH_set_default_method(default_method);
 +            break;
 +        default:
 +            goto err;
@@ -804,17 +808,48 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +int
-+PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx, BUF_MEM ** k_mac,
-+        BUF_MEM ** k_enc)
++PACE_STEP3C_derive_keys(const BUF_MEM *key, PACE_CTX *ctx, PACEInfo *info,
++        BUF_MEM **k_mac, BUF_MEM **k_enc)
 +{
 +    BUF_MEM *key_mac = NULL;
 +    BUF_MEM *key_enc = NULL;
++    int mac_keylen = 0, enc_keylen = 0;
 +
 +    if (!ctx)
 +        goto err;
++    enc_keylen = ctx->cipher->key_len;
 +
-+    key_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
-+    key_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine);
++    switch (info->protocol) {
++        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++            mac_keylen = 16;
++            break;
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            mac_keylen = 16;
++            break;
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            mac_keylen = 24;
++            break;
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++            mac_keylen = 32;
++            break;
++        default:
++            goto err;
++    }
++
++    key_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine, mac_keylen);
++    key_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine, enc_keylen);
 +    if (!key_mac || !key_enc)
 +        goto err;
 +
@@ -837,79 +872,15 @@ Index: openssl/crypto/pace/pace.c
 +}
 +
 +BUF_MEM *
-+PACE_STEP3D_compute_authentication_token(PACE_CTX * ctx,
-+        PACEDomainParameterInfo * dp, const PACEInfo * info, BUF_MEM * pub,
-+        BUF_MEM * k_mac, const uint16_t ssc)
++PACE_STEP3D_compute_authentication_token(PACE_CTX *ctx,
++        PACEDomainParameterInfo *dp, const PACEInfo *info, BUF_MEM *pub,
++        BUF_MEM *k_mac)
 +{
-+    BUF_MEM *asn1 = NULL, *ssc_asn1 = NULL, *out;
-+
-+    if (ctx->tr_version == PACE_TR_VERSION_2_01)
-+        asn1 = asn1_pubkey(ctx->bn_ctx, dp, 1);
-+    else
-+        asn1 = asn1_pubkey(ctx->bn_ctx, dp, 0);
-+    ssc_asn1 = encoded_ssc(ssc, ctx);
-+    if (!asn1 || !ssc_asn1 || !ctx || !info ||
-+            !BUF_MEM_grow(ssc_asn1, ssc_asn1->length + asn1->length))
-+        goto err;
-+    /* BUF_MEM_grow already sets ssc_asn1->length */
-+    memcpy(ssc_asn1->data + ssc_asn1->length - asn1->length, asn1->data,
-+            asn1->length);
-+
-+    switch (info->protocol) {
-+        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            out = retail_mac_des(k_mac, ssc_asn1);
-+            break;
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+            out = cmac(ctx->cmac_ctx, ctx->cipher, k_mac, ssc_asn1,
-+                    PACE_AES_MAC_LENGTH);
-+            break;
-+        default:
-+            goto err;
-+    }
-+
-+    BUF_MEM_free(ssc_asn1);
-+    BUF_MEM_free(asn1);
-+
-+    return out;
-+
-+err:
-+    if (ssc_asn1)
-+        BUF_MEM_free(ssc_asn1);
-+    if (asn1)
-+        BUF_MEM_free(asn1);
-+
-+    return NULL;
-+}
-+
-+int
-+PACE_STEP3D_verify_authentication_token(PACE_CTX * ctx,
-+        PACEDomainParameterInfo * dp, const PACEInfo * info, BUF_MEM * pub,
-+        BUF_MEM * key, BUF_MEM * token, const uint16_t ssc)
-+{
-+    PACEDomainParameterInfo *dp_opp = NULL;
-+    BUF_MEM *token_verify = NULL, *pub_opp = NULL;
++    BUF_MEM *out = NULL;
 +    EC_POINT *ecp = NULL;
-+    int rv = -1;
++    PACEDomainParameterInfo *dp_opp = PACEDomainParameterInfo_dup(dp);
 +
-+    if (!dp || !dp->domainParameter || !token || !pub)
-+        goto err;
-+
-+    dp_opp = PACEDomainParameterInfo_dup(dp);
-+    if (!dp_opp)
++    if (!dp || !dp->domainParameter || !pub || !dp_opp)
 +        goto err;
 +
 +    switch (dp->domainParameter->algorithm) {
@@ -920,11 +891,15 @@ Index: openssl/crypto/pace/pace.c
 +            dp_opp->domainParameter->parameters.dh->pub_key = BN_bin2bn(
 +                    (unsigned char *) pub->data, pub->length,
 +                    dp_opp->domainParameter->parameters.dh->pub_key);
-+
-+            pub_opp = bn2buf(dp->domainParameter->parameters.dh->pub_key);
 +            break;
 +
 +        case NID_X9_62_id_ecPublicKey:
++        /* Note: Test cards derive from the official specification, therefore
++         *       we need to handle some additional OIDs */
++        case NID_ecka_dh_SessionKDF_DES3:
++        case NID_ecka_dh_SessionKDF_AES128:
++        case NID_ecka_dh_SessionKDF_AES192:
++        case NID_ecka_dh_SessionKDF_AES256:
 +            if (!dp->domainParameter->parameters.ecdh)
 +                goto err;
 +
@@ -936,44 +911,51 @@ Index: openssl/crypto/pace/pace.c
 +                    || !EC_KEY_set_public_key(
 +                            dp_opp->domainParameter->parameters.ecdh, ecp))
 +                goto err;
-+
-+            pub_opp = point2buf(dp->domainParameter->parameters.ecdh,
-+                    ctx->bn_ctx, EC_KEY_get0_public_key(
-+                            dp->domainParameter->parameters.ecdh));
 +            break;
 +
 +        default:
 +            goto err;
 +    }
-+
-+    token_verify = PACE_STEP3D_compute_authentication_token(ctx, dp_opp, info,
-+            pub_opp, key, ssc);
-+    if (!token_verify)
-+        goto err;
-+
-+    if ((token_verify->length != token->length) ||
-+            (memcmp(token_verify->data, token->data, token->length) == 0))
-+        rv = 1;
-+    else
-+        rv = 0;
++    out = compute_authentication_token(ctx, dp_opp, info, k_mac);
 +
 +err:
 +    if (ecp)
 +        EC_POINT_free(ecp);
-+    if (token_verify)
-+        BUF_MEM_free(token_verify);
-+    if (pub_opp)
-+        BUF_MEM_free(pub_opp);
-+    if (dp_opp)
-+        PACEDomainParameterInfo_clear_free(dp_opp);
++    PACEDomainParameterInfo_clear_free(dp_opp);
++
++    return out;
++}
++
++int
++PACE_STEP3D_verify_authentication_token(PACE_CTX *ctx,
++        PACEDomainParameterInfo *dp, const PACEInfo *info, BUF_MEM *key,
++        BUF_MEM *token)
++{
++    BUF_MEM *token_verify = NULL;
++    int rv;
++
++    if (!token)
++        return -1;
++
++    token_verify = compute_authentication_token(ctx, dp, info, key);
++    if (!token_verify)
++        return -1;
++
++    if (token_verify->length != token->length ||
++            memcmp(token_verify->data, token->data, token->length) != 0)
++        rv = 0;
++    else
++        rv = 1;
++
++    BUF_MEM_free(token_verify);
 +
 +    return rv;
 +}
 Index: openssl/crypto/pace/pace.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2010-03-10 10:03:19.000000000 +0100
-@@ -0,0 +1,431 @@
+--- /dev/null
++++ openssl/crypto/pace/pace.h
+@@ -0,0 +1,418 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -1322,8 +1304,8 @@ Index: openssl/crypto/pace/pace.h
 + *
 + * @return          1 on success and 0 if an error occurred
 + */
-+int PACE_STEP3C_derive_keys(const BUF_MEM * key, PACE_CTX * ctx,
-+        BUF_MEM ** k_mac, BUF_MEM ** k_enc);
++int PACE_STEP3C_derive_keys(const BUF_MEM *key, PACE_CTX *ctx, PACEInfo *info,
++        BUF_MEM **k_mac, BUF_MEM **k_enc);
 +/**
 + * @brief Compute the authentication token from domain parameters
 + *           and public key
@@ -1333,48 +1315,35 @@ Index: openssl/crypto/pace/pace.h
 + * @param info PACEInfo containing information about the MAC to be used
 + * @param pub Public key from the other party (generated in step 3B)
 + * @param key Authentication key (computed in step 3C)
-+ * @param ssc Send sequence counter (Formatted in big endian)
 + *
 + * @return Authentication token or NULL in case of error
 + */
 +BUF_MEM * PACE_STEP3D_compute_authentication_token(PACE_CTX * ctx,
 +		PACEDomainParameterInfo * dp, const PACEInfo * info, BUF_MEM * pub,
-+		BUF_MEM * key, const uint16_t ssc);
++		BUF_MEM * key);
 +/**
 + * @brief Verifies an authentication token.
 + *
 + * @param ctx PACE_CTX object
 + * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param pub Public key from the other party (generated in step 3B)
 + * @param key Authentication key (computed in step 3C)
 + * @param token Authentication token from the other party
-+ * @param ssc Send sequence counter (Formatted in big endian)
 + *
 + * @return 1 if the token has been verified as correct, 0 if not, -1 if an error
 + * occurred.
 + */
 +int PACE_STEP3D_verify_authentication_token(PACE_CTX * ctx,
-+		PACEDomainParameterInfo * dp, const PACEInfo * info, BUF_MEM * pub,
-+		BUF_MEM * key, BUF_MEM * token, const uint16_t ssc);
++		PACEDomainParameterInfo * dp, const PACEInfo * info, BUF_MEM * key,
++		BUF_MEM * token);
 +/** @} ***********************************************************************/
 +
 +int
 +parse_ef_card_access(unsigned const char * in, unsigned int in_len, PACEInfo ** info,
 +        PACEDomainParameterInfo ** dp);
 +
-+/**
-+ * @brief Encodes public key data objects of the ephemeral domain parameters in
-+ * ASN.1 (see TR-3110 D.3.3)
-+ *
-+ * @param PACEDomainParameterInfo object containing an AlgorithmIdentifier, which
-+ * includes the DH or EC_KEY object
-+ * @param ctx
-+ *
-+ * @return ASN.1 encoded ephemeral public key data objects or NULL if an error
-+ * occurred
-+ */
-+BUF_MEM *
-+asn1_ephemeral_pubkey(BN_CTX  *ctx, const PACEDomainParameterInfo *dp);
++int
++simple_parse_ef_card_access(unsigned char *in, unsigned int in_len, PACEInfo *info,
++            PACEDomainParameterInfo *dp);
 +
 +/* The following lines are auto generated by the script mkerr.pl. Any changes
 + * made after this point may be overwritten when the script is next run.
@@ -1405,10 +1374,678 @@ Index: openssl/crypto/pace/pace.h
 +}
 +#endif
 +#endif
+Index: openssl/crypto/pace/pace_asn1.c
+===================================================================
+--- /dev/null
++++ openssl/crypto/pace/pace_asn1.c
+@@ -0,0 +1,454 @@
++/**
++ * @date 2009-12-13
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include <openssl/objects.h>
++#include <openssl/asn1.h>
++#include <openssl/pace.h>
++#include "pace_asn1.h"
++
++static unsigned int
++getlen (unsigned const char * in, unsigned int * len_len);
++
++static int copy_ec_params(EC_KEY **dst, PACE_ECPARAMETERS *src);
++
++static int copy_dh_params(DH ** dst, DH *src);
++
++/* I stole this from dh_asn1.c */
++int
++dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
++{
++    if(operation == ASN1_OP_NEW_PRE) {
++        *pval = (ASN1_VALUE *)DH_new();
++        if(*pval) return 2;
++        return 0;
++    } else if(operation == ASN1_OP_FREE_PRE) {
++        DH_free((DH *)*pval);
++        *pval = NULL;
++        return 2;
++    }
++    return 1;
++}
++
++int
++copy_ec_params(EC_KEY **dst, PACE_ECPARAMETERS *src)
++{
++    EC_KEY *tmp = NULL;
++    EC_GROUP *group = NULL;
++    EC_POINT *generator = NULL;
++    BIGNUM *p = NULL, *cofactor = NULL, *order = NULL, *a = NULL, *b = NULL;
++    BN_CTX *bn_ctx = NULL;
++
++    if (!dst || !*dst) {
++        tmp = EC_KEY_new();
++        if (!tmp)
++            goto err;
++    } else
++        tmp = *dst;
++
++    bn_ctx = BN_CTX_new();
++    if (!bn_ctx)
++        goto err;
++
++    p = BN_new();
++    a = BN_new();
++    b = BN_new();
++    order = BN_new();
++    cofactor = BN_new();
++    if (!p || !a || !b || !order || !cofactor)
++        goto err;
++
++    /* Copy field and curve */
++    if (!ASN1_INTEGER_to_BN(src->fieldID->p.prime, p) ||
++        !BN_bin2bn(ASN1_STRING_data(src->curve->a), ASN1_STRING_length(src->curve->a), a) ||
++        !BN_bin2bn(ASN1_STRING_data(src->curve->b), ASN1_STRING_length(src->curve->b), b))
++            goto err;
++    else
++        group = EC_GROUP_new_curve_GFp(p, a, b, bn_ctx);
++
++    if (!ASN1_INTEGER_to_BN(src->cofactor, cofactor) ||
++        !ASN1_INTEGER_to_BN(src->order, order))
++        goto err;
++
++    generator = EC_POINT_new(group);
++    if (!generator)
++        goto err;
++
++    /* Copy and set the generator point */
++    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(src->base),
++            ASN1_STRING_length(src->base), bn_ctx))
++        goto err;
++
++    if (!EC_GROUP_set_generator(group, generator, order, cofactor))
++        goto err;
++
++    if(!EC_KEY_set_group(tmp, group))
++        goto err;
++
++    if (!*dst)
++        *dst = tmp;
++
++    /* Clean up */
++    BN_CTX_free(bn_ctx);
++    BN_clear_free(cofactor);
++    BN_clear_free(order);
++    BN_clear_free(a);
++    BN_clear_free(b);
++    BN_clear_free(p);
++    EC_GROUP_clear_free(group);
++    EC_POINT_clear_free(generator);
++    return 1;
++
++err:
++    if(bn_ctx)
++        BN_CTX_free(bn_ctx);
++    if(!*dst && tmp)
++        EC_KEY_free(tmp);
++    if(!group)
++        EC_GROUP_clear_free(group);
++    if(!generator)
++        EC_POINT_clear_free(generator);
++    if(!cofactor)
++        BN_clear_free(cofactor);
++    if(!order)
++        BN_clear_free(order);
++    if(!a)
++        BN_clear_free(a);
++    if(!b)
++        BN_clear_free(b);
++    if(!p)
++        BN_clear_free(p);
++    return 0;
++}
++
++int
++copy_dh_params(DH ** dst, DH *src)
++{
++    DH *tmp = NULL;
++    if (!dst || !*dst) {
++        tmp = DH_new();
++        if (!tmp)
++            goto err;
++    } else
++        tmp = *dst;
++
++    /* dh.h doesn't have setter methods, so we have to set the members manually */
++    tmp->p = BN_dup(src->p);
++    tmp->g = BN_dup(src->g);
++    if (src->length)
++        tmp->length = src->length;
++    if (src->j)
++        tmp->j = BN_dup(src->j);
++
++    if(!*dst)
++        *dst = tmp;
++    return 1;
++
++err:
++    if (!*dst && tmp)
++        DH_free(tmp);
++    return 0;
++}
++
++unsigned int
++getlen (unsigned const char * in, unsigned int * len_len)
++{
++    unsigned int len = 0;
++    int i = 0;
++
++    if (!in || !len_len)
++        return 0;
++
++    if ((in[0] & 0x80) == 0x80 ) { /* MSB set => long form */
++        *len_len = (in[0] & 0x7F) + 1;
++        for (i = 0; i < *len_len - 1; i++) {
++            len <<= i*8;
++            len += in[i+1];
++        }
++    }
++    else {/* MSB not set => short form */
++        len = (unsigned int) in[0];
++        *len_len = 1;
++    }
++    return len;
++}
++
++int
++parse_ef_card_access(unsigned const char * in, unsigned int in_len, PACEInfo ** info,
++        PACEDomainParameterInfo ** dp)
++{
++    unsigned int len = 0, len_len = 0, oid_len = 0;
++    int todo = in_len;
++    ASN1_OBJECT *a = NULL;
++    unsigned const char *oid_pos = NULL, *seq_pos = NULL;
++    int nid;
++    PACE_INFO *tmp_info = NULL;
++    PACEInfo *new_info = NULL;
++    PACE_DP_INFO *tmp_dp_info = NULL;
++    PACEDomainParameterInfo *new_dp_info = NULL;
++
++    if (!in)
++        goto err;
++    if (in[0] != 0x31) /* SET */
++        goto err;
++
++    len = getlen(++in, &len_len); /* Length of SET */
++    in += len_len;
++    todo -= len_len + 1;
++
++    while(todo > 0) {
++        if(in[0] != 0x30) /* SEQUENCE */
++            goto err;
++        seq_pos = in;
++        len = getlen(++in, &len_len); /* Length of SEQUENCE */
++        oid_pos = in + len_len;
++        in += len + len_len;
++        todo -= len + len_len + 1;
++
++        /* Read OID */
++        if(oid_pos[0] != 0x06) /* OBJECT IDENTIFIER */
++            goto err;
++        oid_len = getlen(oid_pos+1, &len_len); /* Length of OBJECT IDENTIFIER */
++
++        /* XXX: I dont't understand, why we have to increment the last parameter
++         *      by two. This was found to work by trial and error. */
++        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
++            goto err;
++        else {
++            nid = OBJ_obj2nid(a);
++            switch (nid) {
++                case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++                case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++                case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++                case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++                case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++                case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++                case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++                case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++                case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++                case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                    //printf("Found PACEInfo: %s\n", OBJ_nid2sn(nid));
++                    tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
++                    if (!tmp_info)
++                        goto err;
++                    new_info = PACEInfo_new();
++                    /* TODO: Sanity checks. Note that in theory ASN1_INTEGER may
++                     *       contain values, that are too big for int. Nevertheless
++                     *       we only expect version of 0 or 1. The same holds for
++                     *       parameterId */
++                    new_info->version = (int) ASN1_INTEGER_get(tmp_info->version);
++                    new_info->protocol = OBJ_obj2nid(tmp_info->protocol);
++                    if(tmp_info->parameterId)
++                        new_info->parameterId = (int) ASN1_INTEGER_get(tmp_info->parameterId);
++                    break;
++                case NID_id_PACE_ECDH_GM:
++                case NID_id_PACE_ECDH_IM:
++                case NID_id_PACE_DH_GM:
++                case NID_id_PACE_DH_IM:
++                    //printf("Found PACEDomainParameterInfo: %s\n", OBJ_nid2sn(nid));
++                    tmp_dp_info = d2i_PACE_DP_INFO(NULL, &seq_pos, len+3);
++                    if (!tmp_dp_info)
++                        goto err;
++
++                    new_dp_info = PACEDomainParameterInfo_new();
++                    if (!new_dp_info)
++                        goto err;
++                    new_dp_info->protocol = nid;
++                    if(tmp_dp_info->parameterId)
++                        new_dp_info->parameterId = (int) ASN1_INTEGER_get(tmp_dp_info->parameterId);
++
++                    new_dp_info->domainParameter = AlgorithmIdentifier_new();
++                    if(!new_dp_info->domainParameter)
++                        goto err;
++                    new_dp_info->domainParameter->algorithm = OBJ_obj2nid(tmp_dp_info->aid->algorithm);
++
++                    /* Extraxt actual parameters */
++                    switch (new_dp_info->domainParameter->algorithm) {
++                        case NID_dhpublicnumber:
++                            copy_dh_params(&new_dp_info->domainParameter->parameters.dh,
++                                    tmp_dp_info->aid->parameters.dh);
++                            break;
++                        case NID_X9_62_id_ecPublicKey:
++                        case NID_ecka_dh_SessionKDF_DES3:
++                        case NID_ecka_dh_SessionKDF_AES128:
++                        case NID_ecka_dh_SessionKDF_AES192:
++                        case NID_ecka_dh_SessionKDF_AES256:
++                            copy_ec_params(&new_dp_info->domainParameter->parameters.ecdh,
++                                    tmp_dp_info->aid->parameters.ec);
++                            break;
++                        default:
++                            goto err;
++                    }
++                    break;
++                default:
++                    break;
++            }
++        }
++    }
++
++    if (info) { //Memory leak if (*info)
++        if(new_info)
++            *info = new_info;
++    }
++    if (dp) { //Memory leak if (*dp)
++        if(new_dp_info)
++            *dp = new_dp_info;
++    }
++
++    if (tmp_info)
++        PACE_INFO_free(tmp_info);
++    if (tmp_dp_info)
++        PACE_DP_INFO_free(tmp_dp_info);
++    ASN1_OBJECT_free(a);
++    return 1;
++
++err:
++    if (a)
++        ASN1_OBJECT_free(a);
++    if (tmp_info)
++        PACE_INFO_free(tmp_info);
++    if (tmp_dp_info)
++        PACE_DP_INFO_free(tmp_dp_info);
++    return 0;
++}
++
++int
++simple_parse_ef_card_access(unsigned char *in, unsigned int in_len, PACEInfo *info,
++            PACEDomainParameterInfo *dp)
++{
++    unsigned int len = 0, len_len = 0, oid_len = 0;
++    ASN1_OBJECT *a = NULL;
++    unsigned const char *oid_pos = NULL, *seq_pos = NULL;
++    int nid;
++    PACE_INFO *tmp_info = NULL;
++    PACE_DP_INFO *tmp_dp_info = NULL;
++
++    if (!info || !dp)
++        goto err;
++
++    if (!in)
++        goto err;
++    if (in[0] != 0x31) /* SET */
++        goto err;
++
++    len = getlen(++in, &len_len); /* Length of SET */
++    in += len_len;
++    in_len -= len_len + 1;
++
++    while(in_len != 0) {
++        if(in[0] != 0x30) /* SEQUENCE */
++            goto err;
++        seq_pos = in;
++        len = getlen(++in, &len_len); /* Length of SEQUENCE */
++        oid_pos = in + len_len;
++        in += len + len_len;
++        in_len -= len + len_len + 1;
++
++        /* Read OID */
++        if(oid_pos[0] != 0x06) /* OBJECT IDENTIFIER */
++            goto err;
++        oid_len = getlen(oid_pos+1, &len_len); /* Length of OBJECT IDENTIFIER */
++
++        /* XXX: I dont't understand, why we have to increment the last parameter
++         *      by two. This was found to work by trial and error. */
++        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
++            goto err;
++        else {
++            nid = OBJ_obj2nid(a);
++            switch (nid) {
++                case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++                case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++                case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++                case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++                case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++                case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++                case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++                case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++                case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++                case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++                    printf("Found PACEInfo: %s\n", OBJ_nid2sn(nid));
++                    tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
++                    if (!tmp_info)
++                        goto err;
++                    /* TODO: Sanity checks. Note that in theory ASN1_INTEGER may
++                     *       contain values, that are too big for int. Nevertheless
++                     *       we only expect version of 0 or 1. The same holds for
++                     *       parameterId */
++                    info->version = (int) ASN1_INTEGER_get(tmp_info->version);
++                    info->protocol = OBJ_obj2nid(tmp_info->protocol);
++                    if(tmp_info->parameterId)
++                        info->parameterId = (int) ASN1_INTEGER_get(tmp_info->parameterId);
++                    break;
++                case NID_id_PACE_ECDH_GM:
++                case NID_id_PACE_ECDH_IM:
++                case NID_id_PACE_DH_GM:
++                case NID_id_PACE_DH_IM:
++                    printf("Found PACEDomainParameterInfo: %s\n", OBJ_nid2sn(nid));
++                    tmp_dp_info = d2i_PACE_DP_INFO(NULL, &seq_pos, len+3);
++                    if (!tmp_dp_info)
++                        goto err;
++
++                    dp->protocol = nid;
++                    if(tmp_dp_info->parameterId)
++                        dp->parameterId = (int) ASN1_INTEGER_get(tmp_dp_info->parameterId);
++
++                    dp->domainParameter = AlgorithmIdentifier_new();
++                    if(!dp->domainParameter)
++                        goto err;
++                    dp->domainParameter->algorithm = OBJ_obj2nid(tmp_dp_info->aid->algorithm);
++
++                    /* Extraxt actual parameters */
++                    switch (dp->domainParameter->algorithm) {
++                        case NID_dhpublicnumber:
++                            copy_dh_params(&dp->domainParameter->parameters.dh,
++                                    tmp_dp_info->aid->parameters.dh);
++                            break;
++                        case NID_X9_62_id_ecPublicKey:
++                        case NID_ecka_dh_SessionKDF_DES3:
++                        case NID_ecka_dh_SessionKDF_AES128:
++                        case NID_ecka_dh_SessionKDF_AES192:
++                        case NID_ecka_dh_SessionKDF_AES256:
++                            copy_ec_params(&dp->domainParameter->parameters.ecdh,
++                                    tmp_dp_info->aid->parameters.ec);
++                            break;
++                        default:
++                            goto err;
++                    }
++                    break;
++                default:
++                    break;
++            }
++        }
++    }
++
++    if (tmp_info)
++        PACE_INFO_free(tmp_info);
++    if (tmp_dp_info)
++        PACE_DP_INFO_free(tmp_dp_info);
++    ASN1_OBJECT_free(a);
++    return 1;
++
++err:
++    if (a)
++        ASN1_OBJECT_free(a);
++    if (tmp_info)
++        PACE_INFO_free(tmp_info);
++    if (tmp_dp_info)
++        PACE_DP_INFO_free(tmp_dp_info);
++    return 0;
++}
+Index: openssl/crypto/pace/pace_asn1.h
+===================================================================
+--- /dev/null
++++ openssl/crypto/pace/pace_asn1.h
+@@ -0,0 +1,204 @@
++/**
++ *
++ * @date 2009-12-22
++ * @version 0.1
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#ifndef PACE_ASN1_H_
++#define PACE_ASN1_H_
++
++#include <openssl/ec.h>
++#include <openssl/dh.h>
++#include <openssl/asn1t.h>
++#include <openssl/bn.h>
++
++/**
++ * @defgroup EC_ASN1     ASN1 structures for elliptic curves
++ * @{ ************************************************************************/
++
++/* I stole these from ec_asn1.c */
++
++typedef struct x9_62_pentanomial_st {
++    long k1;
++    long k2;
++    long k3;
++    } PACE_X9_62_PENTANOMIAL;
++
++typedef struct pace_x9_62_characteristic_two_st {
++    long m;
++    ASN1_OBJECT  *type;
++    union   {
++        char *ptr;
++        /* NID_X9_62_onBasis */
++        ASN1_NULL    *onBasis;
++        /* NID_X9_62_tpBasis */
++        ASN1_INTEGER *tpBasis;
++        /* NID_X9_62_ppBasis */
++        PACE_X9_62_PENTANOMIAL *ppBasis;
++        /* anything else */
++        ASN1_TYPE *other;
++        } p;
++    } PACE_X9_62_CHARACTERISTIC_TWO;
++
++typedef struct pace_x9_62_fieldid_st {
++        ASN1_OBJECT *fieldType;
++    union   {
++        char *ptr;
++        /* NID_X9_62_prime_field */
++        ASN1_INTEGER *prime;
++        /* NID_X9_62_characteristic_two_field */
++        PACE_X9_62_CHARACTERISTIC_TWO *char_two;
++        /* anything else */
++        ASN1_TYPE *other;
++        } p;
++    } PACE_X9_62_FIELDID;
++
++typedef struct pace_x9_62_curve_st {
++        ASN1_OCTET_STRING *a;
++        ASN1_OCTET_STRING *b;
++        ASN1_BIT_STRING   *seed;
++        } PACE_X9_62_CURVE;
++
++typedef struct pace_ec_parameters_st {
++        ASN1_INTEGER           *version;
++        PACE_X9_62_FIELDID     *fieldID;
++        PACE_X9_62_CURVE       *curve;
++        ASN1_OCTET_STRING *base;
++        ASN1_INTEGER      *order;
++        ASN1_INTEGER      *cofactor;
++        } PACE_ECPARAMETERS;
++
++/* the OpenSSL ASN.1 definitions */
++ASN1_SEQUENCE(PACE_X9_62_PENTANOMIAL) = {
++    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k1, LONG),
++    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k2, LONG),
++    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k3, LONG)
++} ASN1_SEQUENCE_END(PACE_X9_62_PENTANOMIAL)
++
++DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
++IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
++
++ASN1_ADB_TEMPLATE(char_two_def) = ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.other, ASN1_ANY);
++
++ASN1_ADB(PACE_X9_62_CHARACTERISTIC_TWO) = {
++    ADB_ENTRY(NID_X9_62_onBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.onBasis, ASN1_NULL)),
++    ADB_ENTRY(NID_X9_62_tpBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.tpBasis, ASN1_INTEGER)),
++    ADB_ENTRY(NID_X9_62_ppBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.ppBasis, PACE_X9_62_PENTANOMIAL))
++} ASN1_ADB_END(PACE_X9_62_CHARACTERISTIC_TWO, 0, type, 0, &char_two_def_tt, NULL);
++
++ASN1_SEQUENCE(PACE_X9_62_CHARACTERISTIC_TWO) = {
++    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, m, LONG),
++    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, type, ASN1_OBJECT),
++    ASN1_ADB_OBJECT(PACE_X9_62_CHARACTERISTIC_TWO)
++} ASN1_SEQUENCE_END(PACE_X9_62_CHARACTERISTIC_TWO)
++
++DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
++IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
++
++ASN1_ADB_TEMPLATE(fieldID_def) = ASN1_SIMPLE(PACE_X9_62_FIELDID, p.other, ASN1_ANY);
++
++ASN1_ADB(PACE_X9_62_FIELDID) = {
++    ADB_ENTRY(NID_X9_62_prime_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.prime, ASN1_INTEGER)),
++    ADB_ENTRY(NID_X9_62_characteristic_two_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.char_two, PACE_X9_62_CHARACTERISTIC_TWO))
++} ASN1_ADB_END(PACE_X9_62_FIELDID, 0, fieldType, 0, &fieldID_def_tt, NULL);
++
++ASN1_SEQUENCE(PACE_X9_62_FIELDID) = {
++    ASN1_SIMPLE(PACE_X9_62_FIELDID, fieldType, ASN1_OBJECT),
++    ASN1_ADB_OBJECT(PACE_X9_62_FIELDID)
++} ASN1_SEQUENCE_END(PACE_X9_62_FIELDID)
++
++ASN1_SEQUENCE(PACE_X9_62_CURVE) = {
++    ASN1_SIMPLE(PACE_X9_62_CURVE, a, ASN1_OCTET_STRING),
++    ASN1_SIMPLE(PACE_X9_62_CURVE, b, ASN1_OCTET_STRING),
++    ASN1_OPT(PACE_X9_62_CURVE, seed, ASN1_BIT_STRING)
++} ASN1_SEQUENCE_END(PACE_X9_62_CURVE)
++
++ASN1_SEQUENCE(PACE_ECPARAMETERS) = {
++    ASN1_SIMPLE(PACE_ECPARAMETERS, version, ASN1_INTEGER),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, fieldID, PACE_X9_62_FIELDID),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, curve, PACE_X9_62_CURVE),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, base, ASN1_OCTET_STRING),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, order, ASN1_INTEGER),
++    ASN1_OPT(PACE_ECPARAMETERS, cofactor, ASN1_INTEGER)
++} ASN1_SEQUENCE_END(PACE_ECPARAMETERS)
++
++DECLARE_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
++IMPLEMENT_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup DH_ASN1     ASN1 structures for Diffie Hellman
++ * @{ ************************************************************************/
++/* I stole this from dh_asn1.c */
++int dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg);
++
++ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
++    ASN1_SIMPLE(DH, p, BIGNUM),
++    ASN1_SIMPLE(DH, g, BIGNUM),
++    ASN1_OPT(DH, length, ZLONG),
++} ASN1_SEQUENCE_END_cb(DH, PACE_DHparams)
++
++IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(DH, PACE_DHparams, PACE_DHparams)
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup PACE_ASN1     ASN1 structures for PACE
++ * @{ ************************************************************************/
++typedef struct pace_info_st {
++    ASN1_OBJECT *protocol;
++    ASN1_INTEGER *version;
++    ASN1_INTEGER *parameterId;
++    } PACE_INFO;
++
++typedef struct algorithm_identifier_st {
++    ASN1_OBJECT *algorithm;
++    union {
++        PACE_ECPARAMETERS *ec;
++        DH *dh;
++        ASN1_TYPE *other;
++    } parameters;
++} ALGORITHM_IDENTIFIER;
++
++typedef struct pace_dp_info_st {
++    ASN1_OBJECT *protocol;
++    ALGORITHM_IDENTIFIER *aid;
++    ASN1_INTEGER *parameterId;
++} PACE_DP_INFO;
++
++/* PACEInfo */
++ASN1_SEQUENCE(PACE_INFO) = {
++    ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
++    ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
++    ASN1_OPT(PACE_INFO, parameterId, ASN1_INTEGER)
++} ASN1_SEQUENCE_END(PACE_INFO)
++
++IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
++
++ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other, ASN1_ANY);
++
++ASN1_ADB(ALGORITHM_IDENTIFIER) = {
++        ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
++        ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams))
++} ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
++
++ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
++        ASN1_SIMPLE(ALGORITHM_IDENTIFIER, algorithm, ASN1_OBJECT),
++        ASN1_ADB_OBJECT(ALGORITHM_IDENTIFIER)
++} ASN1_SEQUENCE_END(ALGORITHM_IDENTIFIER)
++
++DECLARE_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
++IMPLEMENT_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
++
++/* PACEDomainParameterInfo */
++ASN1_SEQUENCE(PACE_DP_INFO) = {
++    ASN1_SIMPLE(PACE_DP_INFO, protocol, ASN1_OBJECT),
++    ASN1_SIMPLE(PACE_DP_INFO, aid, ALGORITHM_IDENTIFIER),
++    ASN1_OPT(PACE_DP_INFO, parameterId, ASN1_INTEGER)
++} ASN1_SEQUENCE_END(PACE_DP_INFO)
++
++IMPLEMENT_ASN1_FUNCTIONS(PACE_DP_INFO)
++/** @} ***********************************************************************/
++
++#endif /* PACE_ASN1_H_ */
 Index: openssl/crypto/pace/pace_buffer.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_buffer.c	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_buffer.c
 @@ -0,0 +1,103 @@
 +/**
 + * @version 0.1
@@ -1515,8 +2152,8 @@ Index: openssl/crypto/pace/pace_buffer.c
 +}
 Index: openssl/crypto/pace/pace_buffer.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_buffer.h	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_buffer.h
 @@ -0,0 +1,63 @@
 +/**
 + * @date 2009-11-30
@@ -1583,8 +2220,8 @@ Index: openssl/crypto/pace/pace_buffer.h
 +#endif /*PACE_BUFFER_H_*/
 Index: openssl/crypto/pace/pace_dh.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.c	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_dh.c
 @@ -0,0 +1,213 @@
 +/**
 + * @version 0.1
@@ -1801,8 +2438,8 @@ Index: openssl/crypto/pace/pace_dh.c
 +
 Index: openssl/crypto/pace/pace_dh.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.h	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_dh.h
 @@ -0,0 +1,91 @@
 +/**
 + * @date 2009-12-01
@@ -1897,9 +2534,9 @@ Index: openssl/crypto/pace/pace_dh.h
 +#endif /*PACE_DH_H_*/
 Index: openssl/crypto/pace/pace_ecdh.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.c	2010-02-13 13:52:36.000000000 +0100
-@@ -0,0 +1,160 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_ecdh.c
+@@ -0,0 +1,162 @@
 +/**
 + * @version 0.1
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
@@ -1957,6 +2594,7 @@ Index: openssl/crypto/pace/pace_ecdh.c
 +    if (!dp || !dp->domainParameter || !dp->domainParameter->parameters.ecdh
 +            || !ctx || !in)
 +        goto err;
++
 +    /* decode public key */
 +    ecp = EC_POINT_new(EC_KEY_get0_group(dp->domainParameter->parameters.ecdh));
 +    if (!ecp || !EC_POINT_oct2point(EC_KEY_get0_group(
@@ -1970,6 +2608,7 @@ Index: openssl/crypto/pace/pace_ecdh.c
 +            dp->domainParameter->parameters.ecdh), NULL, 0, ctx->bn_ctx));
 +    if (!out)
 +        goto err;
++
 +    /* copy data and set length */
 +    out->length = ECDH_compute_key(out->data, out->max, ecp,
 +            dp->domainParameter->parameters.ecdh, NULL);
@@ -2062,8 +2701,8 @@ Index: openssl/crypto/pace/pace_ecdh.c
 +}
 Index: openssl/crypto/pace/pace_ecdh.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.h	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_ecdh.h
 @@ -0,0 +1,76 @@
 +/**
 + * @date 2009-12-01
@@ -2143,8 +2782,8 @@ Index: openssl/crypto/pace/pace_ecdh.h
 +#endif /*PACE_ECDH_H_*/
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_err.c
 @@ -0,0 +1,107 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
@@ -2255,9 +2894,9 @@ Index: openssl/crypto/pace/pace_err.c
 +	}
 Index: openssl/crypto/pace/pace_kdf.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.c	2010-02-13 13:52:36.000000000 +0100
-@@ -0,0 +1,80 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_kdf.c
+@@ -0,0 +1,90 @@
 +/**
 + * @date 2009-12-01
 + * @version 0.1
@@ -2268,15 +2907,16 @@ Index: openssl/crypto/pace/pace_kdf.c
 +#include <string.h>
 +#include "pace_kdf.h"
 +#include "pace_util.h"
++#include "pace_buffer.h"
 +
 +BUF_MEM *
 +kdf(const BUF_MEM * key, const BUF_MEM * nonce, const uint32_t counter,
-+        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl)
++        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl, int keylen)
 +{
 +    int inlen;
-+    BUF_MEM * in = NULL, *out = NULL;
++    BUF_MEM *in = NULL, *digest = NULL, *out = NULL;
 +
-+    if (!key)
++    if (!key || keylen > EVP_MD_size(md))
 +        goto err;
 +
 +    in = BUF_MEM_new();
@@ -2300,12 +2940,17 @@ Index: openssl/crypto/pace/pace_kdf.c
 +        memcpy(in->data + key->length, &counter, sizeof counter);
 +    }
 +
-+    out = hash(md, ctx, impl, in);
-+    if (!out)
++    digest = hash(md, ctx, impl, in);
++    if (!digest)
 +        goto err;
++
++    /* Truncate the hash to keylen Bytes */
++    out = BUF_MEM_create_init(digest->data, keylen);
 +
 +    OPENSSL_cleanse(in->data, in->max);
 +    BUF_MEM_free(in);
++    OPENSSL_cleanse(digest->data, digest->max);
++    BUF_MEM_free(digest);
 +
 +    return out;
 +
@@ -2318,20 +2963,24 @@ Index: openssl/crypto/pace/pace_kdf.c
 +        OPENSSL_cleanse(out->data, out->max);
 +        BUF_MEM_free(out);
 +    }
++    if (digest) {
++        OPENSSL_cleanse(digest->data, digest->max);
++        BUF_MEM_free(digest);
++    }
 +
 +    return NULL;
 +}
 +
 +BUF_MEM *
 +kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce, const EVP_MD * md,
-+        EVP_MD_CTX * ctx, ENGINE * impl)
++        EVP_MD_CTX * ctx, ENGINE * impl, int keylen)
 +{
 +    BUF_MEM * out;
 +    BUF_MEM * enc = encoded_secret(pi);
 +    if (!enc)
 +        return NULL;
 +
-+    out = kdf(enc, nonce, htonl(KDF_PI_COUNTER), md, ctx, impl);
++    out = kdf(enc, nonce, htonl(KDF_PI_COUNTER), md, ctx, impl, keylen);
 +
 +    OPENSSL_cleanse(enc->data, enc->max);
 +    BUF_MEM_free(enc);
@@ -2340,9 +2989,9 @@ Index: openssl/crypto/pace/pace_kdf.c
 +}
 Index: openssl/crypto/pace/pace_kdf.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.h	2010-02-13 13:52:36.000000000 +0100
-@@ -0,0 +1,61 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_kdf.h
+@@ -0,0 +1,63 @@
 +/**
 + * @date 2009-12-01
 + * @version 0.1
@@ -2371,12 +3020,14 @@ Index: openssl/crypto/pace/pace_kdf.h
 + * @param md Message digest to use
 + * @param ctx EVP_MD_CTX object to use (optional)
 + * @param impl ENGINE object to use for message digest (optional)
++ * @param keylen Size of the output key. Must be smaller than the size of the
++ *               hash function
 + *
 + * @return derivated key or NULL if an error occurred
 + */
 +BUF_MEM * kdf(const BUF_MEM * key, const BUF_MEM * nonce,
 +        const uint32_t counter, const EVP_MD * md, EVP_MD_CTX * ctx,
-+        ENGINE * impl);
++        ENGINE * impl, int keylen);
 +#define KDF_ENC_COUNTER 1
 +#define KDF_MAC_COUNTER 2
 +#define KDF_PI_COUNTER  3
@@ -2385,29 +3036,29 @@ Index: openssl/crypto/pace/pace_kdf.h
 + *
 + * @see kdf()
 + */
-+#define kdf_enc(key, nonce, md, ctx, impl) \
-+    kdf(key, nonce, htonl(KDF_ENC_COUNTER), md, ctx, impl)
++#define kdf_enc(key, nonce, md, ctx, impl, keylen) \
++    kdf(key, nonce, htonl(KDF_ENC_COUNTER), md, ctx, impl, keylen)
 +/**
 + * @brief Key derivation function to derive authentication key
 + *
 + * @see kdf()
 + */
-+#define kdf_mac(key, nonce, md, ctx, impl) \
-+    kdf(key, nonce, htonl(KDF_MAC_COUNTER), md, ctx, impl)
++#define kdf_mac(key, nonce, md, ctx, impl, keylen) \
++    kdf(key, nonce, htonl(KDF_MAC_COUNTER), md, ctx, impl, keylen)
 +/**
 + * @brief Key derivation function from a password pi
 + *
 + * @see kdf()
 + */
 +BUF_MEM * kdf_pi(const PACE_SEC * pi, const BUF_MEM * nonce,
-+        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl);
++        const EVP_MD * md, EVP_MD_CTX * ctx, ENGINE * impl, int keylen);
 +/** @} ***********************************************************************/
 +
 +#endif /*PACE_KDF_H_*/
 Index: openssl/crypto/pace/pace_lib.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_lib.c	2010-03-10 10:03:19.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_lib.c
 @@ -0,0 +1,516 @@
 +/**
 + * @date 2009-11-30
@@ -2576,7 +3227,7 @@ Index: openssl/crypto/pace/pace_lib.c
 +            EVP_MD_CTX_destroy(ctx->md_ctx);
 +        if (ctx->cipher_ctx)
 +            EVP_CIPHER_CTX_free(ctx->cipher_ctx);
-+        if (ctx->cmac_ctx)
++        if (ctx->cmac_ctx) /* FIXME: Segfaults if CMAC_Init has not been called */
 +            CMAC_CTX_free(ctx->cmac_ctx);
 +        OPENSSL_free(ctx);
 +    }
@@ -2927,9 +3578,9 @@ Index: openssl/crypto/pace/pace_lib.c
 +}
 Index: openssl/crypto/pace/pace_mappings.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.c	2010-02-13 13:52:36.000000000 +0100
-@@ -0,0 +1,371 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_mappings.c
+@@ -0,0 +1,369 @@
 +/**
 + * @date 2009-12-01
 + * @version 0.1
@@ -3082,15 +3733,13 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    BUF_MEM * mem_h = NULL;
 +    BIGNUM * bn_s = NULL;
 +    EC_POINT * ecp_h = NULL, *ecp_g = NULL;
-+    const ECDH_METHOD * default_method = NULL;
++    const ECDH_METHOD *default_method;
 +    const EC_GROUP * group;
 +
 +    if (!dp || !dp->domainParameter || !dp->domainParameter->parameters.ecdh
 +            || !ctx || !s)
 +        goto err;
 +
-+    default_method = ECDH_get_default_method();
-+    ECDH_set_default_method(ECDH_OpenSSL_Point());
 +    group = EC_KEY_get0_group(dp->domainParameter->parameters.ecdh);
 +
 +    /* Convert nonce to BIGNUM */
@@ -3098,8 +3747,11 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    if (!bn_s)
 +        goto err;
 +
++    default_method = ECDH_get_default_method();
++    ECDH_set_default_method(ECDH_OpenSSL_Point());
 +    /* complete the ECDH and get the resulting point h */
 +    mem_h = ecdh_compute_key(dp, ctx, in);
++    ECDH_set_default_method(default_method);
 +    ecp_h = EC_POINT_new(group);
 +    if (!mem_h || !ecp_h || !EC_POINT_oct2point(group, ecp_h,
 +            (unsigned char *) mem_h->data, mem_h->length, ctx->bn_ctx))
@@ -3118,7 +3770,6 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    EC_POINT_clear_free(ecp_h);
 +    BUF_MEM_free(mem_h);
 +    BN_clear_free(bn_s);
-+    ECDH_set_default_method(default_method);
 +
 +    return out;
 +
@@ -3131,8 +3782,6 @@ Index: openssl/crypto/pace/pace_mappings.c
 +        BUF_MEM_free(mem_h);
 +    if (bn_s)
 +        BN_clear_free(bn_s);
-+    if (default_method)
-+        ECDH_set_default_method(default_method);
 +
 +    return NULL;
 +}
@@ -3303,8 +3952,8 @@ Index: openssl/crypto/pace/pace_mappings.c
 +}
 Index: openssl/crypto/pace/pace_mappings.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.h	2010-02-13 13:52:36.000000000 +0100
+--- /dev/null
++++ openssl/crypto/pace/pace_mappings.h
 @@ -0,0 +1,60 @@
 +/**
 + * @date 2009-12-01
@@ -3368,9 +4017,9 @@ Index: openssl/crypto/pace/pace_mappings.h
 +#endif /*PACE_MAPPINGS_H_*/
 Index: openssl/crypto/pace/pace_util.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.c	2010-03-10 10:03:19.000000000 +0100
-@@ -0,0 +1,712 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_util.c
+@@ -0,0 +1,766 @@
 +/**
 + * @date 2009-11-30
 + * @version 0.1
@@ -3831,7 +4480,8 @@ Index: openssl/crypto/pace/pace_util.c
 +}
 +
 +BUF_MEM *
-+asn1_pubkey(BN_CTX *ctx, const PACEDomainParameterInfo *dp, int include_dp)
++asn1_pubkey(BN_CTX *ctx, const PACEDomainParameterInfo *dp, const PACEInfo *info,
++        int include_dp)
 +{
 +    BIO *bio = NULL;
 +    BIGNUM *bn = NULL, *a_bn = NULL, *b_bn = NULL;
@@ -3844,9 +4494,9 @@ Index: openssl/crypto/pace/pace_util.c
 +        goto err;
 +
 +    bio = BIO_new(BIO_s_mem());
-+    sn = OBJ_nid2sn(dp->domainParameter->algorithm);
++    sn = OBJ_nid2sn(info->protocol);
 +    if (!bio || !sn || (BIO_printf(bio,
-+            "asn1=IMPLICIT:78A,SEQUENCE:domainParameter\n"
++            "asn1=IMPLICIT:73A,SEQUENCE:domainParameter\n"
 +                "[domainParameter]\n"
 +                "algorithm=OID:%s\n", sn) < 0))
 +        goto err;
@@ -3901,6 +4551,12 @@ Index: openssl/crypto/pace/pace_util.c
 +            break;
 +
 +        case NID_X9_62_id_ecPublicKey:
++        /* Note: Test cards derive from the official specification, therefore
++         *       we need to handle some additional OIDs */
++        case NID_ecka_dh_SessionKDF_DES3:
++        case NID_ecka_dh_SessionKDF_AES128:
++        case NID_ecka_dh_SessionKDF_AES192:
++        case NID_ecka_dh_SessionKDF_AES256:
 +            if (!dp->domainParameter->parameters.ecdh)
 +                goto err;
 +
@@ -4035,6 +4691,53 @@ Index: openssl/crypto/pace/pace_util.c
 +}
 +
 +BUF_MEM *
++compute_authentication_token(PACE_CTX *ctx, PACEDomainParameterInfo *dp_opp,
++        const PACEInfo *info, BUF_MEM * k_mac)
++{
++    BUF_MEM *asn1 = NULL, *out = NULL;
++
++    if (ctx->tr_version == PACE_TR_VERSION_2_01)
++        asn1 = asn1_pubkey(ctx->bn_ctx, dp_opp, info, 1);
++    else
++        asn1 = asn1_pubkey(ctx->bn_ctx, dp_opp, info, 0);
++
++    if (!asn1 || !ctx || !info)
++        goto err;
++
++    switch (info->protocol) {
++        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++            out = retail_mac_des(k_mac, asn1);
++            break;
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++            out = cmac(ctx->cmac_ctx, ctx->cipher, k_mac, asn1,
++                    PACE_AES_MAC_LENGTH);
++            break;
++        default:
++            goto err;
++    }
++
++err:
++    if (asn1)
++        BUF_MEM_free(asn1);
++
++    return out;
++}
++
++BUF_MEM *
 +bio2asn1bin(BIO *bio)
 +{
 +    CONF *conf = NULL;
@@ -4085,9 +4788,9 @@ Index: openssl/crypto/pace/pace_util.c
 +}
 Index: openssl/crypto/pace/pace_util.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.h	2010-03-10 10:03:19.000000000 +0100
-@@ -0,0 +1,208 @@
+--- /dev/null
++++ openssl/crypto/pace/pace_util.h
+@@ -0,0 +1,213 @@
 +/**
 + * @date 2009-11-30
 + * @version 0.1
@@ -4269,18 +4972,23 @@ Index: openssl/crypto/pace/pace_util.h
 +
 +/**
 + * @brief Encodes public key data objects of the domain parameters in ASN.1
-+ * (see TR-3110 D.3)
++ * (see TR-3110 D.3.2 and D.3.3)
 + *
 + * @param ctx
-+ * @param dp PACEDomainParameterInfo object containing an AlgorithmIdentifier, which
-+ * includes the DH or EC_KEY object
++ * @param dp PACEDomainParameterInfo object containing an AlgorithmIdentifier,
++ * which includes the DH or EC_KEY object
 + * @param include_dp set to 1 if the domain parameter should be included, 0
 + * otherwise.
 + *
 + * @return ASN.1 encoded public key data objects or NULL if an error occurred
 + */
 +BUF_MEM *
-+asn1_pubkey(BN_CTX  *ctx, const PACEDomainParameterInfo *dp, int include_dp);
++asn1_pubkey(BN_CTX  *ctx, const PACEDomainParameterInfo *dp, const PACEInfo *info,
++        int include_dp);
++
++BUF_MEM *
++compute_authentication_token(PACE_CTX *ctx, PACEDomainParameterInfo *dp_opp,
++        const PACEInfo *info, BUF_MEM * k_mac);
 +
 +/**
 + * @brief Generates the ASN.1 encoding from a prepared BIO
@@ -4298,18 +5006,11 @@ Index: openssl/crypto/pace/pace_util.h
 +#endif /*PACE_DH_H_*/
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2010-03-10 10:03:19.000000000 +0100
-@@ -0,0 +1,688 @@
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <sys/time.h>
-+#include <netinet/in.h>
-+
+--- /dev/null
++++ openssl/crypto/pace/pacetest.c
+@@ -0,0 +1,635 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
++#include <stdio.h>
 +#ifdef OPENSSL_NO_PACE
 +int
 +main(int argc, char *argv[])
@@ -4318,23 +5019,21 @@ Index: openssl/crypto/pace/pacetest.c
 +    return (0);
 +}
 +#else
-+#include <openssl/pace.h>
-+#include <openssl/ec.h>
-+#include <openssl/evp.h>
-+#include <openssl/err.h>
-+#include <openssl/objects.h>
-+#include <openssl/buffer.h>
 +#include <openssl/asn1.h>
++#include <openssl/buffer.h>
 +#include <openssl/conf.h>
++#include <openssl/ec.h>
++#include <openssl/err.h>
++#include <openssl/evp.h>
++#include <openssl/objects.h>
++#include <openssl/pace.h>
++#include <string.h>
 +
-+#define start() printf("%s\t", __FUNCTION__)
 +#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); goto err; }
++#define verb(s) { if (verbose) printf(s "\n"); else printf("."); }
 +
 +static char verbose=0;
 +static char debug=0;
-+/*static char do_mrtd = 1;*/
-+static int server_sock;
-+static int client_sock = 0;
 +
 +static const unsigned char EFCardAccess[] = {
 +    0x31, 0x82, 0x02, 0x64, 0x30, 0x0d, 0x06, 0x08, 0x04, 0x00, 0x7f,
@@ -4509,6 +5208,7 @@ Index: openssl/crypto/pace/pacetest.c
 +        ka_obj = EC_KEY_new_by_curve_name(curve);
 +    if (!PACE_init(ctx, dp_info_picc_static, info, algorithm, ka_obj))
 +        err("Error initializing domain parameters and PACE_CTX object for PICC");
++    ctx->tr_version = PACE_TR_VERSION_2_01;
 +    if (curve == NID_undef) {
 +        if (!DH_generate_key(
 +                    dp_info_picc_static->domainParameter->parameters.dh))
@@ -4566,63 +5266,39 @@ Index: openssl/crypto/pace/pacetest.c
 +                err("cannot happen");
 +        }
 +
-+    if (verbose)
-+        printf("STEP1\n");
-+    else
-+        printf(".");
++    verb("STEP1");
 +    if (!PACE_STEP1_enc_nonce(s, ctx, &nonce_picc, &enc_nonce))
 +        err("Error generating or encrypting nonce");
-+    if (verbose)
-+        printf("MRTD generated and encrypted nonce.");
-+    else
-+        printf(".");
++    verb("MRTD generated and encrypted nonce.");
 +    if (debug) {
 +        hexdump("MRTD generated Nonce", nonce_picc);
 +        hexdump("Encrypted nonce", enc_nonce);
 +    }
 +
-+    if (verbose)
-+        printf("STEP2\n");
-+    else
-+        printf(".");
++    verb("STEP2");
 +    nonce_pcd = PACE_STEP2_dec_nonce(s, enc_nonce, ctx);
 +    if (!nonce_pcd)
 +        err("Error decrypting nonce");
 +    if (nonce_picc->length != nonce_pcd->length ||
 +            memcmp(nonce_picc->data, nonce_pcd->data, nonce_pcd->length) != 0)
 +        err("Error decrypting nonce (doesn't match nonce)");
-+    if (verbose)
-+        printf("Terminal decrypted the correct nonce\n");
-+    else
-+        printf(".");
++    verb("Terminal decrypted the correct nonce");
 +
-+    if (verbose)
-+        printf("STEP3A generate key\n");
-+    else
-+        printf(".");
++    verb("STEP3A generate key");
 +    map_pub_picc = PACE_STEP3A_map_generate_key(dp_info_picc, ctx);
 +    if(!map_pub_picc)
 +        err("Error generating keypair to map domain parameters");
-+    if (verbose)
-+        printf("Generated keypair on MRTD for mapping\n");
-+    else
-+        printf(".");
++    verb("Generated keypair on MRTD for mapping");
 +    map_pub_pcd = PACE_STEP3A_map_generate_key(dp_info_pcd, ctx);
 +    if(!map_pub_pcd)
 +        err("Error generating keypair to map domain parameters");
-+    if (verbose)
-+        printf("Generated keypair on Terminal for mapping\n");
-+    else
-+        printf(".");
++    verb("Generated keypair on Terminal for mapping");
 +    if (debug) {
 +        hexdump("Public key MRTD", map_pub_picc);
 +        hexdump("Public key Terminal", map_pub_pcd);
 +    }
 +
-+    if (verbose)
-+        printf("STEP3A compute key\n");
-+    else
-+        printf(".");
++    verb("STEP3A compute key");
 +    switch (dp_info_picc->protocol) {
 +        case NID_id_PACE_DH_IM:
 +            /* dh im is special, only mrtd generates the key */
@@ -4636,18 +5312,12 @@ Index: openssl/crypto/pace/pacetest.c
 +    }
 +    if(!map_dp_info_picc)
 +        err("Error computing mapped domain parameters");
-+    if (verbose)
-+        printf("Computed mapped domain parameters on MRTD\n");
-+    else
-+        printf(".");
++    verb("Computed mapped domain parameters on MRTD");
 +    map_dp_info_pcd = PACE_STEP3A_map_compute_key(dp_info_pcd,
 +            ctx, nonce_pcd, map_pub_picc);
 +    if(!map_dp_info_pcd)
 +        err("Error computing mapped domain parameters");
-+    if (verbose)
-+        printf("Computed mapped domain parameters on MRTD and Terminal\n");
-+    else
-+        printf(".");
++    verb("Computed mapped domain parameters on MRTD and Terminal");
 +    switch (map_dp_info_picc->domainParameter->algorithm) {
 +        case NID_dhpublicnumber:
 +            if (BN_cmp(map_dp_info_picc->domainParameter->parameters.dh->g,
@@ -4672,24 +5342,15 @@ Index: openssl/crypto/pace/pacetest.c
 +            err("cannot happen");
 +    }
 +
-+    if (verbose)
-+        printf("STEP3B\n");
-+    else
-+        printf(".");
++    verb("STEP3B");
 +    pub_picc = PACE_STEP3B_dh_generate_key(map_dp_info_picc, ctx);
 +    if(!pub_picc)
 +        err("Error generating keypair for key derivation on MRTD");
-+    if (verbose)
-+        printf("Generated keypair on MRTD for key derivation\n");
-+    else
-+        printf(".");
++    verb("Generated keypair on MRTD for key derivation");
 +    pub_pcd = PACE_STEP3B_dh_generate_key(map_dp_info_pcd, ctx);
 +    if(!pub_pcd)
 +        err("Error generating keypair for key derivation on Terminal");
-+    if (verbose)
-+        printf("Generated keypair on Terminal for key derivation\n");
-+    else
-+        printf(".");
++    verb("Generated keypair on Terminal for key derivation");
 +    key_picc = PACE_STEP3B_dh_compute_key(map_dp_info_picc, ctx, pub_pcd);
 +    if(!key_picc)
 +        err("Error computing key for key derivation on MRTD");
@@ -4699,63 +5360,41 @@ Index: openssl/crypto/pace/pacetest.c
 +    if (key_pcd->length != key_picc->length ||
 +            memcmp(key_picc->data, key_pcd->data, key_pcd->length) != 0)
 +        err("Error computing key for key derivation (MRTD and TERMINAL differ)");
-+    if (verbose)
-+        printf("Computed the same key on MRTD and TERMINAL for key derivation\n");
-+    else
-+        printf(".");
++    verb("Computed the same key on MRTD and TERMINAL for key derivation");
 +
-+    if (verbose)
-+        printf("STEP3C\n");
-+    else
-+        printf(".");
++    verb("STEP3C");
 +    /* Note: Since the key is the same for MRTD and TERMINAL, k_enc and
 +     * k_mac are the same, too */
-+    if (!PACE_STEP3C_derive_keys(key_picc, ctx, &k_mac, &k_enc))
++    if (!PACE_STEP3C_derive_keys(key_picc, ctx, info, &k_mac, &k_enc))
 +        err("Error during key derivation");
-+    if (verbose)
-+        printf("Derived authentication and encryption key\n");
-+    else
-+        printf(".");
++    verb("Derived authentication and encryption key");
 +    if (debug) {
 +        hexdump("Derived authentication key", k_mac);
 +        hexdump("Derived encryption key", k_enc);
 +    }
 +
-+    if (verbose)
-+        printf("STEP3D\n");
-+    else
-+        printf(".");
++    verb("STEP3D");
 +    token_pcd = PACE_STEP3D_compute_authentication_token(ctx, map_dp_info_pcd, info,
-+            pub_picc, k_mac, 1);
++            pub_picc, k_mac);
 +    if (!token_pcd) {
 +        err("Failed to compute authentication token from Terminal");
 +    }
-+    if (verbose)
-+        printf("Computed authentication token for MRTD");
-+    else
-+        printf(".");
++    verb("Computed authentication token for Terminal");
 +    token_picc = PACE_STEP3D_compute_authentication_token(ctx, map_dp_info_picc, info,
-+            pub_pcd, k_mac, 1);
++            pub_pcd, k_mac);
 +    if (!token_picc) {
 +        err("Failed to compute authentication token from MRTD");
 +    }
-+    if (verbose)
-+        printf("Computed authentication token for MRTD");
-+    else
-+        printf(".");
++    verb("Computed authentication token for MRTD");
 +    if (debug) {
 +        hexdump("Authentication token from MRTD", token_picc);
 +        hexdump("Authentication token from TERMINAL", token_pcd);
 +    }
-+    if (!PACE_STEP3D_verify_authentication_token(ctx, map_dp_info_pcd, info,
-+                pub_picc, k_mac, token_picc, 1)) {
++    if (PACE_STEP3D_verify_authentication_token(ctx, map_dp_info_pcd, info,
++                k_mac, token_picc) != 1) {
 +        err("Could not verify authentication token.");
 +    }
-+    if (verbose) {
-+        printf("Authentication token verified.\n");
-+    } else {
-+        printf(".");
-+    }
++    verb("Authentication token verified.");
 +
 +    ok = 0;
 +
@@ -4828,7 +5467,7 @@ Index: openssl/crypto/pace/pacetest.c
 +{
 +    int r = 0;
 +    if (verbose)
-+    printf("Starting a real life test\n");
++        printf("Starting a real life test\n");
 +
 +    enum s_type pace_sec_type [] = {
 +        PACE_PUK,
@@ -4922,6 +5561,35 @@ Index: openssl/crypto/pace/pacetest.c
 +    return r;
 +}
 +
++int parse_test()
++{
++    int ok = 1;
++    if (verbose)
++        printf("Starting a parse test\n");
++    PACEInfo *info = NULL;
++    PACEDomainParameterInfo *dp = NULL;
++
++    printf("Parsing EF.CardAccess");
++    if (!parse_ef_card_access(EFCardAccess, EF_len, &info, &dp))
++        err("Could not parse EFCardAccess");
++
++    if (debug) {
++        printf("\n");
++        dump_pace_info(info);
++        dump_pace_dp(dp);
++        printf("Successfull parsed EF.CardAccess\n");
++    } else
++        printf("\tok\n");
++
++    ok = 0;
++
++err:
++    PACEInfo_free(info);
++    PACEDomainParameterInfo_clear_free(dp);
++
++    return ok;
++}
++
 +int main(int argc, char *argv[])
 +{
 +    int i;
@@ -4969,31 +5637,18 @@ Index: openssl/crypto/pace/pacetest.c
 +
 +    /*printf("%s:%d\n", __FILE__, __LINE__);*/
 +    int out = 0;
-+    PACEInfo *info = NULL;
-+    PACEDomainParameterInfo *dp = NULL;
 +    out += real_life_test();
++    out += parse_test();
 +
-+    if (client_sock > 0)
-+        close(client_sock);
-+    if (server_sock > 0)
-+        close(server_sock);
-+
-+    //dp = PACEDomainParameterInfo_new();
-+    //info = PACEInfo_new();
-+    parse_ef_card_access(EFCardAccess, EF_len, &info, &dp);
-+    dump_pace_info(info);
-+    dump_pace_dp(dp);
-+    PACEInfo_free(info);
-+    PACEDomainParameterInfo_clear_free(dp);
 +    return -out;
 +}
 +
 +#endif /* OPENSSL_NO_PACE */
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/makevms.com	2010-02-13 13:59:35.000000000 +0100
-@@ -525,6 +525,7 @@
+--- openssl.orig/makevms.com
++++ openssl/makevms.com
+@@ -525,6 +525,7 @@ $ EXHEADER_CMS := cms.h
  $ EXHEADER_PQUEUE := pqueue.h
  $ EXHEADER_TS := ts.h
  $ EXHEADER_JPAKE := jpake.h
@@ -5003,9 +5658,9 @@ Index: openssl/makevms.com
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/test/Makefile	2010-02-13 13:59:34.000000000 +0100
-@@ -63,11 +63,11 @@
+--- openssl.orig/test/Makefile
++++ openssl/test/Makefile
+@@ -63,11 +63,11 @@ IGETEST=	igetest
  GCMTESTA=  aesgcmtest
  CMACTESTA= cmac_test
  JPAKETEST=	jpaketest
@@ -5019,7 +5674,7 @@ Index: openssl/test/Makefile
  	$(MD2TEST)$(EXE_EXT)  $(MD4TEST)$(EXE_EXT) $(MD5TEST)$(EXE_EXT) $(HMACTEST)$(EXE_EXT) $(WPTEST)$(EXE_EXT) \
  	$(RC2TEST)$(EXE_EXT) $(RC4TEST)$(EXE_EXT) $(RC5TEST)$(EXE_EXT) \
  	$(DESTEST)$(EXE_EXT) $(SHATEST)$(EXE_EXT) $(SHA1TEST)$(EXE_EXT) $(SHA256TEST)$(EXE_EXT) $(SHA512TEST)$(EXE_EXT) \
-@@ -75,7 +75,7 @@
+@@ -75,7 +75,7 @@ EXE=	$(BNTEST)$(EXE_EXT) $(ECTEST)$(EXE_
  	$(RANDTEST)$(EXE_EXT) $(DHTEST)$(EXE_EXT) $(ENGINETEST)$(EXE_EXT) \
  	$(BFTEST)$(EXE_EXT) $(CASTTEST)$(EXE_EXT) $(SSLTEST)$(EXE_EXT) $(EXPTEST)$(EXE_EXT) $(DSATEST)$(EXE_EXT) $(RSATEST)$(EXE_EXT) \
  	$(EVPTEST)$(EXE_EXT) $(IGETEST)$(EXE_EXT) $(JPAKETEST)$(EXE_EXT) \
@@ -5028,7 +5683,7 @@ Index: openssl/test/Makefile
  
  # $(METHTEST)$(EXE_EXT)
  
-@@ -88,7 +88,7 @@
+@@ -88,7 +88,7 @@ OBJ=	$(BNTEST).o $(ECTEST).o  $(ECDSATES
  	$(RANDTEST).o $(DHTEST).o $(ENGINETEST).o $(CASTTEST).o \
  	$(BFTEST).o  $(SSLTEST).o  $(DSATEST).o  $(EXPTEST).o $(RSATEST).o \
  	$(EVPTEST).o $(IGETEST).o $(JPAKETEST).o \
@@ -5037,7 +5692,7 @@ Index: openssl/test/Makefile
  SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATEST).c $(ECDHTEST).c $(IDEATEST).c \
  	$(MD2TEST).c  $(MD4TEST).c $(MD5TEST).c \
  	$(HMACTEST).c $(WPTEST).c \
-@@ -97,7 +97,7 @@
+@@ -97,7 +97,7 @@ SRC=	$(BNTEST).c $(ECTEST).c  $(ECDSATES
  	$(RANDTEST).c $(DHTEST).c $(ENGINETEST).c $(CASTTEST).c \
  	$(BFTEST).c  $(SSLTEST).c $(DSATEST).c   $(EXPTEST).c $(RSATEST).c \
  	$(EVPTEST).c $(IGETEST).c $(JPAKETEST).c \
@@ -5046,7 +5701,7 @@ Index: openssl/test/Makefile
  
  EXHEADER= 
  HEADER=	$(EXHEADER)
-@@ -140,7 +140,7 @@
+@@ -140,7 +140,7 @@ alltests: \
  	test_enc test_x509 test_rsa test_crl test_sid \
  	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
  	test_ss test_ca test_engine test_evp test_ssl test_tsa test_ige \
@@ -5055,7 +5710,7 @@ Index: openssl/test/Makefile
  
  test_evp:
  	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
-@@ -314,6 +314,16 @@
+@@ -314,6 +314,16 @@ test_cms:
  	@echo "CMS consistency test"
  	$(PERL) cms-test.pl
  
@@ -5072,7 +5727,7 @@ Index: openssl/test/Makefile
  test_aes_gcm:  $(GCMTESTA)$(EXE_EXT)
  	@echo "Test AES GCM modes"
  	../util/shlib_wrap.sh ./aesgcmtest$(EXE_EXT)
-@@ -455,6 +465,9 @@
+@@ -455,6 +465,9 @@ $(IGETEST)$(EXE_EXT): $(IGETEST).o $(DLI
  $(JPAKETEST)$(EXE_EXT): $(JPAKETEST).o $(DLIBCRYPTO)
  	@target=$(JPAKETEST); $(BUILD_CMD)
  
@@ -5082,7 +5737,7 @@ Index: openssl/test/Makefile
  $(GCMTESTA)$(EXE_EXT): $(GCMTESTA).o  $(DLIBCRYPTO)
  	@target=$(GCMTESTA); $(BUILD_CMD)
  
-@@ -479,6 +492,15 @@
+@@ -479,6 +492,15 @@ dummytest$(EXE_EXT): dummytest.o $(DLIBC
  
  # DO NOT DELETE THIS LINE -- make depend depends on it.
  
@@ -5098,7 +5753,7 @@ Index: openssl/test/Makefile
  bftest.o: ../e_os.h ../include/openssl/blowfish.h ../include/openssl/e_os2.h
  bftest.o: ../include/openssl/opensslconf.h bftest.c
  bntest.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
-@@ -497,6 +519,15 @@
+@@ -497,6 +519,15 @@ bntest.o: ../include/openssl/stack.h ../
  bntest.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h bntest.c
  casttest.o: ../e_os.h ../include/openssl/cast.h ../include/openssl/e_os2.h
  casttest.o: ../include/openssl/opensslconf.h casttest.c
@@ -5114,7 +5769,7 @@ Index: openssl/test/Makefile
  destest.o: ../include/openssl/des.h ../include/openssl/des_old.h
  destest.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
  destest.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
-@@ -633,6 +664,17 @@
+@@ -633,6 +664,17 @@ mdc2test.o: ../include/openssl/opensslco
  mdc2test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
  mdc2test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
  mdc2test.o: ../include/openssl/ui.h ../include/openssl/ui_compat.h mdc2test.c
@@ -5134,9 +5789,9 @@ Index: openssl/test/Makefile
  randtest.o: ../include/openssl/rand.h randtest.c
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2010-03-10 15:57:45.000000000 +0100
-+++ openssl/test/tests.com	2010-02-13 13:59:34.000000000 +0100
-@@ -32,7 +32,7 @@
+--- openssl.orig/test/tests.com
++++ openssl/test/tests.com
+@@ -32,7 +32,7 @@ $	    tests := -
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
  	test_ss,test_ca,test_engine,test_evp,test_ssl,test_tsa,test_ige,-
@@ -5145,7 +5800,7 @@ Index: openssl/test/tests.com
  $	endif
  $	tests = f$edit(tests,"COLLAPSE")
  $
-@@ -67,6 +67,7 @@
+@@ -67,6 +67,7 @@ $	ENGINETEST :=	enginetest
  $	EVPTEST :=	evp_test
  $	IGETEST :=	igetest
  $	JPAKETEST :=	jpaketest
@@ -5153,539 +5808,3 @@ Index: openssl/test/tests.com
  $
  $	tests_i = 0
  $ loop_tests:
-Index: openssl/crypto/pace/pace_asn1.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.c	2010-03-10 15:53:13.000000000 +0100
-@@ -0,0 +1,322 @@
-+/**
-+ * @date 2009-12-13
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#include <openssl/objects.h>
-+#include <openssl/asn1.h>
-+#include <openssl/pace.h>
-+#include "pace_asn1.h"
-+
-+static unsigned int
-+getlen (unsigned const char * in, unsigned int * len_len);
-+
-+static int copy_ec_params(EC_KEY **dst, PACE_ECPARAMETERS *src);
-+
-+static int copy_dh_params(DH ** dst, DH *src);
-+
-+/* I stole this from dh_asn1.c */
-+int
-+dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
-+{
-+    if(operation == ASN1_OP_NEW_PRE) {
-+        *pval = (ASN1_VALUE *)DH_new();
-+        if(*pval) return 2;
-+        return 0;
-+    } else if(operation == ASN1_OP_FREE_PRE) {
-+        DH_free((DH *)*pval);
-+        *pval = NULL;
-+        return 2;
-+    }
-+    return 1;
-+}
-+
-+int
-+copy_ec_params(EC_KEY **dst, PACE_ECPARAMETERS *src)
-+{
-+    EC_KEY *tmp = NULL;
-+    EC_GROUP *group = NULL;
-+    EC_POINT *generator = NULL;
-+    BIGNUM *p = NULL, *cofactor = NULL, *order = NULL, *a = NULL, *b = NULL;
-+    BN_CTX *bn_ctx;
-+
-+    if (!dst || !*dst) {
-+        tmp = EC_KEY_new();
-+        if (!tmp)
-+            goto err;
-+    } else
-+        tmp = *dst;
-+
-+    bn_ctx = BN_CTX_new();
-+    if (!bn_ctx)
-+        goto err;
-+
-+    p = BN_new();
-+    a = BN_new();
-+    b = BN_new();
-+    order = BN_new();
-+    cofactor = BN_new();
-+    if (!p || !a || !b || !order || !cofactor)
-+        goto err;
-+
-+    /* Copy field and curve */
-+    if (!ASN1_INTEGER_to_BN(src->fieldID->p.prime, p) ||
-+        !BN_bin2bn(ASN1_STRING_data(src->curve->a), ASN1_STRING_length(src->curve->a), a) ||
-+        !BN_bin2bn(ASN1_STRING_data(src->curve->b), ASN1_STRING_length(src->curve->b), b))
-+            goto err;
-+    else
-+        group = EC_GROUP_new_curve_GFp(p, a, b, bn_ctx);
-+
-+    if (!ASN1_INTEGER_to_BN(src->cofactor, cofactor) ||
-+        !ASN1_INTEGER_to_BN(src->order, order))
-+        goto err;
-+
-+    generator = EC_POINT_new(group);
-+    if (!generator)
-+        goto err;
-+
-+    /* Copy and set the generator point */
-+    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(src->base),
-+            ASN1_STRING_length(src->base), bn_ctx))
-+        goto err;
-+
-+    if (!EC_GROUP_set_generator(group, generator, order, cofactor))
-+        goto err;
-+
-+    if(!EC_KEY_set_group(tmp, group))
-+        goto err;
-+
-+    if (!*dst)
-+        *dst = tmp;
-+
-+    /* Clean up */
-+    BN_CTX_free(bn_ctx);
-+    BN_clear_free(cofactor);
-+    BN_clear_free(order);
-+    BN_clear_free(a);
-+    BN_clear_free(b);
-+    BN_clear_free(p);
-+    EC_GROUP_clear_free(group);
-+    EC_POINT_clear_free(generator);
-+    return 1;
-+
-+err:
-+    if(bn_ctx)
-+        BN_CTX_free(bn_ctx);
-+    if(!*dst && tmp)
-+        EC_KEY_free(tmp);
-+    if(!group)
-+        EC_GROUP_clear_free(group);
-+    if(!generator)
-+        EC_POINT_clear_free(generator);
-+    if(!cofactor)
-+        BN_clear_free(cofactor);
-+    if(!order)
-+        BN_clear_free(order);
-+    if(!a)
-+        BN_clear_free(a);
-+    if(!b)
-+        BN_clear_free(b);
-+    if(!p)
-+        BN_clear_free(p);
-+    return 0;
-+}
-+
-+int
-+copy_dh_params(DH ** dst, DH *src)
-+{
-+    DH *tmp = NULL;
-+    if (!dst || !*dst) {
-+        tmp = DH_new();
-+        if (!tmp)
-+            goto err;
-+    } else
-+        tmp = *dst;
-+
-+    /* dh.h doesn't have setter methods, so we have to set the members manually */
-+    tmp->p = BN_dup(src->p);
-+    tmp->g = BN_dup(src->g);
-+    if (src->length)
-+        tmp->length = src->length;
-+    if (src->j)
-+        tmp->j = BN_dup(src->j);
-+
-+    if(!*dst)
-+        *dst = tmp;
-+    return 1;
-+
-+err:
-+    if (!*dst && tmp)
-+        DH_free(tmp);
-+    return 0;
-+}
-+
-+unsigned int
-+getlen (unsigned const char * in, unsigned int * len_len)
-+{
-+    unsigned int len = 0;
-+    int i = 0;
-+
-+    if (!in || !len_len)
-+        return 0;
-+
-+    if ((in[0] & 0x80) == 0x80 ) { /* MSB set => long form */
-+        *len_len = (in[0] & 0x7F) + 1;
-+        for (i = 0; i < *len_len - 1; i++) {
-+            len <<= i*8;
-+            len += in[i+1];
-+        }
-+    }
-+    else {/* MSB not set => short form */
-+        len = (unsigned int) in[0];
-+        *len_len = 1;
-+    }
-+    return len;
-+}
-+
-+int
-+parse_ef_card_access(unsigned const char * in, unsigned int in_len, PACEInfo ** info,
-+        PACEDomainParameterInfo ** dp)
-+{
-+    unsigned int len = 0, len_len = 0, oid_len = 0;
-+    int todo = in_len;
-+    ASN1_OBJECT *a = NULL;
-+    unsigned const char *oid_pos = NULL, *seq_pos = NULL;
-+    int nid;
-+    PACE_INFO *tmp_info = NULL;
-+    PACEInfo *new_info = NULL;
-+    PACE_DP_INFO *tmp_dp_info = NULL;
-+    PACEDomainParameterInfo *new_dp_info = NULL;
-+
-+    if (!in)
-+        goto err;
-+    if (in[0] != 0x31) /* SET */
-+        goto err;
-+
-+    len = getlen(++in, &len_len); /* Length of SET */
-+    in += len_len;
-+    todo -= len_len + 1;
-+
-+    while(todo > 0) {
-+        if(in[0] != 0x30) /* SEQUENCE */
-+            goto err;
-+        seq_pos = in;
-+        len = getlen(++in, &len_len); /* Length of SEQUENCE */
-+        oid_pos = in + len_len;
-+        in += len + len_len;
-+        todo -= len + len_len + 1;
-+
-+        /* Read OID */
-+        if(oid_pos[0] != 0x06) /* OBJECT IDENTIFIER */
-+            goto err;
-+        oid_len = getlen(oid_pos+1, &len_len); /* Length of OBJECT IDENTIFIER */
-+
-+        /* XXX: I dont't understand, why we have to increment the last parameter
-+         *      by two. This was found to work by trial and error. */
-+        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
-+            goto err;
-+        else {
-+            nid = OBJ_obj2nid(a);
-+            switch (nid) {
-+                case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+                case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+                case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+                case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+                case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+                case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                    //printf("Found PACEInfo: %s\n", OBJ_nid2sn(nid));
-+                    tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
-+                    if (!tmp_info)
-+                        goto err;
-+                    new_info = PACEInfo_new();
-+                    /* TODO: Sanity checks. Note that in theory ASN1_INTEGER may
-+                     *       contain values, that are too big for int. Nevertheless
-+                     *       we only expect version of 0 or 1. The same holds for
-+                     *       parameterId */
-+                    new_info->version = (int) ASN1_INTEGER_get(tmp_info->version);
-+                    new_info->protocol = OBJ_obj2nid(tmp_info->protocol);
-+                    if(tmp_info->parameterId)
-+                        new_info->parameterId = (int) ASN1_INTEGER_get(tmp_info->parameterId);
-+                    break;
-+                case NID_id_PACE_ECDH_GM:
-+                case NID_id_PACE_ECDH_IM:
-+                case NID_id_PACE_DH_GM:
-+                case NID_id_PACE_DH_IM:
-+                    //printf("Found PACEDomainParameterInfo: %s\n", OBJ_nid2sn(nid));
-+                    tmp_dp_info = d2i_PACE_DP_INFO(NULL, &seq_pos, len+3);
-+                    if (!tmp_dp_info)
-+                        goto err;
-+
-+                    new_dp_info = PACEDomainParameterInfo_new();
-+                    if (!new_dp_info)
-+                        goto err;
-+                    new_dp_info->protocol = nid;
-+                    if(tmp_dp_info->parameterId)
-+                        new_dp_info->parameterId = (int) ASN1_INTEGER_get(tmp_dp_info->parameterId);
-+
-+                    new_dp_info->domainParameter = AlgorithmIdentifier_new();
-+                    if(!new_dp_info->domainParameter)
-+                        goto err;
-+                    new_dp_info->domainParameter->algorithm = OBJ_obj2nid(tmp_dp_info->aid->algorithm);
-+
-+                    /* Extraxt actual parameters */
-+                    switch (new_dp_info->domainParameter->algorithm) {
-+                        case NID_dhpublicnumber:
-+                            copy_dh_params(&new_dp_info->domainParameter->parameters.dh,
-+                                    tmp_dp_info->aid->parameters.dh);
-+                            break;
-+                        case NID_X9_62_id_ecPublicKey:
-+                        case NID_ecka_dh_SessionKDF_DES3:
-+                        case NID_ecka_dh_SessionKDF_AES128:
-+                        case NID_ecka_dh_SessionKDF_AES192:
-+                        case NID_ecka_dh_SessionKDF_AES256:
-+                            copy_ec_params(&new_dp_info->domainParameter->parameters.ecdh,
-+                                    tmp_dp_info->aid->parameters.ec);
-+                            break;
-+                        default:
-+                            goto err;
-+                    }
-+                    break;
-+                default:
-+                    break;
-+            }
-+        }
-+    }
-+
-+    if (info) { //Memory leak if (*info)
-+        if(new_info)
-+            *info = new_info;
-+    }
-+    if (dp) { //Memory leak if (*dp)
-+        if(new_dp_info)
-+            *dp = new_dp_info;
-+    }
-+
-+    if (tmp_info)
-+        PACE_INFO_free(tmp_info);
-+    if (tmp_dp_info)
-+        PACE_DP_INFO_free(tmp_dp_info);
-+    ASN1_OBJECT_free(a);
-+    return 1;
-+
-+err:
-+    if (a)
-+        ASN1_OBJECT_free(a);
-+    if (tmp_info)
-+        PACE_INFO_free(tmp_info);
-+    if (tmp_dp_info)
-+        PACE_DP_INFO_free(tmp_dp_info);
-+    return 0;
-+}
-Index: openssl/crypto/pace/pace_asn1.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.h	2010-02-13 13:52:36.000000000 +0100
-@@ -0,0 +1,204 @@
-+/**
-+ *
-+ * @date 2009-12-22
-+ * @version 0.1
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#ifndef PACE_ASN1_H_
-+#define PACE_ASN1_H_
-+
-+#include <openssl/ec.h>
-+#include <openssl/dh.h>
-+#include <openssl/asn1t.h>
-+#include <openssl/bn.h>
-+
-+/**
-+ * @defgroup EC_ASN1     ASN1 structures for elliptic curves
-+ * @{ ************************************************************************/
-+
-+/* I stole these from ec_asn1.c */
-+
-+typedef struct x9_62_pentanomial_st {
-+    long k1;
-+    long k2;
-+    long k3;
-+    } PACE_X9_62_PENTANOMIAL;
-+
-+typedef struct pace_x9_62_characteristic_two_st {
-+    long m;
-+    ASN1_OBJECT  *type;
-+    union   {
-+        char *ptr;
-+        /* NID_X9_62_onBasis */
-+        ASN1_NULL    *onBasis;
-+        /* NID_X9_62_tpBasis */
-+        ASN1_INTEGER *tpBasis;
-+        /* NID_X9_62_ppBasis */
-+        PACE_X9_62_PENTANOMIAL *ppBasis;
-+        /* anything else */
-+        ASN1_TYPE *other;
-+        } p;
-+    } PACE_X9_62_CHARACTERISTIC_TWO;
-+
-+typedef struct pace_x9_62_fieldid_st {
-+        ASN1_OBJECT *fieldType;
-+    union   {
-+        char *ptr;
-+        /* NID_X9_62_prime_field */
-+        ASN1_INTEGER *prime;
-+        /* NID_X9_62_characteristic_two_field */
-+        PACE_X9_62_CHARACTERISTIC_TWO *char_two;
-+        /* anything else */
-+        ASN1_TYPE *other;
-+        } p;
-+    } PACE_X9_62_FIELDID;
-+
-+typedef struct pace_x9_62_curve_st {
-+        ASN1_OCTET_STRING *a;
-+        ASN1_OCTET_STRING *b;
-+        ASN1_BIT_STRING   *seed;
-+        } PACE_X9_62_CURVE;
-+
-+typedef struct pace_ec_parameters_st {
-+        ASN1_INTEGER           *version;
-+        PACE_X9_62_FIELDID     *fieldID;
-+        PACE_X9_62_CURVE       *curve;
-+        ASN1_OCTET_STRING *base;
-+        ASN1_INTEGER      *order;
-+        ASN1_INTEGER      *cofactor;
-+        } PACE_ECPARAMETERS;
-+
-+/* the OpenSSL ASN.1 definitions */
-+ASN1_SEQUENCE(PACE_X9_62_PENTANOMIAL) = {
-+    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k1, LONG),
-+    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k2, LONG),
-+    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k3, LONG)
-+} ASN1_SEQUENCE_END(PACE_X9_62_PENTANOMIAL)
-+
-+DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
-+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
-+
-+ASN1_ADB_TEMPLATE(char_two_def) = ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.other, ASN1_ANY);
-+
-+ASN1_ADB(PACE_X9_62_CHARACTERISTIC_TWO) = {
-+    ADB_ENTRY(NID_X9_62_onBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.onBasis, ASN1_NULL)),
-+    ADB_ENTRY(NID_X9_62_tpBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.tpBasis, ASN1_INTEGER)),
-+    ADB_ENTRY(NID_X9_62_ppBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.ppBasis, PACE_X9_62_PENTANOMIAL))
-+} ASN1_ADB_END(PACE_X9_62_CHARACTERISTIC_TWO, 0, type, 0, &char_two_def_tt, NULL);
-+
-+ASN1_SEQUENCE(PACE_X9_62_CHARACTERISTIC_TWO) = {
-+    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, m, LONG),
-+    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, type, ASN1_OBJECT),
-+    ASN1_ADB_OBJECT(PACE_X9_62_CHARACTERISTIC_TWO)
-+} ASN1_SEQUENCE_END(PACE_X9_62_CHARACTERISTIC_TWO)
-+
-+DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
-+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
-+
-+ASN1_ADB_TEMPLATE(fieldID_def) = ASN1_SIMPLE(PACE_X9_62_FIELDID, p.other, ASN1_ANY);
-+
-+ASN1_ADB(PACE_X9_62_FIELDID) = {
-+    ADB_ENTRY(NID_X9_62_prime_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.prime, ASN1_INTEGER)),
-+    ADB_ENTRY(NID_X9_62_characteristic_two_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.char_two, PACE_X9_62_CHARACTERISTIC_TWO))
-+} ASN1_ADB_END(PACE_X9_62_FIELDID, 0, fieldType, 0, &fieldID_def_tt, NULL);
-+
-+ASN1_SEQUENCE(PACE_X9_62_FIELDID) = {
-+    ASN1_SIMPLE(PACE_X9_62_FIELDID, fieldType, ASN1_OBJECT),
-+    ASN1_ADB_OBJECT(PACE_X9_62_FIELDID)
-+} ASN1_SEQUENCE_END(PACE_X9_62_FIELDID)
-+
-+ASN1_SEQUENCE(PACE_X9_62_CURVE) = {
-+    ASN1_SIMPLE(PACE_X9_62_CURVE, a, ASN1_OCTET_STRING),
-+    ASN1_SIMPLE(PACE_X9_62_CURVE, b, ASN1_OCTET_STRING),
-+    ASN1_OPT(PACE_X9_62_CURVE, seed, ASN1_BIT_STRING)
-+} ASN1_SEQUENCE_END(PACE_X9_62_CURVE)
-+
-+ASN1_SEQUENCE(PACE_ECPARAMETERS) = {
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, version, ASN1_INTEGER),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, fieldID, PACE_X9_62_FIELDID),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, curve, PACE_X9_62_CURVE),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, base, ASN1_OCTET_STRING),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, order, ASN1_INTEGER),
-+    ASN1_OPT(PACE_ECPARAMETERS, cofactor, ASN1_INTEGER)
-+} ASN1_SEQUENCE_END(PACE_ECPARAMETERS)
-+
-+DECLARE_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
-+IMPLEMENT_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
-+/** @} ***********************************************************************/
-+
-+/**
-+ * @defgroup DH_ASN1     ASN1 structures for Diffie Hellman
-+ * @{ ************************************************************************/
-+/* I stole this from dh_asn1.c */
-+int dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg);
-+
-+ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
-+    ASN1_SIMPLE(DH, p, BIGNUM),
-+    ASN1_SIMPLE(DH, g, BIGNUM),
-+    ASN1_OPT(DH, length, ZLONG),
-+} ASN1_SEQUENCE_END_cb(DH, PACE_DHparams)
-+
-+IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(DH, PACE_DHparams, PACE_DHparams)
-+/** @} ***********************************************************************/
-+
-+/**
-+ * @defgroup PACE_ASN1     ASN1 structures for PACE
-+ * @{ ************************************************************************/
-+typedef struct pace_info_st {
-+    ASN1_OBJECT *protocol;
-+    ASN1_INTEGER *version;
-+    ASN1_INTEGER *parameterId;
-+    } PACE_INFO;
-+
-+typedef struct algorithm_identifier_st {
-+    ASN1_OBJECT *algorithm;
-+    union {
-+        PACE_ECPARAMETERS *ec;
-+        DH *dh;
-+        ASN1_TYPE *other;
-+    } parameters;
-+} ALGORITHM_IDENTIFIER;
-+
-+typedef struct pace_dp_info_st {
-+    ASN1_OBJECT *protocol;
-+    ALGORITHM_IDENTIFIER *aid;
-+    ASN1_INTEGER *parameterId;
-+} PACE_DP_INFO;
-+
-+/* PACEInfo */
-+ASN1_SEQUENCE(PACE_INFO) = {
-+    ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
-+    ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
-+    ASN1_OPT(PACE_INFO, parameterId, ASN1_INTEGER)
-+} ASN1_SEQUENCE_END(PACE_INFO)
-+
-+IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
-+
-+ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other, ASN1_ANY);
-+
-+ASN1_ADB(ALGORITHM_IDENTIFIER) = {
-+        ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
-+        ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams))
-+} ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
-+
-+ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
-+        ASN1_SIMPLE(ALGORITHM_IDENTIFIER, algorithm, ASN1_OBJECT),
-+        ASN1_ADB_OBJECT(ALGORITHM_IDENTIFIER)
-+} ASN1_SEQUENCE_END(ALGORITHM_IDENTIFIER)
-+
-+DECLARE_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
-+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
-+
-+/* PACEDomainParameterInfo */
-+ASN1_SEQUENCE(PACE_DP_INFO) = {
-+    ASN1_SIMPLE(PACE_DP_INFO, protocol, ASN1_OBJECT),
-+    ASN1_SIMPLE(PACE_DP_INFO, aid, ALGORITHM_IDENTIFIER),
-+    ASN1_OPT(PACE_DP_INFO, parameterId, ASN1_INTEGER)
-+} ASN1_SEQUENCE_END(PACE_DP_INFO)
-+
-+IMPLEMENT_ASN1_FUNCTIONS(PACE_DP_INFO)
-+/** @} ***********************************************************************/
-+
-+#endif /* PACE_ASN1_H_ */
