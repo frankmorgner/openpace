@@ -2,14 +2,13 @@ Index: openssl/crypto/ec/ec_curve.c
 ===================================================================
 --- openssl.orig/crypto/ec/ec_curve.c
 +++ openssl/crypto/ec/ec_curve.c
-@@ -1817,6 +1817,438 @@ static const struct { EC_CURVE_DATA h; u
+@@ -1817,6 +1817,434 @@
  	  0xBA,0xFC,0xA7,0x5E }
  	};
  
-+//================================================================
-+/* For the definition of BP curves see
-+ *  http://www.ecc-brainpool.org/download/BP-Kurven-aktuell.pdf or
-+ *  http://www.ietf.org/internet-drafts/draft-lochter-pkix-brainpool-ecc-03.txt
++/* These curves were added by Annie Yousar <a.yousar@informatik.hu-berlin.de>
++ * For the definition of RFC 5639 curves see
++ * http://www.ietf.org/rfc/rfc5639.txt
 + * These curves are generated verifiable at random, nevertheless the seed is
 + * omitted as parameter because the generation mechanism is different from
 + * those defined in ANSI X9.62.
@@ -211,7 +210,6 @@ Index: openssl/crypto/ec/ec_curve.c
 +   _EC_brainpoolP320r1 = {
 +	{ NID_X9_62_prime_field, 0,40,1 },
 +	{							/* no seed */
-+
 +	  0xD3,0x5E,0x47,0x20,0x36,0xBC,0x4F,0xB7,0xE1,0x3C,	/* p */
 +	  0x78,0x5E,0xD2,0x01,0xE0,0x65,0xF9,0x8F,0xCF,0xA6,
 +	  0xF6,0xF4,0x0D,0xEF,0x4F,0x92,0xB9,0xEC,0x78,0x93,
@@ -435,31 +433,29 @@ Index: openssl/crypto/ec/ec_curve.c
 +	  0xD3,0x81,0x08,0x5D,0xDA,0xDD,0xB5,0x87,0x96,0x82,
 +	  0x9C,0xA9,0x00,0x69 }
 +	};
-+//================================================================
-+
 +
  typedef struct _ec_list_element_st {
  	int	nid;
  	const EC_CURVE_DATA *data;
-@@ -1902,6 +2334,21 @@ static const ec_list_element curve_list[
+@@ -1902,6 +2330,21 @@
  	/* IPSec curves */
  	{ NID_ipsec3, &_EC_IPSEC_155_ID3.h, "\n\tIPSec/IKE/Oakley curve #3 over a 155 bit binary field.\n""\tNot suitable for ECDSA.\n\tQuestionable extension field!"},
  	{ NID_ipsec4, &_EC_IPSEC_185_ID4.h, "\n\tIPSec/IKE/Oakley curve #4 over a 185 bit binary field.\n""\tNot suitable for ECDSA.\n\tQuestionable extension field!"},
 +	/* brainpool curves */
-+	{ NID_brainpoolP160r1, &_EC_brainpoolP160r1.h, "BP curve over a 160 bit prime field"},
-+	{ NID_brainpoolP160t1, &_EC_brainpoolP160t1.h, "BP curve over a 160 bit prime field"},
-+	{ NID_brainpoolP192r1, &_EC_brainpoolP192r1.h, "BP curve over a 192 bit prime field"},
-+	{ NID_brainpoolP192t1, &_EC_brainpoolP192t1.h, "BP curve over a 192 bit prime field"},
-+	{ NID_brainpoolP224r1, &_EC_brainpoolP224r1.h, "BP curve over a 224 bit prime field"},
-+	{ NID_brainpoolP224t1, &_EC_brainpoolP224t1.h, "BP curve over a 224 bit prime field"},
-+	{ NID_brainpoolP256r1, &_EC_brainpoolP256r1.h, "BP curve over a 256 bit prime field"},
-+	{ NID_brainpoolP256t1, &_EC_brainpoolP256t1.h, "BP curve over a 256 bit prime field"},
-+	{ NID_brainpoolP320r1, &_EC_brainpoolP320r1.h, "BP curve over a 320 bit prime field"},
-+	{ NID_brainpoolP320t1, &_EC_brainpoolP320t1.h, "BP curve over a 320 bit prime field"},
-+	{ NID_brainpoolP384r1, &_EC_brainpoolP384r1.h, "BP curve over a 384 bit prime field"},
-+	{ NID_brainpoolP384t1, &_EC_brainpoolP384t1.h, "BP curve over a 384 bit prime field"},
-+	{ NID_brainpoolP512r1, &_EC_brainpoolP512r1.h, "BP curve over a 512 bit prime field"},
-+	{ NID_brainpoolP512t1, &_EC_brainpoolP512t1.h, "BP curve over a 512 bit prime field"},
++	{ NID_brainpoolP160r1, &_EC_brainpoolP160r1.h, "RFC 5639 curve over a 160 bit prime field"},
++	{ NID_brainpoolP160t1, &_EC_brainpoolP160t1.h, "RFC 5639 curve over a 160 bit prime field"},
++	{ NID_brainpoolP192r1, &_EC_brainpoolP192r1.h, "RFC 5639 curve over a 192 bit prime field"},
++	{ NID_brainpoolP192t1, &_EC_brainpoolP192t1.h, "RFC 5639 curve over a 192 bit prime field"},
++	{ NID_brainpoolP224r1, &_EC_brainpoolP224r1.h, "RFC 5639 curve over a 224 bit prime field"},
++	{ NID_brainpoolP224t1, &_EC_brainpoolP224t1.h, "RFC 5639 curve over a 224 bit prime field"},
++	{ NID_brainpoolP256r1, &_EC_brainpoolP256r1.h, "RFC 5639 curve over a 256 bit prime field"},
++	{ NID_brainpoolP256t1, &_EC_brainpoolP256t1.h, "RFC 5639 curve over a 256 bit prime field"},
++	{ NID_brainpoolP320r1, &_EC_brainpoolP320r1.h, "RFC 5639 curve over a 320 bit prime field"},
++	{ NID_brainpoolP320t1, &_EC_brainpoolP320t1.h, "RFC 5639 curve over a 320 bit prime field"},
++	{ NID_brainpoolP384r1, &_EC_brainpoolP384r1.h, "RFC 5639 curve over a 384 bit prime field"},
++	{ NID_brainpoolP384t1, &_EC_brainpoolP384t1.h, "RFC 5639 curve over a 384 bit prime field"},
++	{ NID_brainpoolP512r1, &_EC_brainpoolP512r1.h, "RFC 5639 curve over a 512 bit prime field"},
++	{ NID_brainpoolP512t1, &_EC_brainpoolP512t1.h, "RFC 5639 curve over a 512 bit prime field"},
  };
  
  #define curve_list_length (sizeof(curve_list)/sizeof(ec_list_element))
@@ -471,7 +467,7 @@ Index: openssl/crypto/objects/objects.txt
  # There is no OID that just denotes "HMAC" oddly enough...
  
  			: HMAC				: hmac
-+# brainpool curve OIDs (see http://www.ecc-brainpool.org)
++# RFC 5639 curve OIDs (see http://www.ietf.org/rfc/rfc5639.txt)
 +# versionOne OBJECT IDENTIFIER ::= {
 +# iso(1) identifified-organization(3) teletrust(36) algorithm(3)
 +# signature-algorithm(3) ecSign(2) ecStdCurvesAndGeneration(8)
