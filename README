@@ -7,19 +7,8 @@ OpenPACE is an implementation of the Password-Authentication-Connection-
 Establishment (PACE) protocol conforming to BSI TR-03110 version 2.03.
 OpenPACE enables applications to establish a strong session key using a weak
 password independent from the use of a smartcard.
-OpenPACE is implemented as an addition for the OpenSSL library (see
+OpenPACE is implemented as a patch for the OpenSSL library (see
 http://openssl.org)
-
-HOW TO COMPILE:
----------------
-
-Just use the included Makefile to build version 1.0.0 of OpenSSL with the
-OpenPACE patch included.
-If you choose to patch and build OpenSSL by yourself, make sure to to configure
-OpenSSL with PACE support, i.e.:
-    ./configure experimental-pace
-After building OpenPACE you can use the included pacetest program in the test
-directory to see if everything is working correctly.
 
 NOTE:
 -----
