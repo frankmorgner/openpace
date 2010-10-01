@@ -1,32 +1,32 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2010-04-22 18:02:17.819543818 +0200
-+++ openssl/Configure	2010-04-22 18:02:21.840799243 +0200
-@@ -668,6 +668,7 @@
+--- openssl.orig/Configure	2010-06-29 09:15:01.165157654 +0200
++++ openssl/Configure	2010-06-29 09:15:04.025157108 +0200
+@@ -667,6 +667,7 @@
+ 		 "gmp"		  => "default",
                   "jpake"          => "experimental",
                   "md2"            => "default",
++                 "pace"           => "experimental",
                   "rc5"            => "default",
-+                 "pace"		  => "experimental",
  		 "rfc3779"	  => "default",
                   "shared"         => "default",
- 		 "store"	  => "experimental",
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2010-04-22 18:02:17.819543818 +0200
-+++ openssl/Makefile.org	2010-04-22 18:02:21.840799243 +0200
+--- openssl.orig/Makefile.org	2010-06-29 09:15:01.165157654 +0200
++++ openssl/Makefile.org	2010-06-29 09:15:04.035164594 +0200
 @@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
 -	cms pqueue ts jpake store
-+	cms pqueue ts jpake store pace
++	cms pqueue ts jpake store pace cv_cert
  # keep in mind that the above list is adjusted by ./Configure
  # according to no-xxx arguments...
  
 Index: openssl/crypto/bn/bn.h
 ===================================================================
---- openssl.orig/crypto/bn/bn.h	2010-04-22 18:02:17.839547477 +0200
-+++ openssl/crypto/bn/bn.h	2010-04-22 18:02:21.810792287 +0200
+--- openssl.orig/crypto/bn/bn.h	2010-06-29 09:15:01.195157348 +0200
++++ openssl/crypto/bn/bn.h	2010-06-29 09:15:04.005157920 +0200
 @@ -126,6 +126,7 @@
  #define HEADER_BN_H
  
@@ -53,8 +53,8 @@ Index: openssl/crypto/bn/bn.h
  int	BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 Index: openssl/crypto/bn/bn_lib.c
 ===================================================================
---- openssl.orig/crypto/bn/bn_lib.c	2010-04-22 18:02:17.839547477 +0200
-+++ openssl/crypto/bn/bn_lib.c	2010-04-22 18:02:21.810792287 +0200
+--- openssl.orig/crypto/bn/bn_lib.c	2010-06-29 09:15:01.195157348 +0200
++++ openssl/crypto/bn/bn_lib.c	2010-06-29 09:15:04.005157920 +0200
 @@ -66,6 +66,7 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -89,8 +89,8 @@ Index: openssl/crypto/bn/bn_lib.c
  	int i;
 Index: openssl/crypto/buffer/buffer.c
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.c	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/buffer/buffer.c	2010-04-22 18:02:21.830791198 +0200
+--- openssl.orig/crypto/buffer/buffer.c	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/buffer/buffer.c	2010-06-29 09:15:04.015156327 +0200
 @@ -242,3 +242,59 @@
  			}
  		}
@@ -153,8 +153,8 @@ Index: openssl/crypto/buffer/buffer.c
 +}
 Index: openssl/crypto/buffer/buffer.h
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.h	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/buffer/buffer.h	2010-04-22 18:02:21.830791198 +0200
+--- openssl.orig/crypto/buffer/buffer.h	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/buffer/buffer.h	2010-06-29 09:15:04.015156327 +0200
 @@ -89,6 +89,34 @@
  char *	BUF_strndup(const char *str, size_t siz);
  void *	BUF_memdup(const void *data, size_t siz);
@@ -190,10 +190,866 @@ Index: openssl/crypto/buffer/buffer.h
  
  /* safe string functions */
  size_t BUF_strlcpy(char *dst,const char *src,size_t siz);
+Index: openssl/crypto/cv_cert/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/cv_cert/Makefile	2010-06-29 09:14:59.996412462 +0200
+@@ -0,0 +1,59 @@
++DIR=cv_cert
++TOP=../..
++
++CFLAGS= $(INCLUDES) $(CFLAG)
++
++LIB=$(TOP)/libcrypto.a
++LIBOBJ=cv_cert.o
++LIBSRC=cv_cert.c
++
++EXHEADER=cv_cert.h
++#TEST=pacetest.c
++
++top:
++	(cd ../..; $(MAKE) DIRS=crypto SDIRS=$(DIR) sub_all)
++
++all:	lib
++
++lib:	$(LIBOBJ)
++	$(AR) $(LIB) $(LIBOBJ)
++	$(RANLIB) $(LIB) || echo Never mind.
++	@touch lib
++
++links:
++	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
++#	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
++
++install:
++	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
++	@headerlist="$(EXHEADER)"; for i in $$headerlist ; \
++	do  \
++	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
++	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
++	done;
++
++depend:
++	@[ -n "$(MAKEDEPEND)" ] # should be set by upper Makefile...
++	$(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(LIBSRC)
++
++dclean:
++	$(PERL) -pe 'if (/^# DO NOT DELETE THIS LINE/) {print; exit(0);}' $(MAKEFILE) >Makefile.new
++	mv -f Makefile.new $(MAKEFILE)
++
++clean:
++	rm -f *.s *.o *.obj des lib tags core .pure .nfs* *.old *.bak fluff
++
++#pacetest: top pace.h pacetest.c $(LIB)
++#	$(CC) $(CFLAGS) -Wall -Werror -g -o pacetest pacetest.c $(LIB)
++
++# DO NOT DELETE THIS LINE -- make depend depends on it.
++
++cv_cert.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
++cv_cert.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
++cv_cert.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
++cv_cert.o: ../../include/openssl/dh.h ../../include/openssl/e_os2.h
++cv_cert.o: ../../include/openssl/ec.h ../../include/openssl/obj_mac.h
++cv_cert.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
++cv_cert.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
++cv_cert.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
++cv_cert.o: ../../include/openssl/symhacks.h cv_cert.c cv_cert.h
+Index: openssl/crypto/cv_cert/cv_cert.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/cv_cert/cv_cert.c	2010-09-28 15:58:13.327924063 +0200
+@@ -0,0 +1,519 @@
++/**
++ * @file cvc_cert.c
++ * @version 0.4
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ * @author Wolf Mueller  <Wolf.Mueller@informatik.hu-berlin.de>
++ */
++
++#include "cv_cert.h"
++//#include "pace_asn1.h"
++//#include "pace_util.h"
++#include <openssl/ec.h>
++#include <openssl/objects.h>
++#include <openssl/buffer.h>
++#include <openssl/evp.h>
++#include <openssl/pace.h> /*for ec_key_from_asn1 */
++#include <string.h>
++
++#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
++
++static const char *at_chat_strings[] = {
++        "Age Verification",
++        "Community ID Verification",
++        "Restrictied Identification",
++        "Privileged Terminal",
++        "CAN allowed",
++        "PIN Managment",
++        "Install Certificate",
++        "Install Qualified Certificate",
++        "Read DG 1",
++        "Read DG 2",
++        "Read DG 3",
++        "Read DG 4",
++        "Read DG 5",
++        "Read DG 6",
++        "Read DG 7",
++        "Read DG 8",
++        "Read DG 9",
++        "Read DG 10",
++        "Read DG 11",
++        "Read DG 12",
++        "Read DG 13",
++        "Read DG 14",
++        "Read DG 15",
++        "Read DG 16",
++        "Read DG 17",
++        "Read DG 18",
++        "Read DG 19",
++        "Read DG 20",
++        "Read DG 21",
++        "RFU",
++        "RFU",
++        "RFU",
++        "RFU",
++        "Write DG 21",
++        "Write DG 20",
++        "Write DG 19",
++        "Write DG 18",
++        "Write DG 17"
++};
++
++static const char *is_chat_strings[] = {
++        "Read fingerprint",
++        "Read iris",
++        "RFU",
++        "RFU",
++        "RFU",
++        "Read eID application"
++};
++
++static const char *st_chat_strings[] = {
++        "Generate electronic signature",
++        "Generate qualified electronic signature",
++        "RFU",
++        "RFU",
++        "RFU",
++        "RFU"
++};
++
++static const char *cert_desc_field_strings[] = {
++    "issuerName",
++    "issuerURL",
++    "subjectName",
++    "subjectURL",
++    "redirectURL",
++    "termsOfUsage",
++};
++
++/**
++ * @defgroup CVC_CERT_ASN1     ASN1 structures for Card Verifiable Certificates
++ * @{ ************************************************************************/
++
++ASN1_SEQUENCE(CVC_CHAT_SEQ) = {
++        ASN1_SIMPLE(CVC_CHAT_SEQ, terminal_type, ASN1_OBJECT),
++        /* tag: 0x53*/
++        ASN1_APP_IMP(CVC_CHAT_SEQ, relative_authorization, ASN1_OCTET_STRING, 0x13) /* discretionary data */
++} ASN1_SEQUENCE_END(CVC_CHAT_SEQ)
++/* Change the tag of the CV Cert to 0x7f4c */
++ASN1_ITEM_TEMPLATE(CVC_CHAT) =
++        ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x4c, CVC_CHAT, CVC_CHAT_SEQ)
++ASN1_ITEM_TEMPLATE_END(CVC_CHAT)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_CHAT)
++
++ASN1_SEQUENCE(CVC_EC_PUBKEY) = {
++    ASN1_SIMPLE(CVC_EC_PUBKEY, oid, ASN1_OBJECT),
++    /* tag: 0x81 */
++    ASN1_IMP_OPT(CVC_EC_PUBKEY, modulus, ASN1_OCTET_STRING, 0x1),
++    /* tag: 0x82 */
++    ASN1_IMP_OPT(CVC_EC_PUBKEY, a, ASN1_OCTET_STRING, 0x2),
++    /* tag: 0x83 */
++    ASN1_IMP_OPT(CVC_EC_PUBKEY, b, ASN1_OCTET_STRING, 0x3),
++    /* tag: 0x84 */
++    ASN1_IMP_OPT(CVC_EC_PUBKEY, base, ASN1_OCTET_STRING, 0x4),
++    /* tag: 0x85 */
++    ASN1_IMP_OPT(CVC_EC_PUBKEY, base_order, ASN1_OCTET_STRING, 0x5),
++    /* tag: 0x86 */
++    ASN1_IMP(CVC_EC_PUBKEY, public_point, ASN1_OCTET_STRING, 0x6),
++    /* tag: 0x87 */
++    ASN1_IMP_OPT(CVC_EC_PUBKEY, cofactor, ASN1_OCTET_STRING, 0x7)
++} ASN1_SEQUENCE_END(CVC_EC_PUBKEY)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_EC_PUBKEY)
++
++ASN1_SEQUENCE(CVC_CERT_EXTENSION) = {
++    ASN1_SIMPLE(CVC_CERT_EXTENSION, type, ASN1_OBJECT),
++    /* tag: 0x80 */
++    ASN1_IMP(CVC_CERT_EXTENSION, hash1, ASN1_OCTET_STRING, 0),
++    /* tag: 0x81 */
++    ASN1_IMP_OPT(CVC_CERT_EXTENSION, hash2, ASN1_OCTET_STRING, 1),
++} ASN1_SEQUENCE_END(CVC_CERT_EXTENSION)
++
++ASN1_SEQUENCE(CVC_CERT_EXTENSIONS) = {
++    ASN1_APP_IMP_OPT(CVC_CERT_EXTENSIONS, certificateDescription, CVC_CERT_EXTENSION, 0x13),
++    ASN1_APP_IMP_OPT(CVC_CERT_EXTENSIONS, terminalSectors, CVC_CERT_EXTENSION, 0x13),
++} ASN1_SEQUENCE_END(CVC_CERT_EXTENSIONS)
++
++ASN1_SEQUENCE(CVC_CERT_BODY) = {
++        /* tag: 0x5f29 */
++        ASN1_APP_IMP(CVC_CERT_BODY, certificate_profile_identifier, ASN1_INTEGER, 0x29),
++        /* tag: 0x42 */
++        ASN1_APP_IMP(CVC_CERT_BODY, certificate_authority_reference, ASN1_OCTET_STRING, 0x2),
++        /* public key: tag:0x7f49 */
++        ASN1_APP_IMP(CVC_CERT_BODY, public_key, CVC_EC_PUBKEY, 0x49), //FIXME: RSA and DH keys?
++        /* tag: 0x5f20 */
++        ASN1_APP_IMP(CVC_CERT_BODY, certificate_holder_reference, ASN1_OCTET_STRING, 0x20),
++        /* tag: 0x7f4c */
++        ASN1_SIMPLE(CVC_CERT_BODY, chat, CVC_CHAT),
++        /* tag: 0x5f25 */
++        ASN1_APP_IMP(CVC_CERT_BODY, certificate_effective_date, ASN1_OCTET_STRING, 0x25),
++        /* tag: 0x5f24 */
++        ASN1_APP_IMP(CVC_CERT_BODY, certificate_expiration_date, ASN1_OCTET_STRING, 0x24),
++        /* tag: 0x65 */
++        ASN1_APP_IMP_OPT(CVC_CERT_BODY, certificate_extensions, CVC_CERT_EXTENSIONS, 0x5)
++} ASN1_SEQUENCE_END(CVC_CERT_BODY)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT_BODY)
++
++ASN1_SEQUENCE(CVC_CERT_SEQ) = {
++        /* tag: 0x7F4E */
++        ASN1_APP_IMP(CVC_CERT_SEQ, body, CVC_CERT_BODY, 0x4e),
++        /* tag: 0x5F37 */
++        ASN1_APP_IMP(CVC_CERT_SEQ, signature, ASN1_OCTET_STRING, 0x37),
++} ASN1_SEQUENCE_END(CVC_CERT_SEQ)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT_SEQ)
++
++/* Change the tag of the CV Cert to 0x7f21 */
++ASN1_ITEM_TEMPLATE(CVC_CERT) =
++        ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x21, CVC_CERT, CVC_CERT_SEQ)
++ASN1_ITEM_TEMPLATE_END(CVC_CERT)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT)
++IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT)
++
++ASN1_ADB_TEMPLATE(cert_def) = ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.other, ASN1_ANY, 0x05);
++
++ASN1_ADB(CVC_CERTIFICATE_DESCRIPTION) = {
++        ADB_ENTRY(NID_id_plainFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.plainTerms, ASN1_UTF8STRING, 0x05)),
++        ADB_ENTRY(NID_id_htmlFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.htmlTerms, ASN1_IA5STRING, 0x05)),
++        ADB_ENTRY(NID_id_pdfFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.pdfTerms, ASN1_OCTET_STRING, 0x05))
++} ASN1_ADB_END(CVC_CERTIFICATE_DESCRIPTION, 0, descriptionType, 0, &cert_def_tt, NULL);
++
++ASN1_SEQUENCE(CVC_CERTIFICATE_DESCRIPTION) = {
++        ASN1_SIMPLE(CVC_CERTIFICATE_DESCRIPTION, descriptionType, ASN1_OBJECT),
++        ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, issuerName, ASN1_UTF8STRING, 0x01),
++        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, issuerURL, ASN1_PRINTABLESTRING, 0x02),
++        ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, subjectName, ASN1_UTF8STRING, 0x03),
++        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, subjectURL, ASN1_PRINTABLESTRING, 0x04),
++        ASN1_ADB_OBJECT(CVC_CERTIFICATE_DESCRIPTION),
++        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, redirectURL, ASN1_PRINTABLESTRING, 0x06),
++} ASN1_SEQUENCE_END(CVC_CERTIFICATE_DESCRIPTION)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
++IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
++/** @} ***********************************************************************/
++
++static char *cvc_get_reference_string(ASN1_OCTET_STRING *ref);
++static short cvc_get_profile_identifier(ASN1_INTEGER *id);
++#if 0
++static EC_KEY *cvc_get_ec_key(CVC_EC_PUBKEY *key_asn1);
++#endif
++
++int cvc_print(BIO *bio, CVC_CERT *cv, const char *prefix)
++{
++    int r = 0;
++    char *effective_date = NULL, *expiration_date = NULL, *car = NULL, *chr = NULL;
++    char buf[9];
++
++    snprintf(buf, sizeof(buf), "%s\t", prefix);
++    buf[8] = 0;
++
++    if (!bio || !cv || !cv->body || !cv->body->public_key)
++        goto err;
++
++    effective_date = cvc_get_date_string(cv->body->certificate_effective_date);
++    expiration_date = cvc_get_date_string(cv->body->certificate_expiration_date);
++    car = cvc_get_reference_string(cv->body->certificate_authority_reference);
++    chr = cvc_get_reference_string(cv->body->certificate_holder_reference);
++
++    if (!effective_date || !expiration_date || !car || !chr)
++        goto err;
++
++    BIO_printf(bio, "%sProfile identifier: %d\n", prefix, cvc_get_profile_identifier(cv->body->certificate_profile_identifier));
++    BIO_printf(bio, "%sCAR: %s\n", prefix, car);
++    BIO_printf(bio, "%sPublic key type: %s\n", prefix, OBJ_nid2ln(OBJ_obj2nid(cv->body->public_key->oid)));
++    BIO_printf(bio, "%sCHR: %s\n", prefix, chr);
++    BIO_printf(bio, "%sCHAT:\n", prefix);
++    cvc_chat_print(bio, cvc_get_chat(cv), buf);
++    BIO_printf(bio, "%sEffective Date: %s\n", prefix, effective_date);
++    BIO_printf(bio, "%sExpiration Date: %s\n", prefix, expiration_date);
++    if (cv->body->certificate_extensions) {
++        BIO_printf(bio, "%sExtensions:\n", prefix);
++        BIO_printf(bio, "%s\tDescription type: %s\n", prefix, OBJ_nid2ln(OBJ_obj2nid(cv->body->certificate_extensions->certificateDescription->type)));
++        BIO_printf(bio, "%s\tTerminal sector: %s\n", prefix, OBJ_nid2ln(OBJ_obj2nid(cv->body->certificate_extensions->terminalSectors->type)));
++    }
++
++    r = 1;
++
++err:
++    if (effective_date)
++        OPENSSL_free(effective_date);
++    if (expiration_date)
++        OPENSSL_free(expiration_date);
++    if (car)
++        OPENSSL_free(car);
++    if (chr)
++        OPENSSL_free(chr);
++
++    return r;
++}
++
++int cvc_chat_print(BIO *bio, CVC_CHAT *chat, char prefix[]) {
++
++    int ok = 0, nid = 0, rel_auth_len = 0, rel_auth_num_bytes = 0, i, j = 1;
++    const const char **strings;
++
++    if (!bio || !chat || !chat->relative_authorization
++            || !chat->relative_authorization->data)
++        goto err;
++
++    /* Figure out what kind of CHAT we have */
++    nid = OBJ_obj2nid(chat->terminal_type);
++    switch(nid) {
++        case NID_id_AT:
++            BIO_printf(bio, "%sAuthentication terminal\n", prefix);
++            strings = at_chat_strings;
++            rel_auth_len = 38;
++            rel_auth_num_bytes = 5;
++            break;
++        case NID_id_IS:
++            BIO_printf(bio, "%sInspection system\n", prefix);
++            strings = is_chat_strings;
++            rel_auth_len = 6;
++            rel_auth_num_bytes = 1;
++            break;
++        case NID_id_ST:
++            BIO_printf(bio, "%sSignature terminal\n", prefix);
++            strings = st_chat_strings;
++            rel_auth_len = 6;
++            rel_auth_num_bytes = 1;
++            break;
++        default:
++            BIO_printf(bio, "%sInvalid terminal type\n", prefix);
++            goto err;
++    }
++
++    /* Sanity check: Does the recieved CHAT have the correct length? */
++    if(chat->relative_authorization->length != rel_auth_num_bytes)
++        goto err;
++
++    /* Dump the relative authorization bitstring in human readable form.
++     * Each set Bit means one authorization */
++    for (i = 0; i <= rel_auth_len; i++) {
++        if (i % 8 == 0 && i != 0)
++            j++;
++        if (CHECK_BIT(chat->relative_authorization->data[rel_auth_num_bytes - j],
++                i % 8))
++            BIO_printf(bio, "%s\t%s\n", prefix, strings[i]);
++    }
++
++    /* The most significant two bits contain the role of the terminal */
++    switch(chat->relative_authorization->data[rel_auth_num_bytes - 1] & (3 << 6)) {
++        case 3:
++            BIO_printf(bio, "%s\tCVCA certificate\n", prefix);
++            break;
++        case 2:
++        case 1:
++            BIO_printf(bio, "%s\tDV certificate\n", prefix);
++            break;
++        case 0:
++            BIO_printf(bio, "%s\tTerminal certificate\n", prefix);
++            break;
++    }
++
++    ok = 1;
++
++err:
++    return ok;
++}
++
++#if 0
++/* Extract the public key from a CV certificate */
++EC_KEY *
++cvc_get_ec_key(CVC_EC_PUBKEY *key_asn1)
++{
++    EC_KEY *key = NULL;
++
++    if (!key_asn1)
++        goto err;
++
++    /* XXX: Check OID? */
++    if (ec_key_from_asn1(&key, key_asn1->modulus, key_asn1->a, key_asn1->b,
++            key_asn1->base, key_asn1->base_order, key_asn1->public_point,
++            key_asn1->cofactor))
++        printf("Copied public key\n");
++    else
++        printf("Failed to copy public key\n");
++
++err:
++    return key;
++
++}
++#endif
++
++short
++cvc_get_profile_identifier(ASN1_INTEGER *id)
++{
++    long l;
++    if (!id || !id->data)
++        return -1;
++    l = ASN1_INTEGER_get(id);
++    return (l == 0) ? 0 : -1; /* The only specified version number is 0 right now */
++}
++
++char *
++cvc_get_reference_string(ASN1_OCTET_STRING *ref)
++{
++    /* Used to check CAR and CHR */
++    /* Max length is 16 byte: 2 Byte country code (ASCII), max. 9 Byte Holder
++     *      Mnemonic, 5 Byte Sequence Number (ASCII A-Z, 0-9)
++     */
++
++    int i;
++    char *ret = NULL;
++    char c;
++
++    if (!ref || !ref->data || ref->length > 16)
++        return NULL;
++
++    ret = (char *) OPENSSL_malloc(ref->length + 1);
++    if (!ret)
++        return NULL;
++
++    for (i = 0; i < ref->length; i++) {
++        c = ref->data[i];
++        /* FIXME: For now we accept Alphanumeric characters only */
++        if (((c >= 0x30) && (c <= 0x39)) || ((c >= 0x41) && (c <= 0x5A)))
++            ret[i] = c;
++        else {
++            OPENSSL_free(ret);
++            return NULL;
++        }
++
++    }
++
++    ret[ref->length] = 0;
++    return ret;
++}
++
++char *
++cvc_get_date_string(ASN1_OCTET_STRING *date)
++{
++    int i;
++    char *ret = (char *) OPENSSL_malloc(7);
++
++    if (!ret || !date || !date->data || date->length != 6)
++        return NULL;
++
++    for(i = 0; i < date->length; i++) {
++        if (date->data[i] <= 9)
++            /* Convert to ASCII digit */
++            ret[i] = date->data[i] + 0x30;
++        else { /* Invalid character */
++            OPENSSL_free(ret);
++            return NULL;
++        }
++
++    }
++
++    ret[6] = 0; /* Null-terminate string */
++    return ret;
++}
++
++int
++certificate_description_print(BIO *bio, const unsigned char *cert_desc_in,
++        unsigned int len, const char *prefix)
++{
++    CVC_CERTIFICATE_DESCRIPTION *cert_desc = NULL;
++    int ret = -1, nid;
++
++    cert_desc = d2i_CVC_CERTIFICATE_DESCRIPTION(NULL, &cert_desc_in, len);
++    if (cert_desc == NULL) {
++        goto err;
++    }
++
++    BIO_printf(bio, "%s%s\t%s\n", prefix, cert_desc_field_strings[0],
++            cert_desc->issuerName->data);
++    if (cert_desc->issuerURL)
++        BIO_printf(bio, "%s%s\t%s\n", prefix, cert_desc_field_strings[1],
++                cert_desc->issuerURL->data);
++    BIO_printf(bio, "%s%s\t%s\n", prefix, cert_desc_field_strings[2],
++            cert_desc->subjectName->data);
++    if (cert_desc->subjectURL)
++        BIO_printf(bio, "%s%s\t%s\n", prefix, cert_desc_field_strings[3],
++                cert_desc->subjectURL->data);
++    if (cert_desc->redirectURL)
++        BIO_printf(bio, "%s%s\t%s\n", prefix, cert_desc_field_strings[4],
++                cert_desc->redirectURL->data);
++
++    nid = OBJ_obj2nid(cert_desc->descriptionType);
++    switch (nid) {
++        case NID_id_plainFormat:
++            BIO_printf(bio, "%s%s\t%s\n", prefix, cert_desc_field_strings[5],
++                    cert_desc->termsOfUsage.plainTerms->data);
++            break;
++            ret = 0;
++        case NID_id_htmlFormat:
++            ret = 1;
++            break;
++        case NID_id_pdfFormat:
++            ret = 2;
++            break;
++        default:
++            /* Unknown format for terms of usage */
++            break;
++    }
++
++    CVC_CERTIFICATE_DESCRIPTION_free(cert_desc);
++
++err:
++    return ret;
++
++}
++
++CVC_CHAT*
++cvc_get_chat(CVC_CERT *cvc) {
++
++    if (!cvc || !cvc->body)
++        return NULL;
++
++    return cvc->body->chat;
++}
++
++int
++check_cert(CVC_CERT *cv, const unsigned char *cert_desc_in,
++        const unsigned int cert_desc_in_len, const EVP_MD *md_type)
++{
++
++    BUF_MEM *desc_hash = NULL;
++    EVP_MD_CTX *md_ctx = NULL;
++
++    unsigned int ret = 0, tmp_len;
++
++    if (!cv || !cv->body || !md_type)
++        goto err;
++
++    md_ctx = EVP_MD_CTX_create();
++    desc_hash = BUF_MEM_create(EVP_MD_size(md_type));
++
++    if (!md_ctx || !desc_hash)
++        goto err;
++
++    if (cv->body->certificate_extensions &&
++            cv->body->certificate_extensions->certificateDescription &&
++            cv->body->certificate_extensions->certificateDescription->hash1) {
++
++        /* Check whether or not the hash in the certificate has the correct size */
++        if (cv->body->certificate_extensions->certificateDescription->hash1->length
++                != EVP_MD_size(md_type))
++            goto err;
++
++        /* Hash the certificate description */
++        tmp_len = EVP_MD_size(md_type);
++        if (!EVP_DigestInit_ex(md_ctx, md_type, NULL) ||
++                !EVP_DigestUpdate(md_ctx, cert_desc_in, cert_desc_in_len) ||
++                !EVP_DigestFinal_ex(md_ctx, (unsigned char *) desc_hash->data,
++                        &tmp_len))
++            goto err;
++        desc_hash->length = tmp_len;
++
++        /* Compare it with the hash in the cert */
++        if (memcmp(desc_hash->data,
++                cv->body->certificate_extensions->certificateDescription->hash1,
++                desc_hash->length))
++            ret = 1;
++    }
++
++err:
++    if (md_ctx)
++        EVP_MD_CTX_destroy(md_ctx);
++    if (desc_hash)
++        BUF_MEM_free(desc_hash);
++    return ret;
++}
+Index: openssl/crypto/cv_cert/cv_cert.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/cv_cert/cv_cert.h	2010-09-28 15:58:31.436692915 +0200
+@@ -0,0 +1,263 @@
++/*
++ * cvc_cert.h
++ *
++ *  Created on: 19.05.2010
++ *      Author: azrael
++ */
++
++#ifndef CVC_CERT_H_
++#define CVC_CERT_H_
++
++#include <openssl/asn1t.h>
++#include <openssl/asn1.h>
++#include <openssl/bio.h>
++
++#define ASN1_APP_IMP(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, tag, stname, field, type)
++#define ASN1_APP_IMP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
++
++/**
++ * @defgroup CVC-types      Data types for card verifiable certificates
++ * @{ ************************************************************************/
++
++/** Certificate Holder Authentication template*/
++typedef struct cvc_chat_seq_st {
++    /** What kind of terminals does this certificate belong to (Inspection System,
++     *  Authentication Terminal or Signature terminal) */
++    ASN1_OBJECT *terminal_type;
++    /** What datagroups or special functions may the terminal access */
++    ASN1_OCTET_STRING *relative_authorization;
++} CVC_CHAT_SEQ;
++/** Short name for CVC_CHAT_SEQ */
++typedef CVC_CHAT_SEQ CVC_CHAT;
++
++/** Elliptic curve public key. May contain domain parameters*/
++typedef struct cvc_ec_pubkey_st {
++    /** Curve OID */
++    ASN1_OBJECT *oid;
++    ASN1_OCTET_STRING *modulus;
++    ASN1_OCTET_STRING *a;
++    ASN1_OCTET_STRING *b;
++    ASN1_OCTET_STRING *base;
++    ASN1_OCTET_STRING *base_order;
++    ASN1_OCTET_STRING *public_point;
++    ASN1_OCTET_STRING *cofactor;
++} CVC_EC_PUBKEY;
++
++/** Discretionary data template, used to encode certificate extensions. Consists
++ *  of an OID and up to two hash values */
++typedef struct cvc_cert_extension_st {
++    ASN1_OBJECT *type;
++    ASN1_OCTET_STRING *hash1;
++    ASN1_OCTET_STRING *hash2;
++} CVC_CERT_EXTENSION;
++
++//FIXME: This should definitely  not be a SEQUENCE
++/** Two kinds of certificate extensions are specified */
++typedef struct cvc_cert_extensions_st {
++    /** Contains the hash of the certificate description associated with this
++     *  certifcate */
++    CVC_CERT_EXTENSION *certificateDescription;
++    /** Contains up to two hashes of public keys for restricted identification */
++    CVC_CERT_EXTENSION *terminalSectors;
++} CVC_CERT_EXTENSIONS;
++
++/** The body of the certificate */
++typedef struct cvc_cert_body_st {
++    /** Certificate Profile of this certificate. Only version number 0 is
++     *  specified */
++    ASN1_INTEGER *certificate_profile_identifier; //FIXME: Unsigned Integer
++    /** Certificate authority that issued this certificate */
++    ASN1_UTF8STRING *certificate_authority_reference; /* Actually Latin1 */
++    /** Public key associated with this certificate */
++    CVC_EC_PUBKEY *public_key; //FIXME: RSA keys?
++    /** Holder of the certificate */
++    ASN1_UTF8STRING *certificate_holder_reference; /* Actually Latin1 */
++    /** Certificate Holder Authorisation Template */
++    CVC_CHAT *chat;
++    /** Date the certificate was issued. Format: YYMMDD, BCD encoded */
++    ASN1_OCTET_STRING *certificate_effective_date;
++    /** Date until which the certicate is valid. Format: YYMMDD, BCD encoded  */
++    ASN1_OCTET_STRING *certificate_expiration_date;
++    /** Optional extensions */
++    CVC_CERT_EXTENSIONS *certificate_extensions;
++} CVC_CERT_BODY;
++
++/** The actual certifcate, consisting of the body and a signature */
++typedef struct cvc_cert_seq_st {
++    /** Body of the certificate */
++    CVC_CERT_BODY *body;
++    /** Signature calculated over the hash of the certificate body */
++    ASN1_OCTET_STRING *signature;
++} CVC_CERT_SEQ;
++/** Short name for CVC_CERT_SEQ */
++typedef CVC_CERT_SEQ CVC_CERT;
++
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup Certificate-Description-types  Data Types for the Certificate
++ *                  Descrption structure
++ * @{ ************************************************************************/
++
++/** This structure holds further information about a card verifiable certificate
++ *  in human readable form. It should be displayed to the user along with the
++ *  access rights encoded in the CHAT of the certificate. A hash of this description
++ *  may be contained in the certificate. */
++ typedef struct cvc_certificate_description_st {
++    /** Format of the description (Plain Text, PDF or HTML) */
++    ASN1_OBJECT *descriptionType;
++    /** Human readable name of the issuer of this certificate */
++    ASN1_UTF8STRING *issuerName;
++    /** Optional URL that points to informations about the issuer of this
++     *  certificate */
++    ASN1_PRINTABLESTRING *issuerURL;
++    /** Human readable name of the holder of this certificate */
++    ASN1_UTF8STRING *subjectName;
++    /** Optional URL that points to informations about the holder of this
++     *  certificate */
++    ASN1_PRINTABLESTRING *subjectURL;
++    union {
++        ASN1_UTF8STRING *plainTerms;
++        ASN1_IA5STRING *htmlTerms;
++        ASN1_OCTET_STRING *pdfTerms;
++        ASN1_TYPE *other;
++    } termsOfUsage;
++    ASN1_PRINTABLESTRING *redirectURL;
++} CVC_CERTIFICATE_DESCRIPTION;
++
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup mgmt-functions  Functions for memory managment and data conversion
++ * @{ ************************************************************************/
++
++CVC_CERT *d2i_CV_CERT(CVC_CERT **cert, const unsigned char **in, long len);
++int i2d_CV_CERT(CVC_CERT *a, unsigned char **out);
++CVC_CERT *CVC_CERT_new(void);
++void CVC_CERT_free(CVC_CERT *a);
++//DECLARE_ASN1_FUNCTIONS(CVC_CERT)
++
++//void CVC_CERT_print_ctx(BIO *bio, CVC_CERT *cert, int indent, const ASN1_PCTX *pctx);
++DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT)
++
++DECLARE_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
++DECLARE_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
++
++DECLARE_ASN1_FUNCTIONS(CVC_CHAT);
++
++/** @} ***********************************************************************/
++
++/**
++ * @defgroup convenience        Convenience functions
++ * @{ ************************************************************************/
++
++int
++certificate_description_print(BIO *bio, const unsigned char *cert_desc_in,
++        unsigned int len, const char *prefix);
++
++/**
++ *  @brief Print the CHAT in a human readable form to bio
++ *  @brief bio
++ *  @param chat The CHAT that shell be dumped
++ *  @param prefix a prefix that will be prepended to each line (e.g. for
++ *          indention).
++ * */
++int
++cvc_chat_print(BIO *bio, CVC_CHAT *chat, char prefix[]);
++
++int
++cvc_print(BIO *bio, CVC_CERT *cv, const char *prefix);
++
++/**
++ *  @brief Returns a pointer to the CHAT contained in a CV certifcate.
++ *  @param cvc The card verifiable certifcate
++
++ *  @return Pointer to the CHAT or NULL in case of an error
++ */
++CVC_CHAT*
++cvc_get_chat(CVC_CERT *cvc);
++
++/**
++ *  @brief Helper function to convert the effective date and expiration date,
++ *         of a certificate to a string
++ *  @param date Octet string that holds the date
++ *  @return Null terminated string representation of the date
++ */
++
++char*
++cvc_get_date_string(ASN1_OCTET_STRING *date);
++/** @} ***********************************************************************/
++
++/**
++ *  @brief Check wether or not the certificate contains the correct hash
++ *         of the certificate description
++ *  @param cv The card verifiable certificate
++ *  @param cvc_desc_in ASN1 representation of the certificate description
++ *  @param cvc_desc_in_len Length of cvc_desc_in
++ *  @param md_type The hash function to use
++ *
++ *  @return 1 if the certificate contains the correct hash, 0 if not.
++ */
++int
++check_cert(CVC_CERT *cv, const unsigned char *cert_desc_in,
++        const unsigned int cert_desc_in_len, const EVP_MD *md_type);
++
++/**
++ * @defgroup ec_asn1        ASN1 structures for EC parameters and keys
++ * @{ ************************************************************************/
++
++/* I stole these from ec_asn1.c */
++
++typedef struct x9_62_pentanomial_st {
++    long k1;
++    long k2;
++    long k3;
++    } PACE_X9_62_PENTANOMIAL;
++
++typedef struct pace_x9_62_characteristic_two_st {
++    long m;
++    ASN1_OBJECT  *type;
++    union   {
++        char *ptr;
++        /* NID_X9_62_onBasis */
++        ASN1_NULL    *onBasis;
++        /* NID_X9_62_tpBasis */
++        ASN1_INTEGER *tpBasis;
++        /* NID_X9_62_ppBasis */
++        PACE_X9_62_PENTANOMIAL *ppBasis;
++        /* anything else */
++        ASN1_TYPE *other;
++        } p;
++    } PACE_X9_62_CHARACTERISTIC_TWO;
++
++typedef struct pace_x9_62_fieldid_st {
++        ASN1_OBJECT *fieldType;
++    union   {
++        char *ptr;
++        /* NID_X9_62_prime_field */
++        ASN1_INTEGER *prime;
++        /* NID_X9_62_characteristic_two_field */
++        PACE_X9_62_CHARACTERISTIC_TWO *char_two;
++        /* anything else */
++        ASN1_TYPE *other;
++        } p;
++    } PACE_X9_62_FIELDID;
++
++typedef struct pace_x9_62_curve_st {
++        ASN1_OCTET_STRING *a;
++        ASN1_OCTET_STRING *b;
++        ASN1_BIT_STRING   *seed;
++        } PACE_X9_62_CURVE;
++
++typedef struct pace_ec_parameters_st {
++    ASN1_INTEGER           *version;
++    PACE_X9_62_FIELDID     *fieldID;
++    PACE_X9_62_CURVE       *curve;
++    ASN1_OCTET_STRING *base;
++    ASN1_INTEGER      *order;
++    ASN1_INTEGER      *cofactor;
++    } PACE_ECPARAMETERS;
++
++/** @} ***********************************************************************/
++
++#endif /* CVC_CERT_H_ */
 Index: openssl/crypto/ec/ec.h
 ===================================================================
---- openssl.orig/crypto/ec/ec.h	2010-04-22 18:02:17.829548581 +0200
-+++ openssl/crypto/ec/ec.h	2010-04-22 18:02:21.820790694 +0200
+--- openssl.orig/crypto/ec/ec.h	2010-06-29 09:15:01.185157403 +0200
++++ openssl/crypto/ec/ec.h	2010-06-29 09:15:04.005157920 +0200
 @@ -1094,6 +1094,19 @@
  #define EC_R_UNSUPPORTED_FIELD				 131
  #define EC_R_WRONG_ORDER				 130
@@ -216,8 +1072,8 @@ Index: openssl/crypto/ec/ec.h
  #endif
 Index: openssl/crypto/ec/ec_print.c
 ===================================================================
---- openssl.orig/crypto/ec/ec_print.c	2010-04-22 18:02:17.839547477 +0200
-+++ openssl/crypto/ec/ec_print.c	2010-04-22 18:02:21.820790694 +0200
+--- openssl.orig/crypto/ec/ec_print.c	2010-06-29 09:15:01.195157348 +0200
++++ openssl/crypto/ec/ec_print.c	2010-06-29 09:15:04.005157920 +0200
 @@ -54,6 +54,7 @@
   */
  
@@ -254,8 +1110,8 @@ Index: openssl/crypto/ec/ec_print.c
 +}
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/ecdh/ecdh.h	2010-04-22 18:02:21.820790694 +0200
+--- openssl.orig/crypto/ecdh/ecdh.h	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/ecdh/ecdh.h	2010-06-29 09:15:04.005157920 +0200
 @@ -86,6 +86,7 @@
  #endif
  
@@ -266,8 +1122,8 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/ecdh/ech_ossl.c	2010-04-22 18:02:21.810792287 +0200
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/ecdh/ech_ossl.c	2010-06-29 09:15:04.005157920 +0200
 @@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
  	return(ret);
@@ -384,8 +1240,8 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	}
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/err/err.c	2010-04-22 18:02:21.820790694 +0200
+--- openssl.orig/crypto/err/err.c	2010-06-29 09:15:01.215157586 +0200
++++ openssl/crypto/err/err.c	2010-06-29 09:15:04.015156327 +0200
 @@ -156,6 +156,7 @@
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
  {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
@@ -396,8 +1252,8 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/err/err.h	2010-04-22 18:02:21.830791198 +0200
+--- openssl.orig/crypto/err/err.h	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/err/err.h	2010-06-29 09:15:04.015156327 +0200
 @@ -198,6 +198,7 @@
  #define ERR_LIB_TS		47
  #define ERR_LIB_HMAC		48
@@ -416,8 +1272,8 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/err/err_all.c	2010-04-22 18:02:21.820790694 +0200
+--- openssl.orig/crypto/err/err_all.c	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/err/err_all.c	2010-06-29 09:15:04.015156327 +0200
 @@ -102,6 +102,9 @@
  #ifndef OPENSSL_NO_JPAKE
  #include <openssl/jpake.h>
@@ -440,8 +1296,8 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2010-04-22 18:02:17.849550145 +0200
-+++ openssl/crypto/err/openssl.ec	2010-04-22 18:02:21.830791198 +0200
+--- openssl.orig/crypto/err/openssl.ec	2010-06-29 09:15:01.205157642 +0200
++++ openssl/crypto/err/openssl.ec	2010-06-29 09:15:04.015156327 +0200
 @@ -35,6 +35,7 @@
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
  L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
@@ -450,11 +1306,292 @@ Index: openssl/crypto/err/openssl.ec
  
  # additional header files to be scanned for function names
  L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/objects/obj_mac.h
+===================================================================
+--- openssl.orig/crypto/objects/obj_mac.h	2010-06-29 09:15:01.175157529 +0200
++++ openssl/crypto/objects/obj_mac.h	2010-06-29 09:15:04.025157108 +0200
+@@ -122,7 +122,7 @@
+ 
+ #define SN_wap_wsg		"wap-wsg"
+ #define NID_wap_wsg		679
+-#define OBJ_wap_wsg		OBJ_wap,1L
++#define OBJ_wap_wsg		OBJ_wap,13L
+ 
+ #define SN_selected_attribute_types		"selected-attribute-types"
+ #define LN_selected_attribute_types		"Selected Attribute Types"
+@@ -3968,3 +3968,211 @@
+ #define NID_brainpoolP512t1		906
+ #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
+ 
++#define OBJ_bsi_de		0L,4L,0L,127L,0L,7L
++
++#define OBJ_id_PACE		OBJ_bsi_de,2L,2L,4L
++
++#define SN_id_PACE_DH_GM		"id-PACE-DH-GM"
++#define NID_id_PACE_DH_GM		907
++#define OBJ_id_PACE_DH_GM		OBJ_id_PACE,1L
++
++#define SN_id_PACE_DH_GM_3DES_CBC_CBC		"id-PACE-DH-GM-3DES-CBC-CBC"
++#define NID_id_PACE_DH_GM_3DES_CBC_CBC		908
++#define OBJ_id_PACE_DH_GM_3DES_CBC_CBC		OBJ_id_PACE_DH_GM,1L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_128		"id-PACE-DH-GM-AES-CBC-CMAC-128"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_128		909
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_GM,2L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_192		"id-PACE-DH-GM-AES-CBC-CMAC-192"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_192		910
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_GM,3L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_256		"id-PACE-DH-GM-AES-CBC-CMAC-256"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_256		911
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_GM,4L
++
++#define SN_id_PACE_ECDH_GM		"id-PACE-ECDH-GM"
++#define NID_id_PACE_ECDH_GM		912
++#define OBJ_id_PACE_ECDH_GM		OBJ_id_PACE,2L
++
++#define SN_id_PACE_ECDH_GM_3DES_CBC_CBC		"id-PACE-ECDH-GM-3DES-CBC-CBC"
++#define NID_id_PACE_ECDH_GM_3DES_CBC_CBC		913
++#define OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_GM,1L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128		"id-PACE-ECDH-GM-AES-CBC-CMAC-128"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_GM,2L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192		"id-PACE-ECDH-GM-AES-CBC-CMAC-192"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_GM,3L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256		"id-PACE-ECDH-GM-AES-CBC-CMAC-256"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_GM,4L
++
++#define SN_id_PACE_DH_IM		"id-PACE-DH-IM"
++#define NID_id_PACE_DH_IM		917
++#define OBJ_id_PACE_DH_IM		OBJ_id_PACE,3L
++
++#define SN_id_PACE_DH_IM_3DES_CBC_CBC		"id-PACE-DH-IM-3DES-CBC-CBC"
++#define NID_id_PACE_DH_IM_3DES_CBC_CBC		918
++#define OBJ_id_PACE_DH_IM_3DES_CBC_CBC		OBJ_id_PACE_DH_IM,1L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_128		"id-PACE-DH-IM-AES-CBC-CMAC-128"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_128		919
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_IM,2L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_192		"id-PACE-DH-IM-AES-CBC-CMAC-192"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_192		920
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_IM,3L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_256		"id-PACE-DH-IM-AES-CBC-CMAC-256"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_256		921
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_IM,4L
++
++#define SN_id_PACE_ECDH_IM		"id-PACE-ECDH-IM"
++#define NID_id_PACE_ECDH_IM		922
++#define OBJ_id_PACE_ECDH_IM		OBJ_id_PACE,4L
++
++#define SN_id_PACE_ECDH_IM_3DES_CBC_CBC		"id-PACE-ECDH-IM-3DES-CBC-CBC"
++#define NID_id_PACE_ECDH_IM_3DES_CBC_CBC		923
++#define OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_IM,1L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128		"id-PACE-ECDH-IM-AES-CBC-CMAC-128"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_IM,2L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192		"id-PACE-ECDH-IM-AES-CBC-CMAC-192"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_IM,3L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256		"id-PACE-ECDH-IM-AES-CBC-CMAC-256"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_IM,4L
++
++#define SN_ansi_x942		"ansi-x942"
++#define NID_ansi_x942		927
++#define OBJ_ansi_x942		OBJ_ISO_US,10046L
++
++#define OBJ_x942_number_type		OBJ_ansi_x942,2L
++
++#define SN_dhpublicnumber		"dhpublicnumber"
++#define NID_dhpublicnumber		928
++#define OBJ_dhpublicnumber		OBJ_x942_number_type,1L
++
++#define OBJ_id_ecc		OBJ_bsi_de,1L,1L
++
++#define OBJ_ecka_dh		OBJ_id_ecc,5L,2L
++
++#define SN_ecka_dh_SessionKDF		"ecka-dh-SessionKDF"
++#define NID_ecka_dh_SessionKDF		929
++#define OBJ_ecka_dh_SessionKDF		OBJ_ecka_dh,2L
++
++#define SN_ecka_dh_SessionKDF_DES3		"ecka-dh-SessionKDF-DES3"
++#define NID_ecka_dh_SessionKDF_DES3		930
++#define OBJ_ecka_dh_SessionKDF_DES3		OBJ_ecka_dh,2L,1L
++
++#define SN_ecka_dh_SessionKDF_AES128		"ecka-dh-SessionKDF-AES128"
++#define NID_ecka_dh_SessionKDF_AES128		931
++#define OBJ_ecka_dh_SessionKDF_AES128		OBJ_ecka_dh,2L,2L
++
++#define SN_ecka_dh_SessionKDF_AES192		"ecka-dh-SessionKDF-AES192"
++#define NID_ecka_dh_SessionKDF_AES192		932
++#define OBJ_ecka_dh_SessionKDF_AES192		OBJ_ecka_dh,2L,3L
++
++#define SN_ecka_dh_SessionKDF_AES256		"ecka-dh-SessionKDF-AES256"
++#define NID_ecka_dh_SessionKDF_AES256		933
++#define OBJ_ecka_dh_SessionKDF_AES256		OBJ_ecka_dh,2L,4L
++
++#define OBJ_id_TA		OBJ_bsi_de,2L,2L,2L
++
++#define SN_id_TA_RSA		"id-TA-RSA"
++#define NID_id_TA_RSA		934
++#define OBJ_id_TA_RSA		OBJ_id_TA,1L
++
++#define SN_id_TA_RSA_v1_5_SHA_1		"id-TA-RSA-v1-5-SHA-1"
++#define NID_id_TA_RSA_v1_5_SHA_1		935
++#define OBJ_id_TA_RSA_v1_5_SHA_1		OBJ_id_TA_RSA,1L
++
++#define SN_id_TA_RSA_v1_5_SHA_256		"id-TA-RSA-v1-5-SHA-256"
++#define NID_id_TA_RSA_v1_5_SHA_256		936
++#define OBJ_id_TA_RSA_v1_5_SHA_256		OBJ_id_TA_RSA,2L
++
++#define SN_id_TA_RSA_PSS_SHA_1		"id-TA-RSA-PSS-SHA-1"
++#define NID_id_TA_RSA_PSS_SHA_1		937
++#define OBJ_id_TA_RSA_PSS_SHA_1		OBJ_id_TA_RSA,3L
++
++#define SN_id_TA_RSA_PSS_SHA_256		"id-TA-RSA-PSS-SHA-256"
++#define NID_id_TA_RSA_PSS_SHA_256		938
++#define OBJ_id_TA_RSA_PSS_SHA_256		OBJ_id_TA_RSA,4L
++
++#define SN_id_TA_RSA_v1_SHA_512		"id-TA-RSA-v1-SHA-512"
++#define NID_id_TA_RSA_v1_SHA_512		939
++#define OBJ_id_TA_RSA_v1_SHA_512		OBJ_id_TA_RSA,5L
++
++#define SN_id_TA_RSA_PSS_SHA_512		"id-TA-RSA-PSS-SHA-512"
++#define NID_id_TA_RSA_PSS_SHA_512		940
++#define OBJ_id_TA_RSA_PSS_SHA_512		OBJ_id_TA_RSA,6L
++
++#define SN_id_TA_ECDSA		"id-TA-ECDSA"
++#define NID_id_TA_ECDSA		941
++#define OBJ_id_TA_ECDSA		OBJ_id_TA,2L
++
++#define SN_id_TA_ECDSA_SHA_1		"id-TA-ECDSA-SHA-1"
++#define NID_id_TA_ECDSA_SHA_1		942
++#define OBJ_id_TA_ECDSA_SHA_1		OBJ_id_TA_ECDSA,1L
++
++#define SN_id_TA_ECDSA_SHA_224		"id-TA-ECDSA-SHA-224"
++#define NID_id_TA_ECDSA_SHA_224		943
++#define OBJ_id_TA_ECDSA_SHA_224		OBJ_id_TA_ECDSA,2L
++
++#define SN_id_TA_ECDSA_SHA_256		"id-TA-ECDSA-SHA-256"
++#define NID_id_TA_ECDSA_SHA_256		944
++#define OBJ_id_TA_ECDSA_SHA_256		OBJ_id_TA_ECDSA,3L
++
++#define SN_id_TA_ECDSA_SHA_384		"id-TA-ECDSA-SHA-384"
++#define NID_id_TA_ECDSA_SHA_384		945
++#define OBJ_id_TA_ECDSA_SHA_384		OBJ_id_TA_ECDSA,4L
++
++#define SN_id_TA_ECDSA_SHA_512		"id-TA-ECDSA-SHA-512"
++#define NID_id_TA_ECDSA_SHA_512		946
++#define OBJ_id_TA_ECDSA_SHA_512		OBJ_id_TA_ECDSA,5L
++
++#define OBJ_id_roles		OBJ_bsi_de,3L,1L,2L
++
++#define SN_id_IS		"id-IS"
++#define NID_id_IS		947
++#define OBJ_id_IS		OBJ_id_roles,1L
++
++#define SN_id_AT		"id-AT"
++#define NID_id_AT		948
++#define OBJ_id_AT		OBJ_id_roles,2L
++
++#define SN_id_ST		"id-ST"
++#define NID_id_ST		949
++#define OBJ_id_ST		OBJ_id_roles,3L
++
++#define OBJ_id_extensions		OBJ_bsi_de,3L,1L,3L
++
++#define SN_id_description		"id-description"
++#define NID_id_description		950
++#define OBJ_id_description		OBJ_id_extensions,1L
++
++#define SN_id_plainFormat		"id-plainFormat"
++#define NID_id_plainFormat		951
++#define OBJ_id_plainFormat		OBJ_id_description,1L
++
++#define SN_id_htmlFormat		"id-htmlFormat"
++#define NID_id_htmlFormat		952
++#define OBJ_id_htmlFormat		OBJ_id_description,2L
++
++#define SN_id_pdfFormat		"id-pdfFormat"
++#define NID_id_pdfFormat		953
++#define OBJ_id_pdfFormat		OBJ_id_description,3L
++
++#define SN_id_sector		"id-sector"
++#define NID_id_sector		954
++#define OBJ_id_sector		OBJ_id_extensions,2L
++
+Index: openssl/crypto/objects/obj_mac.num
+===================================================================
+--- openssl.orig/crypto/objects/obj_mac.num	2010-06-29 09:15:01.165157654 +0200
++++ openssl/crypto/objects/obj_mac.num	2010-06-29 09:15:04.025157108 +0200
+@@ -904,3 +904,51 @@
+ brainpoolP384t1		904
+ brainpoolP512r1		905
+ brainpoolP512t1		906
++id_PACE_DH_GM		907
++id_PACE_DH_GM_3DES_CBC_CBC		908
++id_PACE_DH_GM_AES_CBC_CMAC_128		909
++id_PACE_DH_GM_AES_CBC_CMAC_192		910
++id_PACE_DH_GM_AES_CBC_CMAC_256		911
++id_PACE_ECDH_GM		912
++id_PACE_ECDH_GM_3DES_CBC_CBC		913
++id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
++id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
++id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
++id_PACE_DH_IM		917
++id_PACE_DH_IM_3DES_CBC_CBC		918
++id_PACE_DH_IM_AES_CBC_CMAC_128		919
++id_PACE_DH_IM_AES_CBC_CMAC_192		920
++id_PACE_DH_IM_AES_CBC_CMAC_256		921
++id_PACE_ECDH_IM		922
++id_PACE_ECDH_IM_3DES_CBC_CBC		923
++id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
++id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
++id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
++ansi_x942		927
++dhpublicnumber		928
++ecka_dh_SessionKDF		929
++ecka_dh_SessionKDF_DES3		930
++ecka_dh_SessionKDF_AES128		931
++ecka_dh_SessionKDF_AES192		932
++ecka_dh_SessionKDF_AES256		933
++id_TA_RSA		934
++id_TA_RSA_v1_5_SHA_1		935
++id_TA_RSA_v1_5_SHA_256		936
++id_TA_RSA_PSS_SHA_1		937
++id_TA_RSA_PSS_SHA_256		938
++id_TA_RSA_v1_SHA_512		939
++id_TA_RSA_PSS_SHA_512		940
++id_TA_ECDSA		941
++id_TA_ECDSA_SHA_1		942
++id_TA_ECDSA_SHA_224		943
++id_TA_ECDSA_SHA_256		944
++id_TA_ECDSA_SHA_384		945
++id_TA_ECDSA_SHA_512		946
++id_IS		947
++id_AT		948
++id_ST		949
++id_description		950
++id_plainFormat		951
++id_htmlFormat		952
++id_pdfFormat		953
++id_sector		954
 Index: openssl/crypto/objects/objects.txt
 ===================================================================
---- openssl.orig/crypto/objects/objects.txt	2010-04-22 18:02:17.829548581 +0200
-+++ openssl/crypto/objects/objects.txt	2010-04-22 18:02:21.830791198 +0200
-@@ -1276,3 +1276,40 @@
+--- openssl.orig/crypto/objects/objects.txt	2010-06-29 09:15:01.175157529 +0200
++++ openssl/crypto/objects/objects.txt	2010-06-29 09:15:04.025157108 +0200
+@@ -1276,3 +1276,70 @@
  1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
  1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
  1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
@@ -495,19 +1632,49 @@ Index: openssl/crypto/objects/objects.txt
 +ecka-dh 2 2 :        ecka-dh-SessionKDF-AES128
 +ecka-dh 2 3 :        ecka-dh-SessionKDF-AES192
 +ecka-dh 2 4 :        ecka-dh-SessionKDF-AES256
++
++# Terminal authentication OIDs from TR-03110
++!Alias id-TA    bsi-de 2 2 2
++id-TA 1 :       id-TA-RSA
++id-TA-RSA 1 :   id-TA-RSA-v1-5-SHA-1
++id-TA-RSA 2 :   id-TA-RSA-v1-5-SHA-256
++id-TA-RSA 3 :   id-TA-RSA-PSS-SHA-1
++id-TA-RSA 4 :   id-TA-RSA-PSS-SHA-256
++id-TA-RSA 5 :   id-TA-RSA-v1-SHA-512
++id-TA-RSA 6 :   id-TA-RSA-PSS-SHA-512
++id-TA 2 :       id-TA-ECDSA
++id-TA-ECDSA 1 : id-TA-ECDSA-SHA-1
++id-TA-ECDSA 2 : id-TA-ECDSA-SHA-224
++id-TA-ECDSA 3 : id-TA-ECDSA-SHA-256
++id-TA-ECDSA 4 : id-TA-ECDSA-SHA-384
++id-TA-ECDSA 5 : id-TA-ECDSA-SHA-512
++
++# Role OIDs for CV certificates according to 03110
++!Alias id-roles bsi-de 3 1 2
++id-roles 1 :    id-IS
++id-roles 2 :    id-AT
++id-roles 3 :    id-ST
++
++# Description and extesnsion OIDs from TR-03110
++!Alias id-extensions bsi-de 3 1 3
++id-extensions 1 :   id-description
++id-description 1 :  id-plainFormat
++id-description 2 :  id-htmlFormat
++id-description 3 :  id-pdfFormat
++id-extensions 2 :   id-sector
 Index: openssl/crypto/pace/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2010-04-22 18:02:17.090793720 +0200
-@@ -0,0 +1,150 @@
++++ openssl/crypto/pace/Makefile	2010-06-29 09:15:00.236410566 +0200
+@@ -0,0 +1,156 @@
 +DIR=pace
 +TOP=../..
 +
 +CFLAGS= $(INCLUDES) $(CFLAG)
 +
 +LIB=$(TOP)/libcrypto.a
-+LIBOBJ=pace_err.o pace_lib.o pace_util.o pace.o pace_dh.o pace_kdf.o pace_ecdh.o pace_mappings.o pace_asn1.o#pace_ka.o
-+LIBSRC=pace_err.c pace_lib.c pace_util.c pace.c pace_dh.c pace_kdf.c pace_ecdh.c pace_mappings.c pace_asn1.c#pace_ka.c
++LIBOBJ=pace_err.o pace_lib.o pace_util.o pace.o pace_dh.o pace_kdf.o pace_ecdh.o pace_mappings.o pace_asn1.o #pace_ka.o
++LIBSRC=pace_err.c pace_lib.c pace_util.c pace.c pace_dh.c pace_kdf.c pace_ecdh.c pace_mappings.c pace_asn1.c #pace_ka.c
 +
 +EXHEADER=pace.h
 +TEST=pacetest.c
@@ -561,8 +1728,19 @@ Index: openssl/crypto/pace/Makefile
 +pace.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 +pace.o: ../../include/openssl/pace.h ../../include/openssl/safestack.h
 +pace.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h pace.c
-+pace.o: pace_dh.h pace_ecdh.h pace_kdf.h pace_mappings.h
-+pace.o: pace_util.h
++pace.o: pace_dh.h pace_ecdh.h pace_kdf.h pace_mappings.h pace_util.h
++pace_asn1.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
++pace_asn1.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
++pace_asn1.o: ../../include/openssl/buffer.h ../../include/openssl/cmac.h
++pace_asn1.o: ../../include/openssl/crypto.h ../../include/openssl/dh.h
++pace_asn1.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
++pace_asn1.o: ../../include/openssl/ecdh.h ../../include/openssl/obj_mac.h
++pace_asn1.o: ../../include/openssl/objects.h
++pace_asn1.o: ../../include/openssl/opensslconf.h
++pace_asn1.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
++pace_asn1.o: ../../include/openssl/pace.h ../../include/openssl/safestack.h
++pace_asn1.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
++pace_asn1.o: pace_asn1.c pace_asn1.h
 +pace_dh.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 +pace_dh.o: ../../include/openssl/bn.h ../../include/openssl/buffer.h
 +pace_dh.o: ../../include/openssl/cmac.h ../../include/openssl/crypto.h
@@ -615,7 +1793,7 @@ Index: openssl/crypto/pace/Makefile
 +pace_lib.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 +pace_lib.o: ../../include/openssl/pace.h ../../include/openssl/safestack.h
 +pace_lib.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+pace_lib.o: pace_lib.c
++pace_lib.o: pace_dh.h pace_ecdh.h pace_lib.c pace_mappings.h
 +pace_mappings.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 +pace_mappings.o: ../../include/openssl/bn.h ../../include/openssl/buffer.h
 +pace_mappings.o: ../../include/openssl/cmac.h ../../include/openssl/crypto.h
@@ -643,21 +1821,16 @@ Index: openssl/crypto/pace/Makefile
 +pace_util.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 +pace_util.o: ../../include/openssl/pace.h ../../include/openssl/rand.h
 +pace_util.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+pace_util.o: ../../include/openssl/symhacks.h pace_dh.h
-+pace_util.o: pace_util.c pace_util.h
-+pace_asn1.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
-+pace_asn1.o: ../../include/openssl/objects.h ../../include/openssl/ec.h
-+pace_asn1.o: ../../include/openssl/dh.h ../../include/openssl/bn.h
-+pace_asn1.o: ../../include/openssl/pace.h
-+pace_asn1.o: pace_asn1.c pace_asn1.h
++pace_util.o: ../../include/openssl/symhacks.h pace.h pace_dh.h pace_util.c
++pace_util.o: pace_util.h
 Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2010-05-17 11:39:01.907029833 +0200
-@@ -0,0 +1,577 @@
++++ openssl/crypto/pace/pace.c	2010-09-28 15:47:35.587911852 +0200
+@@ -0,0 +1,641 @@
 +/**
 + * @file pace.c
-+ * @version 0.1
++ * @version 0.4
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + * @author Wolf Mueller  <Wolf.Mueller@informatik.hu-berlin.de>
@@ -1232,11 +2405,75 @@ Index: openssl/crypto/pace/pace.c
 +
 +    return out;
 +}
++
++BUF_MEM *
++PACE_Comp(const PACEDomainParameterInfo *dp, PACE_CTX *ctx, const BUF_MEM *pub)
++{
++    BUF_MEM *out = NULL;
++    const EC_GROUP *group;
++    EC_POINT *ecp = NULL;
++    BIGNUM *x = NULL, *y = NULL;
++
++    if (!dp || !dp->domainParameter || !ctx)
++        goto err;
++
++    switch (dp->domainParameter->algorithm) {
++        case NID_dhpublicnumber:
++            out = hash(EVP_sha1(), NULL, NULL, pub);
++            break;
++        case NID_X9_62_id_ecPublicKey:
++        /* Note: Test cards derive from the official specification, therefore
++         *       we need to handle some additional OIDs */
++        case NID_ecka_dh_SessionKDF_DES3:
++        case NID_ecka_dh_SessionKDF_AES128:
++        case NID_ecka_dh_SessionKDF_AES192:
++        case NID_ecka_dh_SessionKDF_AES256:
++            group = EC_KEY_get0_group(
++                    dp->domainParameter->parameters.ecdh);
++            ecp = EC_POINT_new(group);
++            x = BN_CTX_get(ctx->bn_ctx);
++            y = BN_CTX_get(ctx->bn_ctx);
++
++            if(!ecp || !x || !y
++                    || !EC_POINT_oct2point(group, ecp,
++                        (unsigned char *) pub->data, pub->length, ctx->bn_ctx)
++                    || !EC_POINT_get_affine_coordinates_GF2m(group, ecp, x, y, ctx->bn_ctx))
++                goto err;
++
++            out = BUF_MEM_create(BN_num_bytes(x));
++            if(!out
++                    || !BN_bn2bin(x, (unsigned char *) out->data))
++                goto err;
++            break;
++        default:
++            goto err;
++    }
++
++err:
++    if (ecp)
++        EC_POINT_free(ecp);
++    if (x)
++        BN_free(x);
++    if (y)
++        BN_free(y);
++
++    return out;
++}
++
++BUF_MEM *
++PACE_hash_certificate_description(const unsigned char *cert_desc,
++        size_t cert_desc_len)
++{
++    BUF_MEM *cd = BUF_MEM_create_init(cert_desc, cert_desc_len);
++    BUF_MEM *out = hash(EVP_sha256(), NULL, NULL, cd);
++    BUF_MEM_free(cd);
++    return out;
++}
 Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2010-05-17 11:39:01.907029833 +0200
-@@ -0,0 +1,449 @@
++++ openssl/crypto/pace/pace.h	2010-10-01 15:00:19.047736351 +0200
+@@ -0,0 +1,463 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -1252,8 +2489,8 @@ Index: openssl/crypto/pace/pace.h
 + * PACE can be used with different suites of algorithms and is not
 + * subject to any patents.
 + *
-+ * @date 2009-04-29
-+ * @version 0.1
++ * @date 2010-09-28
++ * @version 0.4
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -1633,8 +2870,15 @@ Index: openssl/crypto/pace/pace.h
 +            PACEDomainParameterInfo *dp);
 +
 +int
-+parse_cv_cert(unsigned const char *cv_cert, unsigned int len);
++ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
++        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING *base_order,
++        ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor);
++
 +/** @} ***********************************************************************/
++
++/**
++ * @defgroup convenience              Convenience functions
++ * @{ ************************************************************************/
 +
 +/**
 + * @brief Padds a buffer using ISO/IEC 9797-1 padding method 2.
@@ -1656,6 +2900,13 @@ Index: openssl/crypto/pace/pace.h
 +BUF_MEM *
 +PACE_authenticate(const PACE_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *k_mac,
 +        const unsigned char *data, size_t datalen);
++BUF_MEM *
++PACE_Comp(const PACEDomainParameterInfo *dp, PACE_CTX *ctx, const BUF_MEM *pub);
++BUF_MEM *
++PACE_hash_certificate_description(const unsigned char *cert_desc,
++        size_t cert_desc_len);
++/** @} ***********************************************************************/
++
 +
 +/* The following lines are auto generated by the script mkerr.pl. Any changes
 + * made after this point may be overwritten when the script is next run.
@@ -1689,8 +2940,8 @@ Index: openssl/crypto/pace/pace.h
 Index: openssl/crypto/pace/pace_asn1.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.c	2010-05-18 18:50:01.958548791 +0200
-@@ -0,0 +1,452 @@
++++ openssl/crypto/pace/pace_asn1.c	2010-09-20 11:17:13.179475011 +0200
+@@ -0,0 +1,575 @@
 +/**
 + * @date 2009-12-13
 + * @version 0.1
@@ -1698,9 +2949,9 @@ Index: openssl/crypto/pace/pace_asn1.c
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
 +
-+#include <openssl/objects.h>
 +#include <openssl/asn1.h>
 +#include <openssl/pace.h>
++#include <openssl/cv_cert.h>
 +#include "pace_asn1.h"
 +
 +static unsigned int
@@ -1710,7 +2961,104 @@ Index: openssl/crypto/pace/pace_asn1.c
 +
 +static int copy_dh_params(DH ** dst, DH *src);
 +
++/* the OpenSSL ASN.1 definitions */
++ASN1_SEQUENCE(PACE_X9_62_PENTANOMIAL) = {
++    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k1, LONG),
++    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k2, LONG),
++    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k3, LONG)
++} ASN1_SEQUENCE_END(PACE_X9_62_PENTANOMIAL)
++
++DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
++IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
++
++ASN1_ADB_TEMPLATE(char_two_def) = ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.other, ASN1_ANY);
++
++ASN1_ADB(PACE_X9_62_CHARACTERISTIC_TWO) = {
++    ADB_ENTRY(NID_X9_62_onBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.onBasis, ASN1_NULL)),
++    ADB_ENTRY(NID_X9_62_tpBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.tpBasis, ASN1_INTEGER)),
++    ADB_ENTRY(NID_X9_62_ppBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.ppBasis, PACE_X9_62_PENTANOMIAL))
++} ASN1_ADB_END(PACE_X9_62_CHARACTERISTIC_TWO, 0, type, 0, &char_two_def_tt, NULL);
++
++ASN1_SEQUENCE(PACE_X9_62_CHARACTERISTIC_TWO) = {
++    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, m, LONG),
++    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, type, ASN1_OBJECT),
++    ASN1_ADB_OBJECT(PACE_X9_62_CHARACTERISTIC_TWO)
++} ASN1_SEQUENCE_END(PACE_X9_62_CHARACTERISTIC_TWO)
++
++DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
++IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
++
++ASN1_ADB_TEMPLATE(fieldID_def) = ASN1_SIMPLE(PACE_X9_62_FIELDID, p.other, ASN1_ANY);
++
++ASN1_ADB(PACE_X9_62_FIELDID) = {
++    ADB_ENTRY(NID_X9_62_prime_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.prime, ASN1_INTEGER)),
++    ADB_ENTRY(NID_X9_62_characteristic_two_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.char_two, PACE_X9_62_CHARACTERISTIC_TWO))
++} ASN1_ADB_END(PACE_X9_62_FIELDID, 0, fieldType, 0, &fieldID_def_tt, NULL);
++
++ASN1_SEQUENCE(PACE_X9_62_FIELDID) = {
++    ASN1_SIMPLE(PACE_X9_62_FIELDID, fieldType, ASN1_OBJECT),
++    ASN1_ADB_OBJECT(PACE_X9_62_FIELDID)
++} ASN1_SEQUENCE_END(PACE_X9_62_FIELDID)
++
++ASN1_SEQUENCE(PACE_X9_62_CURVE) = {
++    ASN1_SIMPLE(PACE_X9_62_CURVE, a, ASN1_OCTET_STRING),
++    ASN1_SIMPLE(PACE_X9_62_CURVE, b, ASN1_OCTET_STRING),
++    ASN1_OPT(PACE_X9_62_CURVE, seed, ASN1_BIT_STRING)
++} ASN1_SEQUENCE_END(PACE_X9_62_CURVE)
++
++ASN1_SEQUENCE(PACE_ECPARAMETERS) = {
++    ASN1_SIMPLE(PACE_ECPARAMETERS, version, ASN1_INTEGER),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, fieldID, PACE_X9_62_FIELDID),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, curve, PACE_X9_62_CURVE),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, base, ASN1_OCTET_STRING),
++    ASN1_SIMPLE(PACE_ECPARAMETERS, order, ASN1_INTEGER),
++    ASN1_OPT(PACE_ECPARAMETERS, cofactor, ASN1_INTEGER)
++} ASN1_SEQUENCE_END(PACE_ECPARAMETERS)
++
++DECLARE_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
++IMPLEMENT_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
++
 +/* I stole this from dh_asn1.c */
++ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
++    ASN1_SIMPLE(DH, p, BIGNUM),
++    ASN1_SIMPLE(DH, g, BIGNUM),
++    ASN1_OPT(DH, length, ZLONG),
++} ASN1_SEQUENCE_END_cb(DH, PACE_DHparams)
++
++IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(DH, PACE_DHparams, PACE_DHparams)
++
++ASN1_SEQUENCE(PACE_INFO) = {
++    ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
++    ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
++    ASN1_OPT(PACE_INFO, parameterId, ASN1_INTEGER)
++} ASN1_SEQUENCE_END(PACE_INFO)
++
++IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
++
++ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other, ASN1_ANY);
++
++ASN1_ADB(ALGORITHM_IDENTIFIER) = {
++        ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
++        ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams))
++} ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
++
++ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
++        ASN1_SIMPLE(ALGORITHM_IDENTIFIER, algorithm, ASN1_OBJECT),
++        ASN1_ADB_OBJECT(ALGORITHM_IDENTIFIER)
++} ASN1_SEQUENCE_END(ALGORITHM_IDENTIFIER)
++
++DECLARE_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
++IMPLEMENT_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
++
++/* PACEDomainParameterInfo */
++ASN1_SEQUENCE(PACE_DP_INFO) = {
++    ASN1_SIMPLE(PACE_DP_INFO, protocol, ASN1_OBJECT),
++    ASN1_SIMPLE(PACE_DP_INFO, aid, ALGORITHM_IDENTIFIER),
++    ASN1_OPT(PACE_DP_INFO, parameterId, ASN1_INTEGER)
++} ASN1_SEQUENCE_END(PACE_DP_INFO)
++
++IMPLEMENT_ASN1_FUNCTIONS(PACE_DP_INFO)
++
 +int
 +dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
 +{
@@ -1727,94 +3075,126 @@ Index: openssl/crypto/pace/pace_asn1.c
 +}
 +
 +int
-+copy_ec_params(EC_KEY **dst, PACE_ECPARAMETERS *src)
++ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
++        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING *base_order,
++        ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor)
 +{
-+    EC_KEY *tmp = NULL;
-+    EC_GROUP *group = NULL;
-+    EC_POINT *generator = NULL;
-+    BIGNUM *p = NULL, *cofactor = NULL, *order = NULL, *a = NULL, *b = NULL;
++    int ret = 0;
++    BIGNUM *p_bn = NULL, *cofactor_bn = NULL, *order_bn = NULL, *a_bn = NULL,
++            *b_bn = NULL;
 +    BN_CTX *bn_ctx = NULL;
++    EC_GROUP *group = NULL;
++    EC_POINT *generator = NULL, *pub_point = NULL;
++    EC_KEY *tmp = NULL;
 +
-+    if (!dst || !*dst) {
-+        tmp = EC_KEY_new();
-+        if (!tmp)
-+            goto err;
-+    } else
-+        tmp = *dst;
-+
-+    bn_ctx = BN_CTX_new();
-+    if (!bn_ctx)
++    if (!key || !p || !a || !b || !base || !base_order || !cofactor) //XXX: Are base_order and cofactor essential?
 +        goto err;
 +
-+    p = BN_new();
-+    a = BN_new();
-+    b = BN_new();
-+    order = BN_new();
-+    cofactor = BN_new();
-+    if (!p || !a || !b || !order || !cofactor)
++    p_bn = BN_new();
++    a_bn = BN_new();
++    b_bn = BN_new();
++    order_bn = BN_new();
++    cofactor_bn = BN_new();
++    bn_ctx = BN_CTX_new();
++
++    if (!p_bn || !a_bn || !b_bn || !order_bn || !cofactor_bn || !bn_ctx)
 +        goto err;
 +
 +    /* Copy field and curve */
-+    if (!ASN1_INTEGER_to_BN(src->fieldID->p.prime, p) ||
-+        !BN_bin2bn(ASN1_STRING_data(src->curve->a), ASN1_STRING_length(src->curve->a), a) ||
-+        !BN_bin2bn(ASN1_STRING_data(src->curve->b), ASN1_STRING_length(src->curve->b), b))
++    if (!BN_bin2bn(ASN1_STRING_data(p), ASN1_STRING_length(p), p_bn) || //FIXME: ASN1_INTEGER in X9.62
++        !BN_bin2bn(ASN1_STRING_data(a), ASN1_STRING_length(a), a_bn) ||
++        !BN_bin2bn(ASN1_STRING_data(b), ASN1_STRING_length(b), b_bn))
 +            goto err;
 +    else
-+        group = EC_GROUP_new_curve_GFp(p, a, b, bn_ctx);
++        group = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, bn_ctx);
 +
-+    if (!ASN1_INTEGER_to_BN(src->cofactor, cofactor) ||
-+        !ASN1_INTEGER_to_BN(src->order, order))
++    if (!group)
 +        goto err;
++
++    /* Set generator, order and cofactor */
++    if (!ASN1_INTEGER_to_BN(cofactor, cofactor_bn) || //FIXME: OCTET_STRING
++        !ASN1_INTEGER_to_BN(base_order, order_bn)) //FIXME: OCTET_STRING
++            goto err;
 +
 +    generator = EC_POINT_new(group);
 +    if (!generator)
 +        goto err;
 +
-+    /* Copy and set the generator point */
-+    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(src->base),
-+            ASN1_STRING_length(src->base), bn_ctx))
++    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(base),
++            ASN1_STRING_length(base), bn_ctx))
 +        goto err;
 +
-+    if (!EC_GROUP_set_generator(group, generator, order, cofactor))
++    if (!EC_GROUP_set_generator(group, generator, order_bn, cofactor_bn))
 +        goto err;
 +
-+    if(!EC_KEY_set_group(tmp, group))
++    /* Set the group for the key*/
++    if (!*key) {
++        tmp = EC_KEY_new();
++        if(!tmp)
++            goto err;
++    } else
++        tmp = *key;
++
++    if( !EC_KEY_set_group(tmp, group))
 +        goto err;
 +
-+    if (!*dst)
-+        *dst = tmp;
++    /* Set the public point if available */
++    if (pub) {
++        pub_point = EC_POINT_new(group);
++        if (!pub_point)
++            goto err;
 +
-+    /* Clean up */
-+    BN_CTX_free(bn_ctx);
-+    BN_clear_free(cofactor);
-+    BN_clear_free(order);
-+    BN_clear_free(a);
-+    BN_clear_free(b);
-+    BN_clear_free(p);
-+    EC_GROUP_clear_free(group);
-+    EC_POINT_clear_free(generator);
-+    return 1;
++        if (!EC_POINT_oct2point(group, pub_point, ASN1_STRING_data(pub),
++                ASN1_STRING_length(pub), bn_ctx))
++            goto err;
++
++        if (!EC_KEY_set_public_key(tmp, pub_point))
++            goto err;
++    }
++
++    if (!*key)
++        *key = tmp;
++
++    ret = 1;
 +
 +err:
-+    if(bn_ctx)
++    if (bn_ctx)
 +        BN_CTX_free(bn_ctx);
-+    if(!*dst && tmp)
++    if (!*key && tmp && !ret)
 +        EC_KEY_free(tmp);
-+    if(!group)
++    if (group)
 +        EC_GROUP_clear_free(group);
-+    if(!generator)
++    if (generator)
 +        EC_POINT_clear_free(generator);
-+    if(!cofactor)
-+        BN_clear_free(cofactor);
-+    if(!order)
-+        BN_clear_free(order);
-+    if(!a)
-+        BN_clear_free(a);
-+    if(!b)
-+        BN_clear_free(b);
-+    if(!p)
-+        BN_clear_free(p);
-+    return 0;
++    if (pub_point)
++        EC_POINT_clear_free(pub_point);
++    if(cofactor_bn)
++        BN_clear_free(cofactor_bn);
++    if(order_bn)
++        BN_clear_free(order_bn);
++    if(a_bn)
++        BN_clear_free(a_bn);
++    if(b_bn)
++        BN_clear_free(b_bn);
++    if(p_bn)
++        BN_clear_free(p_bn);
++
++    return ret;
++}
++
++int
++copy_ec_params(EC_KEY **dst, PACE_ECPARAMETERS *src)
++{
++    int ret = 0;
++
++    if (!src || !src->curve || !src->fieldID)
++        goto err;
++
++    ret = ec_key_from_asn1(dst, src->fieldID->p.prime, src->curve->a, src->curve->b,
++            src->base, src->order, NULL, src->cofactor);
++
++err:
++    return ret;
 +}
 +
 +int
@@ -1906,7 +3286,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +            goto err;
 +        oid_len = getlen(oid_pos+1, &len_len); /* Length of OBJECT IDENTIFIER */
 +
-+        /* XXX: I dont't understand, why we have to increment the last parameter
++        /* XXX: I don't understand, why we have to increment the last parameter
 +         *      by two. This was found to work by trial and error. */
 +        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
 +            goto err;
@@ -1929,16 +3309,13 @@ Index: openssl/crypto/pace/pace_asn1.c
 +                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
 +                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
 +                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                    //printf("Found PACEInfo: %s\n", OBJ_nid2sn(nid));
 +                    tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
 +                    if (!tmp_info)
 +                        goto err;
 +                    new_info = PACEInfo_new();
-+                    /* TODO: Sanity checks. Note that in theory ASN1_INTEGER may
-+                     *       contain values, that are too big for int. Nevertheless
-+                     *       we only expect version of 0 or 1. The same holds for
-+                     *       parameterId */
 +                    new_info->version = (int) ASN1_INTEGER_get(tmp_info->version);
++                    if (new_info->version < 0 || new_info->version > 1)
++                        goto err;
 +                    new_info->protocol = OBJ_obj2nid(tmp_info->protocol);
 +                    if(tmp_info->parameterId)
 +                        new_info->parameterId = (int) ASN1_INTEGER_get(tmp_info->parameterId);
@@ -1947,7 +3324,6 @@ Index: openssl/crypto/pace/pace_asn1.c
 +                case NID_id_PACE_ECDH_IM:
 +                case NID_id_PACE_DH_GM:
 +                case NID_id_PACE_DH_IM:
-+                    //printf("Found PACEDomainParameterInfo: %s\n", OBJ_nid2sn(nid));
 +                    tmp_dp_info = d2i_PACE_DP_INFO(NULL, &seq_pos, len+3);
 +                    if (!tmp_dp_info)
 +                        goto err;
@@ -2051,7 +3427,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +            goto err;
 +        oid_len = getlen(oid_pos+1, &len_len); /* Length of OBJECT IDENTIFIER */
 +
-+        /* XXX: I dont't understand, why we have to increment the last parameter
++        /* XXX: I don't understand, why we have to increment the last parameter
 +         *      by two. This was found to work by trial and error. */
 +        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
 +            goto err;
@@ -2077,11 +3453,9 @@ Index: openssl/crypto/pace/pace_asn1.c
 +                    tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
 +                    if (!tmp_info)
 +                        goto err;
-+                    /* TODO: Sanity checks. Note that in theory ASN1_INTEGER may
-+                     *       contain values, that are too big for int. Nevertheless
-+                     *       we only expect version of 0 or 1. The same holds for
-+                     *       parameterId */
 +                    info->version = (int) ASN1_INTEGER_get(tmp_info->version);
++                    if (info->version < 0 || info->version > 1)
++                        goto err;
 +                    info->protocol = OBJ_obj2nid(tmp_info->protocol);
 +                    if(tmp_info->parameterId)
 +                        info->parameterId = (int) ASN1_INTEGER_get(tmp_info->parameterId);
@@ -2103,7 +3477,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +                        goto err;
 +                    dp->domainParameter->algorithm = OBJ_obj2nid(tmp_dp_info->aid->algorithm);
 +
-+                    /* Extraxt actual parameters */
++                    /* Extract actual parameters */
 +                    switch (dp->domainParameter->algorithm) {
 +                        case NID_dhpublicnumber:
 +                            copy_dh_params(&dp->domainParameter->parameters.dh,
@@ -2146,8 +3520,8 @@ Index: openssl/crypto/pace/pace_asn1.c
 Index: openssl/crypto/pace/pace_asn1.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.h	2010-05-18 18:50:33.118538661 +0200
-@@ -0,0 +1,206 @@
++++ openssl/crypto/pace/pace_asn1.h	2010-09-22 15:18:12.528061791 +0200
+@@ -0,0 +1,51 @@
 +/**
 + *
 + * @date 2009-12-22
@@ -2163,123 +3537,7 @@ Index: openssl/crypto/pace/pace_asn1.h
 +#include <openssl/dh.h>
 +#include <openssl/asn1t.h>
 +#include <openssl/bn.h>
-+
-+#define ASN1_APP_IMP(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, tag, stname, field, type)
-+#define ASN1_APP_IMP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
-+
-+/**
-+ * @defgroup EC_ASN1     ASN1 structures for elliptic curves
-+ * @{ ************************************************************************/
-+
-+/* I stole these from ec_asn1.c */
-+
-+typedef struct x9_62_pentanomial_st {
-+    long k1;
-+    long k2;
-+    long k3;
-+    } PACE_X9_62_PENTANOMIAL;
-+
-+typedef struct pace_x9_62_characteristic_two_st {
-+    long m;
-+    ASN1_OBJECT  *type;
-+    union   {
-+        char *ptr;
-+        /* NID_X9_62_onBasis */
-+        ASN1_NULL    *onBasis;
-+        /* NID_X9_62_tpBasis */
-+        ASN1_INTEGER *tpBasis;
-+        /* NID_X9_62_ppBasis */
-+        PACE_X9_62_PENTANOMIAL *ppBasis;
-+        /* anything else */
-+        ASN1_TYPE *other;
-+        } p;
-+    } PACE_X9_62_CHARACTERISTIC_TWO;
-+
-+typedef struct pace_x9_62_fieldid_st {
-+        ASN1_OBJECT *fieldType;
-+    union   {
-+        char *ptr;
-+        /* NID_X9_62_prime_field */
-+        ASN1_INTEGER *prime;
-+        /* NID_X9_62_characteristic_two_field */
-+        PACE_X9_62_CHARACTERISTIC_TWO *char_two;
-+        /* anything else */
-+        ASN1_TYPE *other;
-+        } p;
-+    } PACE_X9_62_FIELDID;
-+
-+typedef struct pace_x9_62_curve_st {
-+        ASN1_OCTET_STRING *a;
-+        ASN1_OCTET_STRING *b;
-+        ASN1_BIT_STRING   *seed;
-+        } PACE_X9_62_CURVE;
-+
-+typedef struct pace_ec_parameters_st {
-+        ASN1_INTEGER           *version;
-+        PACE_X9_62_FIELDID     *fieldID;
-+        PACE_X9_62_CURVE       *curve;
-+        ASN1_OCTET_STRING *base;
-+        ASN1_INTEGER      *order;
-+        ASN1_INTEGER      *cofactor;
-+        } PACE_ECPARAMETERS;
-+
-+/* the OpenSSL ASN.1 definitions */
-+ASN1_SEQUENCE(PACE_X9_62_PENTANOMIAL) = {
-+    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k1, LONG),
-+    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k2, LONG),
-+    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k3, LONG)
-+} ASN1_SEQUENCE_END(PACE_X9_62_PENTANOMIAL)
-+
-+DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
-+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_PENTANOMIAL)
-+
-+ASN1_ADB_TEMPLATE(char_two_def) = ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.other, ASN1_ANY);
-+
-+ASN1_ADB(PACE_X9_62_CHARACTERISTIC_TWO) = {
-+    ADB_ENTRY(NID_X9_62_onBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.onBasis, ASN1_NULL)),
-+    ADB_ENTRY(NID_X9_62_tpBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.tpBasis, ASN1_INTEGER)),
-+    ADB_ENTRY(NID_X9_62_ppBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.ppBasis, PACE_X9_62_PENTANOMIAL))
-+} ASN1_ADB_END(PACE_X9_62_CHARACTERISTIC_TWO, 0, type, 0, &char_two_def_tt, NULL);
-+
-+ASN1_SEQUENCE(PACE_X9_62_CHARACTERISTIC_TWO) = {
-+    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, m, LONG),
-+    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, type, ASN1_OBJECT),
-+    ASN1_ADB_OBJECT(PACE_X9_62_CHARACTERISTIC_TWO)
-+} ASN1_SEQUENCE_END(PACE_X9_62_CHARACTERISTIC_TWO)
-+
-+DECLARE_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
-+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(PACE_X9_62_CHARACTERISTIC_TWO)
-+
-+ASN1_ADB_TEMPLATE(fieldID_def) = ASN1_SIMPLE(PACE_X9_62_FIELDID, p.other, ASN1_ANY);
-+
-+ASN1_ADB(PACE_X9_62_FIELDID) = {
-+    ADB_ENTRY(NID_X9_62_prime_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.prime, ASN1_INTEGER)),
-+    ADB_ENTRY(NID_X9_62_characteristic_two_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.char_two, PACE_X9_62_CHARACTERISTIC_TWO))
-+} ASN1_ADB_END(PACE_X9_62_FIELDID, 0, fieldType, 0, &fieldID_def_tt, NULL);
-+
-+ASN1_SEQUENCE(PACE_X9_62_FIELDID) = {
-+    ASN1_SIMPLE(PACE_X9_62_FIELDID, fieldType, ASN1_OBJECT),
-+    ASN1_ADB_OBJECT(PACE_X9_62_FIELDID)
-+} ASN1_SEQUENCE_END(PACE_X9_62_FIELDID)
-+
-+ASN1_SEQUENCE(PACE_X9_62_CURVE) = {
-+    ASN1_SIMPLE(PACE_X9_62_CURVE, a, ASN1_OCTET_STRING),
-+    ASN1_SIMPLE(PACE_X9_62_CURVE, b, ASN1_OCTET_STRING),
-+    ASN1_OPT(PACE_X9_62_CURVE, seed, ASN1_BIT_STRING)
-+} ASN1_SEQUENCE_END(PACE_X9_62_CURVE)
-+
-+ASN1_SEQUENCE(PACE_ECPARAMETERS) = {
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, version, ASN1_INTEGER),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, fieldID, PACE_X9_62_FIELDID),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, curve, PACE_X9_62_CURVE),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, base, ASN1_OCTET_STRING),
-+    ASN1_SIMPLE(PACE_ECPARAMETERS, order, ASN1_INTEGER),
-+    ASN1_OPT(PACE_ECPARAMETERS, cofactor, ASN1_INTEGER)
-+} ASN1_SEQUENCE_END(PACE_ECPARAMETERS)
-+
-+DECLARE_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
-+IMPLEMENT_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
-+/** @} ***********************************************************************/
++#include <openssl/objects.h>
 +
 +/**
 + * @defgroup DH_ASN1     ASN1 structures for Diffie Hellman
@@ -2287,13 +3545,6 @@ Index: openssl/crypto/pace/pace_asn1.h
 +/* I stole this from dh_asn1.c */
 +int dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg);
 +
-+ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
-+    ASN1_SIMPLE(DH, p, BIGNUM),
-+    ASN1_SIMPLE(DH, g, BIGNUM),
-+    ASN1_OPT(DH, length, ZLONG),
-+} ASN1_SEQUENCE_END_cb(DH, PACE_DHparams)
-+
-+IMPLEMENT_ASN1_ENCODE_FUNCTIONS_const_fname(DH, PACE_DHparams, PACE_DHparams)
 +/** @} ***********************************************************************/
 +
 +/**
@@ -2319,45 +3570,13 @@ Index: openssl/crypto/pace/pace_asn1.h
 +    ALGORITHM_IDENTIFIER *aid;
 +    ASN1_INTEGER *parameterId;
 +} PACE_DP_INFO;
-+
-+/* PACEInfo */
-+ASN1_SEQUENCE(PACE_INFO) = {
-+    ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
-+    ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
-+    ASN1_OPT(PACE_INFO, parameterId, ASN1_INTEGER)
-+} ASN1_SEQUENCE_END(PACE_INFO)
-+
-+IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
-+
-+ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other, ASN1_ANY);
-+
-+ASN1_ADB(ALGORITHM_IDENTIFIER) = {
-+        ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
-+        ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams))
-+} ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
-+
-+ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
-+        ASN1_SIMPLE(ALGORITHM_IDENTIFIER, algorithm, ASN1_OBJECT),
-+        ASN1_ADB_OBJECT(ALGORITHM_IDENTIFIER)
-+} ASN1_SEQUENCE_END(ALGORITHM_IDENTIFIER)
-+
-+DECLARE_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
-+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(ALGORITHM_IDENTIFIER)
-+
-+/* PACEDomainParameterInfo */
-+ASN1_SEQUENCE(PACE_DP_INFO) = {
-+    ASN1_SIMPLE(PACE_DP_INFO, protocol, ASN1_OBJECT),
-+    ASN1_SIMPLE(PACE_DP_INFO, aid, ALGORITHM_IDENTIFIER),
-+    ASN1_OPT(PACE_DP_INFO, parameterId, ASN1_INTEGER)
-+} ASN1_SEQUENCE_END(PACE_DP_INFO)
-+
-+IMPLEMENT_ASN1_FUNCTIONS(PACE_DP_INFO)
 +/** @} ***********************************************************************/
++
 +#endif /* PACE_ASN1_H_ */
 Index: openssl/crypto/pace/pace_dh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.c	2010-04-22 18:02:17.090793720 +0200
++++ openssl/crypto/pace/pace_dh.c	2010-06-29 09:15:00.236410566 +0200
 @@ -0,0 +1,212 @@
 +/**
 + * @version 0.1
@@ -2574,7 +3793,7 @@ Index: openssl/crypto/pace/pace_dh.c
 Index: openssl/crypto/pace/pace_dh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.h	2010-04-22 18:02:17.090793720 +0200
++++ openssl/crypto/pace/pace_dh.h	2010-06-29 09:15:00.236410566 +0200
 @@ -0,0 +1,91 @@
 +/**
 + * @date 2009-12-01
@@ -2670,7 +3889,7 @@ Index: openssl/crypto/pace/pace_dh.h
 Index: openssl/crypto/pace/pace_ecdh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.c	2010-04-22 18:02:17.090793720 +0200
++++ openssl/crypto/pace/pace_ecdh.c	2010-06-29 09:15:00.236410566 +0200
 @@ -0,0 +1,161 @@
 +/**
 + * @version 0.1
@@ -2836,7 +4055,7 @@ Index: openssl/crypto/pace/pace_ecdh.c
 Index: openssl/crypto/pace/pace_ecdh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.h	2010-04-22 18:02:17.080793357 +0200
++++ openssl/crypto/pace/pace_ecdh.h	2010-06-29 09:15:00.216409699 +0200
 @@ -0,0 +1,76 @@
 +/**
 + * @date 2009-12-01
@@ -2917,7 +4136,7 @@ Index: openssl/crypto/pace/pace_ecdh.h
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2010-04-22 18:02:17.090793720 +0200
++++ openssl/crypto/pace/pace_err.c	2010-06-29 09:15:00.236410566 +0200
 @@ -0,0 +1,107 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
@@ -3029,7 +4248,7 @@ Index: openssl/crypto/pace/pace_err.c
 Index: openssl/crypto/pace/pace_kdf.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.c	2010-04-22 18:02:17.090793720 +0200
++++ openssl/crypto/pace/pace_kdf.c	2010-06-29 09:15:00.236410566 +0200
 @@ -0,0 +1,89 @@
 +/**
 + * @date 2009-12-01
@@ -3123,7 +4342,7 @@ Index: openssl/crypto/pace/pace_kdf.c
 Index: openssl/crypto/pace/pace_kdf.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.h	2010-04-22 18:02:17.080793357 +0200
++++ openssl/crypto/pace/pace_kdf.h	2010-06-29 09:15:00.216409699 +0200
 @@ -0,0 +1,63 @@
 +/**
 + * @date 2009-12-01
@@ -3191,7 +4410,7 @@ Index: openssl/crypto/pace/pace_kdf.h
 Index: openssl/crypto/pace/pace_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_lib.c	2010-04-22 18:02:17.080793357 +0200
++++ openssl/crypto/pace/pace_lib.c	2010-09-20 11:17:13.179475011 +0200
 @@ -0,0 +1,527 @@
 +/**
 + * @date 2009-11-30
@@ -3544,7 +4763,7 @@ Index: openssl/crypto/pace/pace_lib.c
 +                    goto err;
 +            }*/
 +            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-+            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_generate_key = ecdh_im_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
@@ -3557,7 +4776,7 @@ Index: openssl/crypto/pace/pace_lib.c
 +                    goto err;
 +            }*/
 +            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-+            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_generate_key = ecdh_im_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
@@ -3570,14 +4789,14 @@ Index: openssl/crypto/pace/pace_lib.c
 +                    goto err;
 +            }*/
 +            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-+            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_generate_key = ecdh_im_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
 +            break;
 +
 +        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            ctx->map_generate_key = ecdh_generate_key;
++            ctx->map_generate_key = ecdh_im_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede_cbc();
@@ -3723,8 +4942,8 @@ Index: openssl/crypto/pace/pace_lib.c
 Index: openssl/crypto/pace/pace_mappings.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.c	2010-04-22 18:02:17.090793720 +0200
-@@ -0,0 +1,369 @@
++++ openssl/crypto/pace/pace_mappings.c	2010-09-20 11:17:13.179475011 +0200
+@@ -0,0 +1,390 @@
 +/**
 + * @date 2009-12-01
 + * @version 0.1
@@ -3930,11 +5149,21 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    return NULL;
 +}
 +
++BUF_MEM *
++ecdh_im_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx)
++{
++    if (!ctx)
++        return NULL;
++
++    return randb(EVP_CIPHER_key_length(ctx->cipher));
++}
++
 +PACEDomainParameterInfo *
 +ecdh_im_compute_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx,
 +        const BUF_MEM * s, const BUF_MEM * in)
 +{
 +    PACEDomainParameterInfo * out = NULL;
++    BUF_MEM * x_mem = NULL;
 +    BIGNUM * a = NULL, *b = NULL, *p = NULL;
 +    BIGNUM * x = NULL, *y = NULL, *v = NULL, *u = NULL;
 +    BIGNUM * tmp = NULL, *tmp2 = NULL, *bn_const = NULL, *bn_inv = NULL;
@@ -3945,6 +5174,7 @@ Index: openssl/crypto/pace/pace_mappings.c
 +            || !ctx || !s)
 +        goto err;
 +
++    /* Setup all the variables*/
 +    a = BN_new();
 +    b = BN_new();
 +    p = BN_new();
@@ -3966,11 +5196,18 @@ Index: openssl/crypto/pace/pace_mappings.c
 +            !bn_inv)
 +        goto err;
 +
++    /* Encrypt the Nonce using the symmetric key in */
++    x_mem = cipher(ctx->cipher_ctx, ctx->cipher, ctx->cipher_engine,
++            (unsigned char *) in->data, ctx->iv, 1, s, 1);
++    if (!x_mem)
++        goto err;
++
++    /* Fetch the curve parameters */
 +    if (!EC_GROUP_get_curve_GFp(EC_KEY_get0_group(
 +            dp->domainParameter->parameters.ecdh), p, a, b, ctx->bn_ctx))
 +        goto err;
 +
-+    /* assining constants */
++    /* Assign constants */
 +    if (    !BN_set_word(two,2)||
 +            !BN_set_word(three,3)||
 +            !BN_set_word(four,4)||
@@ -3989,8 +5226,8 @@ Index: openssl/crypto/pace/pace_mappings.c
 +        goto err;
 +    }
 +
-+    /* Convert nonce to BIGNUM */
-+    u = BN_bin2bn((unsigned char *) s->data, s->length, u);
++    /* Convert encrypted nonce to BIGNUM */
++    u = BN_bin2bn((unsigned char *) x_mem->data, x_mem->length, u);
 +    if (!u)
 +        goto err;
 +
@@ -4038,6 +5275,7 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    /* configure the new EC_KEY */
 +    out = dp_ecdh_new_generator_by_coordinates(dp, x, y, ctx->bn_ctx);
 +
++    BUF_MEM_free(x_mem); //XXX: Should we clean the memory?
 +    BN_clear_free(a);
 +    BN_clear_free(b);
 +    BN_clear_free(p);
@@ -4058,6 +5296,8 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    return out;
 +
 +err:
++    if (x_mem)
++        BUF_MEM_free(x_mem); //XXX: Should we clean the memory?
 +    if (a)
 +        BN_clear_free(a);
 +    if (b)
@@ -4097,8 +5337,8 @@ Index: openssl/crypto/pace/pace_mappings.c
 Index: openssl/crypto/pace/pace_mappings.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.h	2010-04-22 18:02:17.090793720 +0200
-@@ -0,0 +1,60 @@
++++ openssl/crypto/pace/pace_mappings.h	2010-09-20 11:17:13.179475011 +0200
+@@ -0,0 +1,67 @@
 +/**
 + * @date 2009-12-01
 + * @version 0.1
@@ -4125,14 +5365,14 @@ Index: openssl/crypto/pace/pace_mappings.h
 +dh_gm_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
 +        const BUF_MEM * s, const BUF_MEM * in);
 +/**
-+ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
++ * @brief Generates a key for DH Integrated Mapping (see TR-3110 A.3.5.2)
 + *
 + * @see PACE_STEP3A_map_compute_key()
 + */
 +BUF_MEM *
 +dh_im_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
 +/**
-+ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.4.1)
++ * @brief Computes a key for DH Integrated Mapping (see TR-3110 A.3.5.2)
 + *
 + * @see PACE_STEP3A_map_compute_key()
 + */
@@ -4148,6 +5388,13 @@ Index: openssl/crypto/pace/pace_mappings.h
 +ecdh_gm_compute_key(const PACEDomainParameterInfo * dp_in, const PACE_CTX * ctx,
 +        const BUF_MEM * s, const BUF_MEM * in);
 +/**
++ * @brief Generates a key for ECDH Integrated Mapping (see TR-3110 A.3.4.2)
++ *
++ * @see PACE_STEP3A_map_compute_key()
++ */
++BUF_MEM *
++ecdh_im_generate_key(const PACEDomainParameterInfo * dp, const PACE_CTX * ctx);
++/**
 + * @brief Computes a key for ECDH Integrated Mapping (see TR-3110 A.3.4.2)
 + *
 + * @see PACE_STEP3A_map_compute_key()
@@ -4162,7 +5409,7 @@ Index: openssl/crypto/pace/pace_mappings.h
 Index: openssl/crypto/pace/pace_util.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.c	2010-05-17 11:39:01.907029833 +0200
++++ openssl/crypto/pace/pace_util.c	2010-06-29 09:15:00.216409699 +0200
 @@ -0,0 +1,845 @@
 +/**
 + * @date 2009-11-30
@@ -5012,7 +6259,7 @@ Index: openssl/crypto/pace/pace_util.c
 Index: openssl/crypto/pace/pace_util.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.h	2010-05-17 11:39:01.907029833 +0200
++++ openssl/crypto/pace/pace_util.h	2010-06-29 09:15:00.226409783 +0200
 @@ -0,0 +1,205 @@
 +/**
 + * @date 2009-11-30
@@ -5063,10 +6310,10 @@ Index: openssl/crypto/pace/pace_util.h
 +cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
 +        const unsigned char *key, const unsigned char *iv, int enc, const BUF_MEM * in,
 +        const int init);
-+/** 
++/**
 + * @brief Wrapper to the OpenSSL encryption functions.
 + * Automatic padding is disabled.
-+ * 
++ *
 + * @param ctx
 + * @param key_enc
 + * @param data
@@ -5222,8 +6469,8 @@ Index: openssl/crypto/pace/pace_util.h
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2010-05-18 18:51:01.008531465 +0200
-@@ -0,0 +1,678 @@
++++ openssl/crypto/pace/pacetest.c	2010-09-28 16:00:10.797919827 +0200
+@@ -0,0 +1,821 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
 +#ifdef OPENSSL_NO_PACE
@@ -5242,23 +6489,26 @@ Index: openssl/crypto/pace/pacetest.c
 +#include <openssl/evp.h>
 +#include <openssl/objects.h>
 +#include <openssl/pace.h>
++#include <openssl/cv_cert.h>
++#include <openssl/bio.h>
 +#include <string.h>
 +
 +#define err(s) { printf(s "\n"); ERR_print_errors_fp(stdout); goto err; }
++#define errstay(s) { printf(s "\n"); ERR_print_errors_fp(stdout); }
 +#define verb(s) { if (verbose) printf(s "\n"); else printf("."); }
 +
 +static char verbose=0;
 +static char debug=0;
 +
 +/* http://www.internet-sicherheit.de/forschung/aktuelle-forschungsprojekte/elektronischer-personalausweis/berechtigungszertifikat/ */
-+static unsigned const char CVCert[] = {
++/*static unsigned const char CVCert[] = {
 +    0x7f, 0x21, 0x82, 0x01, 0x89, 0x7f, 0x4e, 0x82, 0x01, 0x49, 0x5f,
 +    0x29, 0x01, 0x00, 0x42, 0x0e, 0x44, 0x45, 0x43, 0x56, 0x43, 0x41,
 +    0x45, 0x50, 0x41, 0x53, 0x53, 0x30, 0x30, 0x31, 0x7f, 0x49, 0x81,
 +    0xfd, 0x06, 0x0a, 0x04, 0x00, 0x7f, 0x00, 0x07, 0x02, 0x02, 0x02,
 +    0x02, 0x02, 0x81, 0x1c, 0xd7, 0xc1, 0x34, 0xaa, 0x26, 0x43, 0x66,
 +    0x86, 0x2a, 0x18, 0x30, 0x25, 0x75, 0xd1, 0xd7, 0x87, 0xb0, 0x9f,
-+    0x07, 0x67, 0x97, 0xda, 0x89, 0xf5, 0x7e, 0xc8, 0xc0, 0xff, 0x82,
++    0x07, 0x57, 0x97, 0xda, 0x89, 0xf5, 0x7e, 0xc8, 0xc0, 0xff, 0x82,
 +    0x1c, 0x68, 0xa5, 0xe6, 0x2c, 0xa9, 0xce, 0x6c, 0x1c, 0x29, 0x98,
 +    0x03, 0xa6, 0xc1, 0x53, 0x0b, 0x51, 0x4e, 0x18, 0x2a, 0xd8, 0xb0,
 +    0x04, 0x2a, 0x59, 0xca, 0xd2, 0x9f, 0x43, 0x83, 0x1c, 0x25, 0x80,
@@ -5289,9 +6539,82 @@ Index: openssl/crypto/pace/pacetest.c
 +    0x3f, 0x26, 0xe0, 0xeb, 0x9a, 0xea, 0xe9, 0x98, 0x63, 0x10, 0x7f,
 +    0x9b, 0x0d, 0xad, 0xa1, 0x64, 0x14, 0xff, 0xa2, 0x04, 0x51, 0x6a,
 +    0xee, 0x2b
++};*/
++
++static const unsigned char CVCert[] = {
++    0x7F, 0x21, 0x82, 0x01, 0x41, 0x7F, 0x4E, 0x81, 0xFA, 0x5F, 0x29,
++    0x01, 0x00, 0x42, 0x0D, 0x5A, 0x5A, 0x44, 0x56, 0x43, 0x41, 0x41,
++    0x54, 0x41, 0x30, 0x30, 0x30, 0x33, 0x7F, 0x49, 0x4F, 0x06, 0x0A,
++    0x04, 0x00, 0x7F, 0x00, 0x07, 0x02, 0x02, 0x02, 0x02, 0x03, 0x86,
++    0x41, 0x04, 0x19, 0xD1, 0x75, 0x45, 0xD3, 0xFE, 0x0B, 0x34, 0x3E,
++    0x7E, 0xE2, 0xAE, 0x4E, 0x2B, 0xC9, 0x2D, 0x51, 0x35, 0x1C, 0xC1,
++    0x17, 0xA4, 0x7F, 0xA9, 0x51, 0x9A, 0xDB, 0x1E, 0x40, 0x5E, 0xE6,
++    0xB8, 0x12, 0x12, 0x80, 0xBC, 0xC2, 0xFF, 0xF0, 0x35, 0x7A, 0x19,
++    0x7D, 0xE7, 0x39, 0xA7, 0xFD, 0x2E, 0xF0, 0x22, 0x10, 0xEF, 0x34,
++    0x3C, 0xDB, 0xE7, 0x9E, 0xF9, 0x4B, 0x8E, 0x28, 0x59, 0x1B, 0xB9,
++    0x5F, 0x20, 0x0B, 0x5A, 0x5A, 0x44, 0x4B, 0x42, 0x32, 0x30, 0x30,
++    0x30, 0x30, 0x52, 0x7F, 0x4C, 0x12, 0x06, 0x09, 0x04, 0x00, 0x7F,
++    0x00, 0x07, 0x03, 0x01, 0x02, 0x02, 0x53, 0x05, 0x00, 0x03, 0x01,
++    0xDF, 0x04, 0x5F, 0x25, 0x06, 0x01, 0x00, 0x00, 0x02, 0x01, 0x07,
++    0x5F, 0x24, 0x06, 0x01, 0x00, 0x00, 0x03, 0x03, 0x01, 0x65, 0x5E,
++    0x73, 0x2D, 0x06, 0x09, 0x04, 0x00, 0x7F, 0x00, 0x07, 0x03, 0x01,
++    0x03, 0x01, 0x80, 0x20, 0x75, 0xE0, 0xC4, 0xAC, 0x36, 0xC2, 0x5A,
++    0x33, 0xAC, 0x0E, 0x9A, 0x75, 0xEB, 0x79, 0x2A, 0x72, 0xF3, 0x31,
++    0xA5, 0x1E, 0x28, 0x63, 0x4E, 0xCC, 0x2E, 0xD6, 0x2E, 0x54, 0xF3,
++    0xC6, 0x93, 0xDA, 0x73, 0x2D, 0x06, 0x09, 0x04, 0x00, 0x7F, 0x00,
++    0x07, 0x03, 0x01, 0x03, 0x02, 0x80, 0x20, 0x18, 0x12, 0x65, 0x74,
++    0x49, 0xFC, 0xF1, 0xD3, 0xDA, 0xD8, 0x3D, 0x13, 0x14, 0x29, 0x17,
++    0x5C, 0x61, 0x8B, 0x21, 0xBA, 0xF0, 0xAF, 0x44, 0xAC, 0xE3, 0x8C,
++    0xB2, 0xC1, 0x2C, 0xEB, 0x2A, 0x56, 0x5F, 0x37, 0x40, 0x54, 0x0F,
++    0x85, 0x09, 0x12, 0xAB, 0xD3, 0x51, 0xF8, 0xF5, 0x56, 0x9B, 0x53,
++    0x4A, 0x5C, 0x8F, 0x64, 0x54, 0x5B, 0x51, 0xA7, 0x34, 0x70, 0xBE,
++    0x5A, 0xD2, 0x89, 0xC1, 0x9A, 0x5E, 0x13, 0x52, 0x53, 0xD3, 0xBB,
++    0x15, 0x52, 0x26, 0x21, 0x7B, 0x41, 0xE7, 0xF0, 0x68, 0xB3, 0x52,
++    0x3F, 0x3A, 0x63, 0x92, 0x22, 0xAF, 0x2B, 0x62, 0x8C, 0x39, 0x7D,
++    0x4F, 0xD4, 0x02, 0x1E, 0xDE, 0x00, 0xDC
 +};
 +
-+static const unsigned int CVCert_len = 398;
++//static const unsigned int CVCert_len = 398;
++static const unsigned int CVCert_len = 326;
++
++static const unsigned char certDesc[] = {
++    0x30, 0x82, 0x01, 0x90, 0x06, 0x0A, 0x04, 0x00, 0x7F, 0x00, 0x07, 0x03,
++    0x01, 0x03, 0x01, 0x01, 0xA1, 0x16, 0x0C, 0x14, 0x42, 0x75, 0x6E, 0x64,
++    0x65, 0x73, 0x64, 0x72, 0x75, 0x63, 0x6B, 0x65, 0x72, 0x65, 0x69, 0x20,
++    0x47, 0x6D, 0x62, 0x48, 0xA2, 0x24, 0x13, 0x22, 0x68, 0x74, 0x74, 0x70,
++    0x3A, 0x2F, 0x2F, 0x77, 0x77, 0x77, 0x2E, 0x62, 0x75, 0x6E, 0x64, 0x65,
++    0x73, 0x64, 0x72, 0x75, 0x63, 0x6B, 0x65, 0x72, 0x65, 0x69, 0x2E, 0x64,
++    0x65, 0x2F, 0x64, 0x76, 0x63, 0x61, 0xA3, 0x18, 0x0C, 0x16, 0x44, 0x65,
++    0x75, 0x74, 0x73, 0x63, 0x68, 0x65, 0x20, 0x4B, 0x72, 0x65, 0x64, 0x69,
++    0x74, 0x62, 0x61, 0x6E, 0x6B, 0x20, 0x41, 0x47, 0xA4, 0x13, 0x13, 0x11,
++    0x68, 0x74, 0x74, 0x70, 0x3A, 0x2F, 0x2F, 0x77, 0x77, 0x77, 0x2E, 0x64,
++    0x6B, 0x62, 0x2E, 0x64, 0x65, 0xA5, 0x82, 0x01, 0x13, 0x0C, 0x82, 0x01,
++    0x0F, 0x54, 0x61, 0x75, 0x62, 0x65, 0x6E, 0x73, 0x74, 0x72, 0x2E, 0x20,
++    0x37, 0x2D, 0x39, 0x0D, 0x0A, 0x31, 0x30, 0x31, 0x31, 0x37, 0x20, 0x42,
++    0x65, 0x72, 0x6C, 0x69, 0x6E, 0x0D, 0x0A, 0x69, 0x6E, 0x66, 0x6F, 0x40,
++    0x64, 0x6B, 0x62, 0x2E, 0x64, 0x65, 0x0D, 0x0A, 0x45, 0x72, 0xC3, 0xB6,
++    0x66, 0x66, 0x6E, 0x75, 0x6E, 0x67, 0x20, 0x65, 0x69, 0x6E, 0x65, 0x73,
++    0x20, 0x4B, 0x6F, 0x6E, 0x74, 0x6F, 0x73, 0x0D, 0x0A, 0x42, 0x65, 0x72,
++    0x6C, 0x69, 0x6E, 0x65, 0x72, 0x20, 0x42, 0x65, 0x61, 0x75, 0x66, 0x74,
++    0x72, 0x61, 0x67, 0x74, 0x65, 0x72, 0x20, 0x66, 0xC3, 0xBC, 0x72, 0x20,
++    0x44, 0x61, 0x74, 0x65, 0x6E, 0x73, 0x63, 0x68, 0x75, 0x74, 0x7A, 0x20,
++    0x75, 0x6E, 0x64, 0x20, 0x49, 0x6E, 0x66, 0x6F, 0x72, 0x6D, 0x61, 0x74,
++    0x69, 0x6F, 0x6E, 0x73, 0x66, 0x72, 0x65, 0x69, 0x68, 0x65, 0x69, 0x74,
++    0x2C, 0x20, 0x41, 0x6E, 0x20, 0x64, 0x65, 0x72, 0x20, 0x55, 0x72, 0x61,
++    0x6E, 0x69, 0x61, 0x20, 0x34, 0x2D, 0x31, 0x30, 0x2C, 0x20, 0x31, 0x30,
++    0x37, 0x38, 0x37, 0x20, 0x42, 0x65, 0x72, 0x6C, 0x69, 0x6E, 0x2C, 0x20,
++    0x30, 0x33, 0x30, 0x2F, 0x31, 0x33, 0x20, 0x38, 0x38, 0x39, 0x2D, 0x30,
++    0x2C, 0x20, 0x6D, 0x61, 0x69, 0x6C, 0x62, 0x6F, 0x78, 0x40, 0x64, 0x61,
++    0x74, 0x65, 0x6E, 0x73, 0x63, 0x68, 0x75, 0x74, 0x7A, 0x2D, 0x62, 0x65,
++    0x72, 0x6C, 0x69, 0x6E, 0x2E, 0x64, 0x65, 0x2C, 0x20, 0x68, 0x74, 0x74,
++    0x70, 0x3A, 0x2F, 0x2F, 0x77, 0x77, 0x77, 0x2E, 0x64, 0x61, 0x74, 0x65,
++    0x6E, 0x73, 0x63, 0x68, 0x75, 0x74, 0x7A, 0x2D, 0x62, 0x65, 0x72, 0x6C,
++    0x69, 0x6E, 0x2E, 0x64, 0x65, 0x0D, 0x0A, 0x45, 0x72, 0xC3, 0xB6, 0x66,
++    0x66, 0x6E, 0x75, 0x6E, 0x67, 0x20, 0x65, 0x69, 0x6E, 0x65, 0x73, 0x20,
++    0x4B, 0x6F, 0x6E, 0x74, 0x6F, 0x73, 0x0D, 0x0A
++};
++
++static const unsigned int certDesc_len = 404;
 +
 +static const unsigned char EFCardAccess[] = {
 +    0x31, 0x82, 0x02, 0x64, 0x30, 0x0d, 0x06, 0x08, 0x04, 0x00, 0x7f,
@@ -5446,7 +6769,8 @@ Index: openssl/crypto/pace/pacetest.c
 +    BUF_MEM *nonce_picc = NULL, *enc_nonce = NULL, *nonce_pcd = NULL,
 +            *map_pub_picc = NULL, *map_pub_pcd = NULL, *pub_picc = NULL,
 +            *pub_pcd = NULL, *key_picc = NULL, *key_pcd = NULL, *k_mac = NULL,
-+            *k_enc = NULL, *token_pcd = NULL, * token_picc = NULL, *tmp = NULL;
++            *k_enc = NULL, *token_pcd = NULL, * token_picc = NULL, *tmp = NULL,
++            *id_picc = NULL, *id_pcd = NULL;
 +    PACEDomainParameterInfo *map_dp_info_picc = NULL, *map_dp_info_pcd = NULL;
 +    void *ka_obj = NULL;
 +
@@ -5559,7 +6883,8 @@ Index: openssl/crypto/pace/pacetest.c
 +    verb("STEP3A compute key");
 +    switch (dp_info_picc->protocol) {
 +        case NID_id_PACE_DH_IM:
-+            /* dh im is special, only mrtd generates the key */
++        case NID_id_PACE_ECDH_IM:
++            /* Integrated Mapping is special, only the terminal generates the key */
 +            map_dp_info_picc = PACE_STEP3A_map_dp(dp_info_picc, ctx,
 +                    nonce_picc, map_pub_picc);
 +            break;
@@ -5654,6 +6979,17 @@ Index: openssl/crypto/pace/pacetest.c
 +    }
 +    verb("Authentication token verified.");
 +
++    id_picc = PACE_Comp(map_dp_info_picc, ctx, pub_picc);
++    id_pcd = PACE_Comp(map_dp_info_pcd, ctx, pub_pcd);
++    if (!id_picc || !id_pcd) {
++        err("Failed to compute IDs");
++    }
++    verb("Computed ID of MRTD and Terminal");
++    if (debug) {
++        hexdump("ID of MRTD", id_picc);
++        hexdump("ID of Terminal", id_pcd);
++    }
++
 +    ok = 0;
 +
 +err:
@@ -5697,6 +7033,10 @@ Index: openssl/crypto/pace/pacetest.c
 +    }
 +    if (enc_nonce)
 +        BUF_MEM_free(enc_nonce);
++    if (id_picc)
++        BUF_MEM_free(id_picc);
++    if (id_pcd)
++        BUF_MEM_free(id_pcd);
 +    PACEDomainParameterInfo_clear_free(map_dp_info_pcd);
 +    PACEDomainParameterInfo_clear_free(map_dp_info_picc);
 +    PACEDomainParameterInfo_clear_free(dp_info_pcd);
@@ -5725,7 +7065,7 @@ Index: openssl/crypto/pace/pacetest.c
 +{
 +    int r = 0;
 +    if (verbose)
-+        printf("Starting a real life test\n");
++        printf("Starting a real life test");
 +
 +    enum s_type pace_sec_type [] = {
 +        PACE_PUK,
@@ -5822,28 +7162,78 @@ Index: openssl/crypto/pace/pacetest.c
 +int parse_test()
 +{
 +    int ok = 1;
++    printf("Testing parsing capabilities ");
 +    if (verbose)
-+        printf("Starting a parse test\n");
++        printf("\n");
++
 +    PACEInfo *info = NULL;
 +    PACEDomainParameterInfo *dp = NULL;
++    CVC_CERT *cvc_cert = NULL;
++    CVC_CERTIFICATE_DESCRIPTION *cert_desc = NULL;
++    const unsigned char *p;
++    BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
++    if (!bio_stdout)
++        err("Could not get output buffer");
 +
-+    printf("Parsing EF.CardAccess");
 +    if (!parse_ef_card_access(EFCardAccess, EF_len, &info, &dp))
 +        err("Could not parse EFCardAccess");
-+
++    verb("Parsed EF.CardAccess");
 +    if (debug) {
-+        printf("\n");
 +        dump_pace_info(info);
 +        dump_pace_dp(dp);
-+        printf("Successfull parsed EF.CardAccess\n");
-+    } else
-+        printf("\tok\n");
++    }
++
++    p = CVCert;
++    cvc_cert = d2i_CVC_CERT(NULL, &p, CVCert_len);
++    if (!cvc_cert)
++        err("Could not parse CV Cert");
++    verb("Parsed CV Cert");
++    if (debug)
++        if (!cvc_print(bio_stdout, cvc_cert, "\t"))
++            err("Error printing CV Cert");
++
++    p = certDesc;
++    cert_desc = d2i_CVC_CERTIFICATE_DESCRIPTION(NULL, &p, certDesc_len);
++    if (!cvc_cert)
++        err("Could not parse Certificate Description");
++    verb("Parsed Certificate Description");
++    if (debug)
++        if (!certificate_description_print(bio_stdout, certDesc, certDesc_len, "\t"))
++            err("Could not print Certificate Description");
++
++    if (!check_cert(cvc_cert, certDesc, certDesc_len, EVP_sha256()))
++        err("Certificate Description doesn't match Certificate\n");
++    verb("Certificate Description matches Certificate");
++
++    /* FIXME: CVC_CERT_print_ctx -> segfault
++    BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
++    CVC_CERT_print_ctx(bio_stdout, foo, 1, NULL);
++    BIO_free_all(bio_stdout);
++    */
 +
 +    ok = 0;
 +
 +err:
 +    PACEInfo_free(info);
 +    PACEDomainParameterInfo_clear_free(dp);
++    if (cvc_cert)
++        CVC_CERT_free(cvc_cert);
++    if (cert_desc)
++        CVC_CERTIFICATE_DESCRIPTION_free(cert_desc);
++    if (bio_stdout)
++        BIO_free_all(bio_stdout);
++
++    if (verbose) {
++        if (ok == 0)
++            printf("Everything works as expected.\n");
++        else
++            printf("Some error occurred.\n");
++    } else {
++        if (ok == 0)
++            printf(" ok\n");
++        else
++            printf(" error\n");
++    }
 +
 +    return ok;
 +}
@@ -5904,20 +7294,37 @@ Index: openssl/crypto/pace/pacetest.c
 +#endif /* OPENSSL_NO_PACE */
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2010-04-22 18:02:17.829548581 +0200
-+++ openssl/makevms.com	2010-04-22 18:02:21.830791198 +0200
-@@ -521,6 +521,7 @@
+--- openssl.orig/makevms.com	2010-10-01 14:59:54.000000000 +0200
++++ openssl/makevms.com	2010-10-01 14:56:19.817737218 +0200
+@@ -254,6 +254,7 @@
+ 		     HMAC,-
+ 		     IDEA,-
+ 		     JPAKE,-
++		     PACE,-
+ 		     KRB5,-
+ 		     LHASH,-
+ 		     MD2,-
+@@ -635,7 +636,7 @@
+    BN,EC,RSA,DSA,ECDSA,DH,ECDH,DSO,ENGINE,-
+    BUFFER,BIO,STACK,LHASH,RAND,ERR,-
+    EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,UI,KRB5,-
+-   STORE,CMS,PQUEUE,TS,JPAKE
++   STORE,CMS,PQUEUE,TS,JPAKE,PACE
+ $ EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
+ $ EXHEADER__'ARCH' := opensslconf.h
+ $ EXHEADER_OBJECTS := objects.h,obj_mac.h
+@@ -692,6 +693,7 @@
  $ EXHEADER_PQUEUE := pqueue.h
  $ EXHEADER_TS := ts.h
  $ EXHEADER_JPAKE := jpake.h
-+$ EXEHEADER_PACE := pace.h
++$ EXHEADER_PACE := pace.h
  $
  $ I = 0
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2010-04-22 18:02:17.819543818 +0200
-+++ openssl/test/Makefile	2010-04-22 18:02:21.810792287 +0200
+--- openssl.orig/test/Makefile	2010-06-29 09:15:01.165157654 +0200
++++ openssl/test/Makefile	2010-06-29 09:15:03.995157207 +0200
 @@ -64,10 +64,12 @@
  ASN1TEST=	asn1test
  GCMTESTA=	aesgcmtest
@@ -5980,28 +7387,153 @@ Index: openssl/test/Makefile
  #$(AESTEST).o: $(AESTEST).c
  #	$(CC) -c $(CFLAGS) -DINTERMEDIATE_VALUE_KAT -DTRACE_KAT_MCT $(AESTEST).c
  
-@@ -645,6 +654,17 @@
+@@ -479,6 +488,15 @@
+ 
+ # DO NOT DELETE THIS LINE -- make depend depends on it.
+ 
++aesgcmtest.o: ../include/openssl/aes.h ../include/openssl/aes_gcm.h
++aesgcmtest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
++aesgcmtest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
++aesgcmtest.o: ../include/openssl/err.h ../include/openssl/evp.h
++aesgcmtest.o: ../include/openssl/lhash.h ../include/openssl/obj_mac.h
++aesgcmtest.o: ../include/openssl/objects.h ../include/openssl/opensslconf.h
++aesgcmtest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
++aesgcmtest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
++aesgcmtest.o: ../include/openssl/symhacks.h aesgcmtest.c
+ asn1test.o: ../include/openssl/asn1.h ../include/openssl/asn1_mac.h
+ asn1test.o: ../include/openssl/bio.h ../include/openssl/buffer.h
+ asn1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+@@ -509,36 +527,46 @@
+ bntest.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h bntest.c
+ casttest.o: ../e_os.h ../include/openssl/cast.h ../include/openssl/e_os2.h
+ casttest.o: ../include/openssl/opensslconf.h casttest.c
++cmac_test.o: ../include/openssl/asn1.h ../include/openssl/bio.h
++cmac_test.o: ../include/openssl/cmac.h ../include/openssl/crypto.h
++cmac_test.o: ../include/openssl/e_os2.h ../include/openssl/err.h
++cmac_test.o: ../include/openssl/evp.h ../include/openssl/lhash.h
++cmac_test.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
++cmac_test.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++cmac_test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
++cmac_test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
++cmac_test.o: cmac_test.c
+ destest.o: ../include/openssl/des.h ../include/openssl/des_old.h
+ destest.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
+ destest.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
+ destest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
+ destest.o: ../include/openssl/ui.h ../include/openssl/ui_compat.h destest.c
+ dhtest.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/bn.h
+-dhtest.o: ../include/openssl/crypto.h ../include/openssl/dh.h
+-dhtest.o: ../include/openssl/e_os2.h ../include/openssl/err.h
+-dhtest.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
+-dhtest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
+-dhtest.o: ../include/openssl/rand.h ../include/openssl/safestack.h
+-dhtest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h dhtest.c
++dhtest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
++dhtest.o: ../include/openssl/dh.h ../include/openssl/e_os2.h
++dhtest.o: ../include/openssl/err.h ../include/openssl/lhash.h
++dhtest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++dhtest.o: ../include/openssl/ossl_typ.h ../include/openssl/rand.h
++dhtest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
++dhtest.o: ../include/openssl/symhacks.h dhtest.c
+ dsatest.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/bn.h
+-dsatest.o: ../include/openssl/crypto.h ../include/openssl/dh.h
+-dsatest.o: ../include/openssl/dsa.h ../include/openssl/e_os2.h
+-dsatest.o: ../include/openssl/err.h ../include/openssl/lhash.h
+-dsatest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
+-dsatest.o: ../include/openssl/ossl_typ.h ../include/openssl/rand.h
+-dsatest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
+-dsatest.o: ../include/openssl/symhacks.h dsatest.c
++dsatest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
++dsatest.o: ../include/openssl/dh.h ../include/openssl/dsa.h
++dsatest.o: ../include/openssl/e_os2.h ../include/openssl/err.h
++dsatest.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
++dsatest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
++dsatest.o: ../include/openssl/rand.h ../include/openssl/safestack.h
++dsatest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h dsatest.c
+ ecdhtest.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
+-ecdhtest.o: ../include/openssl/bn.h ../include/openssl/crypto.h
+-ecdhtest.o: ../include/openssl/e_os2.h ../include/openssl/ec.h
+-ecdhtest.o: ../include/openssl/ecdh.h ../include/openssl/err.h
+-ecdhtest.o: ../include/openssl/lhash.h ../include/openssl/obj_mac.h
+-ecdhtest.o: ../include/openssl/objects.h ../include/openssl/opensslconf.h
+-ecdhtest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
+-ecdhtest.o: ../include/openssl/rand.h ../include/openssl/safestack.h
+-ecdhtest.o: ../include/openssl/sha.h ../include/openssl/stack.h
+-ecdhtest.o: ../include/openssl/symhacks.h ecdhtest.c
++ecdhtest.o: ../include/openssl/bn.h ../include/openssl/buffer.h
++ecdhtest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
++ecdhtest.o: ../include/openssl/ec.h ../include/openssl/ecdh.h
++ecdhtest.o: ../include/openssl/err.h ../include/openssl/lhash.h
++ecdhtest.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
++ecdhtest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++ecdhtest.o: ../include/openssl/ossl_typ.h ../include/openssl/rand.h
++ecdhtest.o: ../include/openssl/safestack.h ../include/openssl/sha.h
++ecdhtest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h ecdhtest.c
+ ecdsatest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
+ ecdsatest.o: ../include/openssl/bn.h ../include/openssl/buffer.h
+ ecdsatest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+@@ -593,12 +621,12 @@
+ evp_test.o: ../include/openssl/symhacks.h ../include/openssl/x509.h
+ evp_test.o: ../include/openssl/x509_vfy.h evp_test.c
+ exptest.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/bn.h
+-exptest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+-exptest.o: ../include/openssl/err.h ../include/openssl/lhash.h
+-exptest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
+-exptest.o: ../include/openssl/ossl_typ.h ../include/openssl/rand.h
+-exptest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
+-exptest.o: ../include/openssl/symhacks.h exptest.c
++exptest.o: ../include/openssl/buffer.h ../include/openssl/crypto.h
++exptest.o: ../include/openssl/e_os2.h ../include/openssl/err.h
++exptest.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
++exptest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
++exptest.o: ../include/openssl/rand.h ../include/openssl/safestack.h
++exptest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h exptest.c
+ hmactest.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
+ hmactest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+ hmactest.o: ../include/openssl/evp.h ../include/openssl/hmac.h
+@@ -645,6 +673,17 @@
  mdc2test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
  mdc2test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
  mdc2test.o: ../include/openssl/ui.h ../include/openssl/ui_compat.h mdc2test.c
 +pacetest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
 +pacetest.o: ../include/openssl/buffer.h ../include/openssl/cmac.h
-+pacetest.o: ../include/openssl/crypto.h ../include/openssl/dh.h
-+pacetest.o: ../include/openssl/e_os2.h ../include/openssl/ec.h
-+pacetest.o: ../include/openssl/ecdh.h ../include/openssl/err.h
-+pacetest.o: ../include/openssl/evp.h ../include/openssl/lhash.h
-+pacetest.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
-+pacetest.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
-+pacetest.o: ../include/openssl/ossl_typ.h ../include/openssl/pace.h
-+pacetest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-+pacetest.o: ../include/openssl/symhacks.h pacetest.c
++pacetest.o: ../include/openssl/conf.h ../include/openssl/crypto.h
++pacetest.o: ../include/openssl/dh.h ../include/openssl/e_os2.h
++pacetest.o: ../include/openssl/ec.h ../include/openssl/ecdh.h
++pacetest.o: ../include/openssl/err.h ../include/openssl/evp.h
++pacetest.o: ../include/openssl/lhash.h ../include/openssl/obj_mac.h
++pacetest.o: ../include/openssl/objects.h ../include/openssl/opensslconf.h
++pacetest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
++pacetest.o: ../include/openssl/pace.h ../include/openssl/safestack.h
++pacetest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h pacetest.c
  randtest.o: ../e_os.h ../include/openssl/e_os2.h
  randtest.o: ../include/openssl/opensslconf.h ../include/openssl/ossl_typ.h
  randtest.o: ../include/openssl/rand.h randtest.c
+@@ -666,13 +705,13 @@
+ rmdtest.o: ../include/openssl/ripemd.h ../include/openssl/safestack.h
+ rmdtest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h rmdtest.c
+ rsa_test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
+-rsa_test.o: ../include/openssl/bn.h ../include/openssl/crypto.h
+-rsa_test.o: ../include/openssl/e_os2.h ../include/openssl/err.h
+-rsa_test.o: ../include/openssl/lhash.h ../include/openssl/opensslconf.h
+-rsa_test.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
+-rsa_test.o: ../include/openssl/rand.h ../include/openssl/rsa.h
+-rsa_test.o: ../include/openssl/safestack.h ../include/openssl/stack.h
+-rsa_test.o: ../include/openssl/symhacks.h rsa_test.c
++rsa_test.o: ../include/openssl/bn.h ../include/openssl/buffer.h
++rsa_test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
++rsa_test.o: ../include/openssl/err.h ../include/openssl/lhash.h
++rsa_test.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++rsa_test.o: ../include/openssl/ossl_typ.h ../include/openssl/rand.h
++rsa_test.o: ../include/openssl/rsa.h ../include/openssl/safestack.h
++rsa_test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h rsa_test.c
+ sha1test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
+ sha1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+ sha1test.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2010-04-22 18:02:17.819543818 +0200
-+++ openssl/test/tests.com	2010-04-22 18:02:21.810792287 +0200
+--- openssl.orig/test/tests.com	2010-06-29 09:15:01.165157654 +0200
++++ openssl/test/tests.com	2010-06-29 09:15:03.995157207 +0200
 @@ -35,7 +35,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
@@ -6023,180 +7555,10 @@ Index: openssl/test/tests.com
  $	write sys$output "CMS consistency test"
  $	perl CMS-TEST.PL
  $	return
-+$ test_pace: 
++$ test_pace:
 +$	write sys$output "Test PACE"
 +$	mcr 'texe_dir''pacetest'
 +$	return
  $
  $
  $ exit:
-Index: openssl/crypto/objects/obj_mac.h
-===================================================================
---- openssl.orig/crypto/objects/obj_mac.h	2010-05-17 12:15:28.028291406 +0200
-+++ openssl/crypto/objects/obj_mac.h	2010-04-22 18:02:27.769543329 +0200
-@@ -122,7 +122,7 @@
- 
- #define SN_wap_wsg		"wap-wsg"
- #define NID_wap_wsg		679
--#define OBJ_wap_wsg		OBJ_wap,1L
-+#define OBJ_wap_wsg		OBJ_wap,13L
- 
- #define SN_selected_attribute_types		"selected-attribute-types"
- #define LN_selected_attribute_types		"Selected Attribute Types"
-@@ -3968,3 +3968,121 @@
- #define NID_brainpoolP512t1		906
- #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
- 
-+#define OBJ_bsi_de		0L,4L,0L,127L,0L,7L
-+
-+#define OBJ_id_PACE		OBJ_bsi_de,2L,2L,4L
-+
-+#define SN_id_PACE_DH_GM		"id-PACE-DH-GM"
-+#define NID_id_PACE_DH_GM		907
-+#define OBJ_id_PACE_DH_GM		OBJ_id_PACE,1L
-+
-+#define SN_id_PACE_DH_GM_3DES_CBC_CBC		"id-PACE-DH-GM-3DES-CBC-CBC"
-+#define NID_id_PACE_DH_GM_3DES_CBC_CBC		908
-+#define OBJ_id_PACE_DH_GM_3DES_CBC_CBC		OBJ_id_PACE_DH_GM,1L
-+
-+#define SN_id_PACE_DH_GM_AES_CBC_CMAC_128		"id-PACE-DH-GM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_DH_GM_AES_CBC_CMAC_128		909
-+#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_GM,2L
-+
-+#define SN_id_PACE_DH_GM_AES_CBC_CMAC_192		"id-PACE-DH-GM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_DH_GM_AES_CBC_CMAC_192		910
-+#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_GM,3L
-+
-+#define SN_id_PACE_DH_GM_AES_CBC_CMAC_256		"id-PACE-DH-GM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_DH_GM_AES_CBC_CMAC_256		911
-+#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_GM,4L
-+
-+#define SN_id_PACE_ECDH_GM		"id-PACE-ECDH-GM"
-+#define NID_id_PACE_ECDH_GM		912
-+#define OBJ_id_PACE_ECDH_GM		OBJ_id_PACE,2L
-+
-+#define SN_id_PACE_ECDH_GM_3DES_CBC_CBC		"id-PACE-ECDH-GM-3DES-CBC-CBC"
-+#define NID_id_PACE_ECDH_GM_3DES_CBC_CBC		913
-+#define OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_GM,1L
-+
-+#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128		"id-PACE-ECDH-GM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
-+#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_GM,2L
-+
-+#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192		"id-PACE-ECDH-GM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
-+#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_GM,3L
-+
-+#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256		"id-PACE-ECDH-GM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
-+#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_GM,4L
-+
-+#define SN_id_PACE_DH_IM		"id-PACE-DH-IM"
-+#define NID_id_PACE_DH_IM		917
-+#define OBJ_id_PACE_DH_IM		OBJ_id_PACE,3L
-+
-+#define SN_id_PACE_DH_IM_3DES_CBC_CBC		"id-PACE-DH-IM-3DES-CBC-CBC"
-+#define NID_id_PACE_DH_IM_3DES_CBC_CBC		918
-+#define OBJ_id_PACE_DH_IM_3DES_CBC_CBC		OBJ_id_PACE_DH_IM,1L
-+
-+#define SN_id_PACE_DH_IM_AES_CBC_CMAC_128		"id-PACE-DH-IM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_DH_IM_AES_CBC_CMAC_128		919
-+#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_IM,2L
-+
-+#define SN_id_PACE_DH_IM_AES_CBC_CMAC_192		"id-PACE-DH-IM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_DH_IM_AES_CBC_CMAC_192		920
-+#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_IM,3L
-+
-+#define SN_id_PACE_DH_IM_AES_CBC_CMAC_256		"id-PACE-DH-IM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_DH_IM_AES_CBC_CMAC_256		921
-+#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_IM,4L
-+
-+#define SN_id_PACE_ECDH_IM		"id-PACE-ECDH-IM"
-+#define NID_id_PACE_ECDH_IM		922
-+#define OBJ_id_PACE_ECDH_IM		OBJ_id_PACE,4L
-+
-+#define SN_id_PACE_ECDH_IM_3DES_CBC_CBC		"id-PACE-ECDH-IM-3DES-CBC-CBC"
-+#define NID_id_PACE_ECDH_IM_3DES_CBC_CBC		923
-+#define OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_IM,1L
-+
-+#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128		"id-PACE-ECDH-IM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
-+#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_IM,2L
-+
-+#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192		"id-PACE-ECDH-IM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
-+#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_IM,3L
-+
-+#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256		"id-PACE-ECDH-IM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
-+#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_IM,4L
-+
-+#define SN_ansi_x942		"ansi-x942"
-+#define NID_ansi_x942		927
-+#define OBJ_ansi_x942		OBJ_ISO_US,10046L
-+
-+#define OBJ_x942_number_type		OBJ_ansi_x942,2L
-+
-+#define SN_dhpublicnumber		"dhpublicnumber"
-+#define NID_dhpublicnumber		928
-+#define OBJ_dhpublicnumber		OBJ_x942_number_type,1L
-+
-+#define OBJ_id_ecc		OBJ_bsi_de,1L,1L
-+
-+#define OBJ_ecka_dh		OBJ_id_ecc,5L,2L
-+
-+#define SN_ecka_dh_SessionKDF		"ecka-dh-SessionKDF"
-+#define NID_ecka_dh_SessionKDF		929
-+#define OBJ_ecka_dh_SessionKDF		OBJ_ecka_dh,2L
-+
-+#define SN_ecka_dh_SessionKDF_DES3		"ecka-dh-SessionKDF-DES3"
-+#define NID_ecka_dh_SessionKDF_DES3		930
-+#define OBJ_ecka_dh_SessionKDF_DES3		OBJ_ecka_dh,2L,1L
-+
-+#define SN_ecka_dh_SessionKDF_AES128		"ecka-dh-SessionKDF-AES128"
-+#define NID_ecka_dh_SessionKDF_AES128		931
-+#define OBJ_ecka_dh_SessionKDF_AES128		OBJ_ecka_dh,2L,2L
-+
-+#define SN_ecka_dh_SessionKDF_AES192		"ecka-dh-SessionKDF-AES192"
-+#define NID_ecka_dh_SessionKDF_AES192		932
-+#define OBJ_ecka_dh_SessionKDF_AES192		OBJ_ecka_dh,2L,3L
-+
-+#define SN_ecka_dh_SessionKDF_AES256		"ecka-dh-SessionKDF-AES256"
-+#define NID_ecka_dh_SessionKDF_AES256		933
-+#define OBJ_ecka_dh_SessionKDF_AES256		OBJ_ecka_dh,2L,4L
-+
-Index: openssl/crypto/objects/obj_mac.num
-===================================================================
---- openssl.orig/crypto/objects/obj_mac.num	2010-05-17 12:15:28.028291406 +0200
-+++ openssl/crypto/objects/obj_mac.num	2010-04-22 18:02:26.750790666 +0200
-@@ -904,3 +904,30 @@
- brainpoolP384t1		904
- brainpoolP512r1		905
- brainpoolP512t1		906
-+id_PACE_DH_GM		907
-+id_PACE_DH_GM_3DES_CBC_CBC		908
-+id_PACE_DH_GM_AES_CBC_CMAC_128		909
-+id_PACE_DH_GM_AES_CBC_CMAC_192		910
-+id_PACE_DH_GM_AES_CBC_CMAC_256		911
-+id_PACE_ECDH_GM		912
-+id_PACE_ECDH_GM_3DES_CBC_CBC		913
-+id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
-+id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
-+id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
-+id_PACE_DH_IM		917
-+id_PACE_DH_IM_3DES_CBC_CBC		918
-+id_PACE_DH_IM_AES_CBC_CMAC_128		919
-+id_PACE_DH_IM_AES_CBC_CMAC_192		920
-+id_PACE_DH_IM_AES_CBC_CMAC_256		921
-+id_PACE_ECDH_IM		922
-+id_PACE_ECDH_IM_3DES_CBC_CBC		923
-+id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
-+id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
-+id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
-+ansi_x942		927
-+dhpublicnumber		928
-+ecka_dh_SessionKDF		929
-+ecka_dh_SessionKDF_DES3		930
-+ecka_dh_SessionKDF_AES128		931
-+ecka_dh_SessionKDF_AES192		932
-+ecka_dh_SessionKDF_AES256		933
