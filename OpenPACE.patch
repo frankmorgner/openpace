@@ -1,7 +1,7 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2010-06-29 09:15:01.165157654 +0200
-+++ openssl/Configure	2010-06-29 09:15:04.025157108 +0200
+--- openssl.orig/Configure	2010-10-20 09:53:24.340551003 +0200
++++ openssl/Configure	2010-10-20 09:53:29.190551002 +0200
 @@ -667,6 +667,7 @@
  		 "gmp"		  => "default",
                   "jpake"          => "experimental",
@@ -12,8 +12,8 @@ Index: openssl/Configure
                   "shared"         => "default",
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2010-06-29 09:15:01.165157654 +0200
-+++ openssl/Makefile.org	2010-06-29 09:15:04.035164594 +0200
+--- openssl.orig/Makefile.org	2010-10-20 09:53:24.340551003 +0200
++++ openssl/Makefile.org	2010-10-20 09:53:29.190551002 +0200
 @@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
@@ -25,8 +25,8 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/bn/bn.h
 ===================================================================
---- openssl.orig/crypto/bn/bn.h	2010-06-29 09:15:01.195157348 +0200
-+++ openssl/crypto/bn/bn.h	2010-06-29 09:15:04.005157920 +0200
+--- openssl.orig/crypto/bn/bn.h	2010-10-20 09:53:24.310551000 +0200
++++ openssl/crypto/bn/bn.h	2010-10-20 09:53:29.160550999 +0200
 @@ -126,6 +126,7 @@
  #define HEADER_BN_H
  
@@ -53,8 +53,8 @@ Index: openssl/crypto/bn/bn.h
  int	BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 Index: openssl/crypto/bn/bn_lib.c
 ===================================================================
---- openssl.orig/crypto/bn/bn_lib.c	2010-06-29 09:15:01.195157348 +0200
-+++ openssl/crypto/bn/bn_lib.c	2010-06-29 09:15:04.005157920 +0200
+--- openssl.orig/crypto/bn/bn_lib.c	2010-10-20 09:53:24.310551000 +0200
++++ openssl/crypto/bn/bn_lib.c	2010-10-20 09:53:29.160550999 +0200
 @@ -66,6 +66,7 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -89,8 +89,8 @@ Index: openssl/crypto/bn/bn_lib.c
  	int i;
 Index: openssl/crypto/buffer/buffer.c
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.c	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/buffer/buffer.c	2010-06-29 09:15:04.015156327 +0200
+--- openssl.orig/crypto/buffer/buffer.c	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/buffer/buffer.c	2010-10-20 09:53:29.170551000 +0200
 @@ -242,3 +242,59 @@
  			}
  		}
@@ -153,8 +153,8 @@ Index: openssl/crypto/buffer/buffer.c
 +}
 Index: openssl/crypto/buffer/buffer.h
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.h	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/buffer/buffer.h	2010-06-29 09:15:04.015156327 +0200
+--- openssl.orig/crypto/buffer/buffer.h	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/buffer/buffer.h	2010-10-20 09:53:29.170551000 +0200
 @@ -89,6 +89,34 @@
  char *	BUF_strndup(const char *str, size_t siz);
  void *	BUF_memdup(const void *data, size_t siz);
@@ -193,7 +193,7 @@ Index: openssl/crypto/buffer/buffer.h
 Index: openssl/crypto/cv_cert/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/Makefile	2010-06-29 09:14:59.996412462 +0200
++++ openssl/crypto/cv_cert/Makefile	2010-10-20 09:51:06.000000000 +0200
 @@ -0,0 +1,59 @@
 +DIR=cv_cert
 +TOP=../..
@@ -257,14 +257,14 @@ Index: openssl/crypto/cv_cert/Makefile
 Index: openssl/crypto/cv_cert/cv_cert.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert.c	2010-09-28 15:58:13.327924063 +0200
-@@ -0,0 +1,519 @@
++++ openssl/crypto/cv_cert/cv_cert.c	2010-10-20 15:03:05.000000000 +0200
+@@ -0,0 +1,605 @@
 +/**
-+ * @file cvc_cert.c
-+ * @version 0.4
++ * @file
++ * @brief Library for card verifiable certificates
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ * @author Wolf Mueller  <Wolf.Mueller@informatik.hu-berlin.de>
 + */
 +
 +#include "cv_cert.h"
@@ -277,8 +277,11 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +#include <openssl/pace.h> /*for ec_key_from_asn1 */
 +#include <string.h>
 +
++/** Check wether or not  a specific bit is set */
 +#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 +
++/** Human readable names of the individual bits of the CHAT of an 
++    authentication terminal*/
 +static const char *at_chat_strings[] = {
 +        "Age Verification",
 +        "Community ID Verification",
@@ -320,6 +323,8 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        "Write DG 17"
 +};
 +
++/** Human readable names of the individual bits of the CHAT of an 
++    inspection system */
 +static const char *is_chat_strings[] = {
 +        "Read fingerprint",
 +        "Read iris",
@@ -329,6 +334,8 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        "Read eID application"
 +};
 +
++/** Human readable names of the individual bits of the CHAT of a 
++    signature terminal */
 +static const char *st_chat_strings[] = {
 +        "Generate electronic signature",
 +        "Generate qualified electronic signature",
@@ -338,6 +345,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        "RFU"
 +};
 +
++/** Human readable names of the individual members of a certificate description */
 +static const char *cert_desc_field_strings[] = {
 +    "issuerName",
 +    "issuerURL",
@@ -361,25 +369,26 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x4c, CVC_CHAT, CVC_CHAT_SEQ)
 +ASN1_ITEM_TEMPLATE_END(CVC_CHAT)
 +IMPLEMENT_ASN1_FUNCTIONS(CVC_CHAT)
++IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CHAT)
 +
-+ASN1_SEQUENCE(CVC_EC_PUBKEY) = {
-+    ASN1_SIMPLE(CVC_EC_PUBKEY, oid, ASN1_OBJECT),
++ASN1_SEQUENCE(CVC_PUBKEY) = {
++    ASN1_SIMPLE(CVC_PUBKEY, oid, ASN1_OBJECT),
 +    /* tag: 0x81 */
-+    ASN1_IMP_OPT(CVC_EC_PUBKEY, modulus, ASN1_OCTET_STRING, 0x1),
++    ASN1_IMP_OPT(CVC_PUBKEY, modulus, ASN1_OCTET_STRING, 0x1),
 +    /* tag: 0x82 */
-+    ASN1_IMP_OPT(CVC_EC_PUBKEY, a, ASN1_OCTET_STRING, 0x2),
++    ASN1_IMP_OPT(CVC_PUBKEY, a, ASN1_OCTET_STRING, 0x2),
 +    /* tag: 0x83 */
-+    ASN1_IMP_OPT(CVC_EC_PUBKEY, b, ASN1_OCTET_STRING, 0x3),
++    ASN1_IMP_OPT(CVC_PUBKEY, b, ASN1_OCTET_STRING, 0x3),
 +    /* tag: 0x84 */
-+    ASN1_IMP_OPT(CVC_EC_PUBKEY, base, ASN1_OCTET_STRING, 0x4),
++    ASN1_IMP_OPT(CVC_PUBKEY, base, ASN1_OCTET_STRING, 0x4),
 +    /* tag: 0x85 */
-+    ASN1_IMP_OPT(CVC_EC_PUBKEY, base_order, ASN1_OCTET_STRING, 0x5),
++    ASN1_IMP_OPT(CVC_PUBKEY, base_order, ASN1_OCTET_STRING, 0x5),
 +    /* tag: 0x86 */
-+    ASN1_IMP(CVC_EC_PUBKEY, public_point, ASN1_OCTET_STRING, 0x6),
++    ASN1_IMP_OPT(CVC_PUBKEY, public_point, ASN1_OCTET_STRING, 0x6),
 +    /* tag: 0x87 */
-+    ASN1_IMP_OPT(CVC_EC_PUBKEY, cofactor, ASN1_OCTET_STRING, 0x7)
-+} ASN1_SEQUENCE_END(CVC_EC_PUBKEY)
-+IMPLEMENT_ASN1_FUNCTIONS(CVC_EC_PUBKEY)
++    ASN1_IMP_OPT(CVC_PUBKEY, cofactor, ASN1_OCTET_STRING, 0x7)
++} ASN1_SEQUENCE_END(CVC_PUBKEY)
++IMPLEMENT_ASN1_FUNCTIONS(CVC_PUBKEY)
 +
 +ASN1_SEQUENCE(CVC_CERT_EXTENSION) = {
 +    ASN1_SIMPLE(CVC_CERT_EXTENSION, type, ASN1_OBJECT),
@@ -400,7 +409,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        /* tag: 0x42 */
 +        ASN1_APP_IMP(CVC_CERT_BODY, certificate_authority_reference, ASN1_OCTET_STRING, 0x2),
 +        /* public key: tag:0x7f49 */
-+        ASN1_APP_IMP(CVC_CERT_BODY, public_key, CVC_EC_PUBKEY, 0x49), //FIXME: RSA and DH keys?
++        ASN1_APP_IMP(CVC_CERT_BODY, public_key, CVC_PUBKEY, 0x49),
 +        /* tag: 0x5f20 */
 +        ASN1_APP_IMP(CVC_CERT_BODY, certificate_holder_reference, ASN1_OCTET_STRING, 0x20),
 +        /* tag: 0x7f4c */
@@ -450,23 +459,68 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 +/** @} ***********************************************************************/
 +
++/** Convert the CAR or CHR to a human readable string */
 +static char *cvc_get_reference_string(ASN1_OCTET_STRING *ref);
++/** Convert the profile identifier to an integer*/
 +static short cvc_get_profile_identifier(ASN1_INTEGER *id);
 +#if 0
 +static EC_KEY *cvc_get_ec_key(CVC_EC_PUBKEY *key_asn1);
 +#endif
 +
++CVC_CERT *CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len) {
++	CVC_CERT *ret = NULL;
++
++	ret = d2i_CVC_CERT(cert, in, len);
++	if (!ret)
++		goto err;
++
++	/* Check whether or not all the necessary parameters for the given type of
++	 * public key are provided */
++	switch(OBJ_obj2nid(ret->body->public_key->oid)) {
++		case NID_id_TA_ECDSA_SHA_1:
++		case NID_id_TA_ECDSA_SHA_224:
++		case NID_id_TA_ECDSA_SHA_256:
++		case NID_id_TA_ECDSA_SHA_384:
++		case NID_id_TA_ECDSA_SHA_512:
++			if (!ret->body->public_key->public_point)
++				goto err;
++			break;
++		case NID_id_TA_RSA_v1_5_SHA_1:
++		case NID_id_TA_RSA_v1_5_SHA_256:
++		case NID_id_TA_RSA_v1_5_SHA_512:
++		case NID_id_TA_RSA_PSS_SHA_1:
++		case NID_id_TA_RSA_PSS_SHA_256:
++		case NID_id_TA_RSA_PSS_SHA_512:
++			if (!ret->body->public_key->modulus || !ret->body->public_key->a)
++				goto err;
++			break;
++		default:
++			goto err;
++	}
++
++	return ret;
++
++err:
++	if(ret) {
++		CVC_CERT_free(ret);
++		ret = NULL;
++	}
++
++	return ret;
++}
++
 +int cvc_print(BIO *bio, CVC_CERT *cv, const char *prefix)
 +{
 +    int r = 0;
 +    char *effective_date = NULL, *expiration_date = NULL, *car = NULL, *chr = NULL;
-+    char buf[9];
++    BUF_MEM *buf = NULL;
 +
-+    snprintf(buf, sizeof(buf), "%s\t", prefix);
-+    buf[8] = 0;
-+
-+    if (!bio || !cv || !cv->body || !cv->body->public_key)
++    if (!bio || !cv || !cv->body || !cv->body->public_key || !prefix)
 +        goto err;
++
++    buf = BUF_MEM_create(strlen(prefix) + 2);
++    buf->data[buf->length - 2] = '\t';
++    buf->data[buf->length - 1] = '\0';
 +
 +    effective_date = cvc_get_date_string(cv->body->certificate_effective_date);
 +    expiration_date = cvc_get_date_string(cv->body->certificate_expiration_date);
@@ -481,7 +535,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +    BIO_printf(bio, "%sPublic key type: %s\n", prefix, OBJ_nid2ln(OBJ_obj2nid(cv->body->public_key->oid)));
 +    BIO_printf(bio, "%sCHR: %s\n", prefix, chr);
 +    BIO_printf(bio, "%sCHAT:\n", prefix);
-+    cvc_chat_print(bio, cvc_get_chat(cv), buf);
++    cvc_chat_print(bio, cvc_get_chat(cv), buf->data);
 +    BIO_printf(bio, "%sEffective Date: %s\n", prefix, effective_date);
 +    BIO_printf(bio, "%sExpiration Date: %s\n", prefix, expiration_date);
 +    if (cv->body->certificate_extensions) {
@@ -501,6 +555,8 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        OPENSSL_free(car);
 +    if (chr)
 +        OPENSSL_free(chr);
++    if (buf)
++        BUF_MEM_free(buf);
 +
 +    return r;
 +}
@@ -540,7 +596,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +            goto err;
 +    }
 +
-+    /* Sanity check: Does the recieved CHAT have the correct length? */
++    /* Sanity check: Does the received CHAT have the correct length? */
 +    if(chat->relative_authorization->length != rel_auth_num_bytes)
 +        goto err;
 +
@@ -629,7 +685,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +
 +    for (i = 0; i < ref->length; i++) {
 +        c = ref->data[i];
-+        /* FIXME: For now we accept Alphanumeric characters only */
++        /*XXX: For now we accept Alphanumeric characters only */
 +        if (((c >= 0x30) && (c <= 0x39)) || ((c >= 0x41) && (c <= 0x5A)))
 +            ret[i] = c;
 +        else {
@@ -728,20 +784,46 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +}
 +
 +int
-+check_cert(CVC_CERT *cv, const unsigned char *cert_desc_in,
-+        const unsigned int cert_desc_in_len, const EVP_MD *md_type)
++CVC_check_cert(CVC_CERT *cv, const unsigned char *cert_desc_in,
++        const unsigned int cert_desc_in_len)
 +{
 +
 +    BUF_MEM *desc_hash = NULL;
++    EVP_MD *md = NULL;
 +    EVP_MD_CTX *md_ctx = NULL;
 +
 +    unsigned int ret = 0, tmp_len;
 +
-+    if (!cv || !cv->body || !md_type)
++    if (!cv || !cv->body || !cv->body->public_key)
 +        goto err;
 +
 +    md_ctx = EVP_MD_CTX_create();
-+    desc_hash = BUF_MEM_create(EVP_MD_size(md_type));
++
++    /* Chose the correct hash function */
++    switch(OBJ_obj2nid(cv->body->public_key->oid)) {
++        case NID_id_TA_ECDSA_SHA_1:
++        case NID_id_TA_RSA_v1_5_SHA_1:
++        case NID_id_TA_RSA_PSS_SHA_1:
++            md = EVP_sha1();
++            break;
++        case NID_id_TA_ECDSA_SHA_256:
++        case NID_id_TA_RSA_v1_5_SHA_256:
++        case NID_id_TA_RSA_PSS_SHA_256:
++            md = EVP_sha256();
++            break;
++        case NID_id_TA_ECDSA_SHA_512:
++        case NID_id_TA_RSA_v1_5_SHA_512:
++        case NID_id_TA_RSA_PSS_SHA_512:
++            md = EVP_sha512();
++            break;
++/*        case NID_id_TA_ECDSA_SHA_224:
++            md = EVP_sha224();
++        case NID_id_TA_ECDSA_SHA_384:
++            md = EVP_sha384();*/
++        default:
++            goto err;
++    }
++    desc_hash = BUF_MEM_create(EVP_MD_size(md));
 +
 +    if (!md_ctx || !desc_hash)
 +        goto err;
@@ -752,16 +834,20 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +
 +        /* Check whether or not the hash in the certificate has the correct size */
 +        if (cv->body->certificate_extensions->certificateDescription->hash1->length
-+                != EVP_MD_size(md_type))
++                != EVP_MD_size(md)) {
++            ret = -1;
 +            goto err;
++        }
 +
 +        /* Hash the certificate description */
-+        tmp_len = EVP_MD_size(md_type);
-+        if (!EVP_DigestInit_ex(md_ctx, md_type, NULL) ||
++        tmp_len = EVP_MD_size(md);
++        if (!EVP_DigestInit_ex(md_ctx, md, NULL) ||
 +                !EVP_DigestUpdate(md_ctx, cert_desc_in, cert_desc_in_len) ||
 +                !EVP_DigestFinal_ex(md_ctx, (unsigned char *) desc_hash->data,
-+                        &tmp_len))
++                        &tmp_len)) {
++            ret = -1;
 +            goto err;
++        }
 +        desc_hash->length = tmp_len;
 +
 +        /* Compare it with the hash in the cert */
@@ -781,13 +867,14 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 Index: openssl/crypto/cv_cert/cv_cert.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert.h	2010-09-28 15:58:31.436692915 +0200
-@@ -0,0 +1,263 @@
-+/*
-+ * cvc_cert.h
++++ openssl/crypto/cv_cert/cv_cert.h	2010-10-20 15:02:21.000000000 +0200
+@@ -0,0 +1,314 @@
++/**
++ * @file
++ * @brief Interface to library for card verifiable certificates
 + *
-+ *  Created on: 19.05.2010
-+ *      Author: azrael
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
 +
 +#ifndef CVC_CERT_H_
@@ -797,11 +884,13 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +#include <openssl/asn1.h>
 +#include <openssl/bio.h>
 +
++/** Application specific, IMPLICIT tagged ASN1 type */
 +#define ASN1_APP_IMP(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, tag, stname, field, type)
++/** Application specific, IMPLICIT tagged, optional ASN1 type */
 +#define ASN1_APP_IMP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
 +
 +/**
-+ * @defgroup CVC-types      Data types for card verifiable certificates
++ * @defgroup cvctypes      Data types for card verifiable certificates
 + * @{ ************************************************************************/
 +
 +/** Certificate Holder Authentication template*/
@@ -816,8 +905,7 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +typedef CVC_CHAT_SEQ CVC_CHAT;
 +
 +/** Elliptic curve public key. May contain domain parameters*/
-+typedef struct cvc_ec_pubkey_st {
-+    /** Curve OID */
++typedef struct cvc_pubkey_st {
 +    ASN1_OBJECT *oid;
 +    ASN1_OCTET_STRING *modulus;
 +    ASN1_OCTET_STRING *a;
@@ -826,7 +914,7 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +    ASN1_OCTET_STRING *base_order;
 +    ASN1_OCTET_STRING *public_point;
 +    ASN1_OCTET_STRING *cofactor;
-+} CVC_EC_PUBKEY;
++} CVC_PUBKEY;
 +
 +/** Discretionary data template, used to encode certificate extensions. Consists
 + *  of an OID and up to two hash values */
@@ -836,7 +924,7 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +    ASN1_OCTET_STRING *hash2;
 +} CVC_CERT_EXTENSION;
 +
-+//FIXME: This should definitely  not be a SEQUENCE
++//XXX: This should actually not be a SEQUENCE
 +/** Two kinds of certificate extensions are specified */
 +typedef struct cvc_cert_extensions_st {
 +    /** Contains the hash of the certificate description associated with this
@@ -850,11 +938,11 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +typedef struct cvc_cert_body_st {
 +    /** Certificate Profile of this certificate. Only version number 0 is
 +     *  specified */
-+    ASN1_INTEGER *certificate_profile_identifier; //FIXME: Unsigned Integer
++    ASN1_INTEGER *certificate_profile_identifier;
 +    /** Certificate authority that issued this certificate */
 +    ASN1_UTF8STRING *certificate_authority_reference; /* Actually Latin1 */
 +    /** Public key associated with this certificate */
-+    CVC_EC_PUBKEY *public_key; //FIXME: RSA keys?
++    CVC_PUBKEY *public_key;
 +    /** Holder of the certificate */
 +    ASN1_UTF8STRING *certificate_holder_reference; /* Actually Latin1 */
 +    /** Certificate Holder Authorisation Template */
@@ -880,8 +968,8 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +/** @} ***********************************************************************/
 +
 +/**
-+ * @defgroup Certificate-Description-types  Data Types for the Certificate
-+ *                  Descrption structure
++ * @defgroup certificatedescriptiontypes  Data Types for the Certificate
++ *                  Description structure
 + * @{ ************************************************************************/
 +
 +/** This structure holds further information about a card verifiable certificate
@@ -902,9 +990,13 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +     *  certificate */
 +    ASN1_PRINTABLESTRING *subjectURL;
 +    union {
++        /** Plaintext Terms of Usage */
 +        ASN1_UTF8STRING *plainTerms;
++        /** HTML formatted Terms of Usage */
 +        ASN1_IA5STRING *htmlTerms;
++        /** PDF formatted Terms of Usage */
 +        ASN1_OCTET_STRING *pdfTerms;
++        /** Otherwise formatted Terms of Usage (not specified) */
 +        ASN1_TYPE *other;
 +    } termsOfUsage;
 +    ASN1_PRINTABLESTRING *redirectURL;
@@ -913,14 +1005,39 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +/** @} ***********************************************************************/
 +
 +/**
-+ * @defgroup mgmt-functions  Functions for memory managment and data conversion
++ * @defgroup mgmtfunctions  Functions for memory managment and data conversion
 + * @{ ************************************************************************/
 +
-+CVC_CERT *d2i_CV_CERT(CVC_CERT **cert, const unsigned char **in, long len);
-+int i2d_CV_CERT(CVC_CERT *a, unsigned char **out);
++/**
++ * @brief Convert an ASN1 formatted CV certificate to the internal structure
++ * @param cert A pointer to the internal structure.
++ * @param in The ASN1 formatted data
++ * @param len The length of the data
++ *
++ * @return the CVC_CERT structure or NULL in case of an error
++ * */
++CVC_CERT *CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len);
++
++/**
++ * @brief Convert a certificate description to an ASN1 representation
++ *
++ * @param[in] a the certificate description
++ * @param[out] out where to write the ASN1 data
++ *
++ * @return the number of bytes successfully encoded or a negative value if an
++ * error occured.
++ */
++int i2d_CVC_CERT(CVC_CERT *a, unsigned char **out);
++
++/**
++ * @brief Allocate memory for a CV certificate structure
++ * */
 +CVC_CERT *CVC_CERT_new(void);
++/**
++ * @brief Free a CV certificate structure
++ * @param a Pointer to the structure to be freed
++ * */
 +void CVC_CERT_free(CVC_CERT *a);
-+//DECLARE_ASN1_FUNCTIONS(CVC_CERT)
 +
 +//void CVC_CERT_print_ctx(BIO *bio, CVC_CERT *cert, int indent, const ASN1_PCTX *pctx);
 +DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT)
@@ -936,26 +1053,46 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 + * @defgroup convenience        Convenience functions
 + * @{ ************************************************************************/
 +
-+int
-+certificate_description_print(BIO *bio, const unsigned char *cert_desc_in,
++/** 
++ * @brief Print the certificate description in a human readable form
++ * 
++ * @param[in] bio
++ * @param[in] cert_desc_in
++ * @param[in] len
++ * @param[in] prefix prepend @a prefix to each line (for indentation)
++ * 
++ * @return 1 on success and 0 if an error occurred
++ */
++int certificate_description_print(BIO *bio, const unsigned char *cert_desc_in,
 +        unsigned int len, const char *prefix);
 +
 +/**
-+ *  @brief Print the CHAT in a human readable form to bio
-+ *  @brief bio
-+ *  @param chat The CHAT that shell be dumped
-+ *  @param prefix a prefix that will be prepended to each line (e.g. for
-+ *          indention).
++ * @brief Print card holder authorization template (CHAT) in a human readable form
++ *
++ * @param[in] bio
++ * @param[in] chat The CHAT that shell be dumped
++ * @param[in] prefix prepend @a prefix to each line (for indentation)
++ * 
++ * @return 1 on success and 0 if an error occurred
 + * */
 +int
 +cvc_chat_print(BIO *bio, CVC_CHAT *chat, char prefix[]);
 +
++/**
++ * @brief Print card verifiable certificate in a human readable form
++ *
++ * @param[in] bio
++ * @param[in] cv
++ * @param[in] prefix prepend @a prefix to each line (for indentation)
++ * 
++ * @return 1 on success and 0 if an error occurred
++ * */
 +int
 +cvc_print(BIO *bio, CVC_CERT *cv, const char *prefix);
 +
 +/**
 + *  @brief Returns a pointer to the CHAT contained in a CV certifcate.
-+ *  @param cvc The card verifiable certifcate
++ *  @param[in] cvc The card verifiable certifcate
 +
 + *  @return Pointer to the CHAT or NULL in case of an error
 + */
@@ -965,27 +1102,27 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +/**
 + *  @brief Helper function to convert the effective date and expiration date,
 + *         of a certificate to a string
-+ *  @param date Octet string that holds the date
++ *  @param[in] date Octet string that holds the date
 + *  @return Null terminated string representation of the date
 + */
-+
 +char*
 +cvc_get_date_string(ASN1_OCTET_STRING *date);
++
 +/** @} ***********************************************************************/
 +
 +/**
 + *  @brief Check wether or not the certificate contains the correct hash
 + *         of the certificate description
-+ *  @param cv The card verifiable certificate
-+ *  @param cvc_desc_in ASN1 representation of the certificate description
-+ *  @param cvc_desc_in_len Length of cvc_desc_in
-+ *  @param md_type The hash function to use
++ *  @param[in] cv The card verifiable certificate
++ *  @param[in] cert_desc_in ASN1 representation of the certificate description
++ *  @param[in] cert_desc_in_len Length of cvc_desc_in
 + *
-+ *  @return 1 if the certificate contains the correct hash, 0 if not.
++ *  @return 1 if the certificate contains the correct hash, 0 if not and -1 in case of
++ *      an error.
 + */
 +int
-+check_cert(CVC_CERT *cv, const unsigned char *cert_desc_in,
-+        const unsigned int cert_desc_in_len, const EVP_MD *md_type);
++CVC_check_cert(CVC_CERT *cv, const unsigned char *cert_desc_in,
++        const unsigned int cert_desc_in_len);
 +
 +/**
 + * @defgroup ec_asn1        ASN1 structures for EC parameters and keys
@@ -1048,8 +1185,8 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +#endif /* CVC_CERT_H_ */
 Index: openssl/crypto/ec/ec.h
 ===================================================================
---- openssl.orig/crypto/ec/ec.h	2010-06-29 09:15:01.185157403 +0200
-+++ openssl/crypto/ec/ec.h	2010-06-29 09:15:04.005157920 +0200
+--- openssl.orig/crypto/ec/ec.h	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/ec/ec.h	2010-10-20 09:53:29.170551000 +0200
 @@ -1094,6 +1094,19 @@
  #define EC_R_UNSUPPORTED_FIELD				 131
  #define EC_R_WRONG_ORDER				 130
@@ -1072,8 +1209,8 @@ Index: openssl/crypto/ec/ec.h
  #endif
 Index: openssl/crypto/ec/ec_print.c
 ===================================================================
---- openssl.orig/crypto/ec/ec_print.c	2010-06-29 09:15:01.195157348 +0200
-+++ openssl/crypto/ec/ec_print.c	2010-06-29 09:15:04.005157920 +0200
+--- openssl.orig/crypto/ec/ec_print.c	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/ec/ec_print.c	2010-10-20 09:53:29.160550999 +0200
 @@ -54,6 +54,7 @@
   */
  
@@ -1110,8 +1247,8 @@ Index: openssl/crypto/ec/ec_print.c
 +}
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/ecdh/ecdh.h	2010-06-29 09:15:04.005157920 +0200
+--- openssl.orig/crypto/ecdh/ecdh.h	2010-10-20 09:53:24.340551003 +0200
++++ openssl/crypto/ecdh/ecdh.h	2010-10-20 09:53:29.160550999 +0200
 @@ -86,6 +86,7 @@
  #endif
  
@@ -1122,8 +1259,8 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/ecdh/ech_ossl.c	2010-06-29 09:15:04.005157920 +0200
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2010-10-20 09:53:24.340551003 +0200
++++ openssl/crypto/ecdh/ech_ossl.c	2010-10-20 09:53:29.160550999 +0200
 @@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
  	return(ret);
@@ -1240,8 +1377,8 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	}
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2010-06-29 09:15:01.215157586 +0200
-+++ openssl/crypto/err/err.c	2010-06-29 09:15:04.015156327 +0200
+--- openssl.orig/crypto/err/err.c	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/err/err.c	2010-10-20 09:53:29.170551000 +0200
 @@ -156,6 +156,7 @@
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
  {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
@@ -1252,8 +1389,8 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/err/err.h	2010-06-29 09:15:04.015156327 +0200
+--- openssl.orig/crypto/err/err.h	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/err/err.h	2010-10-20 09:53:29.170551000 +0200
 @@ -198,6 +198,7 @@
  #define ERR_LIB_TS		47
  #define ERR_LIB_HMAC		48
@@ -1272,8 +1409,8 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/err/err_all.c	2010-06-29 09:15:04.015156327 +0200
+--- openssl.orig/crypto/err/err_all.c	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/err/err_all.c	2010-10-20 09:53:29.170551000 +0200
 @@ -102,6 +102,9 @@
  #ifndef OPENSSL_NO_JPAKE
  #include <openssl/jpake.h>
@@ -1296,8 +1433,8 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2010-06-29 09:15:01.205157642 +0200
-+++ openssl/crypto/err/openssl.ec	2010-06-29 09:15:04.015156327 +0200
+--- openssl.orig/crypto/err/openssl.ec	2010-10-20 09:53:24.330551002 +0200
++++ openssl/crypto/err/openssl.ec	2010-10-20 09:53:29.170551000 +0200
 @@ -35,6 +35,7 @@
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
  L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
@@ -1308,8 +1445,8 @@ Index: openssl/crypto/err/openssl.ec
  L NONE		crypto/x509/x509_vfy.h		NONE
 Index: openssl/crypto/objects/obj_mac.h
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.h	2010-06-29 09:15:01.175157529 +0200
-+++ openssl/crypto/objects/obj_mac.h	2010-06-29 09:15:04.025157108 +0200
+--- openssl.orig/crypto/objects/obj_mac.h	2010-10-20 09:53:24.320551001 +0200
++++ openssl/crypto/objects/obj_mac.h	2010-10-20 09:53:29.180551001 +0200
 @@ -122,7 +122,7 @@
  
  #define SN_wap_wsg		"wap-wsg"
@@ -1463,9 +1600,9 @@ Index: openssl/crypto/objects/obj_mac.h
 +#define NID_id_TA_RSA_PSS_SHA_256		938
 +#define OBJ_id_TA_RSA_PSS_SHA_256		OBJ_id_TA_RSA,4L
 +
-+#define SN_id_TA_RSA_v1_SHA_512		"id-TA-RSA-v1-SHA-512"
-+#define NID_id_TA_RSA_v1_SHA_512		939
-+#define OBJ_id_TA_RSA_v1_SHA_512		OBJ_id_TA_RSA,5L
++#define SN_id_TA_RSA_v1_5_SHA_512		"id-TA-RSA-v1-5-SHA-512"
++#define NID_id_TA_RSA_v1_5_SHA_512		955
++#define OBJ_id_TA_RSA_v1_5_SHA_512		OBJ_id_TA_RSA,5L
 +
 +#define SN_id_TA_RSA_PSS_SHA_512		"id-TA-RSA-PSS-SHA-512"
 +#define NID_id_TA_RSA_PSS_SHA_512		940
@@ -1533,9 +1670,9 @@ Index: openssl/crypto/objects/obj_mac.h
 +
 Index: openssl/crypto/objects/obj_mac.num
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.num	2010-06-29 09:15:01.165157654 +0200
-+++ openssl/crypto/objects/obj_mac.num	2010-06-29 09:15:04.025157108 +0200
-@@ -904,3 +904,51 @@
+--- openssl.orig/crypto/objects/obj_mac.num	2010-10-20 09:53:24.320551001 +0200
++++ openssl/crypto/objects/obj_mac.num	2010-10-20 09:53:29.180551001 +0200
+@@ -904,3 +904,52 @@
  brainpoolP384t1		904
  brainpoolP512r1		905
  brainpoolP512t1		906
@@ -1587,10 +1724,11 @@ Index: openssl/crypto/objects/obj_mac.num
 +id_htmlFormat		952
 +id_pdfFormat		953
 +id_sector		954
++id_TA_RSA_v1_5_SHA_512		955
 Index: openssl/crypto/objects/objects.txt
 ===================================================================
---- openssl.orig/crypto/objects/objects.txt	2010-06-29 09:15:01.175157529 +0200
-+++ openssl/crypto/objects/objects.txt	2010-06-29 09:15:04.025157108 +0200
+--- openssl.orig/crypto/objects/objects.txt	2010-10-20 09:53:24.320551001 +0200
++++ openssl/crypto/objects/objects.txt	2010-10-20 09:53:29.180551001 +0200
 @@ -1276,3 +1276,70 @@
  1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
  1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
@@ -1640,7 +1778,7 @@ Index: openssl/crypto/objects/objects.txt
 +id-TA-RSA 2 :   id-TA-RSA-v1-5-SHA-256
 +id-TA-RSA 3 :   id-TA-RSA-PSS-SHA-1
 +id-TA-RSA 4 :   id-TA-RSA-PSS-SHA-256
-+id-TA-RSA 5 :   id-TA-RSA-v1-SHA-512
++id-TA-RSA 5 :   id-TA-RSA-v1-5-SHA-512
 +id-TA-RSA 6 :   id-TA-RSA-PSS-SHA-512
 +id-TA 2 :       id-TA-ECDSA
 +id-TA-ECDSA 1 : id-TA-ECDSA-SHA-1
@@ -1665,7 +1803,7 @@ Index: openssl/crypto/objects/objects.txt
 Index: openssl/crypto/pace/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2010-06-29 09:15:00.236410566 +0200
++++ openssl/crypto/pace/Makefile	2010-10-20 09:51:06.000000000 +0200
 @@ -0,0 +1,156 @@
 +DIR=pace
 +TOP=../..
@@ -1826,14 +1964,14 @@ Index: openssl/crypto/pace/Makefile
 Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2010-09-28 15:47:35.587911852 +0200
-@@ -0,0 +1,641 @@
++++ openssl/crypto/pace/pace.c	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,644 @@
 +/**
-+ * @file pace.c
-+ * @version 0.4
++ * @file
++ * @brief OpenPACE implementation
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ * @author Wolf Mueller  <Wolf.Mueller@informatik.hu-berlin.de>
 + */
 +
 +#include <string.h>
@@ -2339,6 +2477,7 @@ Index: openssl/crypto/pace/pace.c
 +    if (!out)
 +        goto err;
 +
++    /* Flawfinder: ignore */
 +    memcpy(out->data, m->data, m->length);
 +
 +    /* now add iso padding */
@@ -2391,7 +2530,9 @@ Index: openssl/crypto/pace/pace.c
 +    if (!databuf) {
 +        goto err;
 +    }
++    /* Flawfinder: ignore */
 +    memcpy(databuf->data, ssc_buf, r);
++    /* Flawfinder: ignore */
 +    memcpy(databuf->data + r, data, datalen);
 +    databuf->length = r + datalen;
 +
@@ -2472,8 +2613,8 @@ Index: openssl/crypto/pace/pace.c
 Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2010-10-01 15:00:19.047736351 +0200
-@@ -0,0 +1,463 @@
++++ openssl/crypto/pace/pace.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,582 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -2495,6 +2636,14 @@ Index: openssl/crypto/pace/pace.h
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
 +
++/**
++ * @file
++ * @brief Interface to OpenPACE
++ *
++ * Provide all usefull functions (API) for establishing and communicating
++ * through a PACE channel
++ */
++
 +#ifndef PACE_H_
 +#define PACE_H_
 +
@@ -2510,9 +2659,12 @@ Index: openssl/crypto/pace/pace.h
 +
 +/**
 + * @defgroup types                 Data Types
++ *
 + * @{ ************************************************************************/
 +
-+/** Enum for the type of the secret used. */
++/**
++ * Enum for the type of the secret used.
++ */
 +enum s_type {
 +    /** MRZ is the Machine Readable Zone, printed on the card, encoding
 +     * the personal information of the user */
@@ -2531,7 +2683,9 @@ Index: openssl/crypto/pace/pace.h
 +    /** Undefined type, if nothing else matches */
 +    PACE_SEC_UNDEF,
 +};
-+/** Shared secret */
++/**
++ * Shared secret
++ */
 +typedef struct pace_sec {
 +    /** The type of the secret */
 +    enum s_type type;
@@ -2539,10 +2693,13 @@ Index: openssl/crypto/pace/pace.h
 +    BUF_MEM * mem;
 +} PACE_SEC;
 +
++/** Specifies which algorithm to use for key exchange and contains the necessary
++ * parameters
++ */
 +typedef struct algorithmidentifier {
 +    /** NID to identify the algorithms to be used */
 +    int algorithm;
-+    /** Depending on algorithm either a DH object or a EC_KEY object. */
++    /** Depending on algorithm either a \c DH object or a \c EC_KEY object. */
 +    union {
 +        /** Classic Diffie-Hellman parameters */
 +        DH * dh;
@@ -2551,6 +2708,10 @@ Index: openssl/crypto/pace/pace.h
 +    } parameters;
 +} AlgorithmIdentifier;
 +
++/**
++ * This data structure provides detailed information on an implementation of
++ * PACE.
++ */
 +typedef struct paceinfo {
 +	/** NID to identify the exact protocol to be used, including methods for
 +	 *  key agreement, mapping of domain parameters, encryption and integrity
@@ -2562,6 +2723,9 @@ Index: openssl/crypto/pace/pace.h
 +	int parameterId;
 +} PACEInfo;
 +
++/**
++ * This data structure provides one set of domain parameters for PACE.
++ */
 +typedef struct pacedomainparameterinfo {
 +	/** NID to identify the type of domain parameters */
 +	int protocol;
@@ -2574,7 +2738,9 @@ Index: openssl/crypto/pace/pace.h
 +/** AES message authentication: CMAC of 8 bytes length */
 +#define PACE_AES_MAC_LENGTH 8
 +
++/** Perform PACE according to TR-03110 v2.01 */
 +#define PACE_TR_VERSION_2_01 1
++/** Perform PACE according to TR-03110 v2.02 and later */
 +#define PACE_TR_VERSION_2_02 2
 +
 +/** Context structure used in all protocol steps. Encompasses information
@@ -2582,21 +2748,21 @@ Index: openssl/crypto/pace/pace.h
 +typedef struct pace_ctx {
 +    /** version of TR-03110 */
 +    int tr_version;
-+    /** BN_CTX object for various operations */
++    /** \c BN_CTX object for various operations */
 +    BN_CTX * bn_ctx;
 +    /** Which hash function to use for Key Derivation */
 +    const EVP_MD * md;
-+    /** BN_CTX object for md */
++    /** \c BN_CTX object for md */
 +    EVP_MD_CTX * md_ctx;
-+    /** ENGINE object for md */
++    /** \c ENGINE object for md */
 +    ENGINE * md_engine;
-+    /** CMAC_CTX object for cmac */
++    /** \c CMAC_CTX object for cmac */
 +    CMAC_CTX * cmac_ctx;
-+    /** EVP_CIPHER object to use for encryption/decryption */
++    /** \c EVP_CIPHER object to use for encryption/decryption */
 +    const EVP_CIPHER * cipher;
-+    /** EVP_CIPHER_CTX object for cipher */
++    /** \c EVP_CIPHER_CTX object for cipher */
 +    EVP_CIPHER_CTX * cipher_ctx;
-+    /** ENGINE object for cipher */
++    /** \c ENGINE object for cipher */
 +    ENGINE * cipher_engine;
 +    /** Initialisation vector for encryption/decryption */
 +    unsigned char * iv;
@@ -2614,119 +2780,122 @@ Index: openssl/crypto/pace/pace.h
 +
 +/**
 + * @defgroup manage              Data Managment
++ *
++ * @brief Create, destroy and initialize OpenPACE objects
++ *
 + * @{ ************************************************************************/
 +
 +/**
-+ * @brief Frees a AlgorithmIdentifier object and all of its components
++ * @brief Frees a \c AlgorithmIdentifier object and all of its components
 + *
-+ * @param dp Object to free (optional)
++ * @param[in] dp Object to free (optional)
 + */
 +void AlgorithmIdentifier_clear_free(AlgorithmIdentifier * dp);
 +/**
-+ * @brief Creates a new AlgorithmIdentifier object
++ * @brief Creates a new \c AlgorithmIdentifier object
 + *
 + * @return The new object or NULL if an error occurred
 + */
 +AlgorithmIdentifier * AlgorithmIdentifier_new(void);
 +/**
-+ * @brief Duplicates a AlgorithmIdentifier object without preserving private keys
++ * @brief Duplicates a \c AlgorithmIdentifier object without preserving private keys
 + *
-+ * @param dp_in Object to duplicate
++ * @param[in] dp_in Object to duplicate
 + *
 + * @return Duplicate of dp_in without private and public keys or NULL if an
 + * error occurred
 + */
 +AlgorithmIdentifier * AlgorithmIdentifier_dup(const AlgorithmIdentifier * dp_in);
 +/**
-+ * @brief Frees a PACE_SEC object and all its of components
++ * @brief Frees a \c PACE_SEC object and all its of components
 + *
-+ * @param s Object to free (optional)
++ * @param[in] s Object to free (optional)
 + */
 +void PACE_SEC_clean_free(PACE_SEC * s);
 +/**
-+ * @brief Creates a new PACE_SEC object and initializes it with a secret
-+ * @param sec Secret
-+ * @param sec_len Length of secret in bytes
-+ * @param type Type of secret
++ * @brief Creates a new \c PACE_SEC object and initializes it with a secret
++ * @param[in] sec Secret
++ * @param[in] sec_len Length of secret in bytes
++ * @param[in] type Type of secret
 + *
 + * @return The new object or NULL if an error occurred
 + */
 +PACE_SEC *
 +PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type);
 +/**
-+ * @brief Frees a PACE_CTX object
++ * @brief Frees a \c PACE_CTX object
 + *
-+ * @param s Object to free (optional)
++ * @param[in] s Object to free (optional)
 + */
 +void PACE_CTX_free(PACE_CTX * s);
 +/**
-+ * @brief Frees a PACE_CTX object and all its components
++ * @brief Frees a \c PACE_CTX object and all its components
 + *
-+ * @param s Object to free (optional)
++ * @param[in] s Object to free (optional)
 + */
 +void PACE_CTX_clear_free(PACE_CTX * s);
 +/**
-+ * @brief Creates a new PACE_CTX object
++ * @brief Creates a new \c PACE_CTX object
 + *
 + * @return The new object or NULL if an error occurred
 + */
 +PACE_CTX * PACE_CTX_new(void);
 +/**
-+ * @brief Initializes a PACE_CTX structure using the information given in a
-+ *        PACEInfo structure
++ * @brief Initializes a \c PACE_CTX object using the information given in a
++ *        \c PACEInfo object
 + *
-+ * @param ctx The ctx object to initialise
-+ * @param info The PACEInfo structure containing a valid protocol OID
++ * @param[in,out] ctx The ctx object to initialise
++ * @param[in] info The \c PACEInfo object containing a valid protocol OID
 + *
 + * @return 1 in case of success, 0 otherwise
 + */
 +int PACE_CTX_init(PACE_CTX * ctx, PACEInfo * info);
 +/**
-+ * @brief Creates a new PACEInfo object
++ * @brief Creates a new \c PACEInfo object
 + *
 + * @return The new object or NULL if an error occurred
 + */
 +PACEInfo * PACEInfo_new(void);
 +/**
-+ * @brief Frees a PACEInfo object
++ * @brief Frees a \c PACEInfo object
 + *
-+ * @param info Object to free (optional)
++ * @param[in] info Object to free (optional)
 + */
 +void PACEInfo_free(PACEInfo * info);
 +/**
 + * @brief Frees a PACEDomainParameterInfo object
 + *
-+ * @param dp Object to free (optional)
++ * @param[in] dp Object to free (optional)
 + */
 +void PACEDomainParameterInfo_free(PACEDomainParameterInfo * dp);
 +/**
-+ * @brief Frees a PACEDomainParameterInfo object and all its components
++ * @brief Frees a \c PACEDomainParameterInfo object and all its components
 + *
-+ * @param dp Object to free (optional)
++ * @param[in] dp Object to free (optional)
 + */
 +void PACEDomainParameterInfo_clear_free(PACEDomainParameterInfo * dp);
 + /**
-+  * @brief Creates a new PACEDomainParameterInfo object
++  * @brief Creates a new \c PACEDomainParameterInfo object
 +  *
 +  * @return Pointer to the new object or NULL on error
 +  */
 +PACEDomainParameterInfo * PACEDomainParameterInfo_new(void);
 +/**
-+ * @brief Duplicates a PACEDomainParameterInfo structure
++ * @brief Duplicates a \c PACEDomainParameterInfo object
 + *
-+ * @param dp_in PACEDomainParameterInfo structure to duplicate (optional)
-+ * @return Pointer to the duplicated structure or NULL on error
++ * @param[in] dp_in \c PACEDomainParameterInfo object to duplicate (optional)
++ * @return Pointer to the duplicated object or NULL on error
 + */
 +PACEDomainParameterInfo * PACEDomainParameterInfo_dup(const
 +		PACEDomainParameterInfo * dp_in);
 +/**
-+ * @brief Initializes PACE_CTX, PACEDomainParameterInfo and PACEInfo objects
++ * @brief Initializes \c PACE_CTX, \c PACEDomainParameterInfo and \c PACEInfo objects
 + *
-+ * @param ctx Object to initialize
-+ * @param dp Object to initialize
-+ * @param info Object to initialize
-+ * @param nid Identifier to use for PACEInfo->protocol
-+ * @param ka_obj Depending on nid either a DH or a EC_KEY object (optional)
++ * @param[in,out] ctx Object to initialize
++ * @param[in,out] dp Object to initialize
++ * @param[in,out] info Object to initialize
++ * @param[in] nid Identifier to use for PACEInfo->protocol
++ * @param[in] ka_obj Depending on nid either a \c DH or a \c EC_KEY object (optional)
 + *
 + * @return 1 on success and 0 if an error occurred
 + */
@@ -2737,15 +2906,18 @@ Index: openssl/crypto/pace/pace.h
 +
 +/**
 + * @defgroup proto               Protocol Steps
++ *
++ * @brief Protocol steps to establish a PACE channel
++ *
 + * @{ ************************************************************************/
 +
 +/**
 + * @brief Generates and encrypts a nonce.
 + *
-+ * @param pi        Shared secret for key derivation (see kdf_pi())
-+ * @param ctx       PACE_CTX object
-+ * @param nonce     Where to save the new object containing the nonce
-+ * @param enc_nonce Where to save the new object containing the encrypted nonce
++ * @param[in] pi        Shared secret for key derivation (see kdf_pi())
++ * @param[in] ctx       \c PACE_CTX object
++ * @param[out] nonce     Where to save the new object containing the nonce
++ * @param[out] enc_nonce Where to save the new object containing the encrypted nonce
 + *
 + * @return          1 on success and 0 if an error occurred
 + */
@@ -2754,9 +2926,9 @@ Index: openssl/crypto/pace/pace.h
 +/**
 + * @brief Decrypt the Nonce from the other party.
 + *
-+ * @param pi PACE secret used to derive the symmetric key
-+ * @param enc_nonce Encrypted nonce
-+ * @param ctx Context structure that contains information about encryption and
++ * @param[in] pi PACE secret used to derive the symmetric key
++ * @param[in] enc_nonce Encrypted nonce
++ * @param[in] ctx Context object that contains information about encryption and
 + * hash algorithms to use
 + *
 + * @return Plaintext nonce or NULL if an error occurred
@@ -2767,8 +2939,8 @@ Index: openssl/crypto/pace/pace.h
 + * @brief Generate a public keypair to perform the mapping to new domain
 + * parameters
 + *
-+ * @param dp Domain parameters
-+ * @param ctx PACE_CTX object
++ * @param[in] dp Domain parameters
++ * @param[in] ctx \c PACE_CTX object
 + *
 + * @return Buffer to be transmitted to the other party or NULL if an error
 + * occurred
@@ -2783,10 +2955,10 @@ Index: openssl/crypto/pace/pace.h
 + * parties public key. Then map the static domain parameters to new,
 + * ephemeral ones.
 + *
-+ * @param dp_in Static domain parameters
-+ * @param ctx
-+ * @param s Nonce used for computing the ephemeral domain parameters
-+ * @param in Public key from the other party
++ * @param[in] dp_in Static domain parameters
++ * @param[in] ctx
++ * @param[in] s Nonce used for computing the ephemeral domain parameters
++ * @param[in] in Public key from the other party
 + *
 + * @return Ephemeral domain parameters or NULL if an error occurred
 + */
@@ -2796,8 +2968,8 @@ Index: openssl/crypto/pace/pace.h
 +/**
 + * @brief Generate a keypair for key agreement
 + *
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param ctx PACE_CTX object
++ * @param[in] dp Ephemeral domain parameters (generated in PACE_STEP3A_map_dp())
++ * @param[in] ctx \c PACE_CTX object
 + *
 + * @return Public key or NULL if an error occurred
 + */
@@ -2806,9 +2978,9 @@ Index: openssl/crypto/pace/pace.h
 +/**
 + * @brief Compute the shared secret
 + *
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param ctx PACE_CTX object
-+ * @param in Public key from the other party
++ * @param[in] dp Ephemeral domain parameters (generated in PACE_STEP3A_map_dp())
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] in Public key from the other party
 + *
 + * @return Shared secret or NULL if an error occurred
 + */
@@ -2817,10 +2989,11 @@ Index: openssl/crypto/pace/pace.h
 +/**
 + * @brief Derives encryption and authentication keys
 + *
-+ * @param key Shared secret (computed in step 3B)
-+ * @param ctx PACE_CTX object
-+ * @param k_mac Where to store the authentication key
-+ * @param k_enc Where to store the encryption key
++ * @param[in] key Shared secret (computed in PACE_STEP3B_compute_ephemeral_key())
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] info The \c PACEInfo object containing a valid protocol OID
++ * @param[out] k_mac Where to store the authentication key
++ * @param[out] k_enc Where to store the encryption key
 + *
 + * @return          1 on success and 0 if an error occurred
 + */
@@ -2830,11 +3003,11 @@ Index: openssl/crypto/pace/pace.h
 + * @brief Compute the authentication token from domain parameters
 + *           and public key
 + *
-+ * @param ctx PACE_CTX object
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param info PACEInfo containing information about the MAC to be used
-+ * @param pub Public key from the other party (generated in step 3B)
-+ * @param key Authentication key (computed in step 3C)
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] dp Ephemeral domain parameters (generated in PACE_STEP3A_map_dp())
++ * @param[in] info \c PACEInfo containing information about the MAC to be used
++ * @param[in] pub Public key from the other party (generated in PACE_STEP3B_generate_ephemeral_key())
++ * @param[in] key Authentication key (computed in PACE_STEP3C_derive_keys())
 + *
 + * @return Authentication token or NULL in case of error
 + */
@@ -2844,10 +3017,11 @@ Index: openssl/crypto/pace/pace.h
 +/**
 + * @brief Verifies an authentication token.
 + *
-+ * @param ctx PACE_CTX object
-+ * @param dp Ephemeral domain parameters (generated in step 3A)
-+ * @param key Authentication key (computed in step 3C)
-+ * @param token Authentication token from the other party
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] dp Ephemeral domain parameters (generated in PACE_STEP3A_map_dp())
++ * @param[in] info \c PACEInfo containing information about the MAC to be used
++ * @param[in] key Authentication key (computed in PACE_STEP3C_derive_keys())
++ * @param[in] token Authentication token from the other party
 + *
 + * @return 1 if the token has been verified as correct, 0 if not, -1 if an error
 + * occurred.
@@ -2859,47 +3033,132 @@ Index: openssl/crypto/pace/pace.h
 +
 +/**
 + * @defgroup asn1              ASN1 parsing functions
++ *
 + * @{ ************************************************************************/
 +
-+int
-+parse_ef_card_access(unsigned const char * in, unsigned int in_len, PACEInfo ** info,
-+        PACEDomainParameterInfo ** dp);
++/** 
++ * @brief Generates \c PACEInfo and \c PACEDomainParameterInfo objects from
++ * EF.CardAccess
++ * 
++ * @param[in] in Buffer with EF.CardAccess
++ * @param[in] in_len Length of EF.CardAccess
++ * @param[out] info where to write the new \c PACEInfo object
++ * @param[out] dp where to write the new \c PACEDomainParameterInfo object
++ *
++ * @return 1 on success and 0 if an error occurred
++ */
++int parse_ef_card_access(unsigned const char * in, unsigned int in_len,
++        PACEInfo ** info, PACEDomainParameterInfo ** dp);
 +
-+int
-+simple_parse_ef_card_access(unsigned char *in, unsigned int in_len, PACEInfo *info,
-+            PACEDomainParameterInfo *dp);
++/**
++ * @brief Initialises \c PACEInfo and \c PACEDomainParameterInfo objects from
++ * EF.CardAccess
++ * @param[in] in Buffer with EF.CardAccess
++ * @param[in] in_len Length of EF.CardAccess
++ * @param[out] info pointer to the \c PACEInfo strcture to initialise 
++ * @param[out] dp pointer to the \c PACEDomainParameterInfo structure to initialise
++ */
++int simple_parse_ef_card_access(unsigned char *in, unsigned int in_len,
++        PACEInfo *info, PACEDomainParameterInfo *dp);
 +
-+int
-+ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
-+        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING *base_order,
-+        ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor);
++/** 
++ * @brief Generate an EC Key from the ASN1 encoded parameters. This function is
++ * needed because asn1.h does not export a d2i_asn1 function
++ *
++ * @param[out] key where to write the new EC key
++ * @param[in] p prime modulus of the field
++ * @param[in] a first coefficient of the curve
++ * @param[in] b second coefficient of the curve
++ * @param[in] base generator of the curve
++ * @param[in] base_order order of the generator
++ * @param[in] pub public point of the key
++ * @param[in] cofactor
++ */
++int ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
++        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING
++        *base_order, ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor);
 +
 +/** @} ***********************************************************************/
 +
 +/**
 + * @defgroup convenience              Convenience functions
++ *
 + * @{ ************************************************************************/
 +
 +/**
 + * @brief Padds a buffer using ISO/IEC 9797-1 padding method 2.
 + *
-+ * @param m buffer to padd
-+ * @param block_size pad to this block size
++ * @param[in] m buffer to padd
++ * @param[in] block_size pad to this block size
 + *
 + * @return new buffer with the padded input or NULL if an error occurred
 + */
 +BUF_MEM *
 +PACE_add_iso_pad(const BUF_MEM * m, int block_size);
 +
++/** 
++ * @brief Encrypts data according to TR-03110 F.2.
++ *
++ * Send sequence counter is used to generate initialisation vector for
++ * encryption.
++ * 
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] ssc send sequence counter
++ * @param[in] key_enc key for encryption
++ * @param[in] data data to encrypt
++ * @note data must already be padded to block length
++ *
++ * @return new buffer with the encrypted data or NULL if an error occurred
++ */
 +BUF_MEM *
 +PACE_encrypt(PACE_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *key_enc,
 +        const BUF_MEM *data);
++
++/** 
++ * @brief Decrypts data according to TR-03110 F.2.
++ *
++ * Send sequence counter is used to generate initialisation vector for
++ * decryption.
++ * 
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] ssc send sequence counter
++ * @param[in] key_enc key for encryption
++ * @param[in] data data to decrypt
++ * @note data must already be padded to block length
++ *
++ * @return new buffer with the decrypted data or NULL if an error occurred
++ */
 +BUF_MEM *
 +PACE_decrypt(PACE_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *key_enc,
 +        const BUF_MEM *data);
++
++/** 
++ * @brief Authenticates data according to TR-03110 F.2.
++ *
++ * Send sequence counter is encoded and prepended to the data.
++ * 
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] ssc send sequence counter
++ * @param[in] k_mac key for authentication
++ * @param[in] data data to authenticate
++ * @param[in] datalen length of \a data
++ * @note data must already be padded to block length
++ *
++ * @return new buffer with the message authentication code or NULL if an error occurred
++ */
 +BUF_MEM *
 +PACE_authenticate(const PACE_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *k_mac,
 +        const unsigned char *data, size_t datalen);
++
++/** 
++ * @brief Compresses a public key according to TR-03110 Table A.2.
++ * 
++ * @param[in] dp Ephemeral domain parameters (generated in PACE_STEP3A_map_dp())
++ * @param[in] ctx \c PACE_CTX object
++ * @param[in] pub public key from the other party or generated in PACE_STEP3A_generate_mapping_data()
++ *
++ * @return new buffer with the message authentication code or NULL if an error occurred
++ */
 +BUF_MEM *
 +PACE_Comp(const PACEDomainParameterInfo *dp, PACE_CTX *ctx, const BUF_MEM *pub);
 +BUF_MEM *
@@ -2911,6 +3170,7 @@ Index: openssl/crypto/pace/pace.h
 +/* The following lines are auto generated by the script mkerr.pl. Any changes
 + * made after this point may be overwritten when the script is next run.
 + */
++/** Load the error strings for the PACE sub library */
 +void ERR_load_PACE_strings(void);
 +
 +/* Error codes for the PACE functions. */
@@ -2940,11 +3200,12 @@ Index: openssl/crypto/pace/pace.h
 Index: openssl/crypto/pace/pace_asn1.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.c	2010-09-20 11:17:13.179475011 +0200
-@@ -0,0 +1,575 @@
++++ openssl/crypto/pace/pace_asn1.c	2010-10-20 15:00:55.000000000 +0200
+@@ -0,0 +1,576 @@
 +/**
-+ * @date 2009-12-13
-+ * @version 0.1
++ * @file
++ * @brief ASN.1 structures related to PACE
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -3087,7 +3348,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +    EC_POINT *generator = NULL, *pub_point = NULL;
 +    EC_KEY *tmp = NULL;
 +
-+    if (!key || !p || !a || !b || !base || !base_order || !cofactor) //XXX: Are base_order and cofactor essential?
++    if (!key || !p || !a || !b || !base || !base_order || !cofactor)
 +        goto err;
 +
 +    p_bn = BN_new();
@@ -3101,7 +3362,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +        goto err;
 +
 +    /* Copy field and curve */
-+    if (!BN_bin2bn(ASN1_STRING_data(p), ASN1_STRING_length(p), p_bn) || //FIXME: ASN1_INTEGER in X9.62
++    if (!BN_bin2bn(ASN1_STRING_data(p), ASN1_STRING_length(p), p_bn) ||
 +        !BN_bin2bn(ASN1_STRING_data(a), ASN1_STRING_length(a), a_bn) ||
 +        !BN_bin2bn(ASN1_STRING_data(b), ASN1_STRING_length(b), b_bn))
 +            goto err;
@@ -3112,8 +3373,8 @@ Index: openssl/crypto/pace/pace_asn1.c
 +        goto err;
 +
 +    /* Set generator, order and cofactor */
-+    if (!ASN1_INTEGER_to_BN(cofactor, cofactor_bn) || //FIXME: OCTET_STRING
-+        !ASN1_INTEGER_to_BN(base_order, order_bn)) //FIXME: OCTET_STRING
++    if (!ASN1_INTEGER_to_BN(cofactor, cofactor_bn) ||
++        !ASN1_INTEGER_to_BN(base_order, order_bn))
 +            goto err;
 +
 +    generator = EC_POINT_new(group);
@@ -3520,12 +3781,12 @@ Index: openssl/crypto/pace/pace_asn1.c
 Index: openssl/crypto/pace/pace_asn1.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.h	2010-09-22 15:18:12.528061791 +0200
-@@ -0,0 +1,51 @@
++++ openssl/crypto/pace/pace_asn1.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,63 @@
 +/**
++ * @file
++ * @brief Interface to ASN.1 structures related to PACE
 + *
-+ * @date 2009-12-22
-+ * @version 0.1
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -3550,13 +3811,20 @@ Index: openssl/crypto/pace/pace_asn1.h
 +/**
 + * @defgroup PACE_ASN1     ASN1 structures for PACE
 + * @{ ************************************************************************/
++/** PACEInfo structure */
 +typedef struct pace_info_st {
++    /** OID of the algorithm to be used */
 +    ASN1_OBJECT *protocol;
++    /** Protocol Version number. Version number 1 is deprecated, version 2 is
++        recommended */
 +    ASN1_INTEGER *version;
++    /** Indicates the domain parameter identifier */
 +    ASN1_INTEGER *parameterId;
 +    } PACE_INFO;
 +
++/** Algorithm Identifier structure */
 +typedef struct algorithm_identifier_st {
++    /** OID of the algorithm */
 +    ASN1_OBJECT *algorithm;
 +    union {
 +        PACE_ECPARAMETERS *ec;
@@ -3565,9 +3833,14 @@ Index: openssl/crypto/pace/pace_asn1.h
 +    } parameters;
 +} ALGORITHM_IDENTIFIER;
 +
++/** Domain parameter structure */
 +typedef struct pace_dp_info_st {
++    /** OID of the type of domain parameters*/
 +    ASN1_OBJECT *protocol;
++    /** The actual domain parameters */
 +    ALGORITHM_IDENTIFIER *aid;
++    /** Optional: specifies the local domain parameters if multiple sets of domain
++        parameters are provided */
 +    ASN1_INTEGER *parameterId;
 +} PACE_DP_INFO;
 +/** @} ***********************************************************************/
@@ -3576,10 +3849,12 @@ Index: openssl/crypto/pace/pace_asn1.h
 Index: openssl/crypto/pace/pace_dh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.c	2010-06-29 09:15:00.236410566 +0200
-@@ -0,0 +1,212 @@
++++ openssl/crypto/pace/pace_dh.c	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,214 @@
 +/**
-+ * @version 0.1
++ * @file
++ * @brief Diffie Hellman helper functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -3793,11 +4068,12 @@ Index: openssl/crypto/pace/pace_dh.c
 Index: openssl/crypto/pace/pace_dh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.h	2010-06-29 09:15:00.236410566 +0200
-@@ -0,0 +1,91 @@
++++ openssl/crypto/pace/pace_dh.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,92 @@
 +/**
-+ * @date 2009-12-01
-+ * @version 0.1
++ * @file
++ * @brief Interface to Diffie Hellman helper functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -3889,10 +4165,12 @@ Index: openssl/crypto/pace/pace_dh.h
 Index: openssl/crypto/pace/pace_ecdh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.c	2010-06-29 09:15:00.236410566 +0200
-@@ -0,0 +1,161 @@
++++ openssl/crypto/pace/pace_ecdh.c	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,163 @@
 +/**
-+ * @version 0.1
++ * @file
++ * @brief Elliptic curve Diffie Hellman helper functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -4055,11 +4333,12 @@ Index: openssl/crypto/pace/pace_ecdh.c
 Index: openssl/crypto/pace/pace_ecdh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.h	2010-06-29 09:15:00.216409699 +0200
-@@ -0,0 +1,76 @@
++++ openssl/crypto/pace/pace_ecdh.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,77 @@
 +/**
-+ * @date 2009-12-01
-+ * @version 0.1
++ * @file
++ * @brief Interface to elliptic curve Diffie Hellman helper functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -4136,7 +4415,7 @@ Index: openssl/crypto/pace/pace_ecdh.h
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2010-06-29 09:15:00.236410566 +0200
++++ openssl/crypto/pace/pace_err.c	2010-10-20 09:51:06.000000000 +0200
 @@ -0,0 +1,107 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
@@ -4248,11 +4527,12 @@ Index: openssl/crypto/pace/pace_err.c
 Index: openssl/crypto/pace/pace_kdf.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.c	2010-06-29 09:15:00.236410566 +0200
-@@ -0,0 +1,89 @@
++++ openssl/crypto/pace/pace_kdf.c	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,95 @@
 +/**
-+ * @date 2009-12-01
-+ * @version 0.1
++ * @file
++ * @brief Key derivation functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -4281,14 +4561,19 @@ Index: openssl/crypto/pace/pace_kdf.c
 +        inlen = key->length + nonce->length + sizeof counter;
 +        if (!BUF_MEM_grow(in, inlen))
 +            goto err;
++        /* Flawfinder: ignore */
 +        memcpy(in->data, key->data, key->length);
++        /* Flawfinder: ignore */
 +        memcpy(in->data + key->length, nonce->data, nonce->length);
++        /* Flawfinder: ignore */
 +        memcpy(in->data + key->length + nonce->length, &counter, sizeof counter);
 +    } else {
 +        inlen = key->length + sizeof counter;
 +        if (!BUF_MEM_grow(in, inlen))
 +            goto err;
++        /* Flawfinder: ignore */
 +        memcpy(in->data, key->data, key->length);
++        /* Flawfinder: ignore */
 +        memcpy(in->data + key->length, &counter, sizeof counter);
 +    }
 +
@@ -4342,11 +4627,12 @@ Index: openssl/crypto/pace/pace_kdf.c
 Index: openssl/crypto/pace/pace_kdf.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.h	2010-06-29 09:15:00.216409699 +0200
-@@ -0,0 +1,63 @@
++++ openssl/crypto/pace/pace_kdf.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,64 @@
 +/**
-+ * @date 2009-12-01
-+ * @version 0.1
++ * @file
++ * @brief Interface to key derivation functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -4410,11 +4696,12 @@ Index: openssl/crypto/pace/pace_kdf.h
 Index: openssl/crypto/pace/pace_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_lib.c	2010-09-20 11:17:13.179475011 +0200
-@@ -0,0 +1,527 @@
++++ openssl/crypto/pace/pace_lib.c	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,528 @@
 +/**
-+ * @date 2009-11-30
-+ * @version 0.1
++ * @file
++ * @brief Data management functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -4942,11 +5229,12 @@ Index: openssl/crypto/pace/pace_lib.c
 Index: openssl/crypto/pace/pace_mappings.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.c	2010-09-20 11:17:13.179475011 +0200
-@@ -0,0 +1,390 @@
++++ openssl/crypto/pace/pace_mappings.c	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,391 @@
 +/**
-+ * @date 2009-12-01
-+ * @version 0.1
++ * @file
++ * @brief Functions for domain parameter mappings
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -5337,11 +5625,12 @@ Index: openssl/crypto/pace/pace_mappings.c
 Index: openssl/crypto/pace/pace_mappings.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.h	2010-09-20 11:17:13.179475011 +0200
-@@ -0,0 +1,67 @@
++++ openssl/crypto/pace/pace_mappings.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,68 @@
 +/**
-+ * @date 2009-12-01
-+ * @version 0.1
++ * @file
++ * @brief Interface to functions for domain parameter mappings
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -5409,11 +5698,12 @@ Index: openssl/crypto/pace/pace_mappings.h
 Index: openssl/crypto/pace/pace_util.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.c	2010-06-29 09:15:00.216409699 +0200
-@@ -0,0 +1,845 @@
++++ openssl/crypto/pace/pace_util.c	2010-10-20 15:06:29.000000000 +0200
+@@ -0,0 +1,857 @@
 +/**
-+ * @date 2009-11-30
-+ * @version 0.1
++ * @file
++ * @brief Utility functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -5694,6 +5984,7 @@ Index: openssl/crypto/pace/pace_util.c
 +    if (!key)
 +        goto err;
 +
++    /* Flawfinder: ignore */
 +    len = EVP_CIPHER_block_size(EVP_des_cbc());
 +    if ( key->length < 2*len ) /* key too short */
 +        goto err;
@@ -5702,12 +5993,14 @@ Index: openssl/crypto/pace/pace_util.c
 +    if (!ctx)
 +        goto err;
 +    EVP_CIPHER_CTX_init(ctx);
++    /* Flawfinder: ignore */
 +    if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
 +            (unsigned char *) key->data, NULL, 1) ||
 +            !EVP_CIPHER_CTX_set_padding(ctx, 0))
 +        goto err;
 +
 +    /* get last block of des_cbc encrypted input */
++    /* Flawfinder: ignore */
 +    c_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, in, 0);
 +    if (!c_tmp)
 +        goto err;
@@ -5715,18 +6008,22 @@ Index: openssl/crypto/pace/pace_util.c
 +
 +    /* decrypt last block with the rest of the key */
 +    /* IV is always NULL */
++    /* Flawfinder: ignore */
 +    if (!block || !EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
 +            (unsigned char *) key->data + len, NULL, 0) ||
 +            !EVP_CIPHER_CTX_set_padding(ctx, 0))
 +        goto err;
++    /* Flawfinder: ignore */
 +    d_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 0, block, 0);
 +
 +    /* encrypt last block with the first key */
 +    /* IV is always NULL */
++    /* Flawfinder: ignore */
 +    if (!d_tmp || !EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
 +            (unsigned char *) key->data, NULL, 1) ||
 +            !EVP_CIPHER_CTX_set_padding(ctx, 0))
 +        goto err;
++    /* Flawfinder: ignore */
 +    mac = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, d_tmp, 0);
 +
 +    BUF_MEM_free(block);
@@ -5755,7 +6052,7 @@ Index: openssl/crypto/pace/pace_util.c
 +int
 +is_no_valid_integer_hexstr(const char * str)
 +{
-+    if (!str || (strlen(str) < 2))
++    if (!str || (strnlen(str, 2) < 2))
 +        return 0;
 +
 +    /* negative INTEGERs are forbidden (TR-3110 D.2.1.1.), but they shouldn't occur anyway */
@@ -5831,10 +6128,13 @@ Index: openssl/crypto/pace/pace_util.c
 +            MRZ_DATEOFEXPIRY_LEN);
 +    if (!cat)
 +        goto err;
++    /* Flawfinder: ignore */
 +    memcpy(cat->data, serial, MRZ_SERIALNUMBER_LEN);
++    /* Flawfinder: ignore */
 +    memcpy(cat->data + MRZ_SERIALNUMBER_LEN, dob, MRZ_DATEOFBIRTH_LEN);
-+    memcpy(cat->data + MRZ_SERIALNUMBER_LEN + MRZ_DATEOFEXPIRY_LEN, doe,
-+            MRZ_DATEOFEXPIRY_LEN);
++    /* Flawfinder: ignore */
++    memcpy(cat->data + MRZ_SERIALNUMBER_LEN + MRZ_DATEOFBIRTH_LEN,
++            doe, MRZ_DATEOFEXPIRY_LEN);
 +
 +    /* Compute and output SHA1 hash of concatenation */
 +    out = hash(EVP_sha1(), NULL, NULL, cat);
@@ -5851,7 +6151,7 @@ Index: openssl/crypto/pace/pace_util.c
 +    unsigned char *p;
 +    size_t en_len, bn_len;
 +
-+    if (!ctx)
++    if (!ctx || !encoded)
 +        return -1;
 +
 +    en_len = EVP_CIPHER_block_size(ctx->cipher);
@@ -5870,6 +6170,7 @@ Index: openssl/crypto/pace/pace_util.c
 +        if (!p)
 +            return -1;
 +        BN_bn2bin(ssc, p);
++        /* Flawfinder: ignore */
 +        memcpy(*encoded, p + bn_len - en_len, en_len);
 +        free(p);
 +    }
@@ -5922,6 +6223,7 @@ Index: openssl/crypto/pace/pace_util.c
 +                goto err;
 +            }
 +            ctx->iv = p;
++            /* Flawfinder: ignore */
 +            memcpy(ctx->iv, ivbuf->data, ivbuf->length);
 +            break;
 +        case NID_des_ede_cbc:
@@ -6064,7 +6366,6 @@ Index: openssl/crypto/pace/pace_util.c
 +                G = EC_POINT_point2hex(group, EC_GROUP_get0_generator(group),
 +                        EC_KEY_get_conv_form(dp->domainParameter->parameters.ecdh),
 +                        ctx);
-+                /* TODO check conversion form in TR-03111 */
 +
 +                /* Order of the base point */
 +                if (!EC_GROUP_get_order(group, bn, ctx))
@@ -6259,11 +6560,12 @@ Index: openssl/crypto/pace/pace_util.c
 Index: openssl/crypto/pace/pace_util.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.h	2010-06-29 09:15:00.226409783 +0200
-@@ -0,0 +1,205 @@
++++ openssl/crypto/pace/pace_util.h	2010-10-20 09:51:06.000000000 +0200
+@@ -0,0 +1,230 @@
 +/**
-+ * @date 2009-11-30
-+ * @version 0.1
++ * @file
++ * @brief Interface to utility functions
++ *
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
 + */
@@ -6427,9 +6729,32 @@ Index: openssl/crypto/pace/pace_util.h
 + * @return length of encoded SSC or -1 if an error occurred
 + */
 +int encode_ssc(const BIGNUM *ssc, const PACE_CTX *ctx, unsigned char **encoded);
++
++/**
++ * @brief Computes the new initialisation vector according to the SSC and the
++ * algorithm
++ *
++ * @param[in,out] ctx contains the parameters needed for the generation of the IV
++ * and the IV itself
++ * @param[in] ssc the send sequence counter
++ * @param[in] key_enc the encryption key
++ *
++ * @return 1 if everything worked, 0 in case of an error 
++ */
 +int update_iv(PACE_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *key_enc);
 +/** @} ***********************************************************************/
 +
++/**
++ * @brief Authenticate data with the algorithm specified by the \c PACE_CTX and
++ * the key k_mac
++ *
++ * @param[in] ctx contains the information on how to authenticate the data
++ * @param[in] k_mac the key used for authentication
++ * @param[data] the data that should be authenticated
++ * 
++ * @return the authenticated data or NULL in case of an error
++ * @note the data has to be padded correctly for this function
++ */
 +BUF_MEM *
 +authenticate(const PACE_CTX *ctx, const BUF_MEM *k_mac, const BUF_MEM *data);
 +/**
@@ -6439,6 +6764,7 @@ Index: openssl/crypto/pace/pace_util.h
 + * @param ctx
 + * @param dp PACEDomainParameterInfo object containing an AlgorithmIdentifier,
 + * which includes the DH or EC_KEY object
++ * @param info
 + * @param include_dp set to 1 if the domain parameter should be included, 0
 + * otherwise.
 + *
@@ -6469,8 +6795,8 @@ Index: openssl/crypto/pace/pace_util.h
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2010-09-28 16:00:10.797919827 +0200
-@@ -0,0 +1,821 @@
++++ openssl/crypto/pace/pacetest.c	2010-10-20 10:53:44.060551005 +0200
+@@ -0,0 +1,818 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
 +#ifdef OPENSSL_NO_PACE
@@ -7184,7 +7510,7 @@ Index: openssl/crypto/pace/pacetest.c
 +    }
 +
 +    p = CVCert;
-+    cvc_cert = d2i_CVC_CERT(NULL, &p, CVCert_len);
++    cvc_cert = CVC_d2i_CVC_CERT(NULL, &p, CVCert_len);
 +    if (!cvc_cert)
 +        err("Could not parse CV Cert");
 +    verb("Parsed CV Cert");
@@ -7201,15 +7527,12 @@ Index: openssl/crypto/pace/pacetest.c
 +        if (!certificate_description_print(bio_stdout, certDesc, certDesc_len, "\t"))
 +            err("Could not print Certificate Description");
 +
-+    if (!check_cert(cvc_cert, certDesc, certDesc_len, EVP_sha256()))
++    if (!CVC_check_cert(cvc_cert, certDesc, certDesc_len))
 +        err("Certificate Description doesn't match Certificate\n");
 +    verb("Certificate Description matches Certificate");
 +
 +    /* FIXME: CVC_CERT_print_ctx -> segfault
-+    BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
-+    CVC_CERT_print_ctx(bio_stdout, foo, 1, NULL);
-+    BIO_free_all(bio_stdout);
-+    */
++    CVC_CERT_print_ctx(bio_stdout, cvc_cert, 1, NULL); */
 +
 +    ok = 0;
 +
@@ -7294,8 +7617,8 @@ Index: openssl/crypto/pace/pacetest.c
 +#endif /* OPENSSL_NO_PACE */
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2010-10-01 14:59:54.000000000 +0200
-+++ openssl/makevms.com	2010-10-01 14:56:19.817737218 +0200
+--- openssl.orig/makevms.com	2010-10-20 09:53:24.340551003 +0200
++++ openssl/makevms.com	2010-10-20 09:53:29.180551001 +0200
 @@ -254,6 +254,7 @@
  		     HMAC,-
  		     IDEA,-
@@ -7323,8 +7646,8 @@ Index: openssl/makevms.com
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2010-06-29 09:15:01.165157654 +0200
-+++ openssl/test/Makefile	2010-06-29 09:15:03.995157207 +0200
+--- openssl.orig/test/Makefile	2010-10-20 09:53:24.310551000 +0200
++++ openssl/test/Makefile	2010-10-20 09:53:29.160550999 +0200
 @@ -64,10 +64,12 @@
  ASN1TEST=	asn1test
  GCMTESTA=	aesgcmtest
@@ -7532,8 +7855,8 @@ Index: openssl/test/Makefile
  sha1test.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2010-06-29 09:15:01.165157654 +0200
-+++ openssl/test/tests.com	2010-06-29 09:15:03.995157207 +0200
+--- openssl.orig/test/tests.com	2010-10-20 09:53:24.310551000 +0200
++++ openssl/test/tests.com	2010-10-20 09:53:29.150550998 +0200
 @@ -35,7 +35,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
