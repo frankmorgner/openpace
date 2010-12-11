@@ -1,10 +1,8 @@
-HOW TO COMPILE:
----------------
+Use `make all` to build OpenSSL 1.0.0 with OpenPACE.
 
-Just use the included Makefile to build version 1.0.0 of OpenSSL with the
-OpenPACE patch included.
 If you choose to patch and build OpenSSL by yourself, make sure to to configure
 OpenSSL with PACE support, i.e.:
     ./configure experimental-pace
+
 After building OpenPACE you can use the included pacetest program in the test
 directory to see if everything is working correctly.
