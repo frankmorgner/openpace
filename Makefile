@@ -31,7 +31,7 @@ patched.openssl: patched.cmac patched.brainpool
 	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < OpenPACE.patch && \
 	    ln -s ../../crypto/pace/pace.h openssl-$(OPENSSL_VERSION)/include/openssl && \
 	    ln -s ../crypto/pace/pacetest.c openssl-$(OPENSSL_VERSION)/test && \
-	    ln -s ../../crypto/pace/cv_cert.h openssl-$(OPENSSL_VERSION)/include/openssl && \
+	    ln -s ../../crypto/cv_cert/cv_cert.h openssl-$(OPENSSL_VERSION)/include/openssl && \
 	    ln -s ../crypto/cv_cert/cv_cert_test.c openssl-$(OPENSSL_VERSION)/test)
 	echo "Patched OpenSSL with OpenPACE"
 
