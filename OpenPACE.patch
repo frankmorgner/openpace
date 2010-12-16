@@ -1,7 +1,7 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2010-12-11 13:33:13.036311987 +0100
-+++ openssl/Configure	2010-12-11 12:54:34.623901974 +0100
+--- openssl.orig/Configure	2010-12-16 20:56:47.056133381 +0100
++++ openssl/Configure	2010-12-16 20:56:48.260141151 +0100
 @@ -670,6 +670,7 @@
  		 "gmp"		  => "default",
                   "jpake"          => "experimental",
@@ -10,10 +10,19 @@ Index: openssl/Configure
                   "rc5"            => "default",
  		 "rfc3779"	  => "default",
                   "shared"         => "default",
+@@ -681,7 +682,7 @@
+ 
+ # This is what $depflags will look like with the above defaults
+ # (we need this to see if we should advise the user to run "make depend"):
+-my $default_depflags = " -DOPENSSL_NO_GMP -DOPENSSL_NO_JPAKE -DOPENSSL_NO_MD2 -DOPENSSL_NO_RC5 -DOPENSSL_NO_RFC3779 -DOPENSSL_NO_STORE";
++my $default_depflags = " -DOPENSSL_NO_GMP -DOPENSSL_NO_JPAKE -DOPENSSL_NO_MD2 -DOPENSSL_NO_PACE -DOPENSSL_NO_RC5 -DOPENSSL_NO_RFC3779 -DOPENSSL_NO_STORE";
+ 
+ # Explicit "no-..." options will be collected in %disabled along with the defaults.
+ # To remove something from %disabled, use "enable-foo" (unless it's experimental).
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2010-12-11 13:33:13.036311987 +0100
-+++ openssl/Makefile.org	2010-12-11 12:54:34.655950183 +0100
+--- openssl.orig/Makefile.org	2010-12-16 20:56:47.056133381 +0100
++++ openssl/Makefile.org	2010-12-16 20:56:48.264131672 +0100
 @@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
@@ -25,8 +34,8 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/bn/bn.h
 ===================================================================
---- openssl.orig/crypto/bn/bn.h	2010-12-11 13:33:13.083882489 +0100
-+++ openssl/crypto/bn/bn.h	2010-12-11 12:54:34.428376854 +0100
+--- openssl.orig/crypto/bn/bn.h	2010-12-16 20:56:47.060131934 +0100
++++ openssl/crypto/bn/bn.h	2010-12-16 20:56:48.244131784 +0100
 @@ -126,6 +126,7 @@
  #define HEADER_BN_H
  
@@ -53,8 +62,8 @@ Index: openssl/crypto/bn/bn.h
  int	BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 Index: openssl/crypto/bn/bn_lib.c
 ===================================================================
---- openssl.orig/crypto/bn/bn_lib.c	2010-12-11 13:33:13.083882489 +0100
-+++ openssl/crypto/bn/bn_lib.c	2010-12-11 12:54:34.439958353 +0100
+--- openssl.orig/crypto/bn/bn_lib.c	2010-12-16 20:56:47.060131934 +0100
++++ openssl/crypto/bn/bn_lib.c	2010-12-16 20:56:48.244131784 +0100
 @@ -66,6 +66,7 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -89,8 +98,8 @@ Index: openssl/crypto/bn/bn_lib.c
  	int i;
 Index: openssl/crypto/buffer/buffer.c
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.c	2010-12-11 13:33:13.135921928 +0100
-+++ openssl/crypto/buffer/buffer.c	2010-12-11 12:54:34.576447269 +0100
+--- openssl.orig/crypto/buffer/buffer.c	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/buffer/buffer.c	2010-12-16 20:56:48.252139785 +0100
 @@ -242,3 +242,59 @@
  			}
  		}
@@ -153,8 +162,8 @@ Index: openssl/crypto/buffer/buffer.c
 +}
 Index: openssl/crypto/buffer/buffer.h
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.h	2010-12-11 13:33:13.115903809 +0100
-+++ openssl/crypto/buffer/buffer.h	2010-12-11 12:54:34.564394760 +0100
+--- openssl.orig/crypto/buffer/buffer.h	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/buffer/buffer.h	2010-12-16 20:56:48.252139785 +0100
 @@ -89,6 +89,34 @@
  char *	BUF_strndup(const char *str, size_t siz);
  void *	BUF_memdup(const void *data, size_t siz);
@@ -190,22 +199,55 @@ Index: openssl/crypto/buffer/buffer.h
  
  /* safe string functions */
  size_t BUF_strlcpy(char *dst,const char *src,size_t siz);
+Index: openssl/crypto/crypto-lib.com
+===================================================================
+--- openssl.orig/crypto/crypto-lib.com	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/crypto-lib.com	2010-12-16 20:56:48.244131784 +0100
+@@ -298,6 +298,9 @@
+ 	"ts_rsp_sign,ts_rsp_verify,ts_verify_ctx,ts_lib,ts_conf,"+ -
+ 	"ts_asn1"
+ $ LIB_JPAKE = "jpake,jpake_err"
++$ LIB_PACE = "pace_asn1.c,pace.c,pace_dh.c,pace_ecdh.c,pace_err.c,"+ -
++	"pace_kdf.c,pace_lib.c,pace_mappings.c,pace_util.c"
++$ LIB_CV_CERT = "cv_cert.c"
+ $!
+ $! Setup exceptional compilations
+ $!
 Index: openssl/crypto/cv_cert/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/Makefile	2010-12-11 02:52:22.874476130 +0100
-@@ -0,0 +1,61 @@
-+DIR=cv_cert
-+TOP=../..
++++ openssl/crypto/cv_cert/Makefile	2010-12-16 20:56:45.724133415 +0100
+@@ -0,0 +1,89 @@
++#
++# OpenSSL/crypto/cv_cert/Makefile
++#
++
++DIR=	cv_cert
++TOP=	../..
++CC=	cc
++INCLUDES=-I$(TOP) -I../../include
++CFLAG=-g
++MAKEFILE=	Makefile
++AR=		ar r
++RANLIB=		ranlib
 +
 +CFLAGS= $(INCLUDES) $(CFLAG)
++ASFLAGS= $(INCLUDES) $(ASFLAG)
++AFLAGS= $(ASFLAGS)
++
++GENERAL=Makefile
++TEST=cv_cert_test.c
++APPS=
 +
 +LIB=$(TOP)/libcrypto.a
-+LIBOBJ=cv_cert.o
 +LIBSRC=cv_cert.c
++LIBOBJ=cv_cert.o
++SRC= $(LIBSRC)
 +
 +EXHEADER=cv_cert.h
-+TEST=cv_cert_test.c
++HEADER=	$(EXHEADER)
++
++ALL=    $(GENERAL) $(SRC) $(HEADER)
 +
 +top:
 +	(cd ../..; $(MAKE) DIRS=crypto SDIRS=$(DIR) sub_all)
@@ -217,9 +259,13 @@ Index: openssl/crypto/cv_cert/Makefile
 +	$(RANLIB) $(LIB) || echo Never mind.
 +	@touch lib
 +
++files:
++	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
++
 +links:
 +	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
 +	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
++	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 +
 +install:
 +	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
@@ -228,6 +274,14 @@ Index: openssl/crypto/cv_cert/Makefile
 +	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
 +	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
 +	done;
++
++tags:
++	ctags $(SRC)
++
++tests:
++
++lint:
++	lint -DLINT $(INCLUDES) $(SRC)>fluff
 +
 +depend:
 +	@[ -n "$(MAKEDEPEND)" ] # should be set by upper Makefile...
@@ -238,10 +292,7 @@ Index: openssl/crypto/cv_cert/Makefile
 +	mv -f Makefile.new $(MAKEFILE)
 +
 +clean:
-+	rm -f *.s *.o *.obj des lib tags core .pure .nfs* *.old *.bak fluff
-+
-+cv_cert_test: top cv_cert.h cv_cert_test.c $(LIB)
-+	$(CC) $(CFLAGS) -Wall -Werror -g -o cv_cert_test cv_cert_test.c $(LIB)
++	rm -f *.o *.obj lib tags core .pure .nfs* *.old *.bak fluff
 +
 +# DO NOT DELETE THIS LINE -- make depend depends on it.
 +
@@ -259,7 +310,7 @@ Index: openssl/crypto/cv_cert/Makefile
 Index: openssl/crypto/cv_cert/cv_cert.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert.c	2010-12-11 02:52:22.874476130 +0100
++++ openssl/crypto/cv_cert/cv_cert.c	2010-12-16 20:56:45.719642202 +0100
 @@ -0,0 +1,605 @@
 +/**
 + * @file
@@ -791,7 +842,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +{
 +
 +    BUF_MEM *desc_hash = NULL;
-+    EVP_MD *md = NULL;
++    const EVP_MD *md = NULL;
 +    EVP_MD_CTX *md_ctx = NULL;
 +
 +    unsigned int ret = 0, tmp_len;
@@ -869,7 +920,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 Index: openssl/crypto/cv_cert/cv_cert.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert.h	2010-12-11 02:52:22.874476130 +0100
++++ openssl/crypto/cv_cert/cv_cert.h	2010-12-16 20:56:45.724133415 +0100
 @@ -0,0 +1,314 @@
 +/**
 + * @file
@@ -1188,7 +1239,7 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 Index: openssl/crypto/cv_cert/cv_cert_test.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert_test.c	2010-12-11 13:59:33.754956447 +0100
++++ openssl/crypto/cv_cert/cv_cert_test.c	2010-12-16 20:56:45.719642202 +0100
 @@ -0,0 +1,316 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
@@ -1508,8 +1559,8 @@ Index: openssl/crypto/cv_cert/cv_cert_test.c
 +#endif /* OPENSSL_NO_PACE */
 Index: openssl/crypto/ec/ec.h
 ===================================================================
---- openssl.orig/crypto/ec/ec.h	2010-12-11 13:33:13.087896058 +0100
-+++ openssl/crypto/ec/ec.h	2010-12-11 12:54:34.503870592 +0100
+--- openssl.orig/crypto/ec/ec.h	2010-12-16 20:56:47.060131934 +0100
++++ openssl/crypto/ec/ec.h	2010-12-16 20:56:48.248153524 +0100
 @@ -1094,6 +1094,19 @@
  #define EC_R_UNSUPPORTED_FIELD				 131
  #define EC_R_WRONG_ORDER				 130
@@ -1532,8 +1583,8 @@ Index: openssl/crypto/ec/ec.h
  #endif
 Index: openssl/crypto/ec/ec_print.c
 ===================================================================
---- openssl.orig/crypto/ec/ec_print.c	2010-12-11 13:33:13.091883157 +0100
-+++ openssl/crypto/ec/ec_print.c	2010-12-11 12:54:34.451872856 +0100
+--- openssl.orig/crypto/ec/ec_print.c	2010-12-16 20:56:47.060131934 +0100
++++ openssl/crypto/ec/ec_print.c	2010-12-16 20:56:48.248153524 +0100
 @@ -54,6 +54,7 @@
   */
  
@@ -1570,8 +1621,8 @@ Index: openssl/crypto/ec/ec_print.c
 +}
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2010-12-11 13:33:13.143885510 +0100
-+++ openssl/crypto/ecdh/ecdh.h	2010-12-11 12:54:34.443872189 +0100
+--- openssl.orig/crypto/ecdh/ecdh.h	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/ecdh/ecdh.h	2010-12-16 20:56:48.244131784 +0100
 @@ -86,6 +86,7 @@
  #endif
  
@@ -1582,8 +1633,8 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2010-12-11 13:33:13.139884862 +0100
-+++ openssl/crypto/ecdh/ech_ossl.c	2010-12-11 12:54:34.443872189 +0100
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/ecdh/ech_ossl.c	2010-12-16 20:56:48.244131784 +0100
 @@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
  	return(ret);
@@ -1700,8 +1751,8 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	}
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2010-12-11 13:33:13.095894352 +0100
-+++ openssl/crypto/err/err.c	2010-12-11 12:54:34.527949767 +0100
+--- openssl.orig/crypto/err/err.c	2010-12-16 20:56:47.060131934 +0100
++++ openssl/crypto/err/err.c	2010-12-16 20:56:48.252139785 +0100
 @@ -156,6 +156,7 @@
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
  {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
@@ -1712,8 +1763,8 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2010-12-11 13:33:13.103908988 +0100
-+++ openssl/crypto/err/err.h	2010-12-11 12:54:34.543873158 +0100
+--- openssl.orig/crypto/err/err.h	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/err/err.h	2010-12-16 20:56:48.252139785 +0100
 @@ -198,6 +198,7 @@
  #define ERR_LIB_TS		47
  #define ERR_LIB_HMAC		48
@@ -1732,8 +1783,8 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2010-12-11 13:33:13.103908988 +0100
-+++ openssl/crypto/err/err_all.c	2010-12-11 12:54:34.503870592 +0100
+--- openssl.orig/crypto/err/err_all.c	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/err/err_all.c	2010-12-16 20:56:48.248153524 +0100
 @@ -102,6 +102,9 @@
  #ifndef OPENSSL_NO_JPAKE
  #include <openssl/jpake.h>
@@ -1756,8 +1807,8 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2010-12-11 13:33:13.095894352 +0100
-+++ openssl/crypto/err/openssl.ec	2010-12-11 12:54:34.543873158 +0100
+--- openssl.orig/crypto/err/openssl.ec	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/err/openssl.ec	2010-12-16 20:56:48.252139785 +0100
 @@ -35,6 +35,7 @@
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
  L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
@@ -1766,10 +1817,32 @@ Index: openssl/crypto/err/openssl.ec
  
  # additional header files to be scanned for function names
  L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/install.com
+===================================================================
+--- openssl.orig/crypto/install.com	2010-12-16 20:56:47.060131934 +0100
++++ openssl/crypto/install.com	2010-12-16 20:56:48.248153524 +0100
+@@ -49,7 +49,7 @@
+ 		 BUFFER,BIO,STACK,LHASH,RAND,ERR,-
+ 		 EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,-
+ 		 UI,KRB5,-
+-		 STORE,CMS,PQUEUE,TS,JPAKE
++		 STORE,CMS,PQUEUE,TS,JPAKE,PACE,CV_CERT
+ $	EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
+ $	EXHEADER__'ARCH' := opensslconf.h
+ $	EXHEADER_OBJECTS := objects.h,obj_mac.h
+@@ -106,6 +106,8 @@
+ $	EXHEADER_PQUEUE := pqueue.h
+ $	EXHEADER_TS := ts.h
+ $	EXHEADER_JPAKE := jpake.h
++$	EXHEADER_PACE := pace.h
++$	EXHEADER_CV_CERT := cv_cert.h
+ $	LIBS := LIBCRYPTO
+ $
+ $	EXE_DIR := [-.'ARCH'.EXE.CRYPTO]
 Index: openssl/crypto/objects/obj_mac.h
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.h	2010-12-11 13:33:13.171959331 +0100
-+++ openssl/crypto/objects/obj_mac.h	2010-12-11 12:54:42.495883280 +0100
+--- openssl.orig/crypto/objects/obj_mac.h	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/objects/obj_mac.h	2010-12-16 20:56:48.256131842 +0100
 @@ -3968,3 +3968,335 @@
  #define NID_brainpoolP512t1		906
  #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
@@ -2108,8 +2181,8 @@ Index: openssl/crypto/objects/obj_mac.h
 +
 Index: openssl/crypto/objects/obj_mac.num
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.num	2010-12-11 13:33:13.159871481 +0100
-+++ openssl/crypto/objects/obj_mac.num	2010-12-11 12:54:41.484370283 +0100
+--- openssl.orig/crypto/objects/obj_mac.num	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/objects/obj_mac.num	2010-12-16 20:56:48.256131842 +0100
 @@ -904,3 +904,82 @@
  brainpoolP384t1		904
  brainpoolP512r1		905
@@ -2195,8 +2268,8 @@ Index: openssl/crypto/objects/obj_mac.num
 +id_eIDSecurity		985
 Index: openssl/crypto/objects/objects.txt
 ===================================================================
---- openssl.orig/crypto/objects/objects.txt	2010-12-11 13:33:13.159871481 +0100
-+++ openssl/crypto/objects/objects.txt	2010-12-11 12:54:34.600372236 +0100
+--- openssl.orig/crypto/objects/objects.txt	2010-12-16 20:56:47.064131184 +0100
++++ openssl/crypto/objects/objects.txt	2010-12-16 20:56:48.256131842 +0100
 @@ -1276,3 +1276,107 @@
  1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
  1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
@@ -2308,19 +2381,38 @@ Index: openssl/crypto/objects/objects.txt
 Index: openssl/crypto/pace/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2010-12-11 02:52:23.102475231 +0100
-@@ -0,0 +1,157 @@
-+DIR=pace
-+TOP=../..
++++ openssl/crypto/pace/Makefile	2010-12-16 20:56:45.936133210 +0100
+@@ -0,0 +1,185 @@
++#
++# OpenSSL/crypto/pace/Makefile
++#
++
++DIR=	pace
++TOP=	../..
++CC=	cc
++INCLUDES=-I$(TOP) -I../../include -I..
++CFLAG=-g
++MAKEFILE=	Makefile
++AR=		ar r
++RANLIB=		ranlib
 +
 +CFLAGS= $(INCLUDES) $(CFLAG)
++ASFLAGS= $(INCLUDES) $(ASFLAG)
++AFLAGS= $(ASFLAGS)
++
++GENERAL=Makefile
++TEST=pacetest.c
++APPS=
 +
 +LIB=$(TOP)/libcrypto.a
-+LIBOBJ=pace_err.o pace_lib.o pace_util.o pace.o pace_dh.o pace_kdf.o pace_ecdh.o pace_mappings.o pace_asn1.o #pace_ka.o
 +LIBSRC=pace_err.c pace_lib.c pace_util.c pace.c pace_dh.c pace_kdf.c pace_ecdh.c pace_mappings.c pace_asn1.c #pace_ka.c
++LIBOBJ=pace_err.o pace_lib.o pace_util.o pace.o pace_dh.o pace_kdf.o pace_ecdh.o pace_mappings.o pace_asn1.o #pace_ka.o
++SRC= $(LIBSRC)
 +
 +EXHEADER=pace.h
-+TEST=pacetest.c
++HEADER=	$(EXHEADER)
++
++ALL=    $(GENERAL) $(SRC) $(HEADER)
 +
 +top:
 +	(cd ../..; $(MAKE) DIRS=crypto SDIRS=$(DIR) sub_all)
@@ -2332,9 +2424,13 @@ Index: openssl/crypto/pace/Makefile
 +	$(RANLIB) $(LIB) || echo Never mind.
 +	@touch lib
 +
++files:
++	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
++
 +links:
 +	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
 +	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
++	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 +
 +install:
 +	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
@@ -2343,6 +2439,14 @@ Index: openssl/crypto/pace/Makefile
 +	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
 +	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
 +	done;
++
++tags:
++	ctags $(SRC)
++
++tests:
++
++lint:
++	lint -DLINT $(INCLUDES) $(SRC)>fluff
 +
 +depend:
 +	@[ -n "$(MAKEDEPEND)" ] # should be set by upper Makefile...
@@ -2353,10 +2457,7 @@ Index: openssl/crypto/pace/Makefile
 +	mv -f Makefile.new $(MAKEFILE)
 +
 +clean:
-+	rm -f *.s *.o *.obj des lib tags core .pure .nfs* *.old *.bak fluff
-+
-+pacetest: top pace.h pacetest.c $(LIB)
-+	$(CC) $(CFLAGS) -Wall -Werror -g -o pacetest pacetest.c $(LIB)
++	rm -f *.o *.obj lib tags core .pure .nfs* *.old *.bak fluff
 +
 +# DO NOT DELETE THIS LINE -- make depend depends on it.
 +
@@ -2470,7 +2571,7 @@ Index: openssl/crypto/pace/Makefile
 Index: openssl/crypto/pace/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace.c	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,662 @@
 +/**
 + * @file
@@ -3137,7 +3238,7 @@ Index: openssl/crypto/pace/pace.c
 Index: openssl/crypto/pace/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace.h	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,585 @@
 +/**
 + * @mainpage OpenPACE
@@ -3154,7 +3255,7 @@ Index: openssl/crypto/pace/pace.h
 + * PACE can be used with different suites of algorithms and is not
 + * subject to any patents.
 + *
-+ * @date 2010-09-28
++ * @date 2010-12-10
 + * @version 0.4
 + * @author Frank Morgner <morgner@informatik.hu-berlin.de>
 + * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
@@ -3727,7 +3828,7 @@ Index: openssl/crypto/pace/pace.h
 Index: openssl/crypto/pace/pace_asn1.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.c	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_asn1.c	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,668 @@
 +/**
 + * @file
@@ -4069,7 +4170,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +getlen (unsigned const char * in, unsigned int * len_len)
 +{
 +    unsigned int len = 0;
-+    int i = 0;
++    unsigned int i = 0;
 +
 +    if (!in || !len_len)
 +        return 0;
@@ -4400,7 +4501,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 Index: openssl/crypto/pace/pace_asn1.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.h	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace_asn1.h	2010-12-16 20:56:45.927642397 +0100
 @@ -0,0 +1,133 @@
 +/**
 + * @file
@@ -4538,7 +4639,7 @@ Index: openssl/crypto/pace/pace_asn1.h
 Index: openssl/crypto/pace/pace_dh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.c	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_dh.c	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,439 @@
 +/**
 + * @file
@@ -4982,7 +5083,7 @@ Index: openssl/crypto/pace/pace_dh.c
 Index: openssl/crypto/pace/pace_dh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.h	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_dh.h	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,104 @@
 +/**
 + * @file
@@ -5091,7 +5192,7 @@ Index: openssl/crypto/pace/pace_dh.h
 Index: openssl/crypto/pace/pace_ecdh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.c	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_ecdh.c	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,199 @@
 +/**
 + * @file
@@ -5295,7 +5396,7 @@ Index: openssl/crypto/pace/pace_ecdh.c
 Index: openssl/crypto/pace/pace_ecdh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.h	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace_ecdh.h	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,78 @@
 +/**
 + * @file
@@ -5378,7 +5479,7 @@ Index: openssl/crypto/pace/pace_ecdh.h
 Index: openssl/crypto/pace/pace_err.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_err.c	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,107 @@
 +/* crypto/pace/pace_err.c */
 +/* ====================================================================
@@ -5490,7 +5591,7 @@ Index: openssl/crypto/pace/pace_err.c
 Index: openssl/crypto/pace/pace_kdf.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.c	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_kdf.c	2010-12-16 20:56:45.936133210 +0100
 @@ -0,0 +1,113 @@
 +/**
 + * @file
@@ -5608,7 +5709,7 @@ Index: openssl/crypto/pace/pace_kdf.c
 Index: openssl/crypto/pace/pace_kdf.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.h	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace_kdf.h	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,67 @@
 +/**
 + * @file
@@ -5680,7 +5781,7 @@ Index: openssl/crypto/pace/pace_kdf.h
 Index: openssl/crypto/pace/pace_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_lib.c	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace_lib.c	2010-12-16 20:56:45.927642397 +0100
 @@ -0,0 +1,532 @@
 +/**
 + * @file
@@ -6217,7 +6318,7 @@ Index: openssl/crypto/pace/pace_lib.c
 Index: openssl/crypto/pace/pace_mappings.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.c	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace_mappings.c	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,390 @@
 +/**
 + * @file
@@ -6312,7 +6413,7 @@ Index: openssl/crypto/pace/pace_mappings.c
 +    BUF_MEM * x_mem = NULL;
 +    BIGNUM * x_bn = NULL, *a = NULL, *p_1 = NULL, *q = NULL;
 +
-+    if (!in || in->length < EVP_CIPHER_key_length(ctx->cipher)
++    if (!in || in->length < (size_t) EVP_CIPHER_key_length(ctx->cipher)
 +            || !dp->domainParameter || !dp->domainParameter->parameters.dh)
 +        goto err;
 +
@@ -6612,7 +6713,7 @@ Index: openssl/crypto/pace/pace_mappings.c
 Index: openssl/crypto/pace/pace_mappings.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.h	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_mappings.h	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,68 @@
 +/**
 + * @file
@@ -6685,7 +6786,7 @@ Index: openssl/crypto/pace/pace_mappings.h
 Index: openssl/crypto/pace/pace_util.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.c	2010-12-11 02:52:23.098975764 +0100
++++ openssl/crypto/pace/pace_util.c	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,857 @@
 +/**
 + * @file
@@ -6905,7 +7006,7 @@ Index: openssl/crypto/pace/pace_util.c
 +    BUF_MEM * out = NULL;
 +
 +    if (!key || !in || !type ||
-+            (key->length < EVP_CIPHER_key_length(type)))
++            (key->length < (size_t) EVP_CIPHER_key_length(type)))
 +        goto err;
 +
 +    if (ctx)
@@ -7547,7 +7648,7 @@ Index: openssl/crypto/pace/pace_util.c
 Index: openssl/crypto/pace/pace_util.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.h	2010-12-11 02:52:23.102475231 +0100
++++ openssl/crypto/pace/pace_util.h	2010-12-16 20:56:45.932133470 +0100
 @@ -0,0 +1,230 @@
 +/**
 + * @file
@@ -7782,8 +7883,8 @@ Index: openssl/crypto/pace/pace_util.h
 Index: openssl/crypto/pace/pacetest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2010-12-11 14:08:24.820369832 +0100
-@@ -0,0 +1,730 @@
++++ openssl/crypto/pace/pacetest.c	2010-12-16 20:56:45.932133470 +0100
+@@ -0,0 +1,732 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
 +#ifdef OPENSSL_NO_PACE
@@ -7981,6 +8082,7 @@ Index: openssl/crypto/pace/pacetest.c
 +    PACE_SEC *s = NULL;
 +    PACE_CTX *ctx = NULL;
 +    PACEInfo *info = NULL;
++    const char *sn;
 +    PACEDomainParameterInfo *dp_info_picc = NULL, *dp_info_picc_static = NULL,
 +                            *dp_info_pcd = NULL;
 +    BUF_MEM *nonce_picc = NULL, *enc_nonce = NULL, *nonce_pcd = NULL,
@@ -8046,7 +8148,7 @@ Index: openssl/crypto/pace/pacetest.c
 +        default:
 +            err("\ncannot happen");
 +    }
-+    const char *sn = OBJ_nid2sn(info->protocol);
++    sn = OBJ_nid2sn(info->protocol);
 +    if (!sn)
 +        err("\nError generating short name from nid.");
 +    if (verbose)
@@ -8284,8 +8386,6 @@ Index: openssl/crypto/pace/pacetest.c
 +int real_life_test()
 +{
 +    int r = 0;
-+    if (verbose)
-+        printf("Starting a real life test");
 +
 +    enum s_type pace_sec_type [] = {
 +        PACE_PUK,
@@ -8352,6 +8452,8 @@ Index: openssl/crypto/pace/pacetest.c
 +    int * curve = standardized_curves;
 +    int * group = standardized_groups;
 +
++    if (verbose)
++        printf("Starting a real life test");
 +
 +    while (*algorithm != NID_undef) {
 +        switch (*algorithm) {
@@ -8400,14 +8502,15 @@ Index: openssl/crypto/pace/pacetest.c
 +int parse_test()
 +{
 +    int fail = 1;
++    PACEInfo *info = NULL;
++    PACEDomainParameterInfo *dp = NULL;
++    BIO *bio_stdout;
 +    printf("Testing parsing capabilities ");
 +    if (verbose)
 +        printf("\n");
 +
-+    PACEInfo *info = NULL;
-+    PACEDomainParameterInfo *dp = NULL;
 +
-+    BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
++    bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
 +    if (!bio_stdout)
 +        err("Could not get output buffer");
 +
@@ -8456,6 +8559,7 @@ Index: openssl/crypto/pace/pacetest.c
 +int main(int argc, char *argv[])
 +{
 +    int i;
++    int out = 0;
 +    for (i=1; i<argc; i++)
 +    {
 +        if ((strcmp(argv[i], "--verbose") == 0)
@@ -8499,7 +8603,6 @@ Index: openssl/crypto/pace/pacetest.c
 +    }
 +
 +    /*printf("%s:%d\n", __FILE__, __LINE__);*/
-+    int out = 0;
 +    out += real_life_test();
 +    out += parse_test();
 +
@@ -8516,37 +8619,39 @@ Index: openssl/crypto/pace/pacetest.c
 +#endif /* OPENSSL_NO_PACE */
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2010-12-11 13:33:13.176397395 +0100
-+++ openssl/makevms.com	2010-12-11 12:54:34.619959713 +0100
-@@ -254,6 +254,7 @@
+--- openssl.orig/makevms.com	2010-12-16 20:56:47.064131184 +0100
++++ openssl/makevms.com	2010-12-16 20:56:48.256131842 +0100
+@@ -254,6 +254,8 @@
  		     HMAC,-
  		     IDEA,-
  		     JPAKE,-
 +		     PACE,-
++		     CV_CERT,-
  		     KRB5,-
  		     LHASH,-
  		     MD2,-
-@@ -640,7 +641,7 @@
+@@ -640,7 +642,7 @@
     BN,EC,RSA,DSA,ECDSA,DH,ECDH,DSO,ENGINE,-
     BUFFER,BIO,STACK,LHASH,RAND,ERR,-
     EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,UI,KRB5,-
 -   STORE,CMS,PQUEUE,TS,JPAKE
-+   STORE,CMS,PQUEUE,TS,JPAKE,PACE
++   STORE,CMS,PQUEUE,TS,JPAKE,PACE,CV_CERT
  $ EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
  $ EXHEADER__'ARCH' := opensslconf.h
  $ EXHEADER_OBJECTS := objects.h,obj_mac.h
-@@ -697,6 +698,7 @@
+@@ -697,6 +699,8 @@
  $ EXHEADER_PQUEUE := pqueue.h
  $ EXHEADER_TS := ts.h
  $ EXHEADER_JPAKE := jpake.h
 +$ EXHEADER_PACE := pace.h
++$ EXHEADER_CV_CERT := cv_cert.h
  $
  $ I = 0
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2010-12-11 13:33:13.075907943 +0100
-+++ openssl/test/Makefile	2010-12-11 12:54:34.424174993 +0100
+--- openssl.orig/test/Makefile	2010-12-16 20:56:47.056133381 +0100
++++ openssl/test/Makefile	2010-12-16 20:56:48.240131834 +0100
 @@ -64,11 +64,14 @@
  ASN1TEST=	asn1test
  GCMTESTA=	aesgcmtest
@@ -8770,10 +8875,32 @@ Index: openssl/test/Makefile
  sha1test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
  sha1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
  sha1test.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h
+Index: openssl/test/maketests.com
+===================================================================
+--- openssl.orig/test/maketests.com	2010-12-16 20:56:47.056133381 +0100
++++ openssl/test/maketests.com	2010-12-16 20:56:48.244131784 +0100
+@@ -105,7 +105,7 @@
+ 	       "MDC2TEST,RMDTEST,"+ -
+ 	       "RANDTEST,DHTEST,ENGINETEST,"+ -
+ 	       "BFTEST,CASTTEST,SSLTEST,EXPTEST,DSATEST,RSA_TEST,"+ -
+-	       "EVP_TEST,IGETEST,JPAKETEST,ASN1TEST"
++	       "EVP_TEST,IGETEST,JPAKETEST,PACETEST,CV_CERT_TEST,ASN1TEST"
+ $! Should we add MTTEST,PQ_TEST,LH_TEST,DIVTEST,TABTEST as well?
+ $!
+ $! Additional directory information.
+@@ -141,6 +141,8 @@
+ $ T_D_EVP_TEST   := [-.crypto.evp]
+ $ T_D_IGETEST    := [-.test]
+ $ T_D_JPAKETEST  := [-.crypto.jpake]
++$ T_D_PACETEST   := [-.crypto.pace]
++$ T_D_CV_CERT_TEST := [-.crypto.cv_cert]
+ $ T_D_ASN1TEST   := [-.test]
+ $!
+ $ TCPIP_PROGRAMS = ",,"
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2010-12-11 13:33:13.075907943 +0100
-+++ openssl/test/tests.com	2010-12-11 12:54:34.424174993 +0100
+--- openssl.orig/test/tests.com	2010-12-16 20:56:47.056133381 +0100
++++ openssl/test/tests.com	2010-12-16 20:56:48.240131834 +0100
 @@ -40,7 +40,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
@@ -8807,6 +8934,77 @@ Index: openssl/test/tests.com
  $
  $
  $ exit:
+Index: openssl/util/mk1mf.pl
+===================================================================
+--- openssl.orig/util/mk1mf.pl	2010-12-16 20:56:47.064131184 +0100
++++ openssl/util/mk1mf.pl	2010-12-16 20:56:48.264131672 +0100
+@@ -271,6 +271,7 @@
+ $cflags.=" -DOPENSSL_NO_ENGINE"   if $no_engine;
+ $cflags.=" -DOPENSSL_NO_HW"   if $no_hw;
+ $cflags.=" -DOPENSSL_NO_JPAKE"    if $no_jpake;
++$cflags.=" -DOPENSSL_NO_PACE"    if $no_pace;
+ $cflags.= " -DZLIB" if $zlib_opt;
+ $cflags.= " -DZLIB_SHARED" if $zlib_opt == 2;
+ 
+@@ -727,6 +728,7 @@
+ 	return("") if $no_gost   && $dir =~ /\/ccgost/;
+ 	return("") if $no_cms  && $dir =~ /\/cms/;
+ 	return("") if $no_jpake  && $dir =~ /\/jpake/;
++	return("") if $no_pace  && $dir =~ /\/pace/ && $dir =~ /\/cv_cert/;
+ 	if ($no_des && $dir =~ /\/des/)
+ 		{
+ 		if ($val =~ /read_pwd/)
+@@ -1058,6 +1060,7 @@
+ 		"no-tlsext" => \$no_tlsext,
+ 		"no-cms" => \$no_cms,
+ 		"no-jpake" => \$no_jpake,
++		"no-pace" => \$no_pace,
+ 		"no-err" => \$no_err,
+ 		"no-sock" => \$no_sock,
+ 		"no-krb5" => \$no_krb5,
+Index: openssl/util/mkdef.pl
+===================================================================
+--- openssl.orig/util/mkdef.pl	2010-12-16 20:56:47.064131184 +0100
++++ openssl/util/mkdef.pl	2010-12-16 20:56:48.264131672 +0100
+@@ -128,7 +128,7 @@
+ my $no_ec; my $no_ecdsa; my $no_ecdh; my $no_engine; my $no_hw;
+ my $no_fp_api; my $no_static_engine=1; my $no_gmp; my $no_deprecated;
+ my $no_rfc3779; my $no_psk; my $no_tlsext; my $no_cms; my $no_capieng;
+-my $no_jpake; my $no_ssl2;
++my $no_jpake; my $no_pace; my $no_ssl2;
+ 
+ my $zlib;
+ 
+@@ -219,6 +219,7 @@
+ 	elsif (/^no-ssl2$/)	{ $no_ssl2=1; }
+ 	elsif (/^no-capieng$/)	{ $no_capieng=1; }
+ 	elsif (/^no-jpake$/)	{ $no_jpake=1; }
++	elsif (/^no-pace$/)	{ $no_pace=1; }
+ 	}
+ 
+ 
+@@ -318,6 +319,8 @@
+ $crypto.=" crypto/pqueue/pqueue.h";
+ $crypto.=" crypto/cms/cms.h";
+ $crypto.=" crypto/jpake/jpake.h";
++$crypto.=" crypto/pace/pace.h";
++$crypto.=" crypto/cv_cert/cv_cert.h";
+ $crypto.=" crypto/modes/modes.h";
+ 
+ 
+Index: openssl/util/mkfiles.pl
+===================================================================
+--- openssl.orig/util/mkfiles.pl	2010-12-16 20:56:47.064131184 +0100
++++ openssl/util/mkfiles.pl	2010-12-16 20:56:48.264131672 +0100
+@@ -51,6 +51,8 @@
+ "crypto/cms",
+ "crypto/conf",
+ "crypto/jpake",
++"crypto/pace",
++"crypto/cv_cert",
+ "crypto/txt_db",
+ "crypto/pkcs7",
+ "crypto/pkcs12",
 Index: openssl/test/cvca-eid.cv
 ===================================================================
-Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2010-12-11 02:52:22.798481272 +0100 differ
+Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2010-12-16 20:56:45.603632271 +0100 differ

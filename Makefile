@@ -8,25 +8,25 @@ PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
 #
 OPENSSL_VERSION=1.0.0c
 
-all: patched.openssl
+all: patch_with_openpace
 	$(MAKE) Makefile -C openssl-$(OPENSSL_VERSION) || \
 	    (cd openssl-$(OPENSSL_VERSION) && sleep 1 && ./config experimental-pace)
 	$(MAKE) -C openssl-$(OPENSSL_VERSION)
 
 # see http://rt.openssl.org/Ticket/Display.html?id=2092&user=guest&pass=guest
 # This patch is modified to be compliant with OpenSSL $(OPENSSL_VERSION) 
-patched.cmac: openssl-$(OPENSSL_VERSION)
+patch_with_cmac: openssl-$(OPENSSL_VERSION)
 	[ -r openssl-$(OPENSSL_VERSION)/crypto/cmac/cmac.h ] || (\
 	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < ibm4_2.patch && \
 	    ln -s ../../crypto/cmac/cmac.h openssl-$(OPENSSL_VERSION)/include/openssl)
 	echo "Patched OpenSSL with CMAC"
 
-patched.brainpool: openssl-$(OPENSSL_VERSION)
+patch_with_brainpool: openssl-$(OPENSSL_VERSION)
 	grep brainpool openssl-$(OPENSSL_VERSION)/crypto/ec/ec_curve.c > /dev/null || \
 	    patch -d openssl-$(OPENSSL_VERSION) -p1 < BP.patch
 	echo "Patched OpenSSL with Brainpool curves"
 
-patched.openssl: patched.cmac patched.brainpool
+patch_with_openpace: patch_with_brainpool patch_with_cmac
 	[ -r openssl-$(OPENSSL_VERSION)/crypto/pace/pace.h ] || (\
 	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < OpenPACE.patch && \
 	    ln -s ../../crypto/pace/pace.h openssl-$(OPENSSL_VERSION)/include/openssl && \
