@@ -1,4 +1,7 @@
-Use `make all` to build OpenSSL 1.0.0 with OpenPACE.
+UNIX
+====
+
+Use `make all` to build OpenSSL with OpenPACE.
 
 If you choose to patch and build OpenSSL by yourself, make sure to to configure
 OpenSSL with PACE support, i.e.:
@@ -6,3 +9,16 @@ OpenSSL with PACE support, i.e.:
 
 After building OpenPACE you can use the included pacetest program in the test
 directory to see if everything is working correctly.
+
+
+WINDOWS
+=======
+
+Compiling with Visual C++ is supported and tested. You will additionally need
+perl, for example from here http://strawberryperl.com/.
+
+Open a VC command prompt, go to your OpenSSL patched with OpenPACE and run the
+following commands:
+1. perl Configure experimental-pace VC-WIN32 no-asm --prefix=c:\openssl
+2. ms\do_ms.bat
+3. nmake -f ms\nt.mak install
