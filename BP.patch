@@ -1,7 +1,6 @@
-Index: openssl-1.0.0c/crypto/ec/ec_curve.c
-===================================================================
---- openssl-1.0.0c.orig/crypto/ec/ec_curve.c	2010-12-10 23:39:47.042981449 +0100
-+++ openssl-1.0.0c/crypto/ec/ec_curve.c	2010-12-10 23:40:32.158476426 +0100
+diff -ur openssl-1.0.0c/crypto/ec/ec_curve.c openssl-bp//crypto/ec/ec_curve.c
+--- openssl-1.0.0c/crypto/ec/ec_curve.c	2007-08-31 11:36:43.000000000 +0200
++++ openssl-bp//crypto/ec/ec_curve.c	2010-12-31 14:50:36.552053001 +0100
 @@ -1817,6 +1817,434 @@
  	  0xBA,0xFC,0xA7,0x5E }
  	};
@@ -459,10 +458,176 @@ Index: openssl-1.0.0c/crypto/ec/ec_curve.c
  };
  
  #define curve_list_length (sizeof(curve_list)/sizeof(ec_list_element))
-Index: openssl-1.0.0c/crypto/objects/obj_mac.h
-===================================================================
---- openssl-1.0.0c.orig/crypto/objects/obj_mac.h	2010-12-10 23:39:47.074974696 +0100
-+++ openssl-1.0.0c/crypto/objects/obj_mac.h	2010-12-10 23:40:32.162487690 +0100
+diff -ur openssl-1.0.0c/crypto/objects/obj_dat.h openssl-bp//crypto/objects/obj_dat.h
+--- openssl-1.0.0c/crypto/objects/obj_dat.h	2010-01-25 17:07:51.000000000 +0100
++++ openssl-bp//crypto/objects/obj_dat.h	2010-12-31 14:55:41.000000000 +0100
+@@ -62,12 +62,12 @@
+  * [including the GNU Public Licence.]
+  */
+ 
+-#define NUM_NID 893
+-#define NUM_SN 886
+-#define NUM_LN 886
+-#define NUM_OBJ 840
++#define NUM_NID 907
++#define NUM_SN 900
++#define NUM_LN 900
++#define NUM_OBJ 854
+ 
+-static const unsigned char lvalues[5824]={
++static const unsigned char lvalues[5950]={
+ 0x00,                                        /* [  0] OBJ_undef */
+ 0x2A,0x86,0x48,0x86,0xF7,0x0D,               /* [  1] OBJ_rsadsi */
+ 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,          /* [  7] OBJ_pkcs */
+@@ -908,6 +908,20 @@
+ 0x55,0x04,0x34,                              /* [5814] OBJ_supportedAlgorithms */
+ 0x55,0x04,0x35,                              /* [5817] OBJ_deltaRevocationList */
+ 0x55,0x04,0x36,                              /* [5820] OBJ_dmdName */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x01,/* [5823] OBJ_brainpoolP160r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x02,/* [5832] OBJ_brainpoolP160t1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x03,/* [5841] OBJ_brainpoolP192r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x04,/* [5850] OBJ_brainpoolP192t1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x05,/* [5859] OBJ_brainpoolP224r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x06,/* [5868] OBJ_brainpoolP224t1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x07,/* [5877] OBJ_brainpoolP256r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x08,/* [5886] OBJ_brainpoolP256t1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x09,/* [5895] OBJ_brainpoolP320r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0A,/* [5904] OBJ_brainpoolP320t1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0B,/* [5913] OBJ_brainpoolP384r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0C,/* [5922] OBJ_brainpoolP384t1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0D,/* [5931] OBJ_brainpoolP512r1 */
++0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0E,/* [5940] OBJ_brainpoolP512t1 */
+ };
+ 
+ static const ASN1_OBJECT nid_objs[NUM_NID]={
+@@ -2351,6 +2365,34 @@
+ {"deltaRevocationList","deltaRevocationList",NID_deltaRevocationList,
+ 	3,&(lvalues[5817]),0},
+ {"dmdName","dmdName",NID_dmdName,3,&(lvalues[5820]),0},
++{"brainpoolP160r1","brainpoolP160r1",NID_brainpoolP160r1,9,
++	&(lvalues[5823]),0},
++{"brainpoolP160t1","brainpoolP160t1",NID_brainpoolP160t1,9,
++	&(lvalues[5832]),0},
++{"brainpoolP192r1","brainpoolP192r1",NID_brainpoolP192r1,9,
++	&(lvalues[5841]),0},
++{"brainpoolP192t1","brainpoolP192t1",NID_brainpoolP192t1,9,
++	&(lvalues[5850]),0},
++{"brainpoolP224r1","brainpoolP224r1",NID_brainpoolP224r1,9,
++	&(lvalues[5859]),0},
++{"brainpoolP224t1","brainpoolP224t1",NID_brainpoolP224t1,9,
++	&(lvalues[5868]),0},
++{"brainpoolP256r1","brainpoolP256r1",NID_brainpoolP256r1,9,
++	&(lvalues[5877]),0},
++{"brainpoolP256t1","brainpoolP256t1",NID_brainpoolP256t1,9,
++	&(lvalues[5886]),0},
++{"brainpoolP320r1","brainpoolP320r1",NID_brainpoolP320r1,9,
++	&(lvalues[5895]),0},
++{"brainpoolP320t1","brainpoolP320t1",NID_brainpoolP320t1,9,
++	&(lvalues[5904]),0},
++{"brainpoolP384r1","brainpoolP384r1",NID_brainpoolP384r1,9,
++	&(lvalues[5913]),0},
++{"brainpoolP384t1","brainpoolP384t1",NID_brainpoolP384t1,9,
++	&(lvalues[5922]),0},
++{"brainpoolP512r1","brainpoolP512r1",NID_brainpoolP512r1,9,
++	&(lvalues[5931]),0},
++{"brainpoolP512t1","brainpoolP512t1",NID_brainpoolP512t1,9,
++	&(lvalues[5940]),0},
+ };
+ 
+ static const unsigned int sn_objs[NUM_SN]={
+@@ -2551,6 +2593,20 @@
+ 87,	/* "basicConstraints" */
+ 365,	/* "basicOCSPResponse" */
+ 285,	/* "biometricInfo" */
++893,	/* "brainpoolP160r1" */
++894,	/* "brainpoolP160t1" */
++895,	/* "brainpoolP192r1" */
++896,	/* "brainpoolP192t1" */
++897,	/* "brainpoolP224r1" */
++898,	/* "brainpoolP224t1" */
++899,	/* "brainpoolP256r1" */
++900,	/* "brainpoolP256t1" */
++901,	/* "brainpoolP320r1" */
++902,	/* "brainpoolP320t1" */
++903,	/* "brainpoolP384r1" */
++904,	/* "brainpoolP384t1" */
++905,	/* "brainpoolP512r1" */
++906,	/* "brainpoolP512t1" */
+ 494,	/* "buildingName" */
+ 860,	/* "businessCategory" */
+ 691,	/* "c2onb191v4" */
+@@ -3412,6 +3468,20 @@
+ 93,	/* "bf-cfb" */
+ 92,	/* "bf-ecb" */
+ 94,	/* "bf-ofb" */
++893,	/* "brainpoolP160r1" */
++894,	/* "brainpoolP160t1" */
++895,	/* "brainpoolP192r1" */
++896,	/* "brainpoolP192t1" */
++897,	/* "brainpoolP224r1" */
++898,	/* "brainpoolP224t1" */
++899,	/* "brainpoolP256r1" */
++900,	/* "brainpoolP256t1" */
++901,	/* "brainpoolP320r1" */
++902,	/* "brainpoolP320t1" */
++903,	/* "brainpoolP384r1" */
++904,	/* "brainpoolP384t1" */
++905,	/* "brainpoolP512r1" */
++906,	/* "brainpoolP512t1" */
+ 494,	/* "buildingName" */
+ 860,	/* "businessCategory" */
+ 691,	/* "c2onb191v4" */
+@@ -4780,6 +4850,20 @@
+ 373,	/* OBJ_id_pkix_OCSP_valid           1 3 6 1 5 5 7 48 1 9 */
+ 374,	/* OBJ_id_pkix_OCSP_path            1 3 6 1 5 5 7 48 1 10 */
+ 375,	/* OBJ_id_pkix_OCSP_trustRoot       1 3 6 1 5 5 7 48 1 11 */
++893,	/* OBJ_brainpoolP160r1              1 3 36 3 3 2 8 1 1 1 */
++894,	/* OBJ_brainpoolP160t1              1 3 36 3 3 2 8 1 1 2 */
++895,	/* OBJ_brainpoolP192r1              1 3 36 3 3 2 8 1 1 3 */
++896,	/* OBJ_brainpoolP192t1              1 3 36 3 3 2 8 1 1 4 */
++897,	/* OBJ_brainpoolP224r1              1 3 36 3 3 2 8 1 1 5 */
++898,	/* OBJ_brainpoolP224t1              1 3 36 3 3 2 8 1 1 6 */
++899,	/* OBJ_brainpoolP256r1              1 3 36 3 3 2 8 1 1 7 */
++900,	/* OBJ_brainpoolP256t1              1 3 36 3 3 2 8 1 1 8 */
++901,	/* OBJ_brainpoolP320r1              1 3 36 3 3 2 8 1 1 9 */
++902,	/* OBJ_brainpoolP320t1              1 3 36 3 3 2 8 1 1 10 */
++903,	/* OBJ_brainpoolP384r1              1 3 36 3 3 2 8 1 1 11 */
++904,	/* OBJ_brainpoolP384t1              1 3 36 3 3 2 8 1 1 12 */
++905,	/* OBJ_brainpoolP512r1              1 3 36 3 3 2 8 1 1 13 */
++906,	/* OBJ_brainpoolP512t1              1 3 36 3 3 2 8 1 1 14 */
+ 418,	/* OBJ_aes_128_ecb                  2 16 840 1 101 3 4 1 1 */
+ 419,	/* OBJ_aes_128_cbc                  2 16 840 1 101 3 4 1 2 */
+ 420,	/* OBJ_aes_128_ofb128               2 16 840 1 101 3 4 1 3 */
+Nur in openssl-bp//crypto/objects: .obj_dat.pl.swp.
+diff -ur openssl-1.0.0c/crypto/objects/objects.txt openssl-bp//crypto/objects/objects.txt
+--- openssl-1.0.0c/crypto/objects/objects.txt	2010-01-25 17:07:51.000000000 +0100
++++ openssl-bp//crypto/objects/objects.txt	2010-12-31 14:50:36.552053001 +0100
+@@ -1257,3 +1257,22 @@
+ # There is no OID that just denotes "HMAC" oddly enough...
+ 
+ 			: HMAC				: hmac
++# RFC 5639 curve OIDs (see http://www.ietf.org/rfc/rfc5639.txt)
++# versionOne OBJECT IDENTIFIER ::= {
++# iso(1) identifified-organization(3) teletrust(36) algorithm(3)
++# signature-algorithm(3) ecSign(2) ecStdCurvesAndGeneration(8)
++# ellipticCurve(1) 1 }
++1 3 36 3 3 2 8 1 1 1 : brainpoolP160r1
++1 3 36 3 3 2 8 1 1 2 : brainpoolP160t1
++1 3 36 3 3 2 8 1 1 3 : brainpoolP192r1
++1 3 36 3 3 2 8 1 1 4 : brainpoolP192t1
++1 3 36 3 3 2 8 1 1 5 : brainpoolP224r1
++1 3 36 3 3 2 8 1 1 6 : brainpoolP224t1
++1 3 36 3 3 2 8 1 1 7 : brainpoolP256r1
++1 3 36 3 3 2 8 1 1 8 : brainpoolP256t1
++1 3 36 3 3 2 8 1 1 9 : brainpoolP320r1
++1 3 36 3 3 2 8 1 1 10 : brainpoolP320t1
++1 3 36 3 3 2 8 1 1 11 : brainpoolP384r1
++1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
++1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
++1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
+diff -ur openssl-1.0.0c/crypto/objects/obj_mac.h openssl-bp//crypto/objects/obj_mac.h
+--- openssl-1.0.0c/crypto/objects/obj_mac.h	2010-01-25 17:07:51.000000000 +0100
++++ openssl-bp//crypto/objects/obj_mac.h	2010-12-31 14:50:36.562053001 +0100
 @@ -3912,3 +3912,59 @@
  #define LN_hmac		"hmac"
  #define NID_hmac		855
@@ -523,10 +688,9 @@ Index: openssl-1.0.0c/crypto/objects/obj_mac.h
 +#define NID_brainpoolP512t1		906
 +#define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
 +
-Index: openssl-1.0.0c/crypto/objects/obj_mac.num
-===================================================================
---- openssl-1.0.0c.orig/crypto/objects/obj_mac.num	2010-12-10 23:39:47.090974357 +0100
-+++ openssl-1.0.0c/crypto/objects/obj_mac.num	2010-12-10 23:40:32.166511876 +0100
+diff -ur openssl-1.0.0c/crypto/objects/obj_mac.num openssl-bp//crypto/objects/obj_mac.num
+--- openssl-1.0.0c/crypto/objects/obj_mac.num	2009-03-25 20:02:22.000000000 +0100
++++ openssl-bp//crypto/objects/obj_mac.num	2010-12-31 14:50:36.562053001 +0100
 @@ -890,3 +890,17 @@
  supportedAlgorithms		890
  deltaRevocationList		891
@@ -545,30 +709,3 @@ Index: openssl-1.0.0c/crypto/objects/obj_mac.num
 +brainpoolP384t1		904
 +brainpoolP512r1		905
 +brainpoolP512t1		906
-Index: openssl-1.0.0c/crypto/objects/objects.txt
-===================================================================
---- openssl-1.0.0c.orig/crypto/objects/objects.txt	2010-12-10 23:39:47.058983276 +0100
-+++ openssl-1.0.0c/crypto/objects/objects.txt	2010-12-10 23:40:32.158476426 +0100
-@@ -1257,3 +1257,22 @@
- # There is no OID that just denotes "HMAC" oddly enough...
- 
- 			: HMAC				: hmac
-+# RFC 5639 curve OIDs (see http://www.ietf.org/rfc/rfc5639.txt)
-+# versionOne OBJECT IDENTIFIER ::= {
-+# iso(1) identifified-organization(3) teletrust(36) algorithm(3)
-+# signature-algorithm(3) ecSign(2) ecStdCurvesAndGeneration(8)
-+# ellipticCurve(1) 1 }
-+1 3 36 3 3 2 8 1 1 1 : brainpoolP160r1
-+1 3 36 3 3 2 8 1 1 2 : brainpoolP160t1
-+1 3 36 3 3 2 8 1 1 3 : brainpoolP192r1
-+1 3 36 3 3 2 8 1 1 4 : brainpoolP192t1
-+1 3 36 3 3 2 8 1 1 5 : brainpoolP224r1
-+1 3 36 3 3 2 8 1 1 6 : brainpoolP224t1
-+1 3 36 3 3 2 8 1 1 7 : brainpoolP256r1
-+1 3 36 3 3 2 8 1 1 8 : brainpoolP256t1
-+1 3 36 3 3 2 8 1 1 9 : brainpoolP320r1
-+1 3 36 3 3 2 8 1 1 10 : brainpoolP320t1
-+1 3 36 3 3 2 8 1 1 11 : brainpoolP384r1
-+1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
-+1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
-+1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1

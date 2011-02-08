@@ -1,7 +1,7 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/Configure	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/Configure	2011-02-08 21:52:04.845157252 +0100
++++ openssl/Configure	2011-02-08 21:39:41.917159214 +0100
 @@ -670,6 +670,7 @@
  		 "gmp"		  => "default",
                   "jpake"          => "experimental",
@@ -21,21 +21,21 @@ Index: openssl/Configure
  # To remove something from %disabled, use "enable-foo" (unless it's experimental).
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/Makefile.org	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/Makefile.org	2011-02-08 21:52:04.845157252 +0100
++++ openssl/Makefile.org	2011-02-08 21:39:41.917159214 +0100
 @@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
 -	cms pqueue ts jpake store
-+	cms pqueue ts jpake store pace cv_cert
++	cms pqueue ts jpake store eac cv_cert
  # keep in mind that the above list is adjusted by ./Configure
  # according to no-xxx arguments...
  
 Index: openssl/crypto/bn/bn.h
 ===================================================================
---- openssl.orig/crypto/bn/bn.h	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/bn/bn.h	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/crypto/bn/bn.h	2011-02-08 21:52:04.849158249 +0100
++++ openssl/crypto/bn/bn.h	2011-02-08 21:39:40.049157266 +0100
 @@ -126,6 +126,7 @@
  #define HEADER_BN_H
  
@@ -62,8 +62,8 @@ Index: openssl/crypto/bn/bn.h
  int	BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 Index: openssl/crypto/bn/bn_lib.c
 ===================================================================
---- openssl.orig/crypto/bn/bn_lib.c	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/bn/bn_lib.c	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/crypto/bn/bn_lib.c	2011-02-08 21:52:04.849158249 +0100
++++ openssl/crypto/bn/bn_lib.c	2011-02-08 21:39:40.053186339 +0100
 @@ -66,6 +66,7 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -98,8 +98,8 @@ Index: openssl/crypto/bn/bn_lib.c
  	int i;
 Index: openssl/crypto/buffer/buffer.c
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.c	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/buffer/buffer.c	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/crypto/buffer/buffer.c	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/buffer/buffer.c	2011-02-08 21:39:40.341157579 +0100
 @@ -242,3 +242,59 @@
  			}
  		}
@@ -162,8 +162,8 @@ Index: openssl/crypto/buffer/buffer.c
 +}
 Index: openssl/crypto/buffer/buffer.h
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.h	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/buffer/buffer.h	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/crypto/buffer/buffer.h	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/buffer/buffer.h	2011-02-08 21:39:40.341157579 +0100
 @@ -89,6 +89,34 @@
  char *	BUF_strndup(const char *str, size_t siz);
  void *	BUF_memdup(const void *data, size_t siz);
@@ -201,8 +201,8 @@ Index: openssl/crypto/buffer/buffer.h
  size_t BUF_strlcpy(char *dst,const char *src,size_t siz);
 Index: openssl/crypto/crypto-lib.com
 ===================================================================
---- openssl.orig/crypto/crypto-lib.com	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/crypto-lib.com	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/crypto/crypto-lib.com	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/crypto-lib.com	2011-02-08 21:39:40.753157357 +0100
 @@ -298,6 +298,9 @@
  	"ts_rsp_sign,ts_rsp_verify,ts_verify_ctx,ts_lib,ts_conf,"+ -
  	"ts_asn1"
@@ -216,7 +216,7 @@ Index: openssl/crypto/crypto-lib.com
 Index: openssl/crypto/cv_cert/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/Makefile	2010-12-17 10:49:12.000000000 +0100
++++ openssl/crypto/cv_cert/Makefile	2011-02-08 21:39:40.121658444 +0100
 @@ -0,0 +1,89 @@
 +#
 +# OpenSSL/crypto/cv_cert/Makefile
@@ -310,8 +310,8 @@ Index: openssl/crypto/cv_cert/Makefile
 Index: openssl/crypto/cv_cert/cv_cert.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert.c	2010-12-20 19:06:15.000000000 +0100
-@@ -0,0 +1,603 @@
++++ openssl/crypto/cv_cert/cv_cert.c	2011-02-08 21:39:40.121658444 +0100
+@@ -0,0 +1,605 @@
 +/**
 + * @file
 + * @brief Library for card verifiable certificates
@@ -336,10 +336,10 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +static const char *at_chat_strings[] = {
 +        "Age Verification",
 +        "Community ID Verification",
-+        "Restrictied Identification",
++        "Restricted Identification",
 +        "Privileged Terminal",
 +        "CAN allowed",
-+        "PIN Managment",
++        "PIN Management",
 +        "Install Certificate",
 +        "Install Qualified Certificate",
 +        "Read DG 1",
@@ -505,6 +505,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, subjectURL, ASN1_PRINTABLESTRING, 0x04),
 +        ASN1_ADB_OBJECT(CVC_CERTIFICATE_DESCRIPTION),
 +        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, redirectURL, ASN1_PRINTABLESTRING, 0x06),
++        ASN1_IMP_SET_OF_OPT(CVC_CERTIFICATE_DESCRIPTION, commCertificates, ASN1_OCTET_STRING, 0x07),
 +} ASN1_SEQUENCE_END(CVC_CERTIFICATE_DESCRIPTION)
 +IMPLEMENT_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
 +IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
@@ -653,7 +654,7 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +
 +    /* Dump the relative authorization bitstring in human readable form.
 +     * Each set Bit means one authorization */
-+    for (i = 0; i <= rel_auth_len; i++) {
++    for (i = 0; i < rel_auth_len; i++) {
 +        if (i % 8 == 0 && i != 0)
 +            j++;
 +        if (CHECK_BIT(chat->relative_authorization->data[rel_auth_num_bytes - j],
@@ -736,10 +737,11 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 +
 +    for (i = 0; i < ref->length; i++) {
 +        c = ref->data[i];
-+        /*XXX: For now we accept Alphanumeric characters only */
-+        if (((c >= 0x30) && (c <= 0x39)) || ((c >= 0x41) && (c <= 0x5A)))
++        /*XXX: For now we accept only a subset of all valid characters */
++        if ((c >= 0x21) && (c <= 0x7E))
 +            ret[i] = c;
 +        else {
++        	printf("Illegal character: %d\n", c);
 +            OPENSSL_free(ret);
 +            return NULL;
 +        }
@@ -918,8 +920,8 @@ Index: openssl/crypto/cv_cert/cv_cert.c
 Index: openssl/crypto/cv_cert/cv_cert.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert.h	2010-12-20 19:06:15.000000000 +0100
-@@ -0,0 +1,314 @@
++++ openssl/crypto/cv_cert/cv_cert.h	2011-02-08 21:39:40.121658444 +0100
+@@ -0,0 +1,315 @@
 +/**
 + * @file
 + * @brief Interface to library for card verifiable certificates
@@ -1051,6 +1053,7 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 +        ASN1_TYPE *other;
 +    } termsOfUsage;
 +    ASN1_PRINTABLESTRING *redirectURL;
++    STACK_OF(ASN1_OCTET_STRING) *commCertificates;
 +} CVC_CERTIFICATE_DESCRIPTION;
 +
 +/** @} ***********************************************************************/
@@ -1237,8 +1240,8 @@ Index: openssl/crypto/cv_cert/cv_cert.h
 Index: openssl/crypto/cv_cert/cv_cert_test.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/cv_cert/cv_cert_test.c	2010-12-20 19:06:15.000000000 +0100
-@@ -0,0 +1,320 @@
++++ openssl/crypto/cv_cert/cv_cert_test.c	2011-02-08 21:39:40.121658444 +0100
+@@ -0,0 +1,321 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
 +#ifdef OPENSSL_NO_PACE
@@ -1376,19 +1379,63 @@ Index: openssl/crypto/cv_cert/cv_cert_test.c
 +
 +static const unsigned int certDesc_len = 404;
 +
++static int parse_cv_cert(const unsigned char *cert, const unsigned int len) {
++	BIO *bio_stdout = NULL;
++    CVC_CERT *cvc_cert = NULL;
++    CVC_CERTIFICATE_DESCRIPTION *cert_desc = NULL;
++	const unsigned char *p;
++	int fail = 1;
++
++	printf("Test CV certificate parsing ");
++    if (verbose)
++        printf("\n");
++
++    bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
++    if (!bio_stdout)
++        err("Could not get output buffer");
++
++    p = cert;
++    cvc_cert = CVC_d2i_CVC_CERT(NULL, &p, len);
++    if (!cvc_cert)
++        err("Could not parse CV Cert");
++    verb("Parsed CV Cert");
++    if (debug) {
++        if (!cvc_print(bio_stdout, cvc_cert, "\t"))
++            err("Could not print CV certificate");
++    }
++
++    p = certDesc;
++    cert_desc = d2i_CVC_CERTIFICATE_DESCRIPTION(NULL, &p, certDesc_len);
++    if (!cvc_cert)
++        err("Could not parse Certificate Description");
++    verb("\nParsed Certificate Description");
++    if (debug)
++        if (!certificate_description_print(bio_stdout, certDesc, certDesc_len, "\t"))
++            err("Could not print Certificate Description");
++
++    if (!CVC_check_cert(cvc_cert, certDesc, certDesc_len)) {
++        err("Certificate Description doesn't match Certificate\n");
++    } else {
++    	verb("Certificate Description matches Certificate");
++    }
++
++    fail = 0;
++
++err:
++	if (cvc_cert)
++		CVC_CERT_free(cvc_cert);
++	if (bio_stdout)
++		BIO_free_all(bio_stdout);
++	return fail;
++}
++
 +static int parse_cv_file(char *filename) {
 +
 +	FILE *fp = NULL;
 +	int fail = 1;
 +	long filesize = 0;
 +	unsigned char *cv_data;
-+	const unsigned char *p;
 +	CVC_CERT *cv = NULL;
-+	BIO *bio_stdout = NULL;
-+
-+	bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
-+	if (!bio_stdout)
-+		err("Could not open stdout\n");
 +
 +	fp = fopen(filename, "rb");
 +	if (!fp)
@@ -1405,20 +1452,15 @@ Index: openssl/crypto/cv_cert/cv_cert_test.c
 +	if (filesize != fread(cv_data, sizeof(unsigned char), filesize, fp))
 +		err("Failed to read file\n");
 +
-+	p = cv_data;
-+    cv = CVC_d2i_CVC_CERT(NULL, &p, filesize);
-+    if (!cv)
-+    	err("Failed to parse CV certificate\n");
++	fail = parse_cv_cert(cv_data, filesize);
 +
 +    if (verbose)
-+        printf("Parsed %s", filename);
++        printf("Parsed %s\n", filename);
 +    else
 +        printf(".");
 +
 +    /* FIXME: CVC_CERT_print_ctx -> segfault */
 +    /*CVC_CERT_print_ctx(bio_stdout, cv, 1, NULL);*/
-+
-+	fail = 0;
 +
 +err:
 +	if (fp)
@@ -1427,18 +1469,13 @@ Index: openssl/crypto/cv_cert/cv_cert_test.c
 +		free(cv_data);
 +	if (cv)
 +		CVC_CERT_free(cv);
-+	if (bio_stdout)
-+		BIO_free_all(bio_stdout);
 +
 +	return fail;
 +}
 +
 +int main(int argc, char *argv[])
 +{
-+    CVC_CERT *cvc_cert = NULL;
-+    CVC_CERTIFICATE_DESCRIPTION *cert_desc = NULL;
-+    BIO *bio_stdout = NULL, *bio_file = NULL;
-+    const unsigned char *p;
++    BIO *bio_file = NULL;
 +	int fail = 1, i = 1;
 +        char *filename = NULL;
 +
@@ -1494,52 +1531,19 @@ Index: openssl/crypto/cv_cert/cv_cert_test.c
 +        return fail;
 +    }
 +
-+	printf("Test CV certificate parsing ");
-+    if (verbose)
-+        printf("\n");
-+
-+    bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
-+    if (!bio_stdout)
-+        err("Could not get output buffer");
-+
-+    p = CVCert;
-+    cvc_cert = CVC_d2i_CVC_CERT(NULL, &p, CVCert_len);
-+    if (!cvc_cert)
-+        err("Could not parse CV Cert");
-+    verb("Parsed CV Cert");
-+    if (debug) {
-+        if (!cvc_print(bio_stdout, cvc_cert, "\t"))
-+            err("Could not print CV certificate");
-+    }
-+
-+    p = certDesc;
-+    cert_desc = d2i_CVC_CERTIFICATE_DESCRIPTION(NULL, &p, certDesc_len);
-+    if (!cvc_cert)
-+        err("Could not parse Certificate Description");
-+    verb("Parsed Certificate Description");
-+    if (debug)
-+        if (!certificate_description_print(bio_stdout, certDesc, certDesc_len, "\t"))
-+            err("Could not print Certificate Description");
-+    verb("Certificate Description matches Certificate");
-+
-+    if (!CVC_check_cert(cvc_cert, certDesc, certDesc_len))
-+        err("Certificate Description doesn't match Certificate\n");
-+
-+    fail = 0;
 +
 +    if (filename)
 +        fail = parse_cv_file(filename);
++    else
++    	fail = parse_cv_cert(CVCert, CVCert_len);
++
++
++
++    fail = 0;
 +
 +    /* FIXME: CVC_CERT_print_ctx -> segfault
 +    CVC_CERT_print_ctx(bio_stdout, cvc_cert, 1, NULL); */
 +
-+err:
-+	if (cvc_cert)
-+		CVC_CERT_free(cvc_cert);
-+	if (cert_desc)
-+		CVC_CERTIFICATE_DESCRIPTION_free(cert_desc);
-+	if (bio_stdout)
-+		BIO_free_all(bio_stdout);
 +	if (bio_file)
 +		BIO_free_all(bio_file);
 +
@@ -1559,837 +1563,16 @@ Index: openssl/crypto/cv_cert/cv_cert_test.c
 +}
 +
 +#endif /* OPENSSL_NO_PACE */
-Index: openssl/crypto/ec/ec.h
-===================================================================
---- openssl.orig/crypto/ec/ec.h	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/ec/ec.h	2010-12-17 10:49:17.000000000 +0100
-@@ -1094,6 +1094,19 @@
- #define EC_R_UNSUPPORTED_FIELD				 131
- #define EC_R_WRONG_ORDER				 130
- 
-+#include <openssl/buffer.h>
-+/**
-+ * @brief converts an EC_POINT object to a BUF_MEM object
-+ *
-+ * @param ecdh EC_KEY object
-+ * @param bn_ctx object (optional)
-+ * @param ecp elliptic curve point to convert
-+ *
-+ * @return converted elliptic curve point or NULL if an error occurred
-+ */
-+BUF_MEM *
-+EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
-+
- #ifdef  __cplusplus
- }
- #endif
-Index: openssl/crypto/ec/ec_print.c
-===================================================================
---- openssl.orig/crypto/ec/ec_print.c	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/ec/ec_print.c	2010-12-17 10:49:17.000000000 +0100
-@@ -54,6 +54,7 @@
-  */
- 
- #include <openssl/crypto.h>
-+#include <openssl/buffer.h>
- #include "ec_lcl.h"
- 
- BIGNUM *EC_POINT_point2bn(const EC_GROUP *group, 
-@@ -193,3 +194,25 @@
- 
- 	return ret;
- 	}
-+
-+BUF_MEM *
-+EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
-+{
-+    size_t len;
-+    BUF_MEM * out;
-+
-+    len = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
-+            EC_KEY_get_conv_form(ecdh), NULL, 0, bn_ctx);
-+    if (len == 0)
-+        return NULL;
-+
-+    out = BUF_MEM_create(len);
-+    if (!out)
-+        return NULL;
-+
-+    out->length = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
-+            EC_KEY_get_conv_form(ecdh), (unsigned char *) out->data, out->max,
-+            bn_ctx);
-+
-+    return out;
-+}
-Index: openssl/crypto/ecdh/ecdh.h
-===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/ecdh/ecdh.h	2010-12-17 10:49:17.000000000 +0100
-@@ -86,6 +86,7 @@
- #endif
- 
- const ECDH_METHOD *ECDH_OpenSSL(void);
-+const ECDH_METHOD *ECDH_OpenSSL_Point(void);
- 
- void	  ECDH_set_default_method(const ECDH_METHOD *);
- const ECDH_METHOD *ECDH_get_default_method(void);
-Index: openssl/crypto/ecdh/ech_ossl.c
-===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/ecdh/ech_ossl.c	2010-12-17 10:49:17.000000000 +0100
-@@ -211,3 +211,113 @@
- 	if (buf) OPENSSL_free(buf);
- 	return(ret);
- 	}
-+
-+static int ecdh_compute_key_point(void *out, size_t len, const EC_POINT *pub_key,
-+	EC_KEY *ecdh,
-+	void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
-+
-+static ECDH_METHOD openssl_ecdh_meth_point = {
-+	"OpenSSL ECDH method with Point",
-+	ecdh_compute_key_point,
-+#if 0
-+	NULL, /* init     */
-+	NULL, /* finish   */
-+#endif
-+	0,    /* flags    */
-+	NULL  /* app_data */
-+};
-+
-+const ECDH_METHOD *ECDH_OpenSSL_Point(void)
-+	{
-+	return &openssl_ecdh_meth_point;
-+	}
-+/* This implementation calculates the point as in ecdh_compute_key.
-+ * Finally an optional KDF is applied to the point rather than to the x-coordinate as done in ecdh_compute_key.
-+ */
-+int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
-+	EC_KEY *ecdh,
-+	void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen))
-+	{
-+	BN_CTX *ctx;
-+	EC_POINT *tmp=NULL;
-+	const BIGNUM *priv_key;
-+	const EC_GROUP* group;
-+	int ret= -1;
-+	size_t buflen;
-+	unsigned char *buf=NULL;
-+
-+	if (outlen > INT_MAX)
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE); /* sort of, anyway */
-+		return -1;
-+		}
-+
-+	if ((ctx = BN_CTX_new()) == NULL) goto err;
-+	BN_CTX_start(ctx);
-+
-+	priv_key = EC_KEY_get0_private_key(ecdh);
-+	if (priv_key == NULL)
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_NO_PRIVATE_VALUE);
-+		goto err;
-+		}
-+
-+	group = EC_KEY_get0_group(ecdh);
-+	if ((tmp=EC_POINT_new(group)) == NULL)
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
-+		goto err;
-+		}
-+
-+	if (!EC_POINT_mul(group, tmp, NULL, pub_key, priv_key, ctx))
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_POINT_ARITHMETIC_FAILURE);
-+		goto err;
-+		}
-+
-+
-+        buflen = EC_POINT_point2oct(group, tmp,
-+                EC_KEY_get_conv_form(ecdh), NULL, 0, ctx);
-+        if (buflen < 0)
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_BN_LIB);
-+		goto err;
-+		}
-+	if ((buf = OPENSSL_malloc(buflen)) == NULL)
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
-+		goto err;
-+		}
-+
-+        if (buflen != EC_POINT_point2oct(group, tmp,
-+                    EC_KEY_get_conv_form(ecdh), buf, buflen, ctx))
-+		{
-+		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_BN_LIB);
-+		goto err;
-+		}
-+
-+	if (KDF != 0)
-+		{
-+		if (KDF(buf, buflen, out, &outlen) == NULL)
-+			{
-+			ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_KDF_FAILED);
-+			goto err;
-+			}
-+		ret = outlen;
-+		}
-+	else
-+		{
-+		/* no KDF, just copy as much as we can */
-+		if (outlen > buflen)
-+			outlen = buflen;
-+		memcpy(out, buf, outlen);
-+		ret = outlen;
-+		}
-+
-+err:
-+	if (tmp) EC_POINT_free(tmp);
-+	if (ctx) BN_CTX_end(ctx);
-+	if (ctx) BN_CTX_free(ctx);
-+	if (buf) OPENSSL_free(buf);
-+	return(ret);
-+	}
-Index: openssl/crypto/err/err.c
-===================================================================
---- openssl.orig/crypto/err/err.c	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/err/err.c	2010-12-17 10:49:17.000000000 +0100
-@@ -156,6 +156,7 @@
- {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
- {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
- {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
-+{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
- {0,NULL},
- 	};
- 
-Index: openssl/crypto/err/err.h
-===================================================================
---- openssl.orig/crypto/err/err.h	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/err/err.h	2010-12-17 10:49:17.000000000 +0100
-@@ -198,6 +198,7 @@
- #define ERR_LIB_TS		47
- #define ERR_LIB_HMAC		48
- #define ERR_LIB_JPAKE		49
-+#define ERR_LIB_PACE		50
- 
- #define ERR_LIB_USER		128
- 
-@@ -234,6 +235,7 @@
- #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
- #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
- #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
-+#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
- 
- /* Borland C seems too stupid to be able to shift and do longs in
-  * the pre-processor :-( */
-Index: openssl/crypto/err/err_all.c
-===================================================================
---- openssl.orig/crypto/err/err_all.c	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/err/err_all.c	2010-12-17 10:49:17.000000000 +0100
-@@ -102,6 +102,9 @@
- #ifndef OPENSSL_NO_JPAKE
- #include <openssl/jpake.h>
- #endif
-+#ifndef OPENSSL_NO_PACE
-+#include <openssl/pace.h>
-+#endif
- #include <openssl/comp.h>
- 
- void ERR_load_crypto_strings(void)
-@@ -155,6 +158,9 @@
- #ifndef OPENSSL_NO_JPAKE
- 	ERR_load_JPAKE_strings();
- #endif
-+#ifndef OPENSSL_NO_PACE
-+	ERR_load_PACE_strings();
-+#endif
- 	ERR_load_COMP_strings();
- #endif
- 	}
-Index: openssl/crypto/err/openssl.ec
-===================================================================
---- openssl.orig/crypto/err/openssl.ec	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/err/openssl.ec	2010-12-17 10:49:17.000000000 +0100
-@@ -35,6 +35,7 @@
- L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
- L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
- L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
-+L PACE		crypto/pace/pace.h		crypto/pace/pace_err.c
- 
- # additional header files to be scanned for function names
- L NONE		crypto/x509/x509_vfy.h		NONE
-Index: openssl/crypto/install.com
-===================================================================
---- openssl.orig/crypto/install.com	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/install.com	2010-12-17 10:49:17.000000000 +0100
-@@ -49,7 +49,7 @@
- 		 BUFFER,BIO,STACK,LHASH,RAND,ERR,-
- 		 EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,-
- 		 UI,KRB5,-
--		 STORE,CMS,PQUEUE,TS,JPAKE
-+		 STORE,CMS,PQUEUE,TS,JPAKE,PACE,CV_CERT
- $	EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
- $	EXHEADER__'ARCH' := opensslconf.h
- $	EXHEADER_OBJECTS := objects.h,obj_mac.h
-@@ -106,6 +106,8 @@
- $	EXHEADER_PQUEUE := pqueue.h
- $	EXHEADER_TS := ts.h
- $	EXHEADER_JPAKE := jpake.h
-+$	EXHEADER_PACE := pace.h
-+$	EXHEADER_CV_CERT := cv_cert.h
- $	LIBS := LIBCRYPTO
- $
- $	EXE_DIR := [-.'ARCH'.EXE.CRYPTO]
-Index: openssl/crypto/objects/obj_mac.h
-===================================================================
---- openssl.orig/crypto/objects/obj_mac.h	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/objects/obj_mac.h	2010-12-17 10:49:17.000000000 +0100
-@@ -3968,3 +3968,335 @@
- #define NID_brainpoolP512t1		906
- #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
- 
-+#define OBJ_bsi_de		0L,4L,0L,127L,0L,7L
-+
-+#define SN_standardizedDomainParameters		"standardizedDomainParameters"
-+#define NID_standardizedDomainParameters		956
-+#define OBJ_standardizedDomainParameters		OBJ_bsi_de,1L,2L
-+
-+#define OBJ_id_PK		OBJ_bsi_de,2L,2L,1L
-+
-+#define SN_id_PK_DH		"id-PK-DH"
-+#define NID_id_PK_DH		957
-+#define OBJ_id_PK_DH		OBJ_id_PK,1L
-+
-+#define SN_id_PK_ECDH		"id-PK-ECDH"
-+#define NID_id_PK_ECDH		958
-+#define OBJ_id_PK_ECDH		OBJ_id_PK,2L
-+
-+#define SN_id_TA		"id-TA"
-+#define NID_id_TA		983
-+#define OBJ_id_TA		OBJ_bsi_de,2L,2L,2L
-+
-+#define SN_id_TA_RSA		"id-TA-RSA"
-+#define NID_id_TA_RSA		934
-+#define OBJ_id_TA_RSA		OBJ_id_TA,1L
-+
-+#define SN_id_TA_RSA_v1_5_SHA_1		"id-TA-RSA-v1-5-SHA-1"
-+#define NID_id_TA_RSA_v1_5_SHA_1		935
-+#define OBJ_id_TA_RSA_v1_5_SHA_1		OBJ_id_TA_RSA,1L
-+
-+#define SN_id_TA_RSA_v1_5_SHA_256		"id-TA-RSA-v1-5-SHA-256"
-+#define NID_id_TA_RSA_v1_5_SHA_256		936
-+#define OBJ_id_TA_RSA_v1_5_SHA_256		OBJ_id_TA_RSA,2L
-+
-+#define SN_id_TA_RSA_PSS_SHA_1		"id-TA-RSA-PSS-SHA-1"
-+#define NID_id_TA_RSA_PSS_SHA_1		937
-+#define OBJ_id_TA_RSA_PSS_SHA_1		OBJ_id_TA_RSA,3L
-+
-+#define SN_id_TA_RSA_PSS_SHA_256		"id-TA-RSA-PSS-SHA-256"
-+#define NID_id_TA_RSA_PSS_SHA_256		938
-+#define OBJ_id_TA_RSA_PSS_SHA_256		OBJ_id_TA_RSA,4L
-+
-+#define SN_id_TA_RSA_v1_5_SHA_512		"id-TA-RSA-v1-5-SHA-512"
-+#define NID_id_TA_RSA_v1_5_SHA_512		955
-+#define OBJ_id_TA_RSA_v1_5_SHA_512		OBJ_id_TA_RSA,5L
-+
-+#define SN_id_TA_RSA_PSS_SHA_512		"id-TA-RSA-PSS-SHA-512"
-+#define NID_id_TA_RSA_PSS_SHA_512		940
-+#define OBJ_id_TA_RSA_PSS_SHA_512		OBJ_id_TA_RSA,6L
-+
-+#define SN_id_TA_ECDSA		"id-TA-ECDSA"
-+#define NID_id_TA_ECDSA		941
-+#define OBJ_id_TA_ECDSA		OBJ_id_TA,2L
-+
-+#define SN_id_TA_ECDSA_SHA_1		"id-TA-ECDSA-SHA-1"
-+#define NID_id_TA_ECDSA_SHA_1		942
-+#define OBJ_id_TA_ECDSA_SHA_1		OBJ_id_TA_ECDSA,1L
-+
-+#define SN_id_TA_ECDSA_SHA_224		"id-TA-ECDSA-SHA-224"
-+#define NID_id_TA_ECDSA_SHA_224		943
-+#define OBJ_id_TA_ECDSA_SHA_224		OBJ_id_TA_ECDSA,2L
-+
-+#define SN_id_TA_ECDSA_SHA_256		"id-TA-ECDSA-SHA-256"
-+#define NID_id_TA_ECDSA_SHA_256		944
-+#define OBJ_id_TA_ECDSA_SHA_256		OBJ_id_TA_ECDSA,3L
-+
-+#define SN_id_TA_ECDSA_SHA_384		"id-TA-ECDSA-SHA-384"
-+#define NID_id_TA_ECDSA_SHA_384		945
-+#define OBJ_id_TA_ECDSA_SHA_384		OBJ_id_TA_ECDSA,4L
-+
-+#define SN_id_TA_ECDSA_SHA_512		"id-TA-ECDSA-SHA-512"
-+#define NID_id_TA_ECDSA_SHA_512		946
-+#define OBJ_id_TA_ECDSA_SHA_512		OBJ_id_TA_ECDSA,5L
-+
-+#define OBJ_id_CA		OBJ_bsi_de,2L,2L,3L
-+
-+#define SN_id_CA_DH		"id-CA-DH"
-+#define NID_id_CA_DH		959
-+#define OBJ_id_CA_DH		OBJ_id_CA,1L
-+
-+#define SN_id_CA_DH_3DES_CBC_CBC		"id-CA-DH-3DES-CBC-CBC"
-+#define NID_id_CA_DH_3DES_CBC_CBC		960
-+#define OBJ_id_CA_DH_3DES_CBC_CBC		OBJ_id_CA_DH,1L
-+
-+#define SN_id_CA_DH_AES_CBC_CMAC_128		"id-CA-DH-AES-CBC-CMAC-128"
-+#define NID_id_CA_DH_AES_CBC_CMAC_128		961
-+#define OBJ_id_CA_DH_AES_CBC_CMAC_128		OBJ_id_CA_DH,2L
-+
-+#define SN_id_CA_DH_AES_CBC_CMAC_192		"id-CA-DH-AES-CBC-CMAC-192"
-+#define NID_id_CA_DH_AES_CBC_CMAC_192		962
-+#define OBJ_id_CA_DH_AES_CBC_CMAC_192		OBJ_id_CA_DH,3L
-+
-+#define SN_id_CA_DH_AES_CBC_CMAC_256		"id-CA-DH-AES-CBC-CMAC-256"
-+#define NID_id_CA_DH_AES_CBC_CMAC_256		963
-+#define OBJ_id_CA_DH_AES_CBC_CMAC_256		OBJ_id_CA_DH,4L
-+
-+#define SN_id_CA_ECDH		"id-CA-ECDH"
-+#define NID_id_CA_ECDH		964
-+#define OBJ_id_CA_ECDH		OBJ_id_CA,2L
-+
-+#define SN_id_CA_ECDH_3DES_CBC_CBC		"id-CA-ECDH-3DES-CBC-CBC"
-+#define NID_id_CA_ECDH_3DES_CBC_CBC		965
-+#define OBJ_id_CA_ECDH_3DES_CBC_CBC		OBJ_id_CA_ECDH,1L
-+
-+#define SN_id_CA_ECDH_AES_CBC_CMAC_128		"id-CA-ECDH-AES-CBC-CMAC-128"
-+#define NID_id_CA_ECDH_AES_CBC_CMAC_128		966
-+#define OBJ_id_CA_ECDH_AES_CBC_CMAC_128		OBJ_id_CA_ECDH,2L
-+
-+#define SN_id_CA_ECDH_AES_CBC_CMAC_192		"id-CA-ECDH-AES-CBC-CMAC-192"
-+#define NID_id_CA_ECDH_AES_CBC_CMAC_192		967
-+#define OBJ_id_CA_ECDH_AES_CBC_CMAC_192		OBJ_id_CA_ECDH,3L
-+
-+#define SN_id_CA_ECDH_AES_CBC_CMAC_256		"id-CA-ECDH-AES-CBC-CMAC-256"
-+#define NID_id_CA_ECDH_AES_CBC_CMAC_256		968
-+#define OBJ_id_CA_ECDH_AES_CBC_CMAC_256		OBJ_id_CA_ECDH,4L
-+
-+#define OBJ_id_PACE		OBJ_bsi_de,2L,2L,4L
-+
-+#define SN_id_PACE_DH_GM		"id-PACE-DH-GM"
-+#define NID_id_PACE_DH_GM		907
-+#define OBJ_id_PACE_DH_GM		OBJ_id_PACE,1L
-+
-+#define SN_id_PACE_DH_GM_3DES_CBC_CBC		"id-PACE-DH-GM-3DES-CBC-CBC"
-+#define NID_id_PACE_DH_GM_3DES_CBC_CBC		908
-+#define OBJ_id_PACE_DH_GM_3DES_CBC_CBC		OBJ_id_PACE_DH_GM,1L
-+
-+#define SN_id_PACE_DH_GM_AES_CBC_CMAC_128		"id-PACE-DH-GM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_DH_GM_AES_CBC_CMAC_128		909
-+#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_GM,2L
-+
-+#define SN_id_PACE_DH_GM_AES_CBC_CMAC_192		"id-PACE-DH-GM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_DH_GM_AES_CBC_CMAC_192		910
-+#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_GM,3L
-+
-+#define SN_id_PACE_DH_GM_AES_CBC_CMAC_256		"id-PACE-DH-GM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_DH_GM_AES_CBC_CMAC_256		911
-+#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_GM,4L
-+
-+#define SN_id_PACE_ECDH_GM		"id-PACE-ECDH-GM"
-+#define NID_id_PACE_ECDH_GM		912
-+#define OBJ_id_PACE_ECDH_GM		OBJ_id_PACE,2L
-+
-+#define SN_id_PACE_ECDH_GM_3DES_CBC_CBC		"id-PACE-ECDH-GM-3DES-CBC-CBC"
-+#define NID_id_PACE_ECDH_GM_3DES_CBC_CBC		913
-+#define OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_GM,1L
-+
-+#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128		"id-PACE-ECDH-GM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
-+#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_GM,2L
-+
-+#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192		"id-PACE-ECDH-GM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
-+#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_GM,3L
-+
-+#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256		"id-PACE-ECDH-GM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
-+#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_GM,4L
-+
-+#define SN_id_PACE_DH_IM		"id-PACE-DH-IM"
-+#define NID_id_PACE_DH_IM		917
-+#define OBJ_id_PACE_DH_IM		OBJ_id_PACE,3L
-+
-+#define SN_id_PACE_DH_IM_3DES_CBC_CBC		"id-PACE-DH-IM-3DES-CBC-CBC"
-+#define NID_id_PACE_DH_IM_3DES_CBC_CBC		918
-+#define OBJ_id_PACE_DH_IM_3DES_CBC_CBC		OBJ_id_PACE_DH_IM,1L
-+
-+#define SN_id_PACE_DH_IM_AES_CBC_CMAC_128		"id-PACE-DH-IM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_DH_IM_AES_CBC_CMAC_128		919
-+#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_IM,2L
-+
-+#define SN_id_PACE_DH_IM_AES_CBC_CMAC_192		"id-PACE-DH-IM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_DH_IM_AES_CBC_CMAC_192		920
-+#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_IM,3L
-+
-+#define SN_id_PACE_DH_IM_AES_CBC_CMAC_256		"id-PACE-DH-IM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_DH_IM_AES_CBC_CMAC_256		921
-+#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_IM,4L
-+
-+#define SN_id_PACE_ECDH_IM		"id-PACE-ECDH-IM"
-+#define NID_id_PACE_ECDH_IM		922
-+#define OBJ_id_PACE_ECDH_IM		OBJ_id_PACE,4L
-+
-+#define SN_id_PACE_ECDH_IM_3DES_CBC_CBC		"id-PACE-ECDH-IM-3DES-CBC-CBC"
-+#define NID_id_PACE_ECDH_IM_3DES_CBC_CBC		923
-+#define OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_IM,1L
-+
-+#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128		"id-PACE-ECDH-IM-AES-CBC-CMAC-128"
-+#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
-+#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_IM,2L
-+
-+#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192		"id-PACE-ECDH-IM-AES-CBC-CMAC-192"
-+#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
-+#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_IM,3L
-+
-+#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256		"id-PACE-ECDH-IM-AES-CBC-CMAC-256"
-+#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
-+#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_IM,4L
-+
-+#define OBJ_id_RI		OBJ_bsi_de,2L,2L,5L
-+
-+#define SN_id_RI_DH		"id-RI-DH"
-+#define NID_id_RI_DH		969
-+#define OBJ_id_RI_DH		OBJ_id_RI,1L
-+
-+#define SN_id_RI_DH_SHA_1		"id-RI-DH-SHA-1"
-+#define NID_id_RI_DH_SHA_1		970
-+#define OBJ_id_RI_DH_SHA_1		OBJ_id_RI_DH,1L
-+
-+#define SN_id_RI_DH_SHA_224		"id-RI-DH-SHA-224"
-+#define NID_id_RI_DH_SHA_224		971
-+#define OBJ_id_RI_DH_SHA_224		OBJ_id_RI_DH,2L
-+
-+#define SN_id_RI_DH_SHA_256		"id-RI-DH-SHA-256"
-+#define NID_id_RI_DH_SHA_256		972
-+#define OBJ_id_RI_DH_SHA_256		OBJ_id_RI_DH,3L
-+
-+#define SN_id_RI_DH_SHA_384		"id-RI-DH-SHA-384"
-+#define NID_id_RI_DH_SHA_384		973
-+#define OBJ_id_RI_DH_SHA_384		OBJ_id_RI_DH,4L
-+
-+#define SN_id_RI_DH_SHA_512		"id-RI-DH-SHA-512"
-+#define NID_id_RI_DH_SHA_512		974
-+#define OBJ_id_RI_DH_SHA_512		OBJ_id_RI_DH,5L
-+
-+#define SN_id_RI_ECDH		"id-RI-ECDH"
-+#define NID_id_RI_ECDH		975
-+#define OBJ_id_RI_ECDH		OBJ_id_RI,2L
-+
-+#define SN_id_RI_ECDH_SHA_1		"id-RI-ECDH-SHA-1"
-+#define NID_id_RI_ECDH_SHA_1		976
-+#define OBJ_id_RI_ECDH_SHA_1		OBJ_id_RI_ECDH,1L
-+
-+#define SN_id_RI_ECDH_SHA_224		"id-RI-ECDH-SHA-224"
-+#define NID_id_RI_ECDH_SHA_224		977
-+#define OBJ_id_RI_ECDH_SHA_224		OBJ_id_RI_ECDH,2L
-+
-+#define SN_id_RI_ECDH_SHA_256		"id-RI-ECDH-SHA-256"
-+#define NID_id_RI_ECDH_SHA_256		978
-+#define OBJ_id_RI_ECDH_SHA_256		OBJ_id_RI_ECDH,3L
-+
-+#define SN_id_RI_ECDH_SHA_384		"id-RI-ECDH-SHA-384"
-+#define NID_id_RI_ECDH_SHA_384		979
-+#define OBJ_id_RI_ECDH_SHA_384		OBJ_id_RI_ECDH,4L
-+
-+#define SN_id_RI_ECDH_SHA_512		"id-RI-ECDH-SHA-512"
-+#define NID_id_RI_ECDH_SHA_512		980
-+#define OBJ_id_RI_ECDH_SHA_512		OBJ_id_RI_ECDH,5L
-+
-+#define SN_id_CI		"id-CI"
-+#define NID_id_CI		984
-+#define OBJ_id_CI		OBJ_bsi_de,2L,2L,6L
-+
-+#define SN_id_eIDSecurity		"id-eIDSecurity"
-+#define NID_id_eIDSecurity		985
-+#define OBJ_id_eIDSecurity		OBJ_bsi_de,2L,2L,7L
-+
-+#define SN_ansi_x942		"ansi-x942"
-+#define NID_ansi_x942		927
-+#define OBJ_ansi_x942		OBJ_ISO_US,10046L
-+
-+#define OBJ_x942_number_type		OBJ_ansi_x942,2L
-+
-+#define SN_dhpublicnumber		"dhpublicnumber"
-+#define NID_dhpublicnumber		928
-+#define OBJ_dhpublicnumber		OBJ_x942_number_type,1L
-+
-+#define SN_cardInfoLocator		"cardInfoLocator"
-+#define NID_cardInfoLocator		981
-+#define OBJ_cardInfoLocator		OBJ_bsi_de,2L,2L,6L
-+
-+#define SN_eID		"eID"
-+#define NID_eID		982
-+#define OBJ_eID		OBJ_bsi_de,2L,2L,7L
-+
-+#define OBJ_id_ecc		OBJ_bsi_de,1L,1L
-+
-+#define OBJ_ecka_dh		OBJ_id_ecc,5L,2L
-+
-+#define SN_ecka_dh_SessionKDF		"ecka-dh-SessionKDF"
-+#define NID_ecka_dh_SessionKDF		929
-+#define OBJ_ecka_dh_SessionKDF		OBJ_ecka_dh,2L
-+
-+#define SN_ecka_dh_SessionKDF_DES3		"ecka-dh-SessionKDF-DES3"
-+#define NID_ecka_dh_SessionKDF_DES3		930
-+#define OBJ_ecka_dh_SessionKDF_DES3		OBJ_ecka_dh,2L,1L
-+
-+#define SN_ecka_dh_SessionKDF_AES128		"ecka-dh-SessionKDF-AES128"
-+#define NID_ecka_dh_SessionKDF_AES128		931
-+#define OBJ_ecka_dh_SessionKDF_AES128		OBJ_ecka_dh,2L,2L
-+
-+#define SN_ecka_dh_SessionKDF_AES192		"ecka-dh-SessionKDF-AES192"
-+#define NID_ecka_dh_SessionKDF_AES192		932
-+#define OBJ_ecka_dh_SessionKDF_AES192		OBJ_ecka_dh,2L,3L
-+
-+#define SN_ecka_dh_SessionKDF_AES256		"ecka-dh-SessionKDF-AES256"
-+#define NID_ecka_dh_SessionKDF_AES256		933
-+#define OBJ_ecka_dh_SessionKDF_AES256		OBJ_ecka_dh,2L,4L
-+
-+#define OBJ_id_roles		OBJ_bsi_de,3L,1L,2L
-+
-+#define SN_id_IS		"id-IS"
-+#define NID_id_IS		947
-+#define OBJ_id_IS		OBJ_id_roles,1L
-+
-+#define SN_id_AT		"id-AT"
-+#define NID_id_AT		948
-+#define OBJ_id_AT		OBJ_id_roles,2L
-+
-+#define SN_id_ST		"id-ST"
-+#define NID_id_ST		949
-+#define OBJ_id_ST		OBJ_id_roles,3L
-+
-+#define OBJ_id_extensions		OBJ_bsi_de,3L,1L,3L
-+
-+#define SN_id_description		"id-description"
-+#define NID_id_description		950
-+#define OBJ_id_description		OBJ_id_extensions,1L
-+
-+#define SN_id_plainFormat		"id-plainFormat"
-+#define NID_id_plainFormat		951
-+#define OBJ_id_plainFormat		OBJ_id_description,1L
-+
-+#define SN_id_htmlFormat		"id-htmlFormat"
-+#define NID_id_htmlFormat		952
-+#define OBJ_id_htmlFormat		OBJ_id_description,2L
-+
-+#define SN_id_pdfFormat		"id-pdfFormat"
-+#define NID_id_pdfFormat		953
-+#define OBJ_id_pdfFormat		OBJ_id_description,3L
-+
-+#define SN_id_sector		"id-sector"
-+#define NID_id_sector		954
-+#define OBJ_id_sector		OBJ_id_extensions,2L
-+
-Index: openssl/crypto/objects/obj_mac.num
-===================================================================
---- openssl.orig/crypto/objects/obj_mac.num	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/objects/obj_mac.num	2010-12-17 10:49:17.000000000 +0100
-@@ -904,3 +904,82 @@
- brainpoolP384t1		904
- brainpoolP512r1		905
- brainpoolP512t1		906
-+id_PACE_DH_GM		907
-+id_PACE_DH_GM_3DES_CBC_CBC		908
-+id_PACE_DH_GM_AES_CBC_CMAC_128		909
-+id_PACE_DH_GM_AES_CBC_CMAC_192		910
-+id_PACE_DH_GM_AES_CBC_CMAC_256		911
-+id_PACE_ECDH_GM		912
-+id_PACE_ECDH_GM_3DES_CBC_CBC		913
-+id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
-+id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
-+id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
-+id_PACE_DH_IM		917
-+id_PACE_DH_IM_3DES_CBC_CBC		918
-+id_PACE_DH_IM_AES_CBC_CMAC_128		919
-+id_PACE_DH_IM_AES_CBC_CMAC_192		920
-+id_PACE_DH_IM_AES_CBC_CMAC_256		921
-+id_PACE_ECDH_IM		922
-+id_PACE_ECDH_IM_3DES_CBC_CBC		923
-+id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
-+id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
-+id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
-+ansi_x942		927
-+dhpublicnumber		928
-+ecka_dh_SessionKDF		929
-+ecka_dh_SessionKDF_DES3		930
-+ecka_dh_SessionKDF_AES128		931
-+ecka_dh_SessionKDF_AES192		932
-+ecka_dh_SessionKDF_AES256		933
-+id_TA_RSA		934
-+id_TA_RSA_v1_5_SHA_1		935
-+id_TA_RSA_v1_5_SHA_256		936
-+id_TA_RSA_PSS_SHA_1		937
-+id_TA_RSA_PSS_SHA_256		938
-+id_TA_RSA_v1_SHA_512		939
-+id_TA_RSA_PSS_SHA_512		940
-+id_TA_ECDSA		941
-+id_TA_ECDSA_SHA_1		942
-+id_TA_ECDSA_SHA_224		943
-+id_TA_ECDSA_SHA_256		944
-+id_TA_ECDSA_SHA_384		945
-+id_TA_ECDSA_SHA_512		946
-+id_IS		947
-+id_AT		948
-+id_ST		949
-+id_description		950
-+id_plainFormat		951
-+id_htmlFormat		952
-+id_pdfFormat		953
-+id_sector		954
-+id_TA_RSA_v1_5_SHA_512		955
-+standardizedDomainParameters		956
-+id_PK_DH		957
-+id_PK_ECDH		958
-+id_CA_DH		959
-+id_CA_DH_3DES_CBC_CBC		960
-+id_CA_DH_AES_CBC_CMAC_128		961
-+id_CA_DH_AES_CBC_CMAC_192		962
-+id_CA_DH_AES_CBC_CMAC_256		963
-+id_CA_ECDH		964
-+id_CA_ECDH_3DES_CBC_CBC		965
-+id_CA_ECDH_AES_CBC_CMAC_128		966
-+id_CA_ECDH_AES_CBC_CMAC_192		967
-+id_CA_ECDH_AES_CBC_CMAC_256		968
-+id_RI_DH		969
-+id_RI_DH_SHA_1		970
-+id_RI_DH_SHA_224		971
-+id_RI_DH_SHA_256		972
-+id_RI_DH_SHA_384		973
-+id_RI_DH_SHA_512		974
-+id_RI_ECDH		975
-+id_RI_ECDH_SHA_1		976
-+id_RI_ECDH_SHA_224		977
-+id_RI_ECDH_SHA_256		978
-+id_RI_ECDH_SHA_384		979
-+id_RI_ECDH_SHA_512		980
-+cardInfoLocator		981
-+eID		982
-+id_TA		983
-+id_CI		984
-+id_eIDSecurity		985
-Index: openssl/crypto/objects/objects.txt
-===================================================================
---- openssl.orig/crypto/objects/objects.txt	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/crypto/objects/objects.txt	2010-12-17 10:49:17.000000000 +0100
-@@ -1276,3 +1276,107 @@
- 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
- 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
- 1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
-+
-+# BSI Extensions TR 3110 Version 2.01
-+!Alias bsi-de           0 4 0 127 0 7
-+bsi-de 1 2 :            standardizedDomainParameters
-+
-+!Alias id-PK            bsi-de 2 2 1
-+id-PK 1 :               id-PK-DH
-+id-PK 2 :               id-PK-ECDH
-+
-+bsi-de 2 2 2 :          id-TA
-+id-TA 1 :               id-TA-RSA
-+id-TA-RSA 1 :           id-TA-RSA-v1-5-SHA-1
-+id-TA-RSA 2 :           id-TA-RSA-v1-5-SHA-256
-+id-TA-RSA 3 :           id-TA-RSA-PSS-SHA-1
-+id-TA-RSA 4 :           id-TA-RSA-PSS-SHA-256
-+id-TA-RSA 5 :           id-TA-RSA-v1-5-SHA-512
-+id-TA-RSA 6 :           id-TA-RSA-PSS-SHA-512
-+id-TA 2 :               id-TA-ECDSA
-+id-TA-ECDSA 1 :         id-TA-ECDSA-SHA-1
-+id-TA-ECDSA 2 :         id-TA-ECDSA-SHA-224
-+id-TA-ECDSA 3 :         id-TA-ECDSA-SHA-256
-+id-TA-ECDSA 4 :         id-TA-ECDSA-SHA-384
-+id-TA-ECDSA 5 :         id-TA-ECDSA-SHA-512
-+
-+!Alias id-CA            bsi-de 2 2 3
-+id-CA 1 :               id-CA-DH
-+id-CA-DH 1 :            id-CA-DH-3DES-CBC-CBC
-+id-CA-DH 2 :            id-CA-DH-AES-CBC-CMAC-128
-+id-CA-DH 3 :            id-CA-DH-AES-CBC-CMAC-192
-+id-CA-DH 4 :            id-CA-DH-AES-CBC-CMAC-256
-+id-CA 2 :               id-CA-ECDH
-+id-CA-ECDH 1 :          id-CA-ECDH-3DES-CBC-CBC
-+id-CA-ECDH 2 :          id-CA-ECDH-AES-CBC-CMAC-128
-+id-CA-ECDH 3 :          id-CA-ECDH-AES-CBC-CMAC-192
-+id-CA-ECDH 4 :          id-CA-ECDH-AES-CBC-CMAC-256
-+
-+!Alias id-PACE          bsi-de 2 2 4
-+id-PACE 1 :             id-PACE-DH-GM
-+id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
-+id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
-+id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
-+id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
-+id-PACE 2 :             id-PACE-ECDH-GM
-+id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
-+id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
-+id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
-+id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
-+id-PACE 3 :             id-PACE-DH-IM
-+id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
-+id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
-+id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
-+id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
-+id-PACE 4 :             id-PACE-ECDH-IM
-+id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
-+id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
-+id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
-+id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
-+
-+!Alias id-RI            bsi-de 2 2 5
-+id-RI 1 :               id-RI-DH
-+id-RI-DH 1 :            id-RI-DH-SHA-1
-+id-RI-DH 2 :            id-RI-DH-SHA-224
-+id-RI-DH 3 :            id-RI-DH-SHA-256
-+id-RI-DH 4 :            id-RI-DH-SHA-384
-+id-RI-DH 5 :            id-RI-DH-SHA-512
-+id-RI 2 :               id-RI-ECDH
-+id-RI-ECDH 1 :          id-RI-ECDH-SHA-1
-+id-RI-ECDH 2 :          id-RI-ECDH-SHA-224
-+id-RI-ECDH 3 :          id-RI-ECDH-SHA-256
-+id-RI-ECDH 4 :          id-RI-ECDH-SHA-384
-+id-RI-ECDH 5 :          id-RI-ECDH-SHA-512
-+
-+bsi-de 2 2 6 :          id-CI
-+bsi-de 2 2 7 :          id-eIDSecurity
-+
-+ISO-US 10046 :          ansi-x942
-+!Alias x942_number-type ansi-x942 2
-+x942_number-type 1:     dhpublicnumber
-+
-+bsi-de 2 2 6 :          cardInfoLocator
-+bsi-de 2 2 7 :          eID
-+
-+# BSI extensions TR-03111
-+!Alias id-ecc   bsi-de 1 1
-+!Alias ecka-dh  id-ecc 5 2
-+ecka-dh 2 :          ecka-dh-SessionKDF
-+ecka-dh 2 1 :        ecka-dh-SessionKDF-DES3
-+ecka-dh 2 2 :        ecka-dh-SessionKDF-AES128
-+ecka-dh 2 3 :        ecka-dh-SessionKDF-AES192
-+ecka-dh 2 4 :        ecka-dh-SessionKDF-AES256
-+
-+# Role OIDs for CV certificates according to 03110
-+!Alias id-roles bsi-de 3 1 2
-+id-roles 1 :    id-IS
-+id-roles 2 :    id-AT
-+id-roles 3 :    id-ST
-+
-+# Description and extesnsion OIDs from TR-03110
-+!Alias id-extensions bsi-de 3 1 3
-+id-extensions 1 :   id-description
-+id-description 1 :  id-plainFormat
-+id-description 2 :  id-htmlFormat
-+id-description 3 :  id-pdfFormat
-+id-extensions 2 :   id-sector
-Index: openssl/crypto/pace/Makefile
+Index: openssl/crypto/eac/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/Makefile	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/Makefile	2011-02-08 21:39:40.301657024 +0100
 @@ -0,0 +1,185 @@
 +#
-+# OpenSSL/crypto/pace/Makefile
++# OpenSSL/crypto/eac/Makefile
 +#
 +
-+DIR=	pace
++DIR=    eac
 +TOP=	../..
 +CC=	cc
 +INCLUDES=-I$(TOP) -I../../include -I..
@@ -2486,7 +1669,7 @@ Index: openssl/crypto/pace/Makefile
 +pace_asn1.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
 +pace_asn1.o: ../../include/openssl/pace.h ../../include/openssl/safestack.h
 +pace_asn1.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+pace_asn1.o: pace_asn1.c pace_asn1.h
++pace_asn1.o: pace_asn1.c pace_asn1.h pace_dh.h
 +pace_dh.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
 +pace_dh.o: ../../include/openssl/bn.h ../../include/openssl/buffer.h
 +pace_dh.o: ../../include/openssl/cmac.h ../../include/openssl/crypto.h
@@ -2570,11 +1753,11 @@ Index: openssl/crypto/pace/Makefile
 +pace_util.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
 +pace_util.o: ../../include/openssl/symhacks.h pace.h pace_dh.h pace_util.c
 +pace_util.o: pace_util.h
-Index: openssl/crypto/pace/pace.c
+Index: openssl/crypto/eac/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.c	2010-12-17 10:49:13.000000000 +0100
-@@ -0,0 +1,662 @@
++++ openssl/crypto/eac/pace.c	2011-02-08 21:39:40.297657144 +0100
+@@ -0,0 +1,631 @@
 +/**
 + * @file
 + * @brief OpenPACE implementation
@@ -2949,43 +2132,12 @@ Index: openssl/crypto/pace/pace.c
 +{
 +    BUF_MEM *key_mac = NULL;
 +    BUF_MEM *key_enc = NULL;
-+    int mac_keylen = 0, enc_keylen = 0;
 +
 +    if (!ctx)
 +        goto err;
-+    enc_keylen = ctx->cipher->key_len;
 +
-+    switch (info->protocol) {
-+        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-+        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-+        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-+        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-+            mac_keylen = 16;
-+            break;
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-+            mac_keylen = 16;
-+            break;
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-+            mac_keylen = 24;
-+            break;
-+        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-+        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-+        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-+        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+            mac_keylen = 32;
-+            break;
-+        default:
-+            goto err;
-+    }
-+
-+    key_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine, mac_keylen);
-+    key_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine, enc_keylen);
++    key_mac = kdf_mac(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine, ctx->mac_keylen);
++    key_enc = kdf_enc(key, NULL, ctx->md, ctx->md_ctx, ctx->md_engine, ctx->enc_keylen);
 +    if (!key_mac || !key_enc)
 +        goto err;
 +
@@ -3237,11 +2389,11 @@ Index: openssl/crypto/pace/pace.c
 +    BUF_MEM_free(cd);
 +    return out;
 +}
-Index: openssl/crypto/pace/pace.h
+Index: openssl/crypto/eac/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace.h	2010-12-20 19:06:15.000000000 +0100
-@@ -0,0 +1,585 @@
++++ openssl/crypto/eac/pace.h	2011-02-08 21:39:40.297657144 +0100
+@@ -0,0 +1,583 @@
 +/**
 + * @mainpage OpenPACE
 + * Implements the Password Authenticated Connection Establishment
@@ -3408,6 +2560,10 @@ Index: openssl/crypto/pace/pace.h
 +    PACEDomainParameterInfo * (*map_compute_key)(const PACEDomainParameterInfo * dp_in,
 +            const struct pace_ctx * ctx, const BUF_MEM * s,
 +            const BUF_MEM * in);
++    /** length of the computed key for the message authentication code */
++    int mac_keylen;
++    /** length of the computed key for the encryption/decryption */
++    int enc_keylen;
 +} PACE_CTX;
 +/** @} ***********************************************************************/
 +
@@ -3455,12 +2611,6 @@ Index: openssl/crypto/pace/pace.h
 + */
 +PACE_SEC *
 +PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type);
-+/**
-+ * @brief Frees a \c PACE_CTX object
-+ *
-+ * @param[in] s Object to free (optional)
-+ */
-+void PACE_CTX_free(PACE_CTX * s);
 +/**
 + * @brief Frees a \c PACE_CTX object and all its components
 + *
@@ -3827,11 +2977,11 @@ Index: openssl/crypto/pace/pace.h
 +}
 +#endif
 +#endif
-Index: openssl/crypto/pace/pace_asn1.c
+Index: openssl/crypto/eac/pace_asn1.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.c	2010-12-20 19:06:15.000000000 +0100
-@@ -0,0 +1,669 @@
++++ openssl/crypto/eac/pace_asn1.c	2011-02-08 21:39:40.297657144 +0100
+@@ -0,0 +1,891 @@
 +/**
 + * @file
 + * @brief ASN.1 structures related to PACE
@@ -3844,6 +2994,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +#include <openssl/pace.h>
 +#include <openssl/cv_cert.h>
 +#include "pace_asn1.h"
++#include "pace_dh.h"
 +
 +static unsigned int
 +getlen (unsigned const char * in, unsigned int * len_len);
@@ -4000,6 +3151,41 @@ Index: openssl/crypto/pace/pace_asn1.c
 +	ASN1_SIMPLE(CARD_INFO_LOCATOR, url, ASN1_IA5STRING),
 +	ASN1_OPT(CARD_INFO_LOCATOR, efCardInfo, FILE_ID)
 +} ASN1_SEQUENCE_END(CARD_INFO_LOCATOR)
++
++ASN1_SEQUENCE(DH_PUBKEY_BODY) = {
++    ASN1_SIMPLE(DH_PUBKEY_BODY, oid, ASN1_OBJECT),
++    ASN1_IMP_OPT(DH_PUBKEY_BODY, p, ASN1_INTEGER, 1),
++    ASN1_IMP_OPT(DH_PUBKEY_BODY, q, ASN1_INTEGER, 2),
++    ASN1_IMP_OPT(DH_PUBKEY_BODY, g, ASN1_INTEGER, 3),
++    ASN1_IMP(DH_PUBKEY_BODY, y, ASN1_INTEGER, 4),
++} ASN1_SEQUENCE_END(DH_PUBKEY_BODY)
++IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY_BODY)
++
++ASN1_ITEM_TEMPLATE(DH_PUBKEY) =
++    ASN1_EX_TEMPLATE_TYPE(
++            ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION,
++            0x49, DH_PUBKEY, DH_PUBKEY_BODY)
++ASN1_ITEM_TEMPLATE_END(DH_PUBKEY)
++IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY)
++
++ASN1_SEQUENCE(ECDH_PUBKEY_BODY) = {
++    ASN1_SIMPLE(ECDH_PUBKEY_BODY, oid, ASN1_OBJECT),
++    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, p, ASN1_OCTET_STRING, 1),
++    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, a, ASN1_OCTET_STRING, 2),
++    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, b, ASN1_OCTET_STRING, 3),
++    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, G, ASN1_OCTET_STRING, 4),
++    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, r, ASN1_OCTET_STRING, 5),
++    ASN1_IMP(ECDH_PUBKEY_BODY, Y, ASN1_OCTET_STRING, 6),
++    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, f, ASN1_OCTET_STRING, 7),
++} ASN1_SEQUENCE_END(ECDH_PUBKEY_BODY)
++IMPLEMENT_ASN1_FUNCTIONS(ECDH_PUBKEY_BODY)
++
++ASN1_ITEM_TEMPLATE(ECDH_PUBKEY) =
++    ASN1_EX_TEMPLATE_TYPE(
++            ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION,
++            0x49, ECDH_PUBKEY, ECDH_PUBKEY_BODY)
++ASN1_ITEM_TEMPLATE_END(ECDH_PUBKEY)
++IMPLEMENT_ASN1_FUNCTIONS(ECDH_PUBKEY)
 +
 +int
 +dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
@@ -4206,9 +3392,9 @@ Index: openssl/crypto/pace/pace_asn1.c
 +    PACEDomainParameterInfo *new_dp_info = NULL;
 +
 +    if (!in)
-+    	goto err;
++        goto err;
 +    if (in[0] != 0x31) /* SET */
-+    	goto err;
++        goto err;
 +
 +    len = getlen(++in, &len_len); /* Length of SET */
 +    in += len_len;
@@ -4216,7 +3402,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +
 +    while(todo > 0) {
 +        if(in[0] != 0x30) /* SEQUENCE */
-+       		goto err;
++            goto err;
 +
 +        seq_pos = in;
 +        len = getlen(++in, &len_len); /* Length of SEQUENCE */
@@ -4226,13 +3412,13 @@ Index: openssl/crypto/pace/pace_asn1.c
 +
 +        /* Read OID */
 +        if(oid_pos[0] != 0x06) /* OBJECT IDENTIFIER */
-+        	goto err;
++            goto err;
 +        oid_len = getlen(oid_pos+1, &len_len); /* Length of OBJECT IDENTIFIER */
 +
 +        /* XXX: I don't understand, why we have to increment the last parameter
 +         *      by two. This was found to work by trial and error. */
 +        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
-+        	goto err;
++            goto err;
 +        else {
 +            nid = OBJ_obj2nid(a);
 +            switch (nid) {
@@ -4252,7 +3438,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
 +                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
 +                case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-+                	tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
++                    tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
 +                    if (!tmp_info)
 +                        goto err;
 +                    new_info = PACEInfo_new();
@@ -4324,7 +3510,7 @@ Index: openssl/crypto/pace/pace_asn1.c
 +    }
 +
 +    if (!new_info) /* PaceInfo is mandatory */
-+    	goto err;
++        goto err;
 +    /*Memory leak if (*info)*/
 +    if (info) {
 +        if(new_info)
@@ -4378,10 +3564,10 @@ Index: openssl/crypto/pace/pace_asn1.c
 +
 +    while(in_len != 0) {
 +        if(in[0] != 0x30) {/* SEQUENCE */
-+        	if (in[0] == 0x04) { /* Ignore fucked up octet string at the end of EF.CardAccess */
-+        		break;
-+        	} else
-+        		goto err;
++            if (in[0] == 0x04) { /* Ignore fucked up octet string at the end of EF.CardAccess */
++                break;
++            } else
++                goto err;
 +        }
 +
 +        seq_pos = in;
@@ -4501,11 +3687,197 @@ Index: openssl/crypto/pace/pace_asn1.c
 +        PACE_DP_INFO_free(tmp_dp_info);
 +    return 0;
 +}
-Index: openssl/crypto/pace/pace_asn1.h
++
++BUF_MEM *
++asn1_pubkey(BN_CTX *ctx, const PACEDomainParameterInfo *dp, const PACEInfo *info,
++        int include_dp)
++{
++    ECDH_PUBKEY *ecdhpub = NULL;
++    DH_PUBKEY *dhpub = NULL;
++    BIGNUM *bn = NULL, *a_bn = NULL, *b_bn = NULL;
++    const EC_GROUP *group;
++    BUF_MEM *pubkey = NULL, *Y_buf = NULL, *G_buf = NULL;
++    int l;
++
++    if (!dp || !dp->domainParameter)
++        goto err;
++
++    pubkey = BUF_MEM_new();
++    if (!pubkey)
++        goto err;
++
++    switch (dp->domainParameter->algorithm) {
++        case NID_dhpublicnumber:
++            if (!dp->domainParameter->parameters.dh)
++                goto err;
++
++            dhpub = DH_PUBKEY_new();
++            if (!dhpub) {
++                goto err;
++            }
++
++            /* Object Identifier */
++            dhpub->oid = OBJ_nid2obj(info->protocol);
++
++            /* Public value */
++            dhpub->y = BN_to_ASN1_INTEGER(dp->domainParameter->parameters.dh->pub_key,
++                    dhpub->y);
++
++            if (!dhpub->oid || !dhpub->y)
++                goto err;
++
++            if (include_dp) {
++                /* Prime modulus */
++                dhpub->p = BN_to_ASN1_INTEGER(dp->domainParameter->parameters.dh->p,
++                        dhpub->p);
++
++                /* Order of the subgroup */
++                bn = DH_get_order(dp->domainParameter->parameters.dh, ctx);
++                if (!bn)
++                    goto err;
++                dhpub->q = BN_to_ASN1_INTEGER(bn, dhpub->q);
++
++                /* Generator */
++                dhpub->g = BN_to_ASN1_INTEGER(dp->domainParameter->parameters.dh->g,
++                        dhpub->g);
++
++                if (!dhpub->p|| !dhpub->q || !dhpub->g)
++                    goto err;
++
++                BN_clear_free(bn);
++            }
++
++            /* TODO check if asn1_integers are unsigned, i.e. positive */
++            l = i2d_DH_PUBKEY(dhpub, (unsigned char **) &pubkey->data);
++            if (l < 0)
++                goto err;
++            pubkey->length = l;
++            pubkey->max = l;
++
++            DH_PUBKEY_free(dhpub);
++
++            break;
++
++        case NID_X9_62_id_ecPublicKey:
++        /* Note: Test cards derive from the official specification, therefore
++         *       we need to handle some additional OIDs */
++        case NID_ecka_dh_SessionKDF_DES3:
++        case NID_ecka_dh_SessionKDF_AES128:
++        case NID_ecka_dh_SessionKDF_AES192:
++        case NID_ecka_dh_SessionKDF_AES256:
++            if (!dp->domainParameter->parameters.ecdh)
++                goto err;
++            group = EC_KEY_get0_group(dp->domainParameter->parameters.ecdh);
++
++            ecdhpub = ECDH_PUBKEY_new();
++            if (!ecdhpub) {
++                goto err;
++            }
++
++            /* Object Identifier */
++            ecdhpub->oid = OBJ_nid2obj(info->protocol);
++            if (!ecdhpub->oid)
++                goto err;
++
++            /* Public point */
++            Y_buf = EC_POINT_point2buf(dp->domainParameter->parameters.ecdh, ctx,
++                    EC_KEY_get0_public_key(dp->domainParameter->parameters.ecdh));
++            if (!ecdhpub->Y
++                    || !M_ASN1_OCTET_STRING_set(
++                        ecdhpub->Y, Y_buf->data, Y_buf->length))
++                goto err;
++
++            if (include_dp) {
++                bn = BN_new();
++                a_bn = BN_new();
++                b_bn = BN_new();
++                if (!bn || !a_bn || !b_bn
++                        || !EC_GROUP_get_curve_GFp(group, bn, a_bn, b_bn, ctx))
++                    goto err;
++
++                /* Prime modulus */
++                ecdhpub->p = BN_to_ASN1_INTEGER(bn, ecdhpub->p);
++
++                /* First coefficient */
++                ecdhpub->a = BN_to_ASN1_INTEGER(a_bn, ecdhpub->a);
++
++                /* Second coefficient */
++                ecdhpub->b = BN_to_ASN1_INTEGER(b_bn, ecdhpub->b);
++
++                /* Base Point */
++                G_buf = EC_POINT_point2buf(dp->domainParameter->parameters.ecdh,
++                        ctx, EC_GROUP_get0_generator(group));
++                ecdhpub->G = ASN1_OCTET_STRING_new();
++                if (!ecdhpub->G
++                        || !M_ASN1_OCTET_STRING_set(
++                            ecdhpub->G, G_buf->data, G_buf->length))
++                    goto err;
++
++                /* Order of the base point */
++                if (!EC_GROUP_get_order(group, bn, ctx))
++                    goto err;
++                ecdhpub->r = BN_to_ASN1_INTEGER(bn, ecdhpub->r);
++
++                /* Cofactor */
++                if (!EC_GROUP_get_cofactor(group, bn, ctx))
++                    goto err;
++                ecdhpub->f = BN_to_ASN1_INTEGER(bn, ecdhpub->f);
++
++                /* TODO check if asn1_integers are unsigned, i.e. positive */
++                if (!ecdhpub->p || !ecdhpub->a || !ecdhpub->b || !ecdhpub->r ||
++                        !ecdhpub->f)
++                    goto err;
++
++                BUF_MEM_free(G_buf);
++                BN_clear_free(b_bn);
++                BN_clear_free(a_bn);
++                BN_clear_free(bn);
++            }
++
++            BUF_MEM_free(Y_buf);
++
++            /* TODO check if asn1_integers are unsigned, i.e. positive */
++            l = i2d_ECDH_PUBKEY(ecdhpub, (unsigned char **) &pubkey->data);
++            if (l < 0)
++                goto err;
++            pubkey->length = l;
++            pubkey->max = l;
++
++            ECDH_PUBKEY_free(ecdhpub);
++
++            break;
++
++        default:
++            goto err;
++    }
++
++    return pubkey;
++
++err:
++    if (bn)
++        BN_clear_free(bn);
++    if (a_bn)
++        BN_clear_free(a_bn);
++    if (b_bn)
++        BN_clear_free(b_bn);
++    if (Y_buf)
++        BUF_MEM_free(Y_buf);
++    if (G_buf)
++        BUF_MEM_free(G_buf);
++    if (pubkey)
++        BUF_MEM_free(pubkey);
++    if (ecdhpub)
++        ECDH_PUBKEY_free(ecdhpub);
++    if (dhpub)
++        DH_PUBKEY_free(dhpub);
++
++    return NULL;
++}
+Index: openssl/crypto/eac/pace_asn1.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_asn1.h	2010-12-17 10:49:13.000000000 +0100
-@@ -0,0 +1,133 @@
++++ openssl/crypto/eac/pace_asn1.h	2011-02-08 21:39:40.293657264 +0100
+@@ -0,0 +1,168 @@
 +/**
 + * @file
 + * @brief Interface to ASN.1 structures related to PACE
@@ -4636,13 +4008,48 @@ Index: openssl/crypto/pace/pace_asn1.h
 +	FILE_ID *efCardInfo;
 +} CARD_INFO_LOCATOR;
 +
++typedef struct dh_pubkey_st {
++    /** Object Identifier */
++    ASN1_OBJECT *oid;
++    /** Prime modulus */
++    ASN1_INTEGER *p;
++    /** Order of the subgroup */
++    ASN1_INTEGER *q;
++    /** Generator */
++    ASN1_INTEGER *g;
++    /** Public value */
++    ASN1_INTEGER *y;
++} DH_PUBKEY_BODY;
++typedef DH_PUBKEY_BODY DH_PUBKEY;
++
++typedef struct ecdh_pubkey_st {
++    /** Object Identifier */
++    ASN1_OBJECT *oid;
++    /** Prime modulus */
++    ASN1_INTEGER *p;
++    /** First coefficient */
++    ASN1_INTEGER *a;
++    /** Second coefficient */
++    ASN1_INTEGER *b;
++    /** Base point
++     * Note: This is an Elliptic Curve Point */
++    ASN1_OCTET_STRING *G;
++    /** Order of the base point */
++    ASN1_INTEGER *r;
++    /** Public point
++     * Note: This is an Elliptic Curve Point */
++    ASN1_OCTET_STRING *Y;
++    /** Cofactor */
++    ASN1_INTEGER *f;
++} ECDH_PUBKEY_BODY;
++typedef ECDH_PUBKEY_BODY ECDH_PUBKEY;
 +/** @} ***********************************************************************/
 +
 +#endif /* PACE_ASN1_H_ */
-Index: openssl/crypto/pace/pace_dh.c
+Index: openssl/crypto/eac/pace_dh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.c	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_dh.c	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,439 @@
 +/**
 + * @file
@@ -5083,10 +4490,10 @@ Index: openssl/crypto/pace/pace_dh.c
 +		BN_free(q);
 +	return NULL;
 +}
-Index: openssl/crypto/pace/pace_dh.h
+Index: openssl/crypto/eac/pace_dh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_dh.h	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_dh.h	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,104 @@
 +/**
 + * @file
@@ -5192,10 +4599,10 @@ Index: openssl/crypto/pace/pace_dh.h
 +get_rfc5114_modp(int num);
 +
 +#endif /*PACE_DH_H_*/
-Index: openssl/crypto/pace/pace_ecdh.c
+Index: openssl/crypto/eac/pace_ecdh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.c	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_ecdh.c	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,199 @@
 +/**
 + * @file
@@ -5396,10 +4803,10 @@ Index: openssl/crypto/pace/pace_ecdh.c
 +
 +    return out;
 +}
-Index: openssl/crypto/pace/pace_ecdh.h
+Index: openssl/crypto/eac/pace_ecdh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_ecdh.h	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_ecdh.h	2011-02-08 21:39:40.293657264 +0100
 @@ -0,0 +1,78 @@
 +/**
 + * @file
@@ -5479,12 +4886,12 @@ Index: openssl/crypto/pace/pace_ecdh.h
 +		const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx);
 +
 +#endif /*PACE_ECDH_H_*/
-Index: openssl/crypto/pace/pace_err.c
+Index: openssl/crypto/eac/pace_err.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_err.c	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_err.c	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,107 @@
-+/* crypto/pace/pace_err.c */
++/* crypto/eac/pace_err.c */
 +/* ====================================================================
 + * Copyright (c) 1999-2009 The OpenSSL Project.  All rights reserved.
 + *
@@ -5591,10 +4998,10 @@ Index: openssl/crypto/pace/pace_err.c
 +		}
 +#endif
 +	}
-Index: openssl/crypto/pace/pace_kdf.c
+Index: openssl/crypto/eac/pace_kdf.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.c	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_kdf.c	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,113 @@
 +/**
 + * @file
@@ -5709,10 +5116,10 @@ Index: openssl/crypto/pace/pace_kdf.c
 +{
 +    return kdf(key, nonce, htonl(KDF_MAC_COUNTER), md, ctx, impl, keylen);
 +}
-Index: openssl/crypto/pace/pace_kdf.h
+Index: openssl/crypto/eac/pace_kdf.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_kdf.h	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_kdf.h	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,67 @@
 +/**
 + * @file
@@ -5781,11 +5188,11 @@ Index: openssl/crypto/pace/pace_kdf.h
 +/** @} ***********************************************************************/
 +
 +#endif /*PACE_KDF_H_*/
-Index: openssl/crypto/pace/pace_lib.c
+Index: openssl/crypto/eac/pace_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_lib.c	2010-12-17 10:49:13.000000000 +0100
-@@ -0,0 +1,532 @@
++++ openssl/crypto/eac/pace_lib.c	2011-02-08 21:39:40.293657264 +0100
+@@ -0,0 +1,564 @@
 +/**
 + * @file
 + * @brief Data management functions
@@ -5999,27 +5406,34 @@ Index: openssl/crypto/pace/pace_lib.c
 +
 +    switch (info->protocol) {
 +        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
++            ctx->mac_keylen = 16;
 +            ctx->map_generate_key = dh_generate_key;
 +            ctx->map_compute_key = dh_gm_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
++            ctx->mac_keylen = 16;
 +            ctx->map_generate_key = dh_im_generate_key;
 +            ctx->map_compute_key = dh_im_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
++            ctx->mac_keylen = 16;
 +            ctx->map_generate_key = ecdh_generate_key;
 +            ctx->map_compute_key = ecdh_gm_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
++            ctx->mac_keylen = 16;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6030,9 +5444,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = dh_gm_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
++            ctx->mac_keylen = 16;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6043,9 +5459,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = dh_im_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
++            ctx->mac_keylen = 24;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6056,9 +5474,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = dh_gm_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
++            ctx->mac_keylen = 24;
 +            /*if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6069,9 +5489,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = dh_im_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
++            ctx->mac_keylen = 32;
 +            /*if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6082,9 +5504,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = dh_gm_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
++            ctx->mac_keylen = 32;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6095,9 +5519,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = dh_im_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
++            ctx->mac_keylen = 16;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6108,9 +5534,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = ecdh_gm_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
++            ctx->mac_keylen = 24;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6121,9 +5549,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = ecdh_gm_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
++            ctx->mac_keylen = 32;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6134,9 +5564,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = ecdh_gm_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
++            ctx->mac_keylen = 32;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6147,9 +5579,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_256_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
++            ctx->mac_keylen = 24;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6160,9 +5594,11 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha256();
 +            ctx->cipher = EVP_aes_192_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
++            ctx->mac_keylen = 16;
 +/*            if (!ctx->cmac_ctx) {
 +                cmac_ctx = CMAC_CTX_new();
 +                if (!cmac_ctx)
@@ -6173,13 +5609,16 @@ Index: openssl/crypto/pace/pace_lib.c
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_aes_128_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
++            ctx->mac_keylen = 16;
 +            ctx->map_generate_key = ecdh_im_generate_key;
 +            ctx->map_compute_key = ecdh_im_compute_key;
 +            ctx->md = EVP_sha1();
 +            ctx->cipher = EVP_des_ede_cbc();
++            ctx->enc_keylen = ctx->cipher->key_len;
 +            break;
 +
 +        default:
@@ -6318,10 +5757,10 @@ Index: openssl/crypto/pace/pace_lib.c
 +
 +    return NULL;
 +}
-Index: openssl/crypto/pace/pace_mappings.c
+Index: openssl/crypto/eac/pace_mappings.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.c	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_mappings.c	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,390 @@
 +/**
 + * @file
@@ -6713,10 +6152,10 @@ Index: openssl/crypto/pace/pace_mappings.c
 +
 +    return NULL;
 +}
-Index: openssl/crypto/pace/pace_mappings.h
+Index: openssl/crypto/eac/pace_mappings.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_mappings.h	2010-12-17 10:49:13.000000000 +0100
++++ openssl/crypto/eac/pace_mappings.h	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,68 @@
 +/**
 + * @file
@@ -6786,11 +6225,11 @@ Index: openssl/crypto/pace/pace_mappings.h
 +/** @} ***********************************************************************/
 +
 +#endif /*PACE_MAPPINGS_H_*/
-Index: openssl/crypto/pace/pace_util.c
+Index: openssl/crypto/eac/pace_util.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.c	2010-12-17 10:49:13.000000000 +0100
-@@ -0,0 +1,857 @@
++++ openssl/crypto/eac/pace_util.c	2011-02-08 21:39:40.297657144 +0100
+@@ -0,0 +1,648 @@
 +/**
 + * @file
 + * @brief Utility functions
@@ -7247,7 +6686,7 @@ Index: openssl/crypto/pace/pace_util.c
 +
 +    en_len = EVP_CIPHER_block_size(ctx->cipher);
 +    p = realloc(*encoded, en_len);
-+    if (!p)
++    if (!p || !en_len)
 +        return -1;
 +    *encoded = p;
 +
@@ -7357,216 +6796,6 @@ Index: openssl/crypto/pace/pace_util.c
 +}
 +
 +BUF_MEM *
-+asn1_pubkey(BN_CTX *ctx, const PACEDomainParameterInfo *dp, const PACEInfo *info,
-+        int include_dp)
-+{
-+    BIO *bio = NULL;
-+    BIGNUM *bn = NULL, *a_bn = NULL, *b_bn = NULL;
-+    char *p = NULL, *q = NULL, *g = NULL, *y = NULL, *a = NULL, *b = NULL,
-+        *G = NULL, *r = NULL, *Y = NULL, *f = NULL;
-+    const char *sn;
-+    const EC_GROUP *group;
-+
-+    if (!dp || !dp->domainParameter)
-+        goto err;
-+
-+    bio = BIO_new(BIO_s_mem());
-+    sn = OBJ_nid2sn(info->protocol);
-+    if (!bio || !sn || (BIO_printf(bio,
-+            "asn1=IMPLICIT:73A,SEQUENCE:domainParameter\n"
-+                "[domainParameter]\n"
-+                "algorithm=OID:%s\n", sn) < 0))
-+        goto err;
-+
-+    switch (dp->domainParameter->algorithm) {
-+        case NID_dhpublicnumber:
-+            if (!dp->domainParameter->parameters.dh)
-+                goto err;
-+
-+            if (include_dp) {
-+                /* Prime modulus */
-+                p = BN_bn2hex(dp->domainParameter->parameters.dh->p);
-+
-+                /* Order of the subgroup */
-+                bn = DH_get_order(dp->domainParameter->parameters.dh, ctx);
-+                q = BN_bn2hex(bn);
-+
-+                /* Generator */
-+                g = BN_bn2hex(dp->domainParameter->parameters.dh->g);
-+
-+                if (is_no_valid_integer_hexstr(g)
-+                        || is_no_valid_integer_hexstr(q)
-+                        || is_no_valid_integer_hexstr(p)) {
-+                    PACEerr(PACE_F_ASN1_PUBKEY, PACE_R_BAD_FORMAT);
-+                    goto err;
-+                }
-+                if (BIO_printf(bio,
-+                            "p=IMPLICIT:1C,FORMAT:HEX,OCTETSTRING:%s\n"
-+                            "q=IMPLICIT:2C,FORMAT:HEX,OCTETSTRING:%s\n"
-+                            "g=IMPLICIT:3C,FORMAT:HEX,OCTETSTRING:%s\n",
-+                            p, q, g) < 0)
-+                    goto err;
-+
-+                OPENSSL_free(g);
-+                OPENSSL_free(q);
-+                BN_clear_free(bn);
-+                OPENSSL_free(p);
-+            }
-+
-+            /* Public value */
-+            y = BN_bn2hex(dp->domainParameter->parameters.dh->pub_key);
-+
-+            if (is_no_valid_integer_hexstr(y)) {
-+                PACEerr(PACE_F_ASN1_PUBKEY, PACE_R_BAD_FORMAT);
-+                goto err;
-+            }
-+            if (BIO_printf(bio,
-+                "y=IMPLICIT:4C,FORMAT:HEX,OCTETSTRING:%s", y) < 0)
-+                goto err;
-+
-+            OPENSSL_free(y);
-+            break;
-+
-+        case NID_X9_62_id_ecPublicKey:
-+        /* Note: Test cards derive from the official specification, therefore
-+         *       we need to handle some additional OIDs */
-+        case NID_ecka_dh_SessionKDF_DES3:
-+        case NID_ecka_dh_SessionKDF_AES128:
-+        case NID_ecka_dh_SessionKDF_AES192:
-+        case NID_ecka_dh_SessionKDF_AES256:
-+            if (!dp->domainParameter->parameters.ecdh)
-+                goto err;
-+
-+            group = EC_KEY_get0_group(dp->domainParameter->parameters.ecdh);
-+
-+            if (include_dp) {
-+                bn = BN_new();
-+                a_bn = BN_new();
-+                b_bn = BN_new();
-+                if (!bn || !a_bn || !b_bn
-+                        || !EC_GROUP_get_curve_GFp(group, bn, a_bn, b_bn, ctx))
-+                    goto err;
-+                /* Prime modulus */
-+                p = BN_bn2hex(bn);
-+                /* First coefficient */
-+                a = BN_bn2hex(a_bn);
-+                /* Second coefficient */
-+                b = BN_bn2hex(b_bn);
-+
-+                /* Base Point */
-+                G = EC_POINT_point2hex(group, EC_GROUP_get0_generator(group),
-+                        EC_KEY_get_conv_form(dp->domainParameter->parameters.ecdh),
-+                        ctx);
-+
-+                /* Order of the base point */
-+                if (!EC_GROUP_get_order(group, bn, ctx))
-+                    goto err;
-+                r = BN_bn2hex(bn);
-+
-+                if (is_no_valid_integer_hexstr(r)
-+                        || is_no_valid_integer_hexstr(b)
-+                        || is_no_valid_integer_hexstr(a)
-+                        || is_no_valid_integer_hexstr(p)) {
-+                    PACEerr(PACE_F_ASN1_PUBKEY, PACE_R_BAD_FORMAT);
-+                    goto err;
-+                }
-+                if (BIO_printf(bio,
-+                            "p=IMPLICIT:1C,FORMAT:HEX,OCTETSTRING:%s\n"
-+                            "a=IMPLICIT:2C,FORMAT:HEX,OCTETSTRING:%s\n"
-+                            "b=IMPLICIT:3C,FORMAT:HEX,OCTETSTRING:%s\n"
-+                            "G=IMPLICIT:4C,FORMAT:HEX,OCTETSTRING:%s\n"
-+                            "r=IMPLICIT:5C,FORMAT:HEX,OCTETSTRING:%s\n",
-+                            p, a, b, G, r) < 0)
-+                    goto err;
-+
-+                OPENSSL_free(r);
-+                OPENSSL_free(G);
-+                BN_clear_free(a_bn);
-+                BN_clear_free(b_bn);
-+                OPENSSL_free(b);
-+                OPENSSL_free(a);
-+                OPENSSL_free(p);
-+            }
-+
-+            /* Public point */
-+            Y = EC_POINT_point2hex(group,
-+                    EC_KEY_get0_public_key(dp->domainParameter->parameters.ecdh),
-+                    EC_KEY_get_conv_form(dp->domainParameter->parameters.ecdh),
-+                    ctx);
-+
-+            if (BIO_printf(bio,
-+                        "Y=IMPLICIT:6C,FORMAT:HEX,OCTETSTRING:%s\n", Y) < 0)
-+                goto err;
-+
-+            OPENSSL_free(Y);
-+
-+            if (include_dp) {
-+                /* Cofactor */
-+                if (!EC_GROUP_get_cofactor(group, bn, ctx))
-+                    goto err;
-+                f = BN_bn2hex(bn);
-+
-+                if (is_no_valid_integer_hexstr(f)) {
-+                    PACEerr(PACE_F_ASN1_PUBKEY, PACE_R_BAD_FORMAT);
-+                    goto err;
-+                }
-+                if (BIO_printf(bio,
-+                            "f=IMPLICIT:7C,FORMAT:HEX,OCTETSTRING:%s", f) < 0)
-+                    goto err;
-+
-+                OPENSSL_free(f);
-+                BN_clear_free(bn);
-+            }
-+            break;
-+
-+        default:
-+            goto err;
-+    }
-+
-+    if (BIO_flush(bio) <= 0)
-+        goto err;
-+
-+    return bio2asn1bin(bio);
-+
-+err:
-+    if (y)
-+        OPENSSL_free(y);
-+    if (g)
-+        OPENSSL_free(g);
-+    if (q)
-+        OPENSSL_free(q);
-+    if (p)
-+        OPENSSL_free(p);
-+
-+    if (f)
-+        OPENSSL_free(f);
-+    if (Y)
-+        OPENSSL_free(Y);
-+    if (r)
-+        OPENSSL_free(r);
-+    if (G)
-+        OPENSSL_free(G);
-+    if (a_bn)
-+        BN_clear_free(a_bn);
-+    if (b_bn)
-+        BN_clear_free(b_bn);
-+    if (b)
-+        OPENSSL_free(b);
-+    if (a)
-+        OPENSSL_free(a);
-+    if (p)
-+        OPENSSL_free(p);
-+
-+    if (bn)
-+        BN_clear_free(bn);
-+
-+    if (bio)
-+        BIO_free(bio);
-+
-+    return NULL;
-+}
-+
-+BUF_MEM *
 +compute_authentication_token(PACE_CTX *ctx, PACEDomainParameterInfo *dp_opp,
 +        const PACEInfo *info, BUF_MEM * k_mac)
 +{
@@ -7575,10 +6804,11 @@ Index: openssl/crypto/pace/pace_util.c
 +    if (!info || !ctx)
 +        goto err;
 +
-+    if (ctx->tr_version == PACE_TR_VERSION_2_01)
++    if (ctx->tr_version == PACE_TR_VERSION_2_01) {
 +        asn1 = asn1_pubkey(ctx->bn_ctx, dp_opp, info, 1);
-+    else
++    } else {
 +        asn1 = asn1_pubkey(ctx->bn_ctx, dp_opp, info, 0);
++    }
 +
 +    /* ISO 9797-1 algorithm 3 retail mac now needs extra padding (padding method 2) */
 +    if (EVP_CIPHER_nid(ctx->cipher) == NID_des_ede_cbc) {
@@ -7648,10 +6878,10 @@ Index: openssl/crypto/pace/pace_util.c
 +
 +    return NULL;
 +}
-Index: openssl/crypto/pace/pace_util.h
+Index: openssl/crypto/eac/pace_util.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pace_util.h	2010-12-20 19:06:15.000000000 +0100
++++ openssl/crypto/eac/pace_util.h	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,230 @@
 +/**
 + * @file
@@ -7883,10 +7113,10 @@ Index: openssl/crypto/pace/pace_util.h
 +bio2asn1bin(BIO *bio);
 +
 +#endif /*PACE_DH_H_*/
-Index: openssl/crypto/pace/pacetest.c
+Index: openssl/crypto/eac/pacetest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/pace/pacetest.c	2010-12-20 19:06:15.000000000 +0100
++++ openssl/crypto/eac/pacetest.c	2011-02-08 21:39:40.297657144 +0100
 @@ -0,0 +1,732 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
@@ -8620,10 +7850,1546 @@ Index: openssl/crypto/pace/pacetest.c
 +}
 +
 +#endif /* OPENSSL_NO_PACE */
+Index: openssl/crypto/ec/ec.h
+===================================================================
+--- openssl.orig/crypto/ec/ec.h	2011-02-08 21:52:04.849158249 +0100
++++ openssl/crypto/ec/ec.h	2011-02-08 21:39:40.201158774 +0100
+@@ -1094,6 +1094,19 @@
+ #define EC_R_UNSUPPORTED_FIELD				 131
+ #define EC_R_WRONG_ORDER				 130
+ 
++#include <openssl/buffer.h>
++/**
++ * @brief converts an EC_POINT object to a BUF_MEM object
++ *
++ * @param ecdh EC_KEY object
++ * @param bn_ctx object (optional)
++ * @param ecp elliptic curve point to convert
++ *
++ * @return converted elliptic curve point or NULL if an error occurred
++ */
++BUF_MEM *
++EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
++
+ #ifdef  __cplusplus
+ }
+ #endif
+Index: openssl/crypto/ec/ec_print.c
+===================================================================
+--- openssl.orig/crypto/ec/ec_print.c	2011-02-08 21:52:04.849158249 +0100
++++ openssl/crypto/ec/ec_print.c	2011-02-08 21:39:40.201158774 +0100
+@@ -54,6 +54,7 @@
+  */
+ 
+ #include <openssl/crypto.h>
++#include <openssl/buffer.h>
+ #include "ec_lcl.h"
+ 
+ BIGNUM *EC_POINT_point2bn(const EC_GROUP *group, 
+@@ -193,3 +194,25 @@
+ 
+ 	return ret;
+ 	}
++
++BUF_MEM *
++EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
++{
++    size_t len;
++    BUF_MEM * out;
++
++    len = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
++            EC_KEY_get_conv_form(ecdh), NULL, 0, bn_ctx);
++    if (len == 0)
++        return NULL;
++
++    out = BUF_MEM_create(len);
++    if (!out)
++        return NULL;
++
++    out->length = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
++            EC_KEY_get_conv_form(ecdh), (unsigned char *) out->data, out->max,
++            bn_ctx);
++
++    return out;
++}
+Index: openssl/crypto/ecdh/ecdh.h
+===================================================================
+--- openssl.orig/crypto/ecdh/ecdh.h	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/ecdh/ecdh.h	2011-02-08 21:39:40.085158835 +0100
+@@ -86,6 +86,7 @@
+ #endif
+ 
+ const ECDH_METHOD *ECDH_OpenSSL(void);
++const ECDH_METHOD *ECDH_OpenSSL_Point(void);
+ 
+ void	  ECDH_set_default_method(const ECDH_METHOD *);
+ const ECDH_METHOD *ECDH_get_default_method(void);
+Index: openssl/crypto/ecdh/ech_ossl.c
+===================================================================
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/ecdh/ech_ossl.c	2011-02-08 21:39:40.085158835 +0100
+@@ -211,3 +211,113 @@
+ 	if (buf) OPENSSL_free(buf);
+ 	return(ret);
+ 	}
++
++static int ecdh_compute_key_point(void *out, size_t len, const EC_POINT *pub_key,
++	EC_KEY *ecdh,
++	void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
++
++static ECDH_METHOD openssl_ecdh_meth_point = {
++	"OpenSSL ECDH method with Point",
++	ecdh_compute_key_point,
++#if 0
++	NULL, /* init     */
++	NULL, /* finish   */
++#endif
++	0,    /* flags    */
++	NULL  /* app_data */
++};
++
++const ECDH_METHOD *ECDH_OpenSSL_Point(void)
++	{
++	return &openssl_ecdh_meth_point;
++	}
++/* This implementation calculates the point as in ecdh_compute_key.
++ * Finally an optional KDF is applied to the point rather than to the x-coordinate as done in ecdh_compute_key.
++ */
++int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
++	EC_KEY *ecdh,
++	void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen))
++	{
++	BN_CTX *ctx;
++	EC_POINT *tmp=NULL;
++	const BIGNUM *priv_key;
++	const EC_GROUP* group;
++	int ret= -1;
++	size_t buflen;
++	unsigned char *buf=NULL;
++
++	if (outlen > INT_MAX)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE); /* sort of, anyway */
++		return -1;
++		}
++
++	if ((ctx = BN_CTX_new()) == NULL) goto err;
++	BN_CTX_start(ctx);
++
++	priv_key = EC_KEY_get0_private_key(ecdh);
++	if (priv_key == NULL)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_NO_PRIVATE_VALUE);
++		goto err;
++		}
++
++	group = EC_KEY_get0_group(ecdh);
++	if ((tmp=EC_POINT_new(group)) == NULL)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
++		goto err;
++		}
++
++	if (!EC_POINT_mul(group, tmp, NULL, pub_key, priv_key, ctx))
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_POINT_ARITHMETIC_FAILURE);
++		goto err;
++		}
++
++
++        buflen = EC_POINT_point2oct(group, tmp,
++                EC_KEY_get_conv_form(ecdh), NULL, 0, ctx);
++        if (buflen < 0)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_BN_LIB);
++		goto err;
++		}
++	if ((buf = OPENSSL_malloc(buflen)) == NULL)
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
++		goto err;
++		}
++
++        if (buflen != EC_POINT_point2oct(group, tmp,
++                    EC_KEY_get_conv_form(ecdh), buf, buflen, ctx))
++		{
++		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_BN_LIB);
++		goto err;
++		}
++
++	if (KDF != 0)
++		{
++		if (KDF(buf, buflen, out, &outlen) == NULL)
++			{
++			ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ECDH_R_KDF_FAILED);
++			goto err;
++			}
++		ret = outlen;
++		}
++	else
++		{
++		/* no KDF, just copy as much as we can */
++		if (outlen > buflen)
++			outlen = buflen;
++		memcpy(out, buf, outlen);
++		ret = outlen;
++		}
++
++err:
++	if (tmp) EC_POINT_free(tmp);
++	if (ctx) BN_CTX_end(ctx);
++	if (ctx) BN_CTX_free(ctx);
++	if (buf) OPENSSL_free(buf);
++	return(ret);
++	}
+Index: openssl/crypto/err/err.c
+===================================================================
+--- openssl.orig/crypto/err/err.c	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/err/err.c	2011-02-08 21:39:40.337664118 +0100
+@@ -156,6 +156,7 @@
+ {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
+ {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
+ {ERR_PACK(ERR_LIB_HMAC,0,0)		,"HMAC routines"},
++{ERR_PACK(ERR_LIB_PACE,0,0)             ,"PACE routines"},
+ {0,NULL},
+ 	};
+ 
+Index: openssl/crypto/err/err.h
+===================================================================
+--- openssl.orig/crypto/err/err.h	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/err/err.h	2011-02-08 21:39:40.337664118 +0100
+@@ -198,6 +198,7 @@
+ #define ERR_LIB_TS		47
+ #define ERR_LIB_HMAC		48
+ #define ERR_LIB_JPAKE		49
++#define ERR_LIB_PACE		50
+ 
+ #define ERR_LIB_USER		128
+ 
+@@ -234,6 +235,7 @@
+ #define TSerr(f,r) ERR_PUT_error(ERR_LIB_TS,(f),(r),__FILE__,__LINE__)
+ #define HMACerr(f,r) ERR_PUT_error(ERR_LIB_HMAC,(f),(r),__FILE__,__LINE__)
+ #define JPAKEerr(f,r) ERR_PUT_error(ERR_LIB_JPAKE,(f),(r),__FILE__,__LINE__)
++#define PACEerr(f,r) ERR_PUT_error(ERR_LIB_PACE,(f),(r),__FILE__,__LINE__)
+ 
+ /* Borland C seems too stupid to be able to shift and do longs in
+  * the pre-processor :-( */
+Index: openssl/crypto/err/err_all.c
+===================================================================
+--- openssl.orig/crypto/err/err_all.c	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/err/err_all.c	2011-02-08 21:39:40.333656834 +0100
+@@ -102,6 +102,9 @@
+ #ifndef OPENSSL_NO_JPAKE
+ #include <openssl/jpake.h>
+ #endif
++#ifndef OPENSSL_NO_PACE
++#include <openssl/pace.h>
++#endif
+ #include <openssl/comp.h>
+ 
+ void ERR_load_crypto_strings(void)
+@@ -155,6 +158,9 @@
+ #ifndef OPENSSL_NO_JPAKE
+ 	ERR_load_JPAKE_strings();
+ #endif
++#ifndef OPENSSL_NO_PACE
++	ERR_load_PACE_strings();
++#endif
+ 	ERR_load_COMP_strings();
+ #endif
+ 	}
+Index: openssl/crypto/err/openssl.ec
+===================================================================
+--- openssl.orig/crypto/err/openssl.ec	2011-02-08 21:52:04.853158060 +0100
++++ openssl/crypto/err/openssl.ec	2011-02-08 21:39:40.337664118 +0100
+@@ -35,6 +35,7 @@
+ L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
+ L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
+ L JPAKE		crypto/jpake/jpake.h		crypto/jpake/jpake_err.c
++L PACE		crypto/eac/pace.h		crypto/eac/pace_err.c
+ 
+ # additional header files to be scanned for function names
+ L NONE		crypto/x509/x509_vfy.h		NONE
+Index: openssl/crypto/install.com
+===================================================================
+--- openssl.orig/crypto/install.com	2011-02-08 21:52:04.849158249 +0100
++++ openssl/crypto/install.com	2011-02-08 21:39:40.753157357 +0100
+@@ -49,7 +49,7 @@
+ 		 BUFFER,BIO,STACK,LHASH,RAND,ERR,-
+ 		 EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,-
+ 		 UI,KRB5,-
+-		 STORE,CMS,PQUEUE,TS,JPAKE
++		 STORE,CMS,PQUEUE,TS,JPAKE,PACE,CV_CERT
+ $	EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
+ $	EXHEADER__'ARCH' := opensslconf.h
+ $	EXHEADER_OBJECTS := objects.h,obj_mac.h
+@@ -106,6 +106,8 @@
+ $	EXHEADER_PQUEUE := pqueue.h
+ $	EXHEADER_TS := ts.h
+ $	EXHEADER_JPAKE := jpake.h
++$	EXHEADER_PACE := pace.h
++$	EXHEADER_CV_CERT := cv_cert.h
+ $	LIBS := LIBCRYPTO
+ $
+ $	EXE_DIR := [-.'ARCH'.EXE.CRYPTO]
+Index: openssl/crypto/objects/obj_dat.h
+===================================================================
+--- openssl.orig/crypto/objects/obj_dat.h	2011-02-08 21:52:04.857156823 +0100
++++ openssl/crypto/objects/obj_dat.h	2011-02-08 21:39:40.749189325 +0100
+@@ -62,12 +62,12 @@
+  * [including the GNU Public Licence.]
+  */
+ 
+-#define NUM_NID 907
+-#define NUM_SN 900
+-#define NUM_LN 900
+-#define NUM_OBJ 854
++#define NUM_NID 986
++#define NUM_SN 978
++#define NUM_LN 978
++#define NUM_OBJ 932
+ 
+-static const unsigned char lvalues[5950]={
++static const unsigned char lvalues[6696]={
+ 0x00,                                        /* [  0] OBJ_undef */
+ 0x2A,0x86,0x48,0x86,0xF7,0x0D,               /* [  1] OBJ_rsadsi */
+ 0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,          /* [  7] OBJ_pkcs */
+@@ -922,6 +922,84 @@
+ 0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0C,/* [5922] OBJ_brainpoolP384t1 */
+ 0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0D,/* [5931] OBJ_brainpoolP512r1 */
+ 0x2B,0x24,0x03,0x03,0x02,0x08,0x01,0x01,0x0E,/* [5940] OBJ_brainpoolP512t1 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x01,/* [5949] OBJ_id_PACE_DH_GM */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x01,0x01,/* [5958] OBJ_id_PACE_DH_GM_3DES_CBC_CBC */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x01,0x02,/* [5968] OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x01,0x03,/* [5978] OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x01,0x04,/* [5988] OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x02,/* [5998] OBJ_id_PACE_ECDH_GM */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x02,0x01,/* [6007] OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x02,0x02,/* [6017] OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x02,0x03,/* [6027] OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x02,0x04,/* [6037] OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x03,/* [6047] OBJ_id_PACE_DH_IM */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x03,0x01,/* [6056] OBJ_id_PACE_DH_IM_3DES_CBC_CBC */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x03,0x02,/* [6066] OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x03,0x03,/* [6076] OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x03,0x04,/* [6086] OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x04,/* [6096] OBJ_id_PACE_ECDH_IM */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x04,0x01,/* [6105] OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x04,0x02,/* [6115] OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x04,0x03,/* [6125] OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x04,0x04,0x04,/* [6135] OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256 */
++0x2A,0x86,0x48,0xCE,0x3E,                    /* [6145] OBJ_ansi_x942 */
++0x2A,0x86,0x48,0xCE,0x3E,0x02,0x01,          /* [6150] OBJ_dhpublicnumber */
++0x04,0x00,0x7F,0x00,0x07,0x01,0x01,0x05,0x02,0x02,/* [6157] OBJ_ecka_dh_SessionKDF */
++0x04,0x00,0x7F,0x00,0x07,0x01,0x01,0x05,0x02,0x02,0x01,/* [6167] OBJ_ecka_dh_SessionKDF_DES3 */
++0x04,0x00,0x7F,0x00,0x07,0x01,0x01,0x05,0x02,0x02,0x02,/* [6178] OBJ_ecka_dh_SessionKDF_AES128 */
++0x04,0x00,0x7F,0x00,0x07,0x01,0x01,0x05,0x02,0x02,0x03,/* [6189] OBJ_ecka_dh_SessionKDF_AES192 */
++0x04,0x00,0x7F,0x00,0x07,0x01,0x01,0x05,0x02,0x02,0x04,/* [6200] OBJ_ecka_dh_SessionKDF_AES256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,/* [6211] OBJ_id_TA_RSA */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,0x01,/* [6220] OBJ_id_TA_RSA_v1_5_SHA_1 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,0x02,/* [6230] OBJ_id_TA_RSA_v1_5_SHA_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,0x03,/* [6240] OBJ_id_TA_RSA_PSS_SHA_1 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,0x04,/* [6250] OBJ_id_TA_RSA_PSS_SHA_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,0x06,/* [6260] OBJ_id_TA_RSA_PSS_SHA_512 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x02,/* [6270] OBJ_id_TA_ECDSA */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x02,0x01,/* [6279] OBJ_id_TA_ECDSA_SHA_1 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x02,0x02,/* [6289] OBJ_id_TA_ECDSA_SHA_224 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x02,0x03,/* [6299] OBJ_id_TA_ECDSA_SHA_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x02,0x04,/* [6309] OBJ_id_TA_ECDSA_SHA_384 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x02,0x05,/* [6319] OBJ_id_TA_ECDSA_SHA_512 */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x02,0x01,/* [6329] OBJ_id_IS */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x02,0x02,/* [6338] OBJ_id_AT */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x02,0x03,/* [6347] OBJ_id_ST */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x03,0x01,/* [6356] OBJ_id_description */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x03,0x01,0x01,/* [6365] OBJ_id_plainFormat */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x03,0x01,0x02,/* [6375] OBJ_id_htmlFormat */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x03,0x01,0x03,/* [6385] OBJ_id_pdfFormat */
++0x04,0x00,0x7F,0x00,0x07,0x03,0x01,0x03,0x02,/* [6395] OBJ_id_sector */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,0x01,0x05,/* [6404] OBJ_id_TA_RSA_v1_5_SHA_512 */
++0x04,0x00,0x7F,0x00,0x07,0x01,0x02,          /* [6414] OBJ_standardizedDomainParameters */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x01,0x01,/* [6421] OBJ_id_PK_DH */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x01,0x02,/* [6430] OBJ_id_PK_ECDH */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x01,/* [6439] OBJ_id_CA_DH */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x01,0x01,/* [6448] OBJ_id_CA_DH_3DES_CBC_CBC */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x01,0x02,/* [6458] OBJ_id_CA_DH_AES_CBC_CMAC_128 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x01,0x03,/* [6468] OBJ_id_CA_DH_AES_CBC_CMAC_192 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x01,0x04,/* [6478] OBJ_id_CA_DH_AES_CBC_CMAC_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x02,/* [6488] OBJ_id_CA_ECDH */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x02,0x01,/* [6497] OBJ_id_CA_ECDH_3DES_CBC_CBC */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x02,0x02,/* [6507] OBJ_id_CA_ECDH_AES_CBC_CMAC_128 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x02,0x03,/* [6517] OBJ_id_CA_ECDH_AES_CBC_CMAC_192 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x03,0x02,0x04,/* [6527] OBJ_id_CA_ECDH_AES_CBC_CMAC_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x01,/* [6537] OBJ_id_RI_DH */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x01,0x01,/* [6546] OBJ_id_RI_DH_SHA_1 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x01,0x02,/* [6556] OBJ_id_RI_DH_SHA_224 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x01,0x03,/* [6566] OBJ_id_RI_DH_SHA_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x01,0x04,/* [6576] OBJ_id_RI_DH_SHA_384 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x01,0x05,/* [6586] OBJ_id_RI_DH_SHA_512 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x02,/* [6596] OBJ_id_RI_ECDH */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x02,0x01,/* [6605] OBJ_id_RI_ECDH_SHA_1 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x02,0x02,/* [6615] OBJ_id_RI_ECDH_SHA_224 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x02,0x03,/* [6625] OBJ_id_RI_ECDH_SHA_256 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x02,0x04,/* [6635] OBJ_id_RI_ECDH_SHA_384 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x05,0x02,0x05,/* [6645] OBJ_id_RI_ECDH_SHA_512 */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x06,     /* [6655] OBJ_cardInfoLocator */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x07,     /* [6663] OBJ_eID */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x02,     /* [6671] OBJ_id_TA */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x06,     /* [6679] OBJ_id_CI */
++0x04,0x00,0x7F,0x00,0x07,0x02,0x02,0x07,     /* [6687] OBJ_id_eIDSecurity */
+ };
+ 
+ static const ASN1_OBJECT nid_objs[NUM_NID]={
+@@ -2393,6 +2471,149 @@
+ 	&(lvalues[5931]),0},
+ {"brainpoolP512t1","brainpoolP512t1",NID_brainpoolP512t1,9,
+ 	&(lvalues[5940]),0},
++{"id-PACE-DH-GM","id-PACE-DH-GM",NID_id_PACE_DH_GM,9,&(lvalues[5949]),0},
++{"id-PACE-DH-GM-3DES-CBC-CBC","id-PACE-DH-GM-3DES-CBC-CBC",
++	NID_id_PACE_DH_GM_3DES_CBC_CBC,10,&(lvalues[5958]),0},
++{"id-PACE-DH-GM-AES-CBC-CMAC-128","id-PACE-DH-GM-AES-CBC-CMAC-128",
++	NID_id_PACE_DH_GM_AES_CBC_CMAC_128,10,&(lvalues[5968]),0},
++{"id-PACE-DH-GM-AES-CBC-CMAC-192","id-PACE-DH-GM-AES-CBC-CMAC-192",
++	NID_id_PACE_DH_GM_AES_CBC_CMAC_192,10,&(lvalues[5978]),0},
++{"id-PACE-DH-GM-AES-CBC-CMAC-256","id-PACE-DH-GM-AES-CBC-CMAC-256",
++	NID_id_PACE_DH_GM_AES_CBC_CMAC_256,10,&(lvalues[5988]),0},
++{"id-PACE-ECDH-GM","id-PACE-ECDH-GM",NID_id_PACE_ECDH_GM,9,
++	&(lvalues[5998]),0},
++{"id-PACE-ECDH-GM-3DES-CBC-CBC","id-PACE-ECDH-GM-3DES-CBC-CBC",
++	NID_id_PACE_ECDH_GM_3DES_CBC_CBC,10,&(lvalues[6007]),0},
++{"id-PACE-ECDH-GM-AES-CBC-CMAC-128",
++	"id-PACE-ECDH-GM-AES-CBC-CMAC-128",
++	NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128,10,&(lvalues[6017]),0},
++{"id-PACE-ECDH-GM-AES-CBC-CMAC-192",
++	"id-PACE-ECDH-GM-AES-CBC-CMAC-192",
++	NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192,10,&(lvalues[6027]),0},
++{"id-PACE-ECDH-GM-AES-CBC-CMAC-256",
++	"id-PACE-ECDH-GM-AES-CBC-CMAC-256",
++	NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256,10,&(lvalues[6037]),0},
++{"id-PACE-DH-IM","id-PACE-DH-IM",NID_id_PACE_DH_IM,9,&(lvalues[6047]),0},
++{"id-PACE-DH-IM-3DES-CBC-CBC","id-PACE-DH-IM-3DES-CBC-CBC",
++	NID_id_PACE_DH_IM_3DES_CBC_CBC,10,&(lvalues[6056]),0},
++{"id-PACE-DH-IM-AES-CBC-CMAC-128","id-PACE-DH-IM-AES-CBC-CMAC-128",
++	NID_id_PACE_DH_IM_AES_CBC_CMAC_128,10,&(lvalues[6066]),0},
++{"id-PACE-DH-IM-AES-CBC-CMAC-192","id-PACE-DH-IM-AES-CBC-CMAC-192",
++	NID_id_PACE_DH_IM_AES_CBC_CMAC_192,10,&(lvalues[6076]),0},
++{"id-PACE-DH-IM-AES-CBC-CMAC-256","id-PACE-DH-IM-AES-CBC-CMAC-256",
++	NID_id_PACE_DH_IM_AES_CBC_CMAC_256,10,&(lvalues[6086]),0},
++{"id-PACE-ECDH-IM","id-PACE-ECDH-IM",NID_id_PACE_ECDH_IM,9,
++	&(lvalues[6096]),0},
++{"id-PACE-ECDH-IM-3DES-CBC-CBC","id-PACE-ECDH-IM-3DES-CBC-CBC",
++	NID_id_PACE_ECDH_IM_3DES_CBC_CBC,10,&(lvalues[6105]),0},
++{"id-PACE-ECDH-IM-AES-CBC-CMAC-128",
++	"id-PACE-ECDH-IM-AES-CBC-CMAC-128",
++	NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128,10,&(lvalues[6115]),0},
++{"id-PACE-ECDH-IM-AES-CBC-CMAC-192",
++	"id-PACE-ECDH-IM-AES-CBC-CMAC-192",
++	NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192,10,&(lvalues[6125]),0},
++{"id-PACE-ECDH-IM-AES-CBC-CMAC-256",
++	"id-PACE-ECDH-IM-AES-CBC-CMAC-256",
++	NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256,10,&(lvalues[6135]),0},
++{"ansi-x942","ansi-x942",NID_ansi_x942,5,&(lvalues[6145]),0},
++{"dhpublicnumber","dhpublicnumber",NID_dhpublicnumber,7,
++	&(lvalues[6150]),0},
++{"ecka-dh-SessionKDF","ecka-dh-SessionKDF",NID_ecka_dh_SessionKDF,10,
++	&(lvalues[6157]),0},
++{"ecka-dh-SessionKDF-DES3","ecka-dh-SessionKDF-DES3",
++	NID_ecka_dh_SessionKDF_DES3,11,&(lvalues[6167]),0},
++{"ecka-dh-SessionKDF-AES128","ecka-dh-SessionKDF-AES128",
++	NID_ecka_dh_SessionKDF_AES128,11,&(lvalues[6178]),0},
++{"ecka-dh-SessionKDF-AES192","ecka-dh-SessionKDF-AES192",
++	NID_ecka_dh_SessionKDF_AES192,11,&(lvalues[6189]),0},
++{"ecka-dh-SessionKDF-AES256","ecka-dh-SessionKDF-AES256",
++	NID_ecka_dh_SessionKDF_AES256,11,&(lvalues[6200]),0},
++{"id-TA-RSA","id-TA-RSA",NID_id_TA_RSA,9,&(lvalues[6211]),0},
++{"id-TA-RSA-v1-5-SHA-1","id-TA-RSA-v1-5-SHA-1",
++	NID_id_TA_RSA_v1_5_SHA_1,10,&(lvalues[6220]),0},
++{"id-TA-RSA-v1-5-SHA-256","id-TA-RSA-v1-5-SHA-256",
++	NID_id_TA_RSA_v1_5_SHA_256,10,&(lvalues[6230]),0},
++{"id-TA-RSA-PSS-SHA-1","id-TA-RSA-PSS-SHA-1",NID_id_TA_RSA_PSS_SHA_1,
++	10,&(lvalues[6240]),0},
++{"id-TA-RSA-PSS-SHA-256","id-TA-RSA-PSS-SHA-256",
++	NID_id_TA_RSA_PSS_SHA_256,10,&(lvalues[6250]),0},
++{NULL,NULL,NID_undef,0,NULL,0},
++{"id-TA-RSA-PSS-SHA-512","id-TA-RSA-PSS-SHA-512",
++	NID_id_TA_RSA_PSS_SHA_512,10,&(lvalues[6260]),0},
++{"id-TA-ECDSA","id-TA-ECDSA",NID_id_TA_ECDSA,9,&(lvalues[6270]),0},
++{"id-TA-ECDSA-SHA-1","id-TA-ECDSA-SHA-1",NID_id_TA_ECDSA_SHA_1,10,
++	&(lvalues[6279]),0},
++{"id-TA-ECDSA-SHA-224","id-TA-ECDSA-SHA-224",NID_id_TA_ECDSA_SHA_224,
++	10,&(lvalues[6289]),0},
++{"id-TA-ECDSA-SHA-256","id-TA-ECDSA-SHA-256",NID_id_TA_ECDSA_SHA_256,
++	10,&(lvalues[6299]),0},
++{"id-TA-ECDSA-SHA-384","id-TA-ECDSA-SHA-384",NID_id_TA_ECDSA_SHA_384,
++	10,&(lvalues[6309]),0},
++{"id-TA-ECDSA-SHA-512","id-TA-ECDSA-SHA-512",NID_id_TA_ECDSA_SHA_512,
++	10,&(lvalues[6319]),0},
++{"id-IS","id-IS",NID_id_IS,9,&(lvalues[6329]),0},
++{"id-AT","id-AT",NID_id_AT,9,&(lvalues[6338]),0},
++{"id-ST","id-ST",NID_id_ST,9,&(lvalues[6347]),0},
++{"id-description","id-description",NID_id_description,9,
++	&(lvalues[6356]),0},
++{"id-plainFormat","id-plainFormat",NID_id_plainFormat,10,
++	&(lvalues[6365]),0},
++{"id-htmlFormat","id-htmlFormat",NID_id_htmlFormat,10,&(lvalues[6375]),0},
++{"id-pdfFormat","id-pdfFormat",NID_id_pdfFormat,10,&(lvalues[6385]),0},
++{"id-sector","id-sector",NID_id_sector,9,&(lvalues[6395]),0},
++{"id-TA-RSA-v1-5-SHA-512","id-TA-RSA-v1-5-SHA-512",
++	NID_id_TA_RSA_v1_5_SHA_512,10,&(lvalues[6404]),0},
++{"standardizedDomainParameters","standardizedDomainParameters",
++	NID_standardizedDomainParameters,7,&(lvalues[6414]),0},
++{"id-PK-DH","id-PK-DH",NID_id_PK_DH,9,&(lvalues[6421]),0},
++{"id-PK-ECDH","id-PK-ECDH",NID_id_PK_ECDH,9,&(lvalues[6430]),0},
++{"id-CA-DH","id-CA-DH",NID_id_CA_DH,9,&(lvalues[6439]),0},
++{"id-CA-DH-3DES-CBC-CBC","id-CA-DH-3DES-CBC-CBC",
++	NID_id_CA_DH_3DES_CBC_CBC,10,&(lvalues[6448]),0},
++{"id-CA-DH-AES-CBC-CMAC-128","id-CA-DH-AES-CBC-CMAC-128",
++	NID_id_CA_DH_AES_CBC_CMAC_128,10,&(lvalues[6458]),0},
++{"id-CA-DH-AES-CBC-CMAC-192","id-CA-DH-AES-CBC-CMAC-192",
++	NID_id_CA_DH_AES_CBC_CMAC_192,10,&(lvalues[6468]),0},
++{"id-CA-DH-AES-CBC-CMAC-256","id-CA-DH-AES-CBC-CMAC-256",
++	NID_id_CA_DH_AES_CBC_CMAC_256,10,&(lvalues[6478]),0},
++{"id-CA-ECDH","id-CA-ECDH",NID_id_CA_ECDH,9,&(lvalues[6488]),0},
++{"id-CA-ECDH-3DES-CBC-CBC","id-CA-ECDH-3DES-CBC-CBC",
++	NID_id_CA_ECDH_3DES_CBC_CBC,10,&(lvalues[6497]),0},
++{"id-CA-ECDH-AES-CBC-CMAC-128","id-CA-ECDH-AES-CBC-CMAC-128",
++	NID_id_CA_ECDH_AES_CBC_CMAC_128,10,&(lvalues[6507]),0},
++{"id-CA-ECDH-AES-CBC-CMAC-192","id-CA-ECDH-AES-CBC-CMAC-192",
++	NID_id_CA_ECDH_AES_CBC_CMAC_192,10,&(lvalues[6517]),0},
++{"id-CA-ECDH-AES-CBC-CMAC-256","id-CA-ECDH-AES-CBC-CMAC-256",
++	NID_id_CA_ECDH_AES_CBC_CMAC_256,10,&(lvalues[6527]),0},
++{"id-RI-DH","id-RI-DH",NID_id_RI_DH,9,&(lvalues[6537]),0},
++{"id-RI-DH-SHA-1","id-RI-DH-SHA-1",NID_id_RI_DH_SHA_1,10,
++	&(lvalues[6546]),0},
++{"id-RI-DH-SHA-224","id-RI-DH-SHA-224",NID_id_RI_DH_SHA_224,10,
++	&(lvalues[6556]),0},
++{"id-RI-DH-SHA-256","id-RI-DH-SHA-256",NID_id_RI_DH_SHA_256,10,
++	&(lvalues[6566]),0},
++{"id-RI-DH-SHA-384","id-RI-DH-SHA-384",NID_id_RI_DH_SHA_384,10,
++	&(lvalues[6576]),0},
++{"id-RI-DH-SHA-512","id-RI-DH-SHA-512",NID_id_RI_DH_SHA_512,10,
++	&(lvalues[6586]),0},
++{"id-RI-ECDH","id-RI-ECDH",NID_id_RI_ECDH,9,&(lvalues[6596]),0},
++{"id-RI-ECDH-SHA-1","id-RI-ECDH-SHA-1",NID_id_RI_ECDH_SHA_1,10,
++	&(lvalues[6605]),0},
++{"id-RI-ECDH-SHA-224","id-RI-ECDH-SHA-224",NID_id_RI_ECDH_SHA_224,10,
++	&(lvalues[6615]),0},
++{"id-RI-ECDH-SHA-256","id-RI-ECDH-SHA-256",NID_id_RI_ECDH_SHA_256,10,
++	&(lvalues[6625]),0},
++{"id-RI-ECDH-SHA-384","id-RI-ECDH-SHA-384",NID_id_RI_ECDH_SHA_384,10,
++	&(lvalues[6635]),0},
++{"id-RI-ECDH-SHA-512","id-RI-ECDH-SHA-512",NID_id_RI_ECDH_SHA_512,10,
++	&(lvalues[6645]),0},
++{"cardInfoLocator","cardInfoLocator",NID_cardInfoLocator,8,
++	&(lvalues[6655]),0},
++{"eID","eID",NID_eID,8,&(lvalues[6663]),0},
++{"id-TA","id-TA",NID_id_TA,8,&(lvalues[6671]),0},
++{"id-CI","id-CI",NID_id_CI,8,&(lvalues[6679]),0},
++{"id-eIDSecurity","id-eIDSecurity",NID_id_eIDSecurity,8,
++	&(lvalues[6687]),0},
+ };
+ 
+ static const unsigned int sn_objs[NUM_SN]={
+@@ -2582,6 +2803,7 @@
+ 363,	/* "ad_timestamping" */
+ 376,	/* "algorithm" */
+ 405,	/* "ansi-X9-62" */
++927,	/* "ansi-x942" */
+ 746,	/* "anyPolicy" */
+ 370,	/* "archiveCutoff" */
+ 484,	/* "associatedDomain" */
+@@ -2633,6 +2855,7 @@
+ 483,	/* "cNAMERecord" */
+ 179,	/* "caIssuers" */
+ 785,	/* "caRepository" */
++981,	/* "cardInfoLocator" */
+ 443,	/* "caseIgnoreIA5StringSyntax" */
+ 152,	/* "certBag" */
+ 677,	/* "certicom-arc" */
+@@ -2662,6 +2885,7 @@
+ 107,	/* "description" */
+ 871,	/* "destinationIndicator" */
+ 28,	/* "dhKeyAgreement" */
++928,	/* "dhpublicnumber" */
+ 382,	/* "directory" */
+ 887,	/* "distinguishedName" */
+ 892,	/* "dmdName" */
+@@ -2678,6 +2902,7 @@
+ 452,	/* "domainRelatedObject" */
+ 802,	/* "dsa_with_SHA224" */
+ 803,	/* "dsa_with_SHA256" */
++982,	/* "eID" */
+ 791,	/* "ecdsa-with-Recommended" */
+ 416,	/* "ecdsa-with-SHA1" */
+ 793,	/* "ecdsa-with-SHA224" */
+@@ -2685,6 +2910,11 @@
+ 795,	/* "ecdsa-with-SHA384" */
+ 796,	/* "ecdsa-with-SHA512" */
+ 792,	/* "ecdsa-with-Specified" */
++929,	/* "ecka-dh-SessionKDF" */
++931,	/* "ecka-dh-SessionKDF-AES128" */
++932,	/* "ecka-dh-SessionKDF-AES192" */
++933,	/* "ecka-dh-SessionKDF-AES256" */
++930,	/* "ecka-dh-SessionKDF-DES3" */
+ 48,	/* "emailAddress" */
+ 132,	/* "emailProtection" */
+ 885,	/* "enhancedSearchGuide" */
+@@ -2723,6 +2953,18 @@
+ 466,	/* "host" */
+ 889,	/* "houseIdentifier" */
+ 442,	/* "iA5StringSyntax" */
++948,	/* "id-AT" */
++959,	/* "id-CA-DH" */
++960,	/* "id-CA-DH-3DES-CBC-CBC" */
++961,	/* "id-CA-DH-AES-CBC-CMAC-128" */
++962,	/* "id-CA-DH-AES-CBC-CMAC-192" */
++963,	/* "id-CA-DH-AES-CBC-CMAC-256" */
++964,	/* "id-CA-ECDH" */
++965,	/* "id-CA-ECDH-3DES-CBC-CBC" */
++966,	/* "id-CA-ECDH-AES-CBC-CMAC-128" */
++967,	/* "id-CA-ECDH-AES-CBC-CMAC-192" */
++968,	/* "id-CA-ECDH-AES-CBC-CMAC-256" */
++984,	/* "id-CI" */
+ 783,	/* "id-DHBasedMac" */
+ 824,	/* "id-Gost28147-89-CryptoPro-A-ParamSet" */
+ 825,	/* "id-Gost28147-89-CryptoPro-B-ParamSet" */
+@@ -2763,7 +3005,57 @@
+ 808,	/* "id-GostR3411-94-with-GostR3410-94" */
+ 852,	/* "id-GostR3411-94-with-GostR3410-94-cc" */
+ 810,	/* "id-HMACGostR3411-94" */
++947,	/* "id-IS" */
++907,	/* "id-PACE-DH-GM" */
++908,	/* "id-PACE-DH-GM-3DES-CBC-CBC" */
++909,	/* "id-PACE-DH-GM-AES-CBC-CMAC-128" */
++910,	/* "id-PACE-DH-GM-AES-CBC-CMAC-192" */
++911,	/* "id-PACE-DH-GM-AES-CBC-CMAC-256" */
++917,	/* "id-PACE-DH-IM" */
++918,	/* "id-PACE-DH-IM-3DES-CBC-CBC" */
++919,	/* "id-PACE-DH-IM-AES-CBC-CMAC-128" */
++920,	/* "id-PACE-DH-IM-AES-CBC-CMAC-192" */
++921,	/* "id-PACE-DH-IM-AES-CBC-CMAC-256" */
++912,	/* "id-PACE-ECDH-GM" */
++913,	/* "id-PACE-ECDH-GM-3DES-CBC-CBC" */
++914,	/* "id-PACE-ECDH-GM-AES-CBC-CMAC-128" */
++915,	/* "id-PACE-ECDH-GM-AES-CBC-CMAC-192" */
++916,	/* "id-PACE-ECDH-GM-AES-CBC-CMAC-256" */
++922,	/* "id-PACE-ECDH-IM" */
++923,	/* "id-PACE-ECDH-IM-3DES-CBC-CBC" */
++924,	/* "id-PACE-ECDH-IM-AES-CBC-CMAC-128" */
++925,	/* "id-PACE-ECDH-IM-AES-CBC-CMAC-192" */
++926,	/* "id-PACE-ECDH-IM-AES-CBC-CMAC-256" */
++957,	/* "id-PK-DH" */
++958,	/* "id-PK-ECDH" */
+ 782,	/* "id-PasswordBasedMAC" */
++969,	/* "id-RI-DH" */
++970,	/* "id-RI-DH-SHA-1" */
++971,	/* "id-RI-DH-SHA-224" */
++972,	/* "id-RI-DH-SHA-256" */
++973,	/* "id-RI-DH-SHA-384" */
++974,	/* "id-RI-DH-SHA-512" */
++975,	/* "id-RI-ECDH" */
++976,	/* "id-RI-ECDH-SHA-1" */
++977,	/* "id-RI-ECDH-SHA-224" */
++978,	/* "id-RI-ECDH-SHA-256" */
++979,	/* "id-RI-ECDH-SHA-384" */
++980,	/* "id-RI-ECDH-SHA-512" */
++949,	/* "id-ST" */
++983,	/* "id-TA" */
++941,	/* "id-TA-ECDSA" */
++942,	/* "id-TA-ECDSA-SHA-1" */
++943,	/* "id-TA-ECDSA-SHA-224" */
++944,	/* "id-TA-ECDSA-SHA-256" */
++945,	/* "id-TA-ECDSA-SHA-384" */
++946,	/* "id-TA-ECDSA-SHA-512" */
++934,	/* "id-TA-RSA" */
++937,	/* "id-TA-RSA-PSS-SHA-1" */
++938,	/* "id-TA-RSA-PSS-SHA-256" */
++940,	/* "id-TA-RSA-PSS-SHA-512" */
++935,	/* "id-TA-RSA-v1-5-SHA-1" */
++936,	/* "id-TA-RSA-v1-5-SHA-256" */
++955,	/* "id-TA-RSA-v1-5-SHA-512" */
+ 266,	/* "id-aca" */
+ 355,	/* "id-aca-accessIdentity" */
+ 354,	/* "id-aca-authenticationInfo" */
+@@ -2808,9 +3100,12 @@
+ 327,	/* "id-cmc-statusInfo" */
+ 331,	/* "id-cmc-transactionId" */
+ 787,	/* "id-ct-asciiTextWithCRLF" */
++950,	/* "id-description" */
++985,	/* "id-eIDSecurity" */
+ 408,	/* "id-ecPublicKey" */
+ 508,	/* "id-hex-multipart-message" */
+ 507,	/* "id-hex-partial-message" */
++952,	/* "id-htmlFormat" */
+ 260,	/* "id-it" */
+ 302,	/* "id-it-caKeyUpdateInfo" */
+ 298,	/* "id-it-caProtEncCert" */
+@@ -2850,6 +3145,7 @@
+ 348,	/* "id-pda-dateOfBirth" */
+ 351,	/* "id-pda-gender" */
+ 349,	/* "id-pda-placeOfBirth" */
++953,	/* "id-pdfFormat" */
+ 175,	/* "id-pe" */
+ 261,	/* "id-pkip" */
+ 258,	/* "id-pkix-mod" */
+@@ -2857,6 +3153,7 @@
+ 271,	/* "id-pkix1-explicit-93" */
+ 270,	/* "id-pkix1-implicit-88" */
+ 272,	/* "id-pkix1-implicit-93" */
++951,	/* "id-plainFormat" */
+ 662,	/* "id-ppl" */
+ 664,	/* "id-ppl-anyLanguage" */
+ 667,	/* "id-ppl-independent" */
+@@ -2876,6 +3173,7 @@
+ 314,	/* "id-regInfo" */
+ 322,	/* "id-regInfo-certReq" */
+ 321,	/* "id-regInfo-utf8Pairs" */
++954,	/* "id-sector" */
+ 512,	/* "id-set" */
+ 191,	/* "id-smime-aa" */
+ 215,	/* "id-smime-aa-contentHint" */
+@@ -3251,6 +3549,7 @@
+ 454,	/* "simpleSecurityObject" */
+ 496,	/* "singleLevelQuality" */
+ 387,	/* "snmpv2" */
++956,	/* "standardizedDomainParameters" */
+ 660,	/* "street" */
+ 85,	/* "subjectAltName" */
+ 769,	/* "subjectDirectoryAttributes" */
+@@ -3460,6 +3759,7 @@
+ 426,	/* "aes-256-ecb" */
+ 428,	/* "aes-256-ofb" */
+ 376,	/* "algorithm" */
++927,	/* "ansi-x942" */
+ 484,	/* "associatedDomain" */
+ 485,	/* "associatedName" */
+ 501,	/* "audio" */
+@@ -3524,6 +3824,7 @@
+ 765,	/* "camellia-256-cfb8" */
+ 756,	/* "camellia-256-ecb" */
+ 768,	/* "camellia-256-ofb" */
++981,	/* "cardInfoLocator" */
+ 443,	/* "caseIgnoreIA5StringSyntax" */
+ 108,	/* "cast5-cbc" */
+ 110,	/* "cast5-cfb" */
+@@ -3573,6 +3874,7 @@
+ 871,	/* "destinationIndicator" */
+ 80,	/* "desx-cbc" */
+ 28,	/* "dhKeyAgreement" */
++928,	/* "dhpublicnumber" */
+ 11,	/* "directory services (X.500)" */
+ 378,	/* "directory services - algorithms" */
+ 887,	/* "distinguishedName" */
+@@ -3597,6 +3899,7 @@
+ 802,	/* "dsa_with_SHA224" */
+ 803,	/* "dsa_with_SHA256" */
+ 297,	/* "dvcs" */
++982,	/* "eID" */
+ 791,	/* "ecdsa-with-Recommended" */
+ 416,	/* "ecdsa-with-SHA1" */
+ 793,	/* "ecdsa-with-SHA224" */
+@@ -3604,6 +3907,11 @@
+ 795,	/* "ecdsa-with-SHA384" */
+ 796,	/* "ecdsa-with-SHA512" */
+ 792,	/* "ecdsa-with-Specified" */
++929,	/* "ecka-dh-SessionKDF" */
++931,	/* "ecka-dh-SessionKDF-AES128" */
++932,	/* "ecka-dh-SessionKDF-AES192" */
++933,	/* "ecka-dh-SessionKDF-AES256" */
++930,	/* "ecka-dh-SessionKDF-DES3" */
+ 48,	/* "emailAddress" */
+ 632,	/* "encrypted track 2" */
+ 885,	/* "enhancedSearchGuide" */
+@@ -3633,6 +3941,18 @@
+ 889,	/* "houseIdentifier" */
+ 442,	/* "iA5StringSyntax" */
+ 381,	/* "iana" */
++948,	/* "id-AT" */
++959,	/* "id-CA-DH" */
++960,	/* "id-CA-DH-3DES-CBC-CBC" */
++961,	/* "id-CA-DH-AES-CBC-CMAC-128" */
++962,	/* "id-CA-DH-AES-CBC-CMAC-192" */
++963,	/* "id-CA-DH-AES-CBC-CMAC-256" */
++964,	/* "id-CA-ECDH" */
++965,	/* "id-CA-ECDH-3DES-CBC-CBC" */
++966,	/* "id-CA-ECDH-AES-CBC-CMAC-128" */
++967,	/* "id-CA-ECDH-AES-CBC-CMAC-192" */
++968,	/* "id-CA-ECDH-AES-CBC-CMAC-256" */
++984,	/* "id-CI" */
+ 824,	/* "id-Gost28147-89-CryptoPro-A-ParamSet" */
+ 825,	/* "id-Gost28147-89-CryptoPro-B-ParamSet" */
+ 826,	/* "id-Gost28147-89-CryptoPro-C-ParamSet" */
+@@ -3663,6 +3983,56 @@
+ 848,	/* "id-GostR3410-94-bBis" */
+ 822,	/* "id-GostR3411-94-CryptoProParamSet" */
+ 821,	/* "id-GostR3411-94-TestParamSet" */
++947,	/* "id-IS" */
++907,	/* "id-PACE-DH-GM" */
++908,	/* "id-PACE-DH-GM-3DES-CBC-CBC" */
++909,	/* "id-PACE-DH-GM-AES-CBC-CMAC-128" */
++910,	/* "id-PACE-DH-GM-AES-CBC-CMAC-192" */
++911,	/* "id-PACE-DH-GM-AES-CBC-CMAC-256" */
++917,	/* "id-PACE-DH-IM" */
++918,	/* "id-PACE-DH-IM-3DES-CBC-CBC" */
++919,	/* "id-PACE-DH-IM-AES-CBC-CMAC-128" */
++920,	/* "id-PACE-DH-IM-AES-CBC-CMAC-192" */
++921,	/* "id-PACE-DH-IM-AES-CBC-CMAC-256" */
++912,	/* "id-PACE-ECDH-GM" */
++913,	/* "id-PACE-ECDH-GM-3DES-CBC-CBC" */
++914,	/* "id-PACE-ECDH-GM-AES-CBC-CMAC-128" */
++915,	/* "id-PACE-ECDH-GM-AES-CBC-CMAC-192" */
++916,	/* "id-PACE-ECDH-GM-AES-CBC-CMAC-256" */
++922,	/* "id-PACE-ECDH-IM" */
++923,	/* "id-PACE-ECDH-IM-3DES-CBC-CBC" */
++924,	/* "id-PACE-ECDH-IM-AES-CBC-CMAC-128" */
++925,	/* "id-PACE-ECDH-IM-AES-CBC-CMAC-192" */
++926,	/* "id-PACE-ECDH-IM-AES-CBC-CMAC-256" */
++957,	/* "id-PK-DH" */
++958,	/* "id-PK-ECDH" */
++969,	/* "id-RI-DH" */
++970,	/* "id-RI-DH-SHA-1" */
++971,	/* "id-RI-DH-SHA-224" */
++972,	/* "id-RI-DH-SHA-256" */
++973,	/* "id-RI-DH-SHA-384" */
++974,	/* "id-RI-DH-SHA-512" */
++975,	/* "id-RI-ECDH" */
++976,	/* "id-RI-ECDH-SHA-1" */
++977,	/* "id-RI-ECDH-SHA-224" */
++978,	/* "id-RI-ECDH-SHA-256" */
++979,	/* "id-RI-ECDH-SHA-384" */
++980,	/* "id-RI-ECDH-SHA-512" */
++949,	/* "id-ST" */
++983,	/* "id-TA" */
++941,	/* "id-TA-ECDSA" */
++942,	/* "id-TA-ECDSA-SHA-1" */
++943,	/* "id-TA-ECDSA-SHA-224" */
++944,	/* "id-TA-ECDSA-SHA-256" */
++945,	/* "id-TA-ECDSA-SHA-384" */
++946,	/* "id-TA-ECDSA-SHA-512" */
++934,	/* "id-TA-RSA" */
++937,	/* "id-TA-RSA-PSS-SHA-1" */
++938,	/* "id-TA-RSA-PSS-SHA-256" */
++940,	/* "id-TA-RSA-PSS-SHA-512" */
++935,	/* "id-TA-RSA-v1-5-SHA-1" */
++936,	/* "id-TA-RSA-v1-5-SHA-256" */
++955,	/* "id-TA-RSA-v1-5-SHA-512" */
+ 266,	/* "id-aca" */
+ 355,	/* "id-aca-accessIdentity" */
+ 354,	/* "id-aca-authenticationInfo" */
+@@ -3707,9 +4077,12 @@
+ 327,	/* "id-cmc-statusInfo" */
+ 331,	/* "id-cmc-transactionId" */
+ 787,	/* "id-ct-asciiTextWithCRLF" */
++950,	/* "id-description" */
++985,	/* "id-eIDSecurity" */
+ 408,	/* "id-ecPublicKey" */
+ 508,	/* "id-hex-multipart-message" */
+ 507,	/* "id-hex-partial-message" */
++952,	/* "id-htmlFormat" */
+ 260,	/* "id-it" */
+ 302,	/* "id-it-caKeyUpdateInfo" */
+ 298,	/* "id-it-caProtEncCert" */
+@@ -3748,6 +4121,7 @@
+ 348,	/* "id-pda-dateOfBirth" */
+ 351,	/* "id-pda-gender" */
+ 349,	/* "id-pda-placeOfBirth" */
++953,	/* "id-pdfFormat" */
+ 175,	/* "id-pe" */
+ 261,	/* "id-pkip" */
+ 258,	/* "id-pkix-mod" */
+@@ -3755,6 +4129,7 @@
+ 271,	/* "id-pkix1-explicit-93" */
+ 270,	/* "id-pkix1-implicit-88" */
+ 272,	/* "id-pkix1-implicit-93" */
++951,	/* "id-plainFormat" */
+ 662,	/* "id-ppl" */
+ 267,	/* "id-qcs" */
+ 359,	/* "id-qcs-pkixQCSyntax-v1" */
+@@ -3769,6 +4144,7 @@
+ 314,	/* "id-regInfo" */
+ 322,	/* "id-regInfo-certReq" */
+ 321,	/* "id-regInfo-utf8Pairs" */
++954,	/* "id-sector" */
+ 191,	/* "id-smime-aa" */
+ 215,	/* "id-smime-aa-contentHint" */
+ 218,	/* "id-smime-aa-contentIdentifier" */
+@@ -4156,6 +4532,7 @@
+ 52,	/* "signingTime" */
+ 454,	/* "simpleSecurityObject" */
+ 496,	/* "singleLevelQuality" */
++956,	/* "standardizedDomainParameters" */
+ 16,	/* "stateOrProvinceName" */
+ 660,	/* "streetAddress" */
+ 498,	/* "subtreeMaximumQuality" */
+@@ -4439,6 +4816,7 @@
+ 806,	/* OBJ_cryptocom                    1 2 643 2 9 */
+ 184,	/* OBJ_X9_57                        1 2 840 10040 */
+ 405,	/* OBJ_ansi_X9_62                   1 2 840 10045 */
++927,	/* OBJ_ansi_x942                    1 2 840 10046 */
+ 389,	/* OBJ_Enterprises                  1 3 6 1 4 1 */
+ 504,	/* OBJ_mime_mhs                     1 3 6 1 7 1 */
+ 104,	/* OBJ_md5WithRSA                   1 3 14 3 2 3 */
+@@ -4532,6 +4910,7 @@
+ 633,	/* OBJ_setAttr_T2cleartxt           2 23 42 3 3 4 2 */
+ 634,	/* OBJ_setAttr_TokICCsig            2 23 42 3 3 5 1 */
+ 635,	/* OBJ_setAttr_SecDevSig            2 23 42 3 3 5 2 */
++956,	/* OBJ_standardizedDomainParameters 0 4 0 127 0 7 1 2 */
+ 436,	/* OBJ_ucl                          0 9 2342 19200300 */
+ 820,	/* OBJ_id_Gost28147_89_None_KeyMeshing 1 2 643 2 2 14 0 */
+ 819,	/* OBJ_id_Gost28147_89_CryptoPro_KeyMeshing 1 2 643 2 2 14 1 */
+@@ -4575,6 +4954,7 @@
+ 416,	/* OBJ_ecdsa_with_SHA1              1 2 840 10045 4 1 */
+ 791,	/* OBJ_ecdsa_with_Recommended       1 2 840 10045 4 2 */
+ 792,	/* OBJ_ecdsa_with_Specified         1 2 840 10045 4 3 */
++928,	/* OBJ_dhpublicnumber               1 2 840 10046 2 1 */
+ 258,	/* OBJ_id_pkix_mod                  1 3 6 1 5 5 7 0 */
+ 175,	/* OBJ_id_pe                        1 3 6 1 5 5 7 1 */
+ 259,	/* OBJ_id_qt                        1 3 6 1 5 5 7 2 */
+@@ -4602,6 +4982,11 @@
+ 756,	/* OBJ_camellia_256_ecb             0 3 4401 5 3 1 9 41 */
+ 768,	/* OBJ_camellia_256_ofb128          0 3 4401 5 3 1 9 43 */
+ 759,	/* OBJ_camellia_256_cfb128          0 3 4401 5 3 1 9 44 */
++983,	/* OBJ_id_TA                        0 4 0 127 0 7 2 2 2 */
++981,	/* OBJ_cardInfoLocator              0 4 0 127 0 7 2 2 6 */
++984,	/* OBJ_id_CI                        0 4 0 127 0 7 2 2 6 */
++982,	/* OBJ_eID                          0 4 0 127 0 7 2 2 7 */
++985,	/* OBJ_id_eIDSecurity               0 4 0 127 0 7 2 2 7 */
+ 437,	/* OBJ_pilot                        0 9 2342 19200300 100 */
+ 776,	/* OBJ_seed_ecb                     1 2 410 200004 1 3 */
+ 777,	/* OBJ_seed_cbc                     1 2 410 200004 1 4 */
+@@ -4776,6 +5161,23 @@
+ 781,	/* OBJ_hmac_sha1                    1 3 6 1 5 5 8 1 2 */
+ 58,	/* OBJ_netscape_cert_extension      2 16 840 1 113730 1 */
+ 59,	/* OBJ_netscape_data_type           2 16 840 1 113730 2 */
++957,	/* OBJ_id_PK_DH                     0 4 0 127 0 7 2 2 1 1 */
++958,	/* OBJ_id_PK_ECDH                   0 4 0 127 0 7 2 2 1 2 */
++934,	/* OBJ_id_TA_RSA                    0 4 0 127 0 7 2 2 2 1 */
++941,	/* OBJ_id_TA_ECDSA                  0 4 0 127 0 7 2 2 2 2 */
++959,	/* OBJ_id_CA_DH                     0 4 0 127 0 7 2 2 3 1 */
++964,	/* OBJ_id_CA_ECDH                   0 4 0 127 0 7 2 2 3 2 */
++907,	/* OBJ_id_PACE_DH_GM                0 4 0 127 0 7 2 2 4 1 */
++912,	/* OBJ_id_PACE_ECDH_GM              0 4 0 127 0 7 2 2 4 2 */
++917,	/* OBJ_id_PACE_DH_IM                0 4 0 127 0 7 2 2 4 3 */
++922,	/* OBJ_id_PACE_ECDH_IM              0 4 0 127 0 7 2 2 4 4 */
++969,	/* OBJ_id_RI_DH                     0 4 0 127 0 7 2 2 5 1 */
++975,	/* OBJ_id_RI_ECDH                   0 4 0 127 0 7 2 2 5 2 */
++947,	/* OBJ_id_IS                        0 4 0 127 0 7 3 1 2 1 */
++948,	/* OBJ_id_AT                        0 4 0 127 0 7 3 1 2 2 */
++949,	/* OBJ_id_ST                        0 4 0 127 0 7 3 1 2 3 */
++950,	/* OBJ_id_description               0 4 0 127 0 7 3 1 3 1 */
++954,	/* OBJ_id_sector                    0 4 0 127 0 7 3 1 3 2 */
+ 438,	/* OBJ_pilotAttributeType           0 9 2342 19200300 100 1 */
+ 439,	/* OBJ_pilotAttributeSyntax         0 9 2342 19200300 100 3 */
+ 440,	/* OBJ_pilotObjectClass             0 9 2342 19200300 100 4 */
+@@ -4895,6 +5297,55 @@
+ 78,	/* OBJ_netscape_comment             2 16 840 1 113730 1 13 */
+ 79,	/* OBJ_netscape_cert_sequence       2 16 840 1 113730 2 5 */
+ 139,	/* OBJ_ns_sgc                       2 16 840 1 113730 4 1 */
++929,	/* OBJ_ecka_dh_SessionKDF           0 4 0 127 0 7 1 1 5 2 2 */
++935,	/* OBJ_id_TA_RSA_v1_5_SHA_1         0 4 0 127 0 7 2 2 2 1 1 */
++936,	/* OBJ_id_TA_RSA_v1_5_SHA_256       0 4 0 127 0 7 2 2 2 1 2 */
++937,	/* OBJ_id_TA_RSA_PSS_SHA_1          0 4 0 127 0 7 2 2 2 1 3 */
++938,	/* OBJ_id_TA_RSA_PSS_SHA_256        0 4 0 127 0 7 2 2 2 1 4 */
++955,	/* OBJ_id_TA_RSA_v1_5_SHA_512       0 4 0 127 0 7 2 2 2 1 5 */
++940,	/* OBJ_id_TA_RSA_PSS_SHA_512        0 4 0 127 0 7 2 2 2 1 6 */
++942,	/* OBJ_id_TA_ECDSA_SHA_1            0 4 0 127 0 7 2 2 2 2 1 */
++943,	/* OBJ_id_TA_ECDSA_SHA_224          0 4 0 127 0 7 2 2 2 2 2 */
++944,	/* OBJ_id_TA_ECDSA_SHA_256          0 4 0 127 0 7 2 2 2 2 3 */
++945,	/* OBJ_id_TA_ECDSA_SHA_384          0 4 0 127 0 7 2 2 2 2 4 */
++946,	/* OBJ_id_TA_ECDSA_SHA_512          0 4 0 127 0 7 2 2 2 2 5 */
++960,	/* OBJ_id_CA_DH_3DES_CBC_CBC        0 4 0 127 0 7 2 2 3 1 1 */
++961,	/* OBJ_id_CA_DH_AES_CBC_CMAC_128    0 4 0 127 0 7 2 2 3 1 2 */
++962,	/* OBJ_id_CA_DH_AES_CBC_CMAC_192    0 4 0 127 0 7 2 2 3 1 3 */
++963,	/* OBJ_id_CA_DH_AES_CBC_CMAC_256    0 4 0 127 0 7 2 2 3 1 4 */
++965,	/* OBJ_id_CA_ECDH_3DES_CBC_CBC      0 4 0 127 0 7 2 2 3 2 1 */
++966,	/* OBJ_id_CA_ECDH_AES_CBC_CMAC_128  0 4 0 127 0 7 2 2 3 2 2 */
++967,	/* OBJ_id_CA_ECDH_AES_CBC_CMAC_192  0 4 0 127 0 7 2 2 3 2 3 */
++968,	/* OBJ_id_CA_ECDH_AES_CBC_CMAC_256  0 4 0 127 0 7 2 2 3 2 4 */
++908,	/* OBJ_id_PACE_DH_GM_3DES_CBC_CBC   0 4 0 127 0 7 2 2 4 1 1 */
++909,	/* OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128 0 4 0 127 0 7 2 2 4 1 2 */
++910,	/* OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192 0 4 0 127 0 7 2 2 4 1 3 */
++911,	/* OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256 0 4 0 127 0 7 2 2 4 1 4 */
++913,	/* OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC 0 4 0 127 0 7 2 2 4 2 1 */
++914,	/* OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128 0 4 0 127 0 7 2 2 4 2 2 */
++915,	/* OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192 0 4 0 127 0 7 2 2 4 2 3 */
++916,	/* OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256 0 4 0 127 0 7 2 2 4 2 4 */
++918,	/* OBJ_id_PACE_DH_IM_3DES_CBC_CBC   0 4 0 127 0 7 2 2 4 3 1 */
++919,	/* OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128 0 4 0 127 0 7 2 2 4 3 2 */
++920,	/* OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192 0 4 0 127 0 7 2 2 4 3 3 */
++921,	/* OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256 0 4 0 127 0 7 2 2 4 3 4 */
++923,	/* OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC 0 4 0 127 0 7 2 2 4 4 1 */
++924,	/* OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128 0 4 0 127 0 7 2 2 4 4 2 */
++925,	/* OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192 0 4 0 127 0 7 2 2 4 4 3 */
++926,	/* OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256 0 4 0 127 0 7 2 2 4 4 4 */
++970,	/* OBJ_id_RI_DH_SHA_1               0 4 0 127 0 7 2 2 5 1 1 */
++971,	/* OBJ_id_RI_DH_SHA_224             0 4 0 127 0 7 2 2 5 1 2 */
++972,	/* OBJ_id_RI_DH_SHA_256             0 4 0 127 0 7 2 2 5 1 3 */
++973,	/* OBJ_id_RI_DH_SHA_384             0 4 0 127 0 7 2 2 5 1 4 */
++974,	/* OBJ_id_RI_DH_SHA_512             0 4 0 127 0 7 2 2 5 1 5 */
++976,	/* OBJ_id_RI_ECDH_SHA_1             0 4 0 127 0 7 2 2 5 2 1 */
++977,	/* OBJ_id_RI_ECDH_SHA_224           0 4 0 127 0 7 2 2 5 2 2 */
++978,	/* OBJ_id_RI_ECDH_SHA_256           0 4 0 127 0 7 2 2 5 2 3 */
++979,	/* OBJ_id_RI_ECDH_SHA_384           0 4 0 127 0 7 2 2 5 2 4 */
++980,	/* OBJ_id_RI_ECDH_SHA_512           0 4 0 127 0 7 2 2 5 2 5 */
++951,	/* OBJ_id_plainFormat               0 4 0 127 0 7 3 1 3 1 1 */
++952,	/* OBJ_id_htmlFormat                0 4 0 127 0 7 3 1 3 1 2 */
++953,	/* OBJ_id_pdfFormat                 0 4 0 127 0 7 3 1 3 1 3 */
+ 458,	/* OBJ_userId                       0 9 2342 19200300 100 1 1 */
+ 459,	/* OBJ_textEncodedORAddress         0 9 2342 19200300 100 1 2 */
+ 460,	/* OBJ_rfc822Mailbox                0 9 2342 19200300 100 1 3 */
+@@ -4982,6 +5433,10 @@
+ 138,	/* OBJ_ms_efs                       1 3 6 1 4 1 311 10 3 4 */
+ 648,	/* OBJ_ms_smartcard_login           1 3 6 1 4 1 311 20 2 2 */
+ 649,	/* OBJ_ms_upn                       1 3 6 1 4 1 311 20 2 3 */
++930,	/* OBJ_ecka_dh_SessionKDF_DES3      0 4 0 127 0 7 1 1 5 2 2 1 */
++931,	/* OBJ_ecka_dh_SessionKDF_AES128    0 4 0 127 0 7 1 1 5 2 2 2 */
++932,	/* OBJ_ecka_dh_SessionKDF_AES192    0 4 0 127 0 7 1 1 5 2 2 3 */
++933,	/* OBJ_ecka_dh_SessionKDF_AES256    0 4 0 127 0 7 1 1 5 2 2 4 */
+ 751,	/* OBJ_camellia_128_cbc             1 2 392 200011 61 1 1 1 2 */
+ 752,	/* OBJ_camellia_192_cbc             1 2 392 200011 61 1 1 1 3 */
+ 753,	/* OBJ_camellia_256_cbc             1 2 392 200011 61 1 1 1 4 */
+Index: openssl/crypto/objects/obj_mac.h
+===================================================================
+--- openssl.orig/crypto/objects/obj_mac.h	2011-02-08 21:52:04.857156823 +0100
++++ openssl/crypto/objects/obj_mac.h	2011-02-08 21:39:40.749189325 +0100
+@@ -3968,3 +3968,335 @@
+ #define NID_brainpoolP512t1		906
+ #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
+ 
++#define OBJ_bsi_de		0L,4L,0L,127L,0L,7L
++
++#define SN_standardizedDomainParameters		"standardizedDomainParameters"
++#define NID_standardizedDomainParameters		956
++#define OBJ_standardizedDomainParameters		OBJ_bsi_de,1L,2L
++
++#define OBJ_id_PK		OBJ_bsi_de,2L,2L,1L
++
++#define SN_id_PK_DH		"id-PK-DH"
++#define NID_id_PK_DH		957
++#define OBJ_id_PK_DH		OBJ_id_PK,1L
++
++#define SN_id_PK_ECDH		"id-PK-ECDH"
++#define NID_id_PK_ECDH		958
++#define OBJ_id_PK_ECDH		OBJ_id_PK,2L
++
++#define SN_id_TA		"id-TA"
++#define NID_id_TA		983
++#define OBJ_id_TA		OBJ_bsi_de,2L,2L,2L
++
++#define SN_id_TA_RSA		"id-TA-RSA"
++#define NID_id_TA_RSA		934
++#define OBJ_id_TA_RSA		OBJ_id_TA,1L
++
++#define SN_id_TA_RSA_v1_5_SHA_1		"id-TA-RSA-v1-5-SHA-1"
++#define NID_id_TA_RSA_v1_5_SHA_1		935
++#define OBJ_id_TA_RSA_v1_5_SHA_1		OBJ_id_TA_RSA,1L
++
++#define SN_id_TA_RSA_v1_5_SHA_256		"id-TA-RSA-v1-5-SHA-256"
++#define NID_id_TA_RSA_v1_5_SHA_256		936
++#define OBJ_id_TA_RSA_v1_5_SHA_256		OBJ_id_TA_RSA,2L
++
++#define SN_id_TA_RSA_PSS_SHA_1		"id-TA-RSA-PSS-SHA-1"
++#define NID_id_TA_RSA_PSS_SHA_1		937
++#define OBJ_id_TA_RSA_PSS_SHA_1		OBJ_id_TA_RSA,3L
++
++#define SN_id_TA_RSA_PSS_SHA_256		"id-TA-RSA-PSS-SHA-256"
++#define NID_id_TA_RSA_PSS_SHA_256		938
++#define OBJ_id_TA_RSA_PSS_SHA_256		OBJ_id_TA_RSA,4L
++
++#define SN_id_TA_RSA_v1_5_SHA_512		"id-TA-RSA-v1-5-SHA-512"
++#define NID_id_TA_RSA_v1_5_SHA_512		955
++#define OBJ_id_TA_RSA_v1_5_SHA_512		OBJ_id_TA_RSA,5L
++
++#define SN_id_TA_RSA_PSS_SHA_512		"id-TA-RSA-PSS-SHA-512"
++#define NID_id_TA_RSA_PSS_SHA_512		940
++#define OBJ_id_TA_RSA_PSS_SHA_512		OBJ_id_TA_RSA,6L
++
++#define SN_id_TA_ECDSA		"id-TA-ECDSA"
++#define NID_id_TA_ECDSA		941
++#define OBJ_id_TA_ECDSA		OBJ_id_TA,2L
++
++#define SN_id_TA_ECDSA_SHA_1		"id-TA-ECDSA-SHA-1"
++#define NID_id_TA_ECDSA_SHA_1		942
++#define OBJ_id_TA_ECDSA_SHA_1		OBJ_id_TA_ECDSA,1L
++
++#define SN_id_TA_ECDSA_SHA_224		"id-TA-ECDSA-SHA-224"
++#define NID_id_TA_ECDSA_SHA_224		943
++#define OBJ_id_TA_ECDSA_SHA_224		OBJ_id_TA_ECDSA,2L
++
++#define SN_id_TA_ECDSA_SHA_256		"id-TA-ECDSA-SHA-256"
++#define NID_id_TA_ECDSA_SHA_256		944
++#define OBJ_id_TA_ECDSA_SHA_256		OBJ_id_TA_ECDSA,3L
++
++#define SN_id_TA_ECDSA_SHA_384		"id-TA-ECDSA-SHA-384"
++#define NID_id_TA_ECDSA_SHA_384		945
++#define OBJ_id_TA_ECDSA_SHA_384		OBJ_id_TA_ECDSA,4L
++
++#define SN_id_TA_ECDSA_SHA_512		"id-TA-ECDSA-SHA-512"
++#define NID_id_TA_ECDSA_SHA_512		946
++#define OBJ_id_TA_ECDSA_SHA_512		OBJ_id_TA_ECDSA,5L
++
++#define OBJ_id_CA		OBJ_bsi_de,2L,2L,3L
++
++#define SN_id_CA_DH		"id-CA-DH"
++#define NID_id_CA_DH		959
++#define OBJ_id_CA_DH		OBJ_id_CA,1L
++
++#define SN_id_CA_DH_3DES_CBC_CBC		"id-CA-DH-3DES-CBC-CBC"
++#define NID_id_CA_DH_3DES_CBC_CBC		960
++#define OBJ_id_CA_DH_3DES_CBC_CBC		OBJ_id_CA_DH,1L
++
++#define SN_id_CA_DH_AES_CBC_CMAC_128		"id-CA-DH-AES-CBC-CMAC-128"
++#define NID_id_CA_DH_AES_CBC_CMAC_128		961
++#define OBJ_id_CA_DH_AES_CBC_CMAC_128		OBJ_id_CA_DH,2L
++
++#define SN_id_CA_DH_AES_CBC_CMAC_192		"id-CA-DH-AES-CBC-CMAC-192"
++#define NID_id_CA_DH_AES_CBC_CMAC_192		962
++#define OBJ_id_CA_DH_AES_CBC_CMAC_192		OBJ_id_CA_DH,3L
++
++#define SN_id_CA_DH_AES_CBC_CMAC_256		"id-CA-DH-AES-CBC-CMAC-256"
++#define NID_id_CA_DH_AES_CBC_CMAC_256		963
++#define OBJ_id_CA_DH_AES_CBC_CMAC_256		OBJ_id_CA_DH,4L
++
++#define SN_id_CA_ECDH		"id-CA-ECDH"
++#define NID_id_CA_ECDH		964
++#define OBJ_id_CA_ECDH		OBJ_id_CA,2L
++
++#define SN_id_CA_ECDH_3DES_CBC_CBC		"id-CA-ECDH-3DES-CBC-CBC"
++#define NID_id_CA_ECDH_3DES_CBC_CBC		965
++#define OBJ_id_CA_ECDH_3DES_CBC_CBC		OBJ_id_CA_ECDH,1L
++
++#define SN_id_CA_ECDH_AES_CBC_CMAC_128		"id-CA-ECDH-AES-CBC-CMAC-128"
++#define NID_id_CA_ECDH_AES_CBC_CMAC_128		966
++#define OBJ_id_CA_ECDH_AES_CBC_CMAC_128		OBJ_id_CA_ECDH,2L
++
++#define SN_id_CA_ECDH_AES_CBC_CMAC_192		"id-CA-ECDH-AES-CBC-CMAC-192"
++#define NID_id_CA_ECDH_AES_CBC_CMAC_192		967
++#define OBJ_id_CA_ECDH_AES_CBC_CMAC_192		OBJ_id_CA_ECDH,3L
++
++#define SN_id_CA_ECDH_AES_CBC_CMAC_256		"id-CA-ECDH-AES-CBC-CMAC-256"
++#define NID_id_CA_ECDH_AES_CBC_CMAC_256		968
++#define OBJ_id_CA_ECDH_AES_CBC_CMAC_256		OBJ_id_CA_ECDH,4L
++
++#define OBJ_id_PACE		OBJ_bsi_de,2L,2L,4L
++
++#define SN_id_PACE_DH_GM		"id-PACE-DH-GM"
++#define NID_id_PACE_DH_GM		907
++#define OBJ_id_PACE_DH_GM		OBJ_id_PACE,1L
++
++#define SN_id_PACE_DH_GM_3DES_CBC_CBC		"id-PACE-DH-GM-3DES-CBC-CBC"
++#define NID_id_PACE_DH_GM_3DES_CBC_CBC		908
++#define OBJ_id_PACE_DH_GM_3DES_CBC_CBC		OBJ_id_PACE_DH_GM,1L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_128		"id-PACE-DH-GM-AES-CBC-CMAC-128"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_128		909
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_GM,2L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_192		"id-PACE-DH-GM-AES-CBC-CMAC-192"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_192		910
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_GM,3L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_256		"id-PACE-DH-GM-AES-CBC-CMAC-256"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_256		911
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_GM,4L
++
++#define SN_id_PACE_ECDH_GM		"id-PACE-ECDH-GM"
++#define NID_id_PACE_ECDH_GM		912
++#define OBJ_id_PACE_ECDH_GM		OBJ_id_PACE,2L
++
++#define SN_id_PACE_ECDH_GM_3DES_CBC_CBC		"id-PACE-ECDH-GM-3DES-CBC-CBC"
++#define NID_id_PACE_ECDH_GM_3DES_CBC_CBC		913
++#define OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_GM,1L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128		"id-PACE-ECDH-GM-AES-CBC-CMAC-128"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_GM,2L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192		"id-PACE-ECDH-GM-AES-CBC-CMAC-192"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_GM,3L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256		"id-PACE-ECDH-GM-AES-CBC-CMAC-256"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_GM,4L
++
++#define SN_id_PACE_DH_IM		"id-PACE-DH-IM"
++#define NID_id_PACE_DH_IM		917
++#define OBJ_id_PACE_DH_IM		OBJ_id_PACE,3L
++
++#define SN_id_PACE_DH_IM_3DES_CBC_CBC		"id-PACE-DH-IM-3DES-CBC-CBC"
++#define NID_id_PACE_DH_IM_3DES_CBC_CBC		918
++#define OBJ_id_PACE_DH_IM_3DES_CBC_CBC		OBJ_id_PACE_DH_IM,1L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_128		"id-PACE-DH-IM-AES-CBC-CMAC-128"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_128		919
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_IM,2L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_192		"id-PACE-DH-IM-AES-CBC-CMAC-192"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_192		920
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_IM,3L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_256		"id-PACE-DH-IM-AES-CBC-CMAC-256"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_256		921
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_IM,4L
++
++#define SN_id_PACE_ECDH_IM		"id-PACE-ECDH-IM"
++#define NID_id_PACE_ECDH_IM		922
++#define OBJ_id_PACE_ECDH_IM		OBJ_id_PACE,4L
++
++#define SN_id_PACE_ECDH_IM_3DES_CBC_CBC		"id-PACE-ECDH-IM-3DES-CBC-CBC"
++#define NID_id_PACE_ECDH_IM_3DES_CBC_CBC		923
++#define OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_IM,1L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128		"id-PACE-ECDH-IM-AES-CBC-CMAC-128"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_IM,2L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192		"id-PACE-ECDH-IM-AES-CBC-CMAC-192"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_IM,3L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256		"id-PACE-ECDH-IM-AES-CBC-CMAC-256"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_IM,4L
++
++#define OBJ_id_RI		OBJ_bsi_de,2L,2L,5L
++
++#define SN_id_RI_DH		"id-RI-DH"
++#define NID_id_RI_DH		969
++#define OBJ_id_RI_DH		OBJ_id_RI,1L
++
++#define SN_id_RI_DH_SHA_1		"id-RI-DH-SHA-1"
++#define NID_id_RI_DH_SHA_1		970
++#define OBJ_id_RI_DH_SHA_1		OBJ_id_RI_DH,1L
++
++#define SN_id_RI_DH_SHA_224		"id-RI-DH-SHA-224"
++#define NID_id_RI_DH_SHA_224		971
++#define OBJ_id_RI_DH_SHA_224		OBJ_id_RI_DH,2L
++
++#define SN_id_RI_DH_SHA_256		"id-RI-DH-SHA-256"
++#define NID_id_RI_DH_SHA_256		972
++#define OBJ_id_RI_DH_SHA_256		OBJ_id_RI_DH,3L
++
++#define SN_id_RI_DH_SHA_384		"id-RI-DH-SHA-384"
++#define NID_id_RI_DH_SHA_384		973
++#define OBJ_id_RI_DH_SHA_384		OBJ_id_RI_DH,4L
++
++#define SN_id_RI_DH_SHA_512		"id-RI-DH-SHA-512"
++#define NID_id_RI_DH_SHA_512		974
++#define OBJ_id_RI_DH_SHA_512		OBJ_id_RI_DH,5L
++
++#define SN_id_RI_ECDH		"id-RI-ECDH"
++#define NID_id_RI_ECDH		975
++#define OBJ_id_RI_ECDH		OBJ_id_RI,2L
++
++#define SN_id_RI_ECDH_SHA_1		"id-RI-ECDH-SHA-1"
++#define NID_id_RI_ECDH_SHA_1		976
++#define OBJ_id_RI_ECDH_SHA_1		OBJ_id_RI_ECDH,1L
++
++#define SN_id_RI_ECDH_SHA_224		"id-RI-ECDH-SHA-224"
++#define NID_id_RI_ECDH_SHA_224		977
++#define OBJ_id_RI_ECDH_SHA_224		OBJ_id_RI_ECDH,2L
++
++#define SN_id_RI_ECDH_SHA_256		"id-RI-ECDH-SHA-256"
++#define NID_id_RI_ECDH_SHA_256		978
++#define OBJ_id_RI_ECDH_SHA_256		OBJ_id_RI_ECDH,3L
++
++#define SN_id_RI_ECDH_SHA_384		"id-RI-ECDH-SHA-384"
++#define NID_id_RI_ECDH_SHA_384		979
++#define OBJ_id_RI_ECDH_SHA_384		OBJ_id_RI_ECDH,4L
++
++#define SN_id_RI_ECDH_SHA_512		"id-RI-ECDH-SHA-512"
++#define NID_id_RI_ECDH_SHA_512		980
++#define OBJ_id_RI_ECDH_SHA_512		OBJ_id_RI_ECDH,5L
++
++#define SN_id_CI		"id-CI"
++#define NID_id_CI		984
++#define OBJ_id_CI		OBJ_bsi_de,2L,2L,6L
++
++#define SN_id_eIDSecurity		"id-eIDSecurity"
++#define NID_id_eIDSecurity		985
++#define OBJ_id_eIDSecurity		OBJ_bsi_de,2L,2L,7L
++
++#define SN_ansi_x942		"ansi-x942"
++#define NID_ansi_x942		927
++#define OBJ_ansi_x942		OBJ_ISO_US,10046L
++
++#define OBJ_x942_number_type		OBJ_ansi_x942,2L
++
++#define SN_dhpublicnumber		"dhpublicnumber"
++#define NID_dhpublicnumber		928
++#define OBJ_dhpublicnumber		OBJ_x942_number_type,1L
++
++#define SN_cardInfoLocator		"cardInfoLocator"
++#define NID_cardInfoLocator		981
++#define OBJ_cardInfoLocator		OBJ_bsi_de,2L,2L,6L
++
++#define SN_eID		"eID"
++#define NID_eID		982
++#define OBJ_eID		OBJ_bsi_de,2L,2L,7L
++
++#define OBJ_id_ecc		OBJ_bsi_de,1L,1L
++
++#define OBJ_ecka_dh		OBJ_id_ecc,5L,2L
++
++#define SN_ecka_dh_SessionKDF		"ecka-dh-SessionKDF"
++#define NID_ecka_dh_SessionKDF		929
++#define OBJ_ecka_dh_SessionKDF		OBJ_ecka_dh,2L
++
++#define SN_ecka_dh_SessionKDF_DES3		"ecka-dh-SessionKDF-DES3"
++#define NID_ecka_dh_SessionKDF_DES3		930
++#define OBJ_ecka_dh_SessionKDF_DES3		OBJ_ecka_dh,2L,1L
++
++#define SN_ecka_dh_SessionKDF_AES128		"ecka-dh-SessionKDF-AES128"
++#define NID_ecka_dh_SessionKDF_AES128		931
++#define OBJ_ecka_dh_SessionKDF_AES128		OBJ_ecka_dh,2L,2L
++
++#define SN_ecka_dh_SessionKDF_AES192		"ecka-dh-SessionKDF-AES192"
++#define NID_ecka_dh_SessionKDF_AES192		932
++#define OBJ_ecka_dh_SessionKDF_AES192		OBJ_ecka_dh,2L,3L
++
++#define SN_ecka_dh_SessionKDF_AES256		"ecka-dh-SessionKDF-AES256"
++#define NID_ecka_dh_SessionKDF_AES256		933
++#define OBJ_ecka_dh_SessionKDF_AES256		OBJ_ecka_dh,2L,4L
++
++#define OBJ_id_roles		OBJ_bsi_de,3L,1L,2L
++
++#define SN_id_IS		"id-IS"
++#define NID_id_IS		947
++#define OBJ_id_IS		OBJ_id_roles,1L
++
++#define SN_id_AT		"id-AT"
++#define NID_id_AT		948
++#define OBJ_id_AT		OBJ_id_roles,2L
++
++#define SN_id_ST		"id-ST"
++#define NID_id_ST		949
++#define OBJ_id_ST		OBJ_id_roles,3L
++
++#define OBJ_id_extensions		OBJ_bsi_de,3L,1L,3L
++
++#define SN_id_description		"id-description"
++#define NID_id_description		950
++#define OBJ_id_description		OBJ_id_extensions,1L
++
++#define SN_id_plainFormat		"id-plainFormat"
++#define NID_id_plainFormat		951
++#define OBJ_id_plainFormat		OBJ_id_description,1L
++
++#define SN_id_htmlFormat		"id-htmlFormat"
++#define NID_id_htmlFormat		952
++#define OBJ_id_htmlFormat		OBJ_id_description,2L
++
++#define SN_id_pdfFormat		"id-pdfFormat"
++#define NID_id_pdfFormat		953
++#define OBJ_id_pdfFormat		OBJ_id_description,3L
++
++#define SN_id_sector		"id-sector"
++#define NID_id_sector		954
++#define OBJ_id_sector		OBJ_id_extensions,2L
++
+Index: openssl/crypto/objects/obj_mac.num
+===================================================================
+--- openssl.orig/crypto/objects/obj_mac.num	2011-02-08 21:52:04.857156823 +0100
++++ openssl/crypto/objects/obj_mac.num	2011-02-08 21:39:40.749189325 +0100
+@@ -904,3 +904,82 @@
+ brainpoolP384t1		904
+ brainpoolP512r1		905
+ brainpoolP512t1		906
++id_PACE_DH_GM		907
++id_PACE_DH_GM_3DES_CBC_CBC		908
++id_PACE_DH_GM_AES_CBC_CMAC_128		909
++id_PACE_DH_GM_AES_CBC_CMAC_192		910
++id_PACE_DH_GM_AES_CBC_CMAC_256		911
++id_PACE_ECDH_GM		912
++id_PACE_ECDH_GM_3DES_CBC_CBC		913
++id_PACE_ECDH_GM_AES_CBC_CMAC_128		914
++id_PACE_ECDH_GM_AES_CBC_CMAC_192		915
++id_PACE_ECDH_GM_AES_CBC_CMAC_256		916
++id_PACE_DH_IM		917
++id_PACE_DH_IM_3DES_CBC_CBC		918
++id_PACE_DH_IM_AES_CBC_CMAC_128		919
++id_PACE_DH_IM_AES_CBC_CMAC_192		920
++id_PACE_DH_IM_AES_CBC_CMAC_256		921
++id_PACE_ECDH_IM		922
++id_PACE_ECDH_IM_3DES_CBC_CBC		923
++id_PACE_ECDH_IM_AES_CBC_CMAC_128		924
++id_PACE_ECDH_IM_AES_CBC_CMAC_192		925
++id_PACE_ECDH_IM_AES_CBC_CMAC_256		926
++ansi_x942		927
++dhpublicnumber		928
++ecka_dh_SessionKDF		929
++ecka_dh_SessionKDF_DES3		930
++ecka_dh_SessionKDF_AES128		931
++ecka_dh_SessionKDF_AES192		932
++ecka_dh_SessionKDF_AES256		933
++id_TA_RSA		934
++id_TA_RSA_v1_5_SHA_1		935
++id_TA_RSA_v1_5_SHA_256		936
++id_TA_RSA_PSS_SHA_1		937
++id_TA_RSA_PSS_SHA_256		938
++id_TA_RSA_v1_SHA_512		939
++id_TA_RSA_PSS_SHA_512		940
++id_TA_ECDSA		941
++id_TA_ECDSA_SHA_1		942
++id_TA_ECDSA_SHA_224		943
++id_TA_ECDSA_SHA_256		944
++id_TA_ECDSA_SHA_384		945
++id_TA_ECDSA_SHA_512		946
++id_IS		947
++id_AT		948
++id_ST		949
++id_description		950
++id_plainFormat		951
++id_htmlFormat		952
++id_pdfFormat		953
++id_sector		954
++id_TA_RSA_v1_5_SHA_512		955
++standardizedDomainParameters		956
++id_PK_DH		957
++id_PK_ECDH		958
++id_CA_DH		959
++id_CA_DH_3DES_CBC_CBC		960
++id_CA_DH_AES_CBC_CMAC_128		961
++id_CA_DH_AES_CBC_CMAC_192		962
++id_CA_DH_AES_CBC_CMAC_256		963
++id_CA_ECDH		964
++id_CA_ECDH_3DES_CBC_CBC		965
++id_CA_ECDH_AES_CBC_CMAC_128		966
++id_CA_ECDH_AES_CBC_CMAC_192		967
++id_CA_ECDH_AES_CBC_CMAC_256		968
++id_RI_DH		969
++id_RI_DH_SHA_1		970
++id_RI_DH_SHA_224		971
++id_RI_DH_SHA_256		972
++id_RI_DH_SHA_384		973
++id_RI_DH_SHA_512		974
++id_RI_ECDH		975
++id_RI_ECDH_SHA_1		976
++id_RI_ECDH_SHA_224		977
++id_RI_ECDH_SHA_256		978
++id_RI_ECDH_SHA_384		979
++id_RI_ECDH_SHA_512		980
++cardInfoLocator		981
++eID		982
++id_TA		983
++id_CI		984
++id_eIDSecurity		985
+Index: openssl/crypto/objects/objects.txt
+===================================================================
+--- openssl.orig/crypto/objects/objects.txt	2011-02-08 21:52:04.857156823 +0100
++++ openssl/crypto/objects/objects.txt	2011-02-08 21:39:40.749189325 +0100
+@@ -1276,3 +1276,107 @@
+ 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
+ 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
+ 1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
++
++# BSI Extensions TR 3110 Version 2.01
++!Alias bsi-de           0 4 0 127 0 7
++bsi-de 1 2 :            standardizedDomainParameters
++
++!Alias id-PK            bsi-de 2 2 1
++id-PK 1 :               id-PK-DH
++id-PK 2 :               id-PK-ECDH
++
++bsi-de 2 2 2 :          id-TA
++id-TA 1 :               id-TA-RSA
++id-TA-RSA 1 :           id-TA-RSA-v1-5-SHA-1
++id-TA-RSA 2 :           id-TA-RSA-v1-5-SHA-256
++id-TA-RSA 3 :           id-TA-RSA-PSS-SHA-1
++id-TA-RSA 4 :           id-TA-RSA-PSS-SHA-256
++id-TA-RSA 5 :           id-TA-RSA-v1-5-SHA-512
++id-TA-RSA 6 :           id-TA-RSA-PSS-SHA-512
++id-TA 2 :               id-TA-ECDSA
++id-TA-ECDSA 1 :         id-TA-ECDSA-SHA-1
++id-TA-ECDSA 2 :         id-TA-ECDSA-SHA-224
++id-TA-ECDSA 3 :         id-TA-ECDSA-SHA-256
++id-TA-ECDSA 4 :         id-TA-ECDSA-SHA-384
++id-TA-ECDSA 5 :         id-TA-ECDSA-SHA-512
++
++!Alias id-CA            bsi-de 2 2 3
++id-CA 1 :               id-CA-DH
++id-CA-DH 1 :            id-CA-DH-3DES-CBC-CBC
++id-CA-DH 2 :            id-CA-DH-AES-CBC-CMAC-128
++id-CA-DH 3 :            id-CA-DH-AES-CBC-CMAC-192
++id-CA-DH 4 :            id-CA-DH-AES-CBC-CMAC-256
++id-CA 2 :               id-CA-ECDH
++id-CA-ECDH 1 :          id-CA-ECDH-3DES-CBC-CBC
++id-CA-ECDH 2 :          id-CA-ECDH-AES-CBC-CMAC-128
++id-CA-ECDH 3 :          id-CA-ECDH-AES-CBC-CMAC-192
++id-CA-ECDH 4 :          id-CA-ECDH-AES-CBC-CMAC-256
++
++!Alias id-PACE          bsi-de 2 2 4
++id-PACE 1 :             id-PACE-DH-GM
++id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
++id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
++id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
++id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
++id-PACE 2 :             id-PACE-ECDH-GM
++id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
++id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
++id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
++id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
++id-PACE 3 :             id-PACE-DH-IM
++id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
++id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
++id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
++id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
++id-PACE 4 :             id-PACE-ECDH-IM
++id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
++id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
++id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
++id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
++
++!Alias id-RI            bsi-de 2 2 5
++id-RI 1 :               id-RI-DH
++id-RI-DH 1 :            id-RI-DH-SHA-1
++id-RI-DH 2 :            id-RI-DH-SHA-224
++id-RI-DH 3 :            id-RI-DH-SHA-256
++id-RI-DH 4 :            id-RI-DH-SHA-384
++id-RI-DH 5 :            id-RI-DH-SHA-512
++id-RI 2 :               id-RI-ECDH
++id-RI-ECDH 1 :          id-RI-ECDH-SHA-1
++id-RI-ECDH 2 :          id-RI-ECDH-SHA-224
++id-RI-ECDH 3 :          id-RI-ECDH-SHA-256
++id-RI-ECDH 4 :          id-RI-ECDH-SHA-384
++id-RI-ECDH 5 :          id-RI-ECDH-SHA-512
++
++bsi-de 2 2 6 :          id-CI
++bsi-de 2 2 7 :          id-eIDSecurity
++
++ISO-US 10046 :          ansi-x942
++!Alias x942_number-type ansi-x942 2
++x942_number-type 1:     dhpublicnumber
++
++bsi-de 2 2 6 :          cardInfoLocator
++bsi-de 2 2 7 :          eID
++
++# BSI extensions TR-03111
++!Alias id-ecc   bsi-de 1 1
++!Alias ecka-dh  id-ecc 5 2
++ecka-dh 2 :          ecka-dh-SessionKDF
++ecka-dh 2 1 :        ecka-dh-SessionKDF-DES3
++ecka-dh 2 2 :        ecka-dh-SessionKDF-AES128
++ecka-dh 2 3 :        ecka-dh-SessionKDF-AES192
++ecka-dh 2 4 :        ecka-dh-SessionKDF-AES256
++
++# Role OIDs for CV certificates according to 03110
++!Alias id-roles bsi-de 3 1 2
++id-roles 1 :    id-IS
++id-roles 2 :    id-AT
++id-roles 3 :    id-ST
++
++# Description and extesnsion OIDs from TR-03110
++!Alias id-extensions bsi-de 3 1 3
++id-extensions 1 :   id-description
++id-description 1 :  id-plainFormat
++id-description 2 :  id-htmlFormat
++id-description 3 :  id-pdfFormat
++id-extensions 2 :   id-sector
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/makevms.com	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/makevms.com	2011-02-08 21:52:04.857156823 +0100
++++ openssl/makevms.com	2011-02-08 21:39:41.917159214 +0100
 @@ -254,6 +254,8 @@
  		     HMAC,-
  		     IDEA,-
@@ -8653,8 +9419,8 @@ Index: openssl/makevms.com
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/test/Makefile	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/test/Makefile	2011-02-08 21:52:04.849158249 +0100
++++ openssl/test/Makefile	2011-02-08 21:39:40.021157131 +0100
 @@ -64,11 +64,14 @@
  ASN1TEST=	asn1test
  GCMTESTA=	aesgcmtest
@@ -8878,10 +9644,13 @@ Index: openssl/test/Makefile
  sha1test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
  sha1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
  sha1test.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h
+Index: openssl/test/cvca-eid.cv
+===================================================================
+Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2011-02-08 21:39:40.017157321 +0100 differ
 Index: openssl/test/maketests.com
 ===================================================================
---- openssl.orig/test/maketests.com	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/test/maketests.com	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/test/maketests.com	2011-02-08 21:52:04.849158249 +0100
++++ openssl/test/maketests.com	2011-02-08 21:39:40.021157131 +0100
 @@ -105,7 +105,7 @@
  	       "MDC2TEST,RMDTEST,"+ -
  	       "RANDTEST,DHTEST,ENGINETEST,"+ -
@@ -8902,8 +9671,8 @@ Index: openssl/test/maketests.com
  $ TCPIP_PROGRAMS = ",,"
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/test/tests.com	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/test/tests.com	2011-02-08 21:52:04.849158249 +0100
++++ openssl/test/tests.com	2011-02-08 21:39:40.017157321 +0100
 @@ -40,7 +40,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
@@ -8937,10 +9706,100 @@ Index: openssl/test/tests.com
  $
  $
  $ exit:
+Index: openssl/util/libeay.num
+===================================================================
+--- openssl.orig/util/libeay.num	2011-02-08 21:52:04.857156823 +0100
++++ openssl/util/libeay.num	2011-02-08 21:39:41.913158985 +0100
+@@ -4189,3 +4189,85 @@
+ CRYPTO_cbc128_decrypt                   4561	EXIST::FUNCTION:
+ CRYPTO_cfb128_encrypt                   4562	EXIST::FUNCTION:
+ CRYPTO_cfb128_8_encrypt                 4563	EXIST::FUNCTION:
++PACE_STEP3B_generate_ephemeral_key      4564	EXIST::FUNCTION:
++PACE_STEP3B_compute_ephemeral_key       4565	EXIST::FUNCTION:
++ec_key_from_asn1                        4566	EXIST::FUNCTION:
++d2i_CVC_CERTIFICATE_DESCRIPTION         4567	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_print_ctx   4568	EXIST::FUNCTION:
++PACE_Comp                               4569	EXIST::FUNCTION:
++ECDH_OpenSSL_Point                      4570	EXIST::FUNCTION:ECDH
++PACEInfo_free                           4571	EXIST::FUNCTION:
++parse_ef_card_access                    4572	EXIST::FUNCTION:
++CVC_CHAT_free                           4573	EXIST::FUNCTION:
++CVC_CERT_print_ctx                      4574	EXIST::FUNCTION:
++cvc_get_chat                            4575	EXIST::FUNCTION:
++CVC_CERT_new                            4576	EXIST::FUNCTION:
++AlgorithmIdentifier_new                 4577	EXIST::FUNCTION:
++CMAC_CTX_free                           4578	EXIST::FUNCTION:
++simple_parse_ef_card_access             4579	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_it          4580	EXIST:!EXPORT_VAR_AS_FUNCTION:VARIABLE:
++CVC_CERTIFICATE_DESCRIPTION_it          4580	EXIST:EXPORT_VAR_AS_FUNCTION:FUNCTION:
++AES_GCM_Init                            4581	EXIST::FUNCTION:AES
++PACE_init                               4582	EXIST::FUNCTION:
++PACE_STEP3A_generate_mapping_data       4583	EXIST::FUNCTION:
++i2d_CVC_CERT                            4584	EXIST::FUNCTION:
++PACEDomainParameterInfo_dup             4585	EXIST::FUNCTION:
++PACE_STEP3C_derive_keys                 4586	EXIST::FUNCTION:
++PACEInfo_new                            4587	EXIST::FUNCTION:
++PACE_CTX_new                            4588	EXIST::FUNCTION:
++PACE_STEP3D_verify_authentication_token 4589	EXIST::FUNCTION:
++AES_GCM_CTX_free                        4590	EXIST::FUNCTION:AES
++CVC_CHAT_new                            4591	EXIST::FUNCTION:
++PACE_authenticate                       4592	EXIST::FUNCTION:
++BUF_MEM_create                          4593	EXIST::FUNCTION:
++AES_GCM_DecryptFinal                    4594	EXIST::FUNCTION:AES
++BUF_MEM_dup                             4595	EXIST::FUNCTION:
++PACE_SEC_clean_free                     4596	EXIST::FUNCTION:
++AES_GCM_DecryptUpdate                   4597	EXIST::FUNCTION:AES
++CVC_check_cert                          4598	EXIST::FUNCTION:
++PACEDomainParameterInfo_new             4599	EXIST::FUNCTION:
++AES_GCM_EncryptFinal                    4600	EXIST::FUNCTION:AES
++AES_GCM_EncryptUpdate                   4601	EXIST::FUNCTION:AES
++CMAC_Init                               4602	EXIST::FUNCTION:
++certificate_description_print           4603	EXIST::FUNCTION:
++cvc_print                               4604	EXIST::FUNCTION:
++PACE_CTX_free                           4605	NOEXIST::FUNCTION:
++PACE_hash_certificate_description       4606	EXIST::FUNCTION:
++d2i_CVC_CHAT                            4607	EXIST::FUNCTION:
++CMAC_Update                             4608	EXIST::FUNCTION:
++PACEDomainParameterInfo_free            4609	EXIST::FUNCTION:
++CVC_d2i_CVC_CERT                        4610	EXIST::FUNCTION:
++cvc_chat_print                          4611	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_free        4612	EXIST::FUNCTION:
++PACE_STEP3A_map_dp                      4613	EXIST::FUNCTION:
++PACE_STEP1_enc_nonce                    4614	EXIST::FUNCTION:
++AlgorithmIdentifier_dup                 4615	EXIST::FUNCTION:
++i2d_CVC_CERTIFICATE_DESCRIPTION         4616	EXIST::FUNCTION:
++CVC_CHAT_it                             4617	EXIST:!EXPORT_VAR_AS_FUNCTION:VARIABLE:
++CVC_CHAT_it                             4617	EXIST:EXPORT_VAR_AS_FUNCTION:FUNCTION:
++PACE_STEP2_dec_nonce                    4618	EXIST::FUNCTION:
++GCM128                                  4619	EXIST::FUNCTION:AES
++AES_GCM_GenerateIV                      4620	EXIST::FUNCTION:AES
++CVC_CERTIFICATE_DESCRIPTION_new         4621	EXIST::FUNCTION:
++PACE_SEC_new                            4622	EXIST::FUNCTION:
++i2d_CVC_CHAT                            4623	EXIST::FUNCTION:
++AES_GCM_CTX_ctrl                        4624	EXIST::FUNCTION:AES
++GHASH                                   4625	EXIST::FUNCTION:AES
++AlgorithmIdentifier_clear_free          4626	EXIST::FUNCTION:
++AES_CCM_Decrypt                         4627	EXIST::FUNCTION:AES
++ERR_load_PACE_strings                   4628	EXIST::FUNCTION:
++BUF_MEM_create_init                     4629	EXIST::FUNCTION:
++PACE_decrypt                            4630	EXIST::FUNCTION:
++PACE_add_iso_pad                        4631	EXIST::FUNCTION:
++CMAC_CTX_new                            4632	EXIST::FUNCTION:
++AES_CCM_Encrypt                         4633	EXIST::FUNCTION:AES
++PACE_CTX_init                           4634	EXIST::FUNCTION:
++CVC_CERT_free                           4635	EXIST::FUNCTION:
++PACE_STEP3D_compute_authentication_token 4636	EXIST::FUNCTION:
++CMAC_Final                              4637	EXIST::FUNCTION:
++PACEDomainParameterInfo_clear_free      4638	EXIST::FUNCTION:
++BN_bn2buf                               4639	EXIST::FUNCTION:
++AES_GCM_CTX_new                         4640	EXIST::FUNCTION:AES
++PACE_CTX_clear_free                     4641	EXIST::FUNCTION:
++cvc_get_date_string                     4642	EXIST::FUNCTION:
++PACE_encrypt                            4643	EXIST::FUNCTION:
 Index: openssl/util/mk1mf.pl
 ===================================================================
---- openssl.orig/util/mk1mf.pl	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/util/mk1mf.pl	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/util/mk1mf.pl	2011-02-08 21:52:04.857156823 +0100
++++ openssl/util/mk1mf.pl	2011-02-08 21:39:41.913158985 +0100
 @@ -271,6 +271,7 @@
  $cflags.=" -DOPENSSL_NO_ENGINE"   if $no_engine;
  $cflags.=" -DOPENSSL_NO_HW"   if $no_hw;
@@ -8967,8 +9826,8 @@ Index: openssl/util/mk1mf.pl
  		"no-krb5" => \$no_krb5,
 Index: openssl/util/mkdef.pl
 ===================================================================
---- openssl.orig/util/mkdef.pl	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/util/mkdef.pl	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/util/mkdef.pl	2011-02-08 21:52:04.857156823 +0100
++++ openssl/util/mkdef.pl	2011-02-08 21:39:41.909158476 +0100
 @@ -128,7 +128,7 @@
  my $no_ec; my $no_ecdsa; my $no_ecdh; my $no_engine; my $no_hw;
  my $no_fp_api; my $no_static_engine=1; my $no_gmp; my $no_deprecated;
@@ -8990,24 +9849,21 @@ Index: openssl/util/mkdef.pl
  $crypto.=" crypto/pqueue/pqueue.h";
  $crypto.=" crypto/cms/cms.h";
  $crypto.=" crypto/jpake/jpake.h";
-+$crypto.=" crypto/pace/pace.h";
++$crypto.=" crypto/eac/pace.h";
 +$crypto.=" crypto/cv_cert/cv_cert.h";
  $crypto.=" crypto/modes/modes.h";
  
  
 Index: openssl/util/mkfiles.pl
 ===================================================================
---- openssl.orig/util/mkfiles.pl	2010-12-17 10:49:15.000000000 +0100
-+++ openssl/util/mkfiles.pl	2010-12-17 10:49:17.000000000 +0100
+--- openssl.orig/util/mkfiles.pl	2011-02-08 21:52:04.857156823 +0100
++++ openssl/util/mkfiles.pl	2011-02-08 21:39:41.913158985 +0100
 @@ -51,6 +51,8 @@
  "crypto/cms",
  "crypto/conf",
  "crypto/jpake",
-+"crypto/pace",
++"crypto/eac",
 +"crypto/cv_cert",
  "crypto/txt_db",
  "crypto/pkcs7",
  "crypto/pkcs12",
-Index: openssl/test/cvca-eid.cv
-===================================================================
-Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2010-12-17 10:49:12.000000000 +0100 differ
