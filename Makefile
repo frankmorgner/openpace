@@ -39,7 +39,7 @@ patch_with_openpace: patch_with_brainpool patch_with_cmac
 	echo "Patched OpenSSL with OpenPACE"
 
 test: all
-	openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh openssl-$(OPENSSL_VERSION)/test/pacetest
+	openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh openssl-$(OPENSSL_VERSION)/test/eactest
 	openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh openssl-$(OPENSSL_VERSION)/test/cv_cert_test -f cvca-eid.cv
 
 openssl-$(OPENSSL_VERSION): openssl-$(OPENSSL_VERSION).tar.gz
