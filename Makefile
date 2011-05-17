@@ -40,7 +40,10 @@ patch_with_openpace: patch_with_brainpool patch_with_cmac
 
 test: all
 	openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh openssl-$(OPENSSL_VERSION)/test/eactest
-	openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh openssl-$(OPENSSL_VERSION)/test/cv_cert_test -f cvca-eid.cv
+	for file in cv_cert/*.cvcert; do \
+		openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh \
+			openssl-$(OPENSSL_VERSION)/test/cv_cert_test -f "$$file"; \
+		done
 
 openssl-$(OPENSSL_VERSION): openssl-$(OPENSSL_VERSION).tar.gz
 	gunzip -c openssl-$(OPENSSL_VERSION).tar.gz | tar xf -
