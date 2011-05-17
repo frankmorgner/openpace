@@ -1,12 +1,16 @@
 Title            : OpenPACE
 Authors          : Dominik Oepen <oepen@informatik.hu-berlin.de>
                    Frank Morgner <morgner@informatik.hu-berlin.de>
-Version          : 0.4  11 Dec 2010
+Version          : 0.6  17 Dec 2010
 License          : See file COPYING
 Tested Platforms : Linux 2.6 (Debian, Ubuntu, Om 2008)
 
-OpenPACE is an implementation of the Password-Authentication-Connection-
-Establishment (PACE) protocol conforming to BSI TR-03110 version 2.05.
+OpenPACE is an implementation of the protocols used in the Extended
+Access Control version 2, specified in BSI TR-03110 version 2.05.
+OpenPACE implements the Password Authenticated Connection Establishment
+Protocol (PACE), as well as Terminal Authentication (TA) and Chip 
+Authentication (CA). It also contains support for Card Verifiable
+Certificates (CV certificates).
 OpenPACE enables applications to establish a strong session key using a weak
 password independent from the use of a smart card.
 OpenPACE is implemented as a patch for the OpenSSL library (see

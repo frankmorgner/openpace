@@ -1,12 +1,13 @@
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/crypto/aes/aes_ccm.c
---- openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/aes_ccm.c	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/aes/aes_ccm.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/aes/aes_ccm.c	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,510 @@
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
 +//---------------------------------------------------------------------------*/
@@ -50,7 +51,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +  for(i = 0; i < blen; i++) {
 +    printf("%02x",(unsigned)buf[i]);
 +    if( (i % 4) == 3) printf(" ");
-+    
++
 +  }
 +  printf("\n");
 +}
@@ -85,11 +86,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +  for(i = 15; q > 0 ; i--,q--) {
 +    counter[i]++;
 +    if(0 != counter[i] ) break;
-+  }            
++  }
 +}
 +
 +
-+/** @brief xor two buffers into a destination. 
++/** @brief xor two buffers into a destination.
 +    (Which may be one of the source buffers )
 +    @param dest the destination buffer
 +    @param s1 first source buffer
@@ -104,22 +105,22 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +	dest[i] = s1[i] ^ s2[i];
 +    }
 +}
-+/** @brief perform the CCM incremental hash function 
-+    @param pcb An ICC library context 
-+    @param B The retained hash buffer 
++/** @brief perform the CCM incremental hash function
++    @param pcb An ICC library context
++    @param B The retained hash buffer
 +    @param A the new data to hash in
-+    @param ctx and initialzied Cipher CTX   
++    @param ctx and initialzied Cipher CTX
 +*/
-+static void CCM_HASH(unsigned char *B,unsigned char *A,EVP_CIPHER_CTX *ctx) 
++static void CCM_HASH(unsigned char *B,unsigned char *A,EVP_CIPHER_CTX *ctx)
 +{
 +  int outl = 0;
-+  /* XOR the encrypted last block (now in B) 
-+     with the newly prepared block 
++  /* XOR the encrypted last block (now in B)
++     with the newly prepared block
 +  */
 +  xor(A,B,A,AES_BLOCK_SIZE);
 +  /* Encrypt the result, and save it as the "last block" */
 +  /* AES_encrypt(A,B,akey); */
-+  EVP_EncryptUpdate(ctx,B,&outl,A,AES_BLOCK_SIZE);  
++  EVP_EncryptUpdate(ctx,B,&outl,A,AES_BLOCK_SIZE);
 +}
 +
 +/** @brief Initialize the CCM counter
@@ -131,7 +132,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +static void CCM_FORMAT_CTR(unsigned char *CTR,
 +			   unsigned char *iv,
 +			   unsigned long ivlen,
-+			   unsigned int q) 
++			   unsigned int q)
 +{
 +  unsigned int i;
 +  /* Format the CTR */
@@ -144,7 +145,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +}
 +
 +/** @brief
-+    Perform the code common to AES_CCM encrypt and decrypt 
++    Perform the code common to AES_CCM encrypt and decrypt
 +    provide the iv (Nonce),aad, data and key, output buffer and taglength
 +    @param pcb an ICC library context
 +    @param iv the Nonce, can be 32-128 bits long, < 64 is not recommended
@@ -161,7 +162,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +    @param taglen the desired length of the auth tag
 +    @param enc 0 = decrypt, else encrypt
 +    @return 1 if O.K., 0 otherwise
-+*/ 
++*/
 +static int AES_CCM_Common(unsigned char *iv,unsigned int ivlen,
 +			  unsigned char *key,unsigned int keylen,
 +			  unsigned char *aad, unsigned long aadlen,
@@ -198,17 +199,17 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +    if( (ivlen < 7) || (ivlen > 13) ) {
 +      rv = 0;
 +    } else {
-+      /* Calculate q, the bytes required to hold the possible representation 
-+	 of the LENGTH of the plaintext from the nonce 
++      /* Calculate q, the bytes required to hold the possible representation
++	 of the LENGTH of the plaintext from the nonce
 +      */
 +      q = 15 - ivlen;
 +
 +    }
 +    t = (taglen-2)/2;
 +    /* check for a valid tag length 4,6,8,10,12,14,16 */
-+    
++
 +    if( (0 != (taglen & 1)) || (taglen < 4) || (taglen > 16)) {
-+      rv = 0;      
++      rv = 0;
 +    }
 +    if(NULL == outlen) {
 +      rv = 0;
@@ -230,8 +231,8 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +    ctx = EVP_CIPHER_CTX_new();
 +    if( 1 == rv ) {
 +      *outlen = 0; /* Clear the output data length */
-+      /* Now - to prevent the user from knowing why we failed 
-+	 always flush the output buffers 
++      /* Now - to prevent the user from knowing why we failed
++	 always flush the output buffers
 +      */
 +      if(enc) {
 +	/* In encrypt mode, clear the output buffer */
@@ -241,8 +242,8 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +	memset(out,0,datalen-taglen);
 +      }
 +      EVP_CIPHER_CTX_set_padding(ctx,0);
-+      EVP_EncryptInit(ctx,cipher,key,NULL);      
-+    } 
++      EVP_EncryptInit(ctx,cipher,key,NULL);
++    }
 +    if (1 == rv ) {
 +      /* If we are decrypting, we don't decrypt the tag ... */
 +      if( ! enc ) {
@@ -262,16 +263,16 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +	B0[i] = iv[i-1];
 +      }
 +
-+      /* 
-+	 Encode the number of bytes of plaintext 
-+	 in the remaining space 
++      /*
++	 Encode the number of bytes of plaintext
++	 in the remaining space
 +      */
 +      p = datalen;;
 +      for( j = 15 ; j > i ; j--) {
 +	B0[j] = (p & 0xff);
 +	p >>= 8;
 +      }
-+      
++
 +      printbinCTR("B",&b,B0,16);
 +      memset(A0,0,AES_BLOCK_SIZE); /* Start with original data == 0 */
 +      CCM_HASH(B0,A0,ctx);
@@ -279,14 +280,14 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +      CCM_FORMAT_CTR(CTR,iv,ivlen,q);
 +
 +      /*
-+	 now any aadata 
++	 now any aadata
 +      */
-+    
++
 +      memset(A0,0,AES_BLOCK_SIZE);
-+      
++
 +      if(aad != NULL && aadlen > 0) {
 +	if(aadlen < (0x10000L - 0x100L)) {
-+	  aadbytes = 2;	    
++	  aadbytes = 2;
 +	} else if(aadlen <= 0xFFFFFFFF) {
 +	  aadbytes = 6;
 +	} else {
@@ -301,21 +302,21 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +      }
 +      /* Free space in A0.16 - (1 byte flags + aadbytes) */
 +      offset = aadbytes;
-+      j = 16 - offset; 
++      j = 16 - offset;
 +      /* j is the number of bytes to copy,
-+	 offset is the offset into the buffer to start 
++	 offset is the offset into the buffer to start
 +	 the copy
 +      */
 +
 +      for( ;aadlen > 0 ; aadlen -= j,j = AES_BLOCK_SIZE) {
 +
 +	/* If the remaining free space is less than the aadlength
-+	   copy only the aadlength 
++	   copy only the aadlength
 +	*/
 +	if( j > aadlen) {
 +	  j = aadlen;
 +	}
-+	
++
 +	/* start at buffer + flags + stored length
 +	   copy the requistite ammount of aad
 +	*/
@@ -339,7 +340,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +      /* AES_encrypt(CTR,A0,akey); */
 +      EVP_EncryptUpdate(ctx,A0,&outl,CTR,AES_BLOCK_SIZE);
 +      printbinCTR("S",&s,A0,AES_BLOCK_SIZE);
-+      AES_CCM_inc(CTR,q); 
++      AES_CCM_inc(CTR,q);
 +      memcpy(S0,A0,AES_BLOCK_SIZE);
 +
 +
@@ -360,9 +361,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +	  memcpy(A0,data,l);
 +	  printbinCTR("B",&b,A0,AES_BLOCK_SIZE);
 +	  CCM_HASH(B0,A0,ctx);
-+	} 
++	}
 +	/* Prep the counter - encrypt the current value
-+	   
++
 +	 */
 +	printbinCTR("CTR",&c,CTR,AES_BLOCK_SIZE);
 +	/* AES_encrypt(CTR,A0,akey); */
@@ -379,7 +380,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +	printbin("C",A0,l);
 +
 +	/* In decrypt mode, that gave us plaintext which
-+	   we hash 
++	   we hash
 +	*/
 +	if( !enc ) {
 +	  if(l != AES_BLOCK_SIZE) {
@@ -405,7 +406,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +      if( enc ) {
 +	memcpy(out,B0,taglen);
 +	*outlen += taglen;
-+      } else {	
++      } else {
 +	/* If it's decrypt mode, we compare it with the end of the data */
 +	if(memcmp(B0,data,taglen) != 0 ) {
 +	  rv = 0;
@@ -421,7 +422,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +}
 +
 +/** @brief
-+    Perform an AES CCM Encrypt operation, 
++    Perform an AES CCM Encrypt operation,
 +    provide the iv (Nonce),aad, data and key, output buffer and taglength
 +    @param pcb an ICC library context
 +    @param iv The Nonce, can be 32-128 bits long, < 64 is not recommended
@@ -437,7 +438,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +    - which WILL be rounded up to a 16 byte boundary +16 bytes
 +    @param taglen the desired length of the auth tag
 +    @return 1 if O.K., 0 otherwise
-+*/ 
++*/
 +int AES_CCM_Encrypt(unsigned char *iv,unsigned int ivlen,
 +		    unsigned char *key,unsigned int keylen,
 +		    unsigned char *aad, unsigned long aadlen,
@@ -454,13 +455,13 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +		      out,outlen,
 +		      taglen,1);
 +
-+ 
++
 +    return rv;
 +}
 +
 +
 +/** @brief
-+    Perform an AES CCM Decrypt operation, 
++    Perform an AES CCM Decrypt operation,
 +    provide the iv (Nonce),aad, data and key, output buffer and taglength
 +    @param pcb an ICC library context
 +    @param iv The Nonce, can be 32-128 bits long, < 64 is not recommended
@@ -482,9 +483,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +    - So , be aware that the output buffer WILL be overwritten,
 +    no matter what.
 +    @note the fact that this isn't allowed to return any data if the
-+    tag match fails is the reason why there can't be the usual 
++    tag match fails is the reason why there can't be the usual
 +    Init/Update/Update/Final API.
-+*/ 
++*/
 +int AES_CCM_Decrypt(unsigned char *iv,unsigned int ivlen,
 +		    unsigned char *key,unsigned int keylen,
 +		    unsigned char *aad, unsigned long aadlen,
@@ -500,11 +501,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +		      data,datalen,
 +		      out,outlen,
 +		      taglen,0);
-+  
-+ 
++
++
 +  if(0 == rv) { /* If anything failed, kill the output buffer */
 +    memset(out,0,*outlen);
-+    *outlen = 0;    
++    *outlen = 0;
 +  }
 +
 +  return rv;
@@ -512,29 +513,31 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.c openssl-1.0.0-beta4/cryp
 +
 +
 +
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.h openssl-1.0.0-beta4/crypto/aes/aes_ccm.h
---- openssl-1.0.0-beta4.orig/crypto/aes/aes_ccm.h	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/aes_ccm.h	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/aes/aes_ccm.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/aes/aes_ccm.h	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,10 @@
 +/* crypto/aes/aes_ccm.h */
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
 +//---------------------------------------------------------------------------*/
 +
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/crypto/aes/AES_CCMVS.c
---- openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/AES_CCMVS.c	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/aes/AES_CCMVS.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/aes/AES_CCMVS.c	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,532 @@
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
 +//--------------------------------------------------------------------------*/
@@ -558,7 +561,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +#include "explode.c"
 +#include "VSparser.c"
 +
-+/* Types of CCM validation tests 
++/* Types of CCM validation tests
 +   our processing needs to vary a little based on the
 +   file type, so we need this info
 +*/
@@ -669,7 +672,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +/* Compare a binary buffer with it's expected value in hex
 +   the size of the binary buffer is calculated from the hex "known answer"
 +*/
-+   
++
 +static int cmp(char *tag,char *ref,unsigned char *bin)
 +{
 +  int rv = 0;
@@ -693,7 +696,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +  }
 +}
 +/*
-+  Track a possible change in an unsigned long var 
++  Track a possible change in an unsigned long var
 +  if it changed, print with tag
 +*/
 +void pcondul(char *tag,long *last,unsigned long current)
@@ -709,7 +712,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +/*
 +  Track a possible change in a pointer (to a string)
 +  if it changed, print with tag
-+  this one is a bit dodgy, but the VSParser strings 
++  this one is a bit dodgy, but the VSParser strings
 +  are "mostly" persistant
 +*/
 +void pcondptr(char *tag,char **last,char * current,int nl)
@@ -726,11 +729,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +  }
 +}
 +
-+/* 
++/*
 +   Get the value part of a tag/value pair, convert to binary and
 +   return the length
 +*/
-+int GetX(VS *vs,char *tag,unsigned char **buf) 
++int GetX(VS *vs,char *tag,unsigned char **buf)
 +{
 +  int rv = 0;
 +  if(NULL != VSgetData(vs,tag)) {
@@ -784,19 +787,19 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +    case CCM_NONE:
 +    exit(1);
 +    break;
-+    case DVPT: 
++    case DVPT:
 +      /* need to split the [*] field out, the input looks like this:
 +	 [Alen = 0, Plen = 10, Nlen = 7, Tlen = 4]
 +      */
 +      tmp = VSgetData(vs,"[*]");
 +
-+      expld = explode((char *)tmp,",");      
++      expld = explode((char *)tmp,",");
 +      Alen = atoi(expld[0]+strlen("[Alen ="));
 +      Plen = atoi(expld[1]+strlen(" Plen = "));
 +      Nlen = atoi(expld[2]+strlen(" Nlen = "));
 +      Tlen = atoi(expld[3]+strlen(" Tlen = "));
-+    
-+      if((lastAlen != Alen) || (lastPlen != Plen) || 
++
++      if((lastAlen != Alen) || (lastPlen != Plen) ||
 +	 (lastNlen != Nlen) || (lastTlen != Tlen) ) {
 +	if(verbose) {
 +	  printf("[Alen = %ld, Plen = %ld, Nlen = %ld, Tlen = %ld]\n\n",Alen,Plen,Nlen,Tlen);
@@ -871,7 +874,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +      printbin("Nonce",nonce,Nlen);
 +      printbin("Adata",aadata,Alen);
 +      printbin("CT",ct,ctlen);
-+      
++
 +      Result = AES_CCM_Decrypt(nonce,Nlen,
 +				   key,keylen,
 +				   aadata,Alen,
@@ -889,8 +892,8 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +      if(strstr((char *)tmp,"(0)")) { /* Pass (0) */
 + 	X = 1;
 +      }
-+      /* And set our return code to fail if we didn't get the 
-+	 expected result... 
++      /* And set our return code to fail if we didn't get the
++	 expected result...
 +      */
 +      if(Result != X) {
 +	rv++;
@@ -997,7 +1000,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +
 +  OPENSSL_add_all_algorithms_noconf();
 +
-+ 
++
 +  if(argc > 2) {
 +    if(NULL != strstr(argv[2],"-v")) {
 +      verbose = 1;
@@ -1062,15 +1065,16 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/AES_CCMVS.c openssl-1.0.0-beta4/cr
 +
 +  return(rv);
 +}
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/crypto/aes/aes_gcm.c
---- openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/aes_gcm.c	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/aes/aes_gcm.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/aes/aes_gcm.c	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,1437 @@
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007,2009
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
 +// Table driven GCM acceleration add by Aaron Cristensen November 2007.
@@ -1164,7 +1168,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +
 +
 +#else
-+#define printbin(x,y,z) 
++#define printbin(x,y,z)
 +#define printX(x,y)
 +#define printY(x,y)
 +#define printN(x,y)
@@ -1173,8 +1177,8 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +
 +static const unsigned char zero[AES_BLOCK_SIZE];
 +
-+/** @brief convert the length fields to big endian byte streams 
-+    @param l the incoming unsigned long, assumed to be 8 byte 
++/** @brief convert the length fields to big endian byte streams
++    @param l the incoming unsigned long, assumed to be 8 byte
 +    FIX THIS!
 +    @param b (8 byte) output buffer
 +*/
@@ -1195,7 +1199,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  @note: the IV/counter CTR mode is big-endian.  The rest of the AES code
 +  is endian-neutral.
 +  increment counter (32 bit unsigned int
-+  rightmost 32 bits of a 128 bit block ) by 1 
++  rightmost 32 bits of a 128 bit block ) by 1
 +*/
 +static void AES_gcm_inc(unsigned char *counter, int n) {
 +  int i;
@@ -1527,15 +1531,15 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  default:
 +  case GCM_ACCEL_noaccel:
 +    break;
-+  case GCM_ACCEL_level1:    
++  case GCM_ACCEL_level1:
 +    /* 16 x 16 = 256 bytes */
 +    table_size = 256;
 +    break;
-+  case GCM_ACCEL_level2:   
++  case GCM_ACCEL_level2:
 +    /* 256 x 16 = 4096 bytes */
 +    table_size = 4096;
 +    break;
-+  case GCM_ACCEL_level3:  
++  case GCM_ACCEL_level3:
 +    /* 32 x 16 x 16 = 8192 bytes */
 +    table_size = 8192;
 +    break;
@@ -1600,49 +1604,49 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  size_t table_size = 0;
 +  table_size = GCM_table_size(accel);
 +  if(NULL != t) {
-+    memset(t, 0x00, table_size);      
++    memset(t, 0x00, table_size);
 +    CRYPTO_free(t);
 +  }
 +}
 +
-+/** 
++/**
 +    @brief IV generator for AES_GCM IV's
 +    @param gcm_ctx An AES_GCM context
-+    @param out an 8 byte buffer which should contain reasonably non-repeating data 
++    @param out an 8 byte buffer which should contain reasonably non-repeating data
 +    ideally at least 2^32 between repeats, and not predictable.
 +    @return 1 if O.K. 0 if the RNG found two adjacent repeated values
 +    @note
-+    - There are probably a lot of ways to do this, but the simplest to ensure: 
++    - There are probably a lot of ways to do this, but the simplest to ensure:
 +    - a) non-repitition over 2^32 calls
 +    - b) unpredictability of the data stream
 +    seems to be to encrypt a counter with (any) cipher with an 8 byte block size and
-+    a randomly generated key. 
++    a randomly generated key.
 +    - To guarantee no repeats within our 8 byte output
 +    we need a cipher with an 8 byte blocksize so AES isn't usable.
 +    The 8 byte cipher blocksize guarantees a unqiue 1:1 transform
 +    between our input (counter) and the output and no repeats for the block size.
 +    - To avoid attacks, we generate a new random key every 2^32 iterations.
-+    - The choice of cipher itself shouldn't matter as we are only relying on this one 
++    - The choice of cipher itself shouldn't matter as we are only relying on this one
 +    property (key specific 1:1 mapping of input to output over 64 bits),
 +    not it's strength, and over one block, all ciphers will be equally strong or weak
 +    WRT this. We chose to use blowfish because of it's speed.
 +    DES, 3DES or CAST could also be used, but offer no functional advantages
-+    The weak keys in DES cause problems they require reducing the key space  
-+    - We believe blowfish is usable here, even in FIPS approved code, because we 
-+    are NOT using it as an encryption function, simply as a way to guarantee 
++    The weak keys in DES cause problems they require reducing the key space
++    - We believe blowfish is usable here, even in FIPS approved code, because we
++    are NOT using it as an encryption function, simply as a way to guarantee
 +    the unique 1:1 input/output mapping.
 +*/
-+   
-+int AES_GCM_GenerateIV(AES_GCM_CTX *gcm_ctx,unsigned char out[8]) 
++
++int AES_GCM_GenerateIV(AES_GCM_CTX *gcm_ctx,unsigned char out[8])
 +{
 +  int rv = 1;
 +  AES_GCM_CTX_t *ctx = NULL;
-+  static const EVP_CIPHER *cipher = NULL; 
++  static const EVP_CIPHER *cipher = NULL;
 +  unsigned char IVkeybuf[16];  /*!< Transient encrypt key */
 +  int outl = 0;
 +
 +  ctx = (AES_GCM_CTX_t *)gcm_ctx;
-+  
++
 +  /* Obtain the block cipher */
 +  if(NULL == cipher) {
 +    cipher = EVP_get_cipherbyname("blowfish");
@@ -1652,12 +1656,12 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    /* Create an encryption context for this IV generator */
 +    ctx->IVctx = EVP_CIPHER_CTX_new();
 +  }
-+  /* Initialize from scratch the first time, 
-+     and every 2^32'th time round the block 
++  /* Initialize from scratch the first time,
++     and every 2^32'th time round the block
 +  */
 +  if(0 == ctx->count) {
 +    /* Initialize the counter to some random starting value */
-+    
++
 +    RAND_bytes(ctx->IVcounter,8);
 +    /* get a new seed from the TRNG for the transform key*/
 +    RAND_bytes(IVkeybuf,16);
@@ -1670,7 +1674,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  /* Increment the counter, 8 bytes of it in this case */
 +  AES_gcm_inc(ctx->IVcounter,8);
 +  /* Increment the number of cycles, and ensure we'll restart again at 2^32 */
-+  ctx->count = (ctx->count +1) & 0xffffffff;  
++  ctx->count = (ctx->count +1) & 0xffffffff;
 +  return rv;
 +}
 +/*
@@ -1710,11 +1714,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  /* If the IV part of the context was in use, clean that up */
 +  if(NULL != a->IVctx) {
 +    EVP_CIPHER_CTX_cleanup(a->IVctx);
-+    EVP_CIPHER_CTX_free(a->IVctx);      
++    EVP_CIPHER_CTX_free(a->IVctx);
 +  }
 +  if(NULL != a->ctx) {
 +    EVP_CIPHER_CTX_cleanup(a->ctx);
-+    EVP_CIPHER_CTX_free(a->ctx);      
++    EVP_CIPHER_CTX_free(a->ctx);
 +  }
 +  /* Clear everything */
 +  memset(a,0,sizeof(AES_GCM_CTX_t));
@@ -1759,19 +1763,19 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    if( 0 != (Y[i>>3] & mask[i&7]) ) {
 +      xor(T,T,V,AES_BLOCK_SIZE);
 +    }
-+    /* If the MSBit of the shifted X vector is 0, then there's no need to 
-+       divide by the field polynomial, as we can't possibly overflow 
++    /* If the MSBit of the shifted X vector is 0, then there's no need to
++       divide by the field polynomial, as we can't possibly overflow
 +    */
 +    if ( 0 == ((V[15] & 0x01)) ) {
 +      shr(V,AES_BLOCK_SIZE);
-+    } else { 
++    } else {
 +      /* In a Galois field no one can hear you scream ...
 +	 We are after the 128bit remainder ...
 +      */
 +      shr(V,AES_BLOCK_SIZE);
 +      V[0] = V[0] ^ 0xe1;
 +    }
-+  } 
++  }
 +  memcpy(Z,T,AES_BLOCK_SIZE);
 +  /*printbin("   GCM Z",Z,16);*/
 +  return rv;
@@ -1963,7 +1967,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  }
 +  return ret;
 +}
-+/*! 
++/*!
 +  @brief Public (test) entry point for the Galois multiplier
 +  Multiply two 16 byte vectors (X & Y) in a 128 bit Galois field
 +  @param gcm_ctx an ICC AES_GCM context
@@ -1972,13 +1976,13 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  @param Y the Y input vector
 +  @return always 0
 +  @note This routine was provided ONLY to allow us to debug and performance tune
-+  the AES-GCM code 
-+  @note if supported, any acceleration set up the the AES_GCM context should 
++  the AES-GCM code
++  @note if supported, any acceleration set up the the AES_GCM context should
 +  work for this routine
 +  @note the field chosen is 1 + a +a^2 + a^7 + a^128
 +*/
 +int GCM128(AES_GCM_CTX *gcm_ctx,unsigned char *Z, unsigned char *X, unsigned char *Y)
-+{   
++{
 +  return GCM_mult(&(((AES_GCM_CTX_t *)gcm_ctx)->tab),Z,X,Y);
 +}
 +/** @brief
@@ -1991,7 +1995,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +{
 +  int ret = 0;
 +  void *tab = NULL;
-+    
++
 +  /* if the current acceleration is the same as the
 +     requested, then simply return success. */
 +  if (a->tab.accel == accel) {
@@ -2039,7 +2043,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  return ret;
 +}
 +
-+/** @brief Calculate the GHASH of an arbitrary data stream 
++/** @brief Calculate the GHASH of an arbitrary data stream
 +    @param tab the GSM speedup table. (if one exists)
 +    @param H the hash key
 +    @param Y is the output, (AES_BLOCK_SIZE long)
@@ -2050,13 +2054,13 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    unless you want this.
 +    @note Y should be initialized to 0 if this is the first pass
 +    otherwise, Y is the output from the previous invocation and
-+    the GHASH can be chained.   
++    the GHASH can be chained.
 +*/
 +
-+static void GHASH_i(GCM_TAB *tab,unsigned char *H,unsigned char *Y, unsigned char *X,unsigned long xlen) 
-+{  
++static void GHASH_i(GCM_TAB *tab,unsigned char *H,unsigned char *Y, unsigned char *X,unsigned long xlen)
++{
 +  unsigned char tmp[AES_BLOCK_SIZE];
-+     
++
 +  for( ; xlen >= AES_BLOCK_SIZE; xlen -= AES_BLOCK_SIZE) {
 +    xor(Y,X,Y,AES_BLOCK_SIZE);
 +    GCM_mult(tab,Y,Y,H);
@@ -2082,11 +2086,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    unless you want this.
 +    @note Y should be initialized to 0 if this is the first pass
 +    otherwise, Y is the output from the previous invocation and
-+    the GHASH can be chained.   
++    the GHASH can be chained.
 +*/
 +void GHASH(AES_GCM_CTX *gcm_ctx,unsigned char *H, unsigned char *Hash, unsigned char *X,unsigned long Xlen)
 +{
-+  GHASH_i(&(((AES_GCM_CTX_t *)gcm_ctx)->tab),H,Hash,X,Xlen);  
++  GHASH_i(&(((AES_GCM_CTX_t *)gcm_ctx)->tab),H,Hash,X,Xlen);
 +}
 +
 +
@@ -2099,9 +2103,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    @param key an aes key 16,24 or 32 bytes long
 +    @param klen the length of the aes key
 +
-+    At present unimplemented. 
++    At present unimplemented.
 +    @return 1 if O.K., 0 otherwise
-+*/ 
++*/
 +int AES_GCM_Init(AES_GCM_CTX *ain,
 +		 unsigned char *iv,unsigned long ivlen,
 +		 unsigned char *key, unsigned int klen
@@ -2117,7 +2121,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  Yc = 0;
 +  Nc = 1;
 +#endif
-+  /* 
++  /*
 +     If a key was already setup ...
 +     It's possible to call Init without specifying a key
 +     in which case a previous key/GCM tables will be reused
@@ -2164,7 +2168,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +      EVP_EncryptUpdate(a->ctx,a->H,&outl,&zero[0],AES_BLOCK_SIZE);
 +      /* AES_encrypt(zero,a->H,&(a->key)); */
 +      /* set up acceleration for the key.  We can free it if it is not
-+         NULL, but it's probably best to assume we need a new allocation. 
++         NULL, but it's probably best to assume we need a new allocation.
 +      */
 +      tab = GCM_TAB_new(a->tab.accel);
 +      if (1 == (rv = GCM_TAB_init(a->tab.accel, tab, a->H))) {
@@ -2177,15 +2181,15 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  }
 +
 +  if( 1 == rv ) {
-+      
++
 +    /* now eat the IV */
 +    if(ivlen == 12) {
 +      memcpy(a->ecount_buf,iv,12);
 +      memset(a->ecount_buf+12,0,4); /* Zero the count buffer */
-+      a->ecount_buf[15] = 1; /* Counter starts at 1 ??? */  
++      a->ecount_buf[15] = 1; /* Counter starts at 1 ??? */
 +    } else {
-+      /* NIST appear to have screwed up here, 
-+	 I can't find this documented 
++      /* NIST appear to have screwed up here,
++	 I can't find this documented
 +      */
 +      memset(a->ecount_buf,0,AES_BLOCK_SIZE);
 +      GHASH_i(&(a->tab),a->H,a->ecount_buf,iv,ivlen);
@@ -2205,7 +2209,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +}
 +
 +/** @brief
-+    Merge in any pending aad data to the ciphertext 
++    Merge in any pending aad data to the ciphertext
 +    @param a an AES_GCM_CTX context
 +*/
 +static void GCM_merge_aad(AES_GCM_CTX_t *a) {
@@ -2228,13 +2232,13 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +   @brief Common code, does the encrypt/hash core code
 +
 +   @param a an AES_GCM_CTX context
-+   @param out the output buffer 
++   @param out the output buffer
 +   @param outlen a place to store the amount of data copied to the output buffer
 +   @param encrypt 1 = encrypt, 0 = decrypt
 +   @note Uses a->R/a->Rlen to hold/describe the amount of data
 +   waiting the be encrypted/decrypted
 +*/
-+static void ED_block(AES_GCM_CTX_t *a,unsigned char **out,unsigned long *outlen,int encrypt) 
++static void ED_block(AES_GCM_CTX_t *a,unsigned char **out,unsigned long *outlen,int encrypt)
 +{
 +  int outl = 0;
 +  if(a->Rlen) {
@@ -2248,7 +2252,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    memset((a->R+a->Rlen),0,AES_BLOCK_SIZE - a->Rlen);
 +    memset((a->S+a->Rlen),0,AES_BLOCK_SIZE - a->Rlen);
 +    xor(a->S,a->S,a->R,a->Rlen);
-+    /* That's either generated plaintext, or in reverse, cipher text 
++    /* That's either generated plaintext, or in reverse, cipher text
 +       either way - that gets copied to the output buffer
 +    */
 +    memcpy(*out,a->S,a->Rlen);
@@ -2256,28 +2260,28 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    /* Update the counters */
 +    if(NULL != outlen) *outlen += a->Rlen;
 +    a->LenC += (a->Rlen * 8);
-+    if(a->state == 2) { /* We had aad data to mix in, that was in a->Y (last hash) */	 		
++    if(a->state == 2) { /* We had aad data to mix in, that was in a->Y (last hash) */
 +      a->state = 3;
-+    }  
++    }
 +    if(encrypt) { /* Encrypt: We mix the result of the "last" hash - which may be aad with ciphertext (a->S) */
 +      /* printbin("Enc CT",a->S,a->Rlen); */
 +      xor(a->Y,a->S,a->Y,AES_BLOCK_SIZE);
-+      
++
 +      /* printbin("Enc Xor CT",a->Y,16); */
-+    } else {      /* Decrypt: We mix the result of the "last" hash - which may be aad with incoming ciphertext (a->R) */    
++    } else {      /* Decrypt: We mix the result of the "last" hash - which may be aad with incoming ciphertext (a->R) */
 +      /* printbin("Dec CT",a->R,a->Rlen); */
-+      xor(a->Y,a->R,a->Y,AES_BLOCK_SIZE); 
-+      /* printbin("Dec Xor CT",a->Y,16); */ 
++      xor(a->Y,a->R,a->Y,AES_BLOCK_SIZE);
++      /* printbin("Dec Xor CT",a->Y,16); */
 +    }
 +    /* The residual buffer is now 'empty' */
 +    a->Rlen = 0;
 +    /* generate the next hash block */
 +    /* printbin("H",a->H,16); */
 +    /* printbin("CT^Last",a->Y,16); */
-+    GCM_mult(&(a->tab),a->Y,a->Y,a->H); 
++    GCM_mult(&(a->tab),a->Y,a->Y,a->H);
 +    printX(a->Y,AES_BLOCK_SIZE);
-+    
-+    /* printbin("GCM128(CT^Last)",a->Y,16); */ 
++
++    /* printbin("GCM128(CT^Last)",a->Y,16); */
 +  }
 +}
 +
@@ -2317,8 +2321,8 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    if(a->state > 1) { /* We've started processing data blocks ... */
 +      rv = 0; /* bad, all the aad must be fed in BEFORE we process data */
 +    } else {
-+      a->state = 1; /* Flag that we've been supplied at least some aad */ 
-+      if( (aadlen + a->Rlen) >= AES_BLOCK_SIZE) { 
++      a->state = 1; /* Flag that we've been supplied at least some aad */
++      if( (aadlen + a->Rlen) >= AES_BLOCK_SIZE) {
 +	/* At least one full block */
 +	for( i = aadlen +a->Rlen ; i >= AES_BLOCK_SIZE; i -= AES_BLOCK_SIZE) {
 +	  /* Top up the retain buffer from incoming */
@@ -2332,17 +2336,17 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +	  printX(a->Y,AES_BLOCK_SIZE);
 +	  /* count the number of bits */
 +	  a->LenA = AES_BLOCK_SIZE * 8;
-+	}		
-+      } 
-+      if( aadlen ) { 
++	}
++      }
++      if( aadlen ) {
 +	memcpy(a->R + a->Rlen,aad,aadlen);
 +	a->Rlen += aadlen;
-+      }	    
++      }
 +    }
 +  }
 +  if( (1 == rv) && (datalen != 0) && (NULL != data) ) {
 +    /* Check to see if we have any partial aad left to process ? */
-+    GCM_merge_aad(a); 
++    GCM_merge_aad(a);
 +    a->state = 2;
 +    if( (datalen + a->Rlen) >= AES_BLOCK_SIZE) { /* Do we have a complete data block ? */
 +      for( i = datalen + a->Rlen ; i >= AES_BLOCK_SIZE; i -= AES_BLOCK_SIZE) {
@@ -2354,7 +2358,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +	a->Rlen = AES_BLOCK_SIZE;
 +	ED_block(a,&out,outlen,encrypt);
 +      }
-+    } 
++    }
 +    if(datalen) { /* Not a complete block yet ... */
 +      memcpy(a->R + a->Rlen,data,datalen);
 +      a->Rlen += datalen;
@@ -2423,9 +2427,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    The final phase of an AES GCM operation
 +
 +    @param ain an AES_GCM_CTX pointer
-+    @param out the buffer to hold any residual encrypted data 
++    @param out the buffer to hold any residual encrypted data
 +    @param outlen a place to hold the length of any residual data
-+    @param hash a place to store AES_BLOCK_SIZE bytes of the 
++    @param hash a place to store AES_BLOCK_SIZE bytes of the
 +    authentication tag
 +    @param encrypt 1 if encrypting, 0 if decrypting
 +    @return 1 if O.K., 0 otherwise
@@ -2439,7 +2443,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  *outlen = 0;
 +  if( a->Rlen ) { /* Do we have residual data ? */
 +    if(a->state == 1) {
-+      GCM_merge_aad(a); 
++      GCM_merge_aad(a);
 +    } else if(a->state >= 2) {
 +      ED_block(a,&out,outlen,encrypt);
 +    }
@@ -2461,9 +2465,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    The final phase of an AES GCM operation
 +
 +    @param ain an AES_GCM_CTX pointer
-+    @param out the buffer to hold any residual encrypted data 
++    @param out the buffer to hold any residual encrypted data
 +    @param outlen a place to hold the length of any residual data
-+    @param hash a place to store AES_BLOCK_SIZE bytes of the 
++    @param hash a place to store AES_BLOCK_SIZE bytes of the
 +    authentication tag
 +    @return 1 if O.K., 0 otherwise
 +*/
@@ -2478,9 +2482,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +    The final phase of an AES GCM decrypt operation
 +
 +    @param ain an AES_GCM_CTX pointer
-+    @param out the buffer to hold any residual encrypted data 
++    @param out the buffer to hold any residual encrypted data
 +    @param outlen a place to hold the length of any residual data
-+    @param hash a place to store AES_BLOCK_SIZE bytes of the 
++    @param hash a place to store AES_BLOCK_SIZE bytes of the
 +    authentication tag
 +    @return 1 if the operation completed with the correct hash, 0 otherwise
 +*/
@@ -2492,27 +2496,28 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.c openssl-1.0.0-beta4/cryp
 +  unsigned char ihash[AES_BLOCK_SIZE];
 +  rv = AES_GCM_Final(ain,out,outlen,ihash,0);
 +  if(1 == rv ) {
-+    if((hlen == 0) || 
-+       (hlen > AES_BLOCK_SIZE) || 
++    if((hlen == 0) ||
++       (hlen > AES_BLOCK_SIZE) ||
 +       (memcmp(ihash,hash,hlen) != 0)) {
 +      rv = 0;
 +    }
-+  }    
++  }
 +  return rv;
 +}
 +
 +
 +
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.h openssl-1.0.0-beta4/crypto/aes/aes_gcm.h
---- openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.h	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/aes_gcm.h	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/aes/aes_gcm.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/aes/aes_gcm.h	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,63 @@
 +/* crypto/aes/aes_gcm.h */
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
 +// GCM table driven acceleration: Aaron Cristensen November 2007.
@@ -2555,7 +2560,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.h openssl-1.0.0-beta4/cryp
 +  unsigned char R[AES_BLOCK_SIZE];          /*!< retained data from last partial block */
 +  unsigned char S[AES_BLOCK_SIZE];          /*!< Temporary buffer. Useful for debug. This only has "local to one function" scope */
 +  unsigned int  state;                      /*!< 0 no data, 1 have aad, 2 processed aad but not mixed in, 3 aad mixed in handling data */
-+  unsigned int  Rlen;                       /*!< length of last partial aad or data block */ 
++  unsigned int  Rlen;                       /*!< length of last partial aad or data block */
 +  unsigned int  n;                          /*!< Block count */
 +  unsigned long LenA;                       /*!< Length of the AAD */
 +  unsigned long LenC;                       /*!< Length of the ciphertext */
@@ -2568,11 +2573,12 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes_gcm.h openssl-1.0.0-beta4/cryp
 +
 +
 +
-+                                                                           
++
 +#endif
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/crypto/aes/aesgcmtest.c
---- openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/aesgcmtest.c	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/aes/aesgcmtest.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/aes/aesgcmtest.c	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,1125 @@
 +#include <stdio.h>
 +#include <string.h>
@@ -2782,31 +2788,31 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +};
 +static const unsigned char test_case_5_pt[] = {
 +  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
 +  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
 +  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
 +  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_5_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_5_ct[] = {
-+  0x61, 0x35, 0x3b, 0x4c, 0x28, 0x06, 0x93, 0x4a, 
-+  0x77, 0x7f, 0xf5, 0x1f, 0xa2, 0x2a, 0x47, 0x55, 
-+  0x69, 0x9b, 0x2a, 0x71, 0x4f, 0xcd, 0xc6, 0xf8, 
-+  0x37, 0x66, 0xe5, 0xf9, 0x7b, 0x6c, 0x74, 0x23, 
-+  0x73, 0x80, 0x69, 0x00, 0xe4, 0x9f, 0x24, 0xb2, 
-+  0x2b, 0x09, 0x75, 0x44, 0xd4, 0x89, 0x6b, 0x42, 
-+  0x49, 0x89, 0xb5, 0xe1, 0xeb, 0xac, 0x0f, 0x07, 
++  0x61, 0x35, 0x3b, 0x4c, 0x28, 0x06, 0x93, 0x4a,
++  0x77, 0x7f, 0xf5, 0x1f, 0xa2, 0x2a, 0x47, 0x55,
++  0x69, 0x9b, 0x2a, 0x71, 0x4f, 0xcd, 0xc6, 0xf8,
++  0x37, 0x66, 0xe5, 0xf9, 0x7b, 0x6c, 0x74, 0x23,
++  0x73, 0x80, 0x69, 0x00, 0xe4, 0x9f, 0x24, 0xb2,
++  0x2b, 0x09, 0x75, 0x44, 0xd4, 0x89, 0x6b, 0x42,
++  0x49, 0x89, 0xb5, 0xe1, 0xeb, 0xac, 0x0f, 0x07,
 +  0xc2, 0x3f, 0x45, 0x98
 +};
 +static const unsigned char test_case_5_tag[] = {
-+  0x36, 0x12, 0xd2, 0xe7, 0x9e, 0x3b, 0x07, 0x85, 
++  0x36, 0x12, 0xd2, 0xe7, 0x9e, 0x3b, 0x07, 0x85,
 +  0x56, 0x1b, 0xe1, 0x4a, 0xac, 0xa2, 0xfc, 0xcb
 +};
 +static const GCM_TEST_CASE test_case_5 = {
@@ -2827,46 +2833,46 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 6 *****/
 +static const unsigned char test_case_6_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
 +  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08
 +};
 +static const unsigned char test_case_6_iv[] = {
-+  0x93, 0x13, 0x22, 0x5d, 0xf8, 0x84, 0x06, 0xe5, 
-+  0x55, 0x90, 0x9c, 0x5a, 0xff, 0x52, 0x69, 0xaa, 
-+  0x6a, 0x7a, 0x95, 0x38, 0x53, 0x4f, 0x7d, 0xa1, 
-+  0xe4, 0xc3, 0x03, 0xd2, 0xa3, 0x18, 0xa7, 0x28, 
-+  0xc3, 0xc0, 0xc9, 0x51, 0x56, 0x80, 0x95, 0x39, 
-+  0xfc, 0xf0, 0xe2, 0x42, 0x9a, 0x6b, 0x52, 0x54, 
-+  0x16, 0xae, 0xdb, 0xf5, 0xa0, 0xde, 0x6a, 0x57, 
++  0x93, 0x13, 0x22, 0x5d, 0xf8, 0x84, 0x06, 0xe5,
++  0x55, 0x90, 0x9c, 0x5a, 0xff, 0x52, 0x69, 0xaa,
++  0x6a, 0x7a, 0x95, 0x38, 0x53, 0x4f, 0x7d, 0xa1,
++  0xe4, 0xc3, 0x03, 0xd2, 0xa3, 0x18, 0xa7, 0x28,
++  0xc3, 0xc0, 0xc9, 0x51, 0x56, 0x80, 0x95, 0x39,
++  0xfc, 0xf0, 0xe2, 0x42, 0x9a, 0x6b, 0x52, 0x54,
++  0x16, 0xae, 0xdb, 0xf5, 0xa0, 0xde, 0x6a, 0x57,
 +  0xa6, 0x37, 0xb3, 0x9b
 +};
 +static const unsigned char test_case_6_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_6_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_6_ct[] = {
-+  0x8c, 0xe2, 0x49, 0x98, 0x62, 0x56, 0x15, 0xb6, 
-+  0x03, 0xa0, 0x33, 0xac, 0xa1, 0x3f, 0xb8, 0x94, 
-+  0xbe, 0x91, 0x12, 0xa5, 0xc3, 0xa2, 0x11, 0xa8, 
-+  0xba, 0x26, 0x2a, 0x3c, 0xca, 0x7e, 0x2c, 0xa7, 
-+  0x01, 0xe4, 0xa9, 0xa4, 0xfb, 0xa4, 0x3c, 0x90, 
-+  0xcc, 0xdc, 0xb2, 0x81, 0xd4, 0x8c, 0x7c, 0x6f, 
-+  0xd6, 0x28, 0x75, 0xd2, 0xac, 0xa4, 0x17, 0x03, 
++  0x8c, 0xe2, 0x49, 0x98, 0x62, 0x56, 0x15, 0xb6,
++  0x03, 0xa0, 0x33, 0xac, 0xa1, 0x3f, 0xb8, 0x94,
++  0xbe, 0x91, 0x12, 0xa5, 0xc3, 0xa2, 0x11, 0xa8,
++  0xba, 0x26, 0x2a, 0x3c, 0xca, 0x7e, 0x2c, 0xa7,
++  0x01, 0xe4, 0xa9, 0xa4, 0xfb, 0xa4, 0x3c, 0x90,
++  0xcc, 0xdc, 0xb2, 0x81, 0xd4, 0x8c, 0x7c, 0x6f,
++  0xd6, 0x28, 0x75, 0xd2, 0xac, 0xa4, 0x17, 0x03,
 +  0x4c, 0x34, 0xae, 0xe5
 +};
 +static const unsigned char test_case_6_tag[] = {
-+  0x61, 0x9c, 0xc5, 0xae, 0xff, 0xfe, 0x0b, 0xfa, 
++  0x61, 0x9c, 0xc5, 0xae, 0xff, 0xfe, 0x0b, 0xfa,
 +  0x46, 0x2a, 0xf4, 0x3c, 0x16, 0x99, 0xd0, 0x50
 +};
 +static const GCM_TEST_CASE test_case_6 = {
@@ -2887,16 +2893,16 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 7 *****/
 +static const unsigned char test_case_7_key[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_7_iv[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_7_tag[] = {
-+  0xcd, 0x33, 0xb2, 0x8a, 0xc7, 0x73, 0xf7, 0x4b, 
++  0xcd, 0x33, 0xb2, 0x8a, 0xc7, 0x73, 0xf7, 0x4b,
 +  0xa0, 0x0e, 0xd1, 0xf3, 0x12, 0x57, 0x24, 0x35
 +};
 +static const GCM_TEST_CASE test_case_7 = {
@@ -2917,24 +2923,24 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 8 *****/
 +static const unsigned char test_case_8_key[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_8_iv[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_8_pt[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_8_ct[] = {
-+  0x98, 0xe7, 0x24, 0x7c, 0x07, 0xf0, 0xfe, 0x41, 
++  0x98, 0xe7, 0x24, 0x7c, 0x07, 0xf0, 0xfe, 0x41,
 +  0x1c, 0x26, 0x7e, 0x43, 0x84, 0xb0, 0xf6, 0x00
 +};
 +static const unsigned char test_case_8_tag[] = {
-+  0x2f, 0xf5, 0x8d, 0x80, 0x03, 0x39, 0x27, 0xab, 
++  0x2f, 0xf5, 0x8d, 0x80, 0x03, 0x39, 0x27, 0xab,
 +  0x8e, 0xf4, 0xd4, 0x58, 0x75, 0x14, 0xf0, 0xfb
 +};
 +static const GCM_TEST_CASE test_case_8 = {
@@ -2955,36 +2961,36 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 9 *****/
 +static const unsigned char test_case_9_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
 +  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c
 +};
 +static const unsigned char test_case_9_iv[] = {
-+  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad, 
++  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad,
 +  0xde, 0xca, 0xf8, 0x88
 +};
 +static const unsigned char test_case_9_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39, 0x1a, 0xaf, 0xd2, 0x55
 +};
 +static const unsigned char test_case_9_ct[] = {
-+  0x39, 0x80, 0xca, 0x0b, 0x3c, 0x00, 0xe8, 0x41, 
-+  0xeb, 0x06, 0xfa, 0xc4, 0x87, 0x2a, 0x27, 0x57, 
-+  0x85, 0x9e, 0x1c, 0xea, 0xa6, 0xef, 0xd9, 0x84, 
-+  0x62, 0x85, 0x93, 0xb4, 0x0c, 0xa1, 0xe1, 0x9c, 
-+  0x7d, 0x77, 0x3d, 0x00, 0xc1, 0x44, 0xc5, 0x25, 
-+  0xac, 0x61, 0x9d, 0x18, 0xc8, 0x4a, 0x3f, 0x47, 
-+  0x18, 0xe2, 0x44, 0x8b, 0x2f, 0xe3, 0x24, 0xd9, 
++  0x39, 0x80, 0xca, 0x0b, 0x3c, 0x00, 0xe8, 0x41,
++  0xeb, 0x06, 0xfa, 0xc4, 0x87, 0x2a, 0x27, 0x57,
++  0x85, 0x9e, 0x1c, 0xea, 0xa6, 0xef, 0xd9, 0x84,
++  0x62, 0x85, 0x93, 0xb4, 0x0c, 0xa1, 0xe1, 0x9c,
++  0x7d, 0x77, 0x3d, 0x00, 0xc1, 0x44, 0xc5, 0x25,
++  0xac, 0x61, 0x9d, 0x18, 0xc8, 0x4a, 0x3f, 0x47,
++  0x18, 0xe2, 0x44, 0x8b, 0x2f, 0xe3, 0x24, 0xd9,
 +  0xcc, 0xda, 0x27, 0x10, 0xac, 0xad, 0xe2, 0x56
 +};
 +static const unsigned char test_case_9_tag[] = {
-+  0x99, 0x24, 0xa7, 0xc8, 0x58, 0x73, 0x36, 0xbf, 
++  0x99, 0x24, 0xa7, 0xc8, 0x58, 0x73, 0x36, 0xbf,
 +  0xb1, 0x18, 0x02, 0x4d, 0xb8, 0x67, 0x4a, 0x14
 +};
 +static const GCM_TEST_CASE test_case_9 = {
@@ -3005,41 +3011,41 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 10 *****/
 +static const unsigned char test_case_10_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
 +  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c
 +};
 +static const unsigned char test_case_10_iv[] = {
-+  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad, 
++  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad,
 +  0xde, 0xca, 0xf8, 0x88
 +};
 +static const unsigned char test_case_10_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_10_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_10_ct[] = {
-+  0x39, 0x80, 0xca, 0x0b, 0x3c, 0x00, 0xe8, 0x41, 
-+  0xeb, 0x06, 0xfa, 0xc4, 0x87, 0x2a, 0x27, 0x57, 
-+  0x85, 0x9e, 0x1c, 0xea, 0xa6, 0xef, 0xd9, 0x84, 
-+  0x62, 0x85, 0x93, 0xb4, 0x0c, 0xa1, 0xe1, 0x9c, 
-+  0x7d, 0x77, 0x3d, 0x00, 0xc1, 0x44, 0xc5, 0x25, 
-+  0xac, 0x61, 0x9d, 0x18, 0xc8, 0x4a, 0x3f, 0x47, 
-+  0x18, 0xe2, 0x44, 0x8b, 0x2f, 0xe3, 0x24, 0xd9, 
++  0x39, 0x80, 0xca, 0x0b, 0x3c, 0x00, 0xe8, 0x41,
++  0xeb, 0x06, 0xfa, 0xc4, 0x87, 0x2a, 0x27, 0x57,
++  0x85, 0x9e, 0x1c, 0xea, 0xa6, 0xef, 0xd9, 0x84,
++  0x62, 0x85, 0x93, 0xb4, 0x0c, 0xa1, 0xe1, 0x9c,
++  0x7d, 0x77, 0x3d, 0x00, 0xc1, 0x44, 0xc5, 0x25,
++  0xac, 0x61, 0x9d, 0x18, 0xc8, 0x4a, 0x3f, 0x47,
++  0x18, 0xe2, 0x44, 0x8b, 0x2f, 0xe3, 0x24, 0xd9,
 +  0xcc, 0xda, 0x27, 0x10
 +};
 +static const unsigned char test_case_10_tag[] = {
-+  0x25, 0x19, 0x49, 0x8e, 0x80, 0xf1, 0x47, 0x8f, 
++  0x25, 0x19, 0x49, 0x8e, 0x80, 0xf1, 0x47, 0x8f,
 +  0x37, 0xba, 0x55, 0xbd, 0x6d, 0x27, 0x61, 0x8c
 +};
 +static const GCM_TEST_CASE test_case_10 = {
@@ -3060,40 +3066,40 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 11 *****/
 +static const unsigned char test_case_11_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
 +  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c
 +};
 +static const unsigned char test_case_11_iv[] = {
 +  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad
 +};
 +static const unsigned char test_case_11_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_11_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_11_ct[] = {
-+  0x0f, 0x10, 0xf5, 0x99, 0xae, 0x14, 0xa1, 0x54, 
-+  0xed, 0x24, 0xb3, 0x6e, 0x25, 0x32, 0x4d, 0xb8, 
-+  0xc5, 0x66, 0x63, 0x2e, 0xf2, 0xbb, 0xb3, 0x4f, 
-+  0x83, 0x47, 0x28, 0x0f, 0xc4, 0x50, 0x70, 0x57, 
-+  0xfd, 0xdc, 0x29, 0xdf, 0x9a, 0x47, 0x1f, 0x75, 
-+  0xc6, 0x65, 0x41, 0xd4, 0xd4, 0xda, 0xd1, 0xc9, 
-+  0xe9, 0x3a, 0x19, 0xa5, 0x8e, 0x8b, 0x47, 0x3f, 
++  0x0f, 0x10, 0xf5, 0x99, 0xae, 0x14, 0xa1, 0x54,
++  0xed, 0x24, 0xb3, 0x6e, 0x25, 0x32, 0x4d, 0xb8,
++  0xc5, 0x66, 0x63, 0x2e, 0xf2, 0xbb, 0xb3, 0x4f,
++  0x83, 0x47, 0x28, 0x0f, 0xc4, 0x50, 0x70, 0x57,
++  0xfd, 0xdc, 0x29, 0xdf, 0x9a, 0x47, 0x1f, 0x75,
++  0xc6, 0x65, 0x41, 0xd4, 0xd4, 0xda, 0xd1, 0xc9,
++  0xe9, 0x3a, 0x19, 0xa5, 0x8e, 0x8b, 0x47, 0x3f,
 +  0xa0, 0xf0, 0x62, 0xf7
 +};
 +static const unsigned char test_case_11_tag[] = {
-+  0x65, 0xdc, 0xc5, 0x7f, 0xcf, 0x62, 0x3a, 0x24, 
++  0x65, 0xdc, 0xc5, 0x7f, 0xcf, 0x62, 0x3a, 0x24,
 +  0x09, 0x4f, 0xcc, 0xa4, 0x0d, 0x35, 0x33, 0xf8
 +};
 +static const GCM_TEST_CASE test_case_11 = {
@@ -3114,47 +3120,47 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 12 *****/
 +static const unsigned char test_case_12_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
 +  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c
 +};
 +static const unsigned char test_case_12_iv[] = {
-+  0x93, 0x13, 0x22, 0x5d, 0xf8, 0x84, 0x06, 0xe5, 
-+  0x55, 0x90, 0x9c, 0x5a, 0xff, 0x52, 0x69, 0xaa, 
-+  0x6a, 0x7a, 0x95, 0x38, 0x53, 0x4f, 0x7d, 0xa1, 
-+  0xe4, 0xc3, 0x03, 0xd2, 0xa3, 0x18, 0xa7, 0x28, 
-+  0xc3, 0xc0, 0xc9, 0x51, 0x56, 0x80, 0x95, 0x39, 
-+  0xfc, 0xf0, 0xe2, 0x42, 0x9a, 0x6b, 0x52, 0x54, 
-+  0x16, 0xae, 0xdb, 0xf5, 0xa0, 0xde, 0x6a, 0x57, 
++  0x93, 0x13, 0x22, 0x5d, 0xf8, 0x84, 0x06, 0xe5,
++  0x55, 0x90, 0x9c, 0x5a, 0xff, 0x52, 0x69, 0xaa,
++  0x6a, 0x7a, 0x95, 0x38, 0x53, 0x4f, 0x7d, 0xa1,
++  0xe4, 0xc3, 0x03, 0xd2, 0xa3, 0x18, 0xa7, 0x28,
++  0xc3, 0xc0, 0xc9, 0x51, 0x56, 0x80, 0x95, 0x39,
++  0xfc, 0xf0, 0xe2, 0x42, 0x9a, 0x6b, 0x52, 0x54,
++  0x16, 0xae, 0xdb, 0xf5, 0xa0, 0xde, 0x6a, 0x57,
 +  0xa6, 0x37, 0xb3, 0x9b
 +};
 +static const unsigned char test_case_12_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_12_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_12_ct[] = {
-+  0xd2, 0x7e, 0x88, 0x68, 0x1c, 0xe3, 0x24, 0x3c, 
-+  0x48, 0x30, 0x16, 0x5a, 0x8f, 0xdc, 0xf9, 0xff, 
-+  0x1d, 0xe9, 0xa1, 0xd8, 0xe6, 0xb4, 0x47, 0xef, 
-+  0x6e, 0xf7, 0xb7, 0x98, 0x28, 0x66, 0x6e, 0x45, 
-+  0x81, 0xe7, 0x90, 0x12, 0xaf, 0x34, 0xdd, 0xd9, 
-+  0xe2, 0xf0, 0x37, 0x58, 0x9b, 0x29, 0x2d, 0xb3, 
-+  0xe6, 0x7c, 0x03, 0x67, 0x45, 0xfa, 0x22, 0xe7, 
++  0xd2, 0x7e, 0x88, 0x68, 0x1c, 0xe3, 0x24, 0x3c,
++  0x48, 0x30, 0x16, 0x5a, 0x8f, 0xdc, 0xf9, 0xff,
++  0x1d, 0xe9, 0xa1, 0xd8, 0xe6, 0xb4, 0x47, 0xef,
++  0x6e, 0xf7, 0xb7, 0x98, 0x28, 0x66, 0x6e, 0x45,
++  0x81, 0xe7, 0x90, 0x12, 0xaf, 0x34, 0xdd, 0xd9,
++  0xe2, 0xf0, 0x37, 0x58, 0x9b, 0x29, 0x2d, 0xb3,
++  0xe6, 0x7c, 0x03, 0x67, 0x45, 0xfa, 0x22, 0xe7,
 +  0xe9, 0xb7, 0x37, 0x3b
 +};
 +static const unsigned char test_case_12_tag[] = {
-+  0xdc, 0xf5, 0x66, 0xff, 0x29, 0x1c, 0x25, 0xbb, 
++  0xdc, 0xf5, 0x66, 0xff, 0x29, 0x1c, 0x25, 0xbb,
 +  0xb8, 0x56, 0x8f, 0xc3, 0xd3, 0x76, 0xa6, 0xd9
 +};
 +static const GCM_TEST_CASE test_case_12 = {
@@ -3175,17 +3181,17 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 13 *****/
 +static const unsigned char test_case_13_key[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_13_iv[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_13_tag[] = {
-+  0x53, 0x0f, 0x8a, 0xfb, 0xc7, 0x45, 0x36, 0xb9, 
++  0x53, 0x0f, 0x8a, 0xfb, 0xc7, 0x45, 0x36, 0xb9,
 +  0xa9, 0x63, 0xb4, 0xf1, 0xc4, 0xcb, 0x73, 0x8b
 +};
 +static const GCM_TEST_CASE test_case_13 = {
@@ -3206,25 +3212,25 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 14 *****/
 +static const unsigned char test_case_14_key[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_14_iv[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_14_pt[] = {
-+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
++  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 +  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 +};
 +static const unsigned char test_case_14_ct[] = {
-+  0xce, 0xa7, 0x40, 0x3d, 0x4d, 0x60, 0x6b, 0x6e, 
++  0xce, 0xa7, 0x40, 0x3d, 0x4d, 0x60, 0x6b, 0x6e,
 +  0x07, 0x4e, 0xc5, 0xd3, 0xba, 0xf3, 0x9d, 0x18
 +};
 +static const unsigned char test_case_14_tag[] = {
-+  0xd0, 0xd1, 0xc8, 0xa7, 0x99, 0x99, 0x6b, 0xf0, 
++  0xd0, 0xd1, 0xc8, 0xa7, 0x99, 0x99, 0x6b, 0xf0,
 +  0x26, 0x5b, 0x98, 0xb5, 0xd4, 0x8a, 0xb9, 0x19
 +};
 +static const GCM_TEST_CASE test_case_14 = {
@@ -3245,37 +3251,37 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 15 ******/
 +static const unsigned char test_case_15_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
 +  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08
 +};
 +static const unsigned char test_case_15_iv[] = {
-+  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad, 
++  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad,
 +  0xde, 0xca, 0xf8, 0x88
 +};
 +static const unsigned char test_case_15_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39, 0x1a, 0xaf, 0xd2, 0x55
 +};
 +static const unsigned char test_case_15_ct[] = {
-+  0x52, 0x2d, 0xc1, 0xf0, 0x99, 0x56, 0x7d, 0x07, 
-+  0xf4, 0x7f, 0x37, 0xa3, 0x2a, 0x84, 0x42, 0x7d, 
-+  0x64, 0x3a, 0x8c, 0xdc, 0xbf, 0xe5, 0xc0, 0xc9, 
-+  0x75, 0x98, 0xa2, 0xbd, 0x25, 0x55, 0xd1, 0xaa, 
-+  0x8c, 0xb0, 0x8e, 0x48, 0x59, 0x0d, 0xbb, 0x3d, 
-+  0xa7, 0xb0, 0x8b, 0x10, 0x56, 0x82, 0x88, 0x38, 
-+  0xc5, 0xf6, 0x1e, 0x63, 0x93, 0xba, 0x7a, 0x0a, 
++  0x52, 0x2d, 0xc1, 0xf0, 0x99, 0x56, 0x7d, 0x07,
++  0xf4, 0x7f, 0x37, 0xa3, 0x2a, 0x84, 0x42, 0x7d,
++  0x64, 0x3a, 0x8c, 0xdc, 0xbf, 0xe5, 0xc0, 0xc9,
++  0x75, 0x98, 0xa2, 0xbd, 0x25, 0x55, 0xd1, 0xaa,
++  0x8c, 0xb0, 0x8e, 0x48, 0x59, 0x0d, 0xbb, 0x3d,
++  0xa7, 0xb0, 0x8b, 0x10, 0x56, 0x82, 0x88, 0x38,
++  0xc5, 0xf6, 0x1e, 0x63, 0x93, 0xba, 0x7a, 0x0a,
 +  0xbc, 0xc9, 0xf6, 0x62, 0x89, 0x80, 0x15, 0xad
 +};
 +static const unsigned char test_case_15_tag[] = {
-+  0xb0, 0x94, 0xda, 0xc5, 0xd9, 0x34, 0x71, 0xbd, 
++  0xb0, 0x94, 0xda, 0xc5, 0xd9, 0x34, 0x71, 0xbd,
 +  0xec, 0x1a, 0x50, 0x22, 0x70, 0xe3, 0xcc, 0x6c
 +};
 +static const GCM_TEST_CASE test_case_15 = {
@@ -3296,42 +3302,42 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 16 *****/
 +static const unsigned char test_case_16_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
 +  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08
 +};
 +static const unsigned char test_case_16_iv[] = {
-+  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad, 
++  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad,
 +  0xde, 0xca, 0xf8, 0x88
 +};
 +static const unsigned char test_case_16_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_16_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_16_ct[] = {
-+  0x52, 0x2d, 0xc1, 0xf0, 0x99, 0x56, 0x7d, 0x07, 
-+  0xf4, 0x7f, 0x37, 0xa3, 0x2a, 0x84, 0x42, 0x7d, 
-+  0x64, 0x3a, 0x8c, 0xdc, 0xbf, 0xe5, 0xc0, 0xc9, 
-+  0x75, 0x98, 0xa2, 0xbd, 0x25, 0x55, 0xd1, 0xaa, 
-+  0x8c, 0xb0, 0x8e, 0x48, 0x59, 0x0d, 0xbb, 0x3d, 
-+  0xa7, 0xb0, 0x8b, 0x10, 0x56, 0x82, 0x88, 0x38, 
-+  0xc5, 0xf6, 0x1e, 0x63, 0x93, 0xba, 0x7a, 0x0a, 
++  0x52, 0x2d, 0xc1, 0xf0, 0x99, 0x56, 0x7d, 0x07,
++  0xf4, 0x7f, 0x37, 0xa3, 0x2a, 0x84, 0x42, 0x7d,
++  0x64, 0x3a, 0x8c, 0xdc, 0xbf, 0xe5, 0xc0, 0xc9,
++  0x75, 0x98, 0xa2, 0xbd, 0x25, 0x55, 0xd1, 0xaa,
++  0x8c, 0xb0, 0x8e, 0x48, 0x59, 0x0d, 0xbb, 0x3d,
++  0xa7, 0xb0, 0x8b, 0x10, 0x56, 0x82, 0x88, 0x38,
++  0xc5, 0xf6, 0x1e, 0x63, 0x93, 0xba, 0x7a, 0x0a,
 +  0xbc, 0xc9, 0xf6, 0x62
 +};
 +static const unsigned char test_case_16_tag[] = {
-+  0x76, 0xfc, 0x6e, 0xce, 0x0f, 0x4e, 0x17, 0x68, 
++  0x76, 0xfc, 0x6e, 0xce, 0x0f, 0x4e, 0x17, 0x68,
 +  0xcd, 0xdf, 0x88, 0x53, 0xbb, 0x2d, 0x55, 0x1b
 +};
 +static const GCM_TEST_CASE test_case_16 = {
@@ -3352,41 +3358,41 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 17 *****/
 +static const unsigned char test_case_17_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
 +  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08
 +};
 +static const unsigned char test_case_17_iv[] = {
 +  0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad
 +};
 +static const unsigned char test_case_17_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_17_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_17_ct[] = {
-+  0xc3, 0x76, 0x2d, 0xf1, 0xca, 0x78, 0x7d, 0x32, 
-+  0xae, 0x47, 0xc1, 0x3b, 0xf1, 0x98, 0x44, 0xcb, 
-+  0xaf, 0x1a, 0xe1, 0x4d, 0x0b, 0x97, 0x6a, 0xfa, 
-+  0xc5, 0x2f, 0xf7, 0xd7, 0x9b, 0xba, 0x9d, 0xe0, 
-+  0xfe, 0xb5, 0x82, 0xd3, 0x39, 0x34, 0xa4, 0xf0, 
-+  0x95, 0x4c, 0xc2, 0x36, 0x3b, 0xc7, 0x3f, 0x78, 
-+  0x62, 0xac, 0x43, 0x0e, 0x64, 0xab, 0xe4, 0x99, 
++  0xc3, 0x76, 0x2d, 0xf1, 0xca, 0x78, 0x7d, 0x32,
++  0xae, 0x47, 0xc1, 0x3b, 0xf1, 0x98, 0x44, 0xcb,
++  0xaf, 0x1a, 0xe1, 0x4d, 0x0b, 0x97, 0x6a, 0xfa,
++  0xc5, 0x2f, 0xf7, 0xd7, 0x9b, 0xba, 0x9d, 0xe0,
++  0xfe, 0xb5, 0x82, 0xd3, 0x39, 0x34, 0xa4, 0xf0,
++  0x95, 0x4c, 0xc2, 0x36, 0x3b, 0xc7, 0x3f, 0x78,
++  0x62, 0xac, 0x43, 0x0e, 0x64, 0xab, 0xe4, 0x99,
 +  0xf4, 0x7c, 0x9b, 0x1f
 +};
 +static const unsigned char test_case_17_tag[] = {
-+  0x3a, 0x33, 0x7d, 0xbf, 0x46, 0xa7, 0x92, 0xc4, 
++  0x3a, 0x33, 0x7d, 0xbf, 0x46, 0xa7, 0x92, 0xc4,
 +  0x5e, 0x45, 0x49, 0x13, 0xfe, 0x2e, 0xa8, 0xf2
 +};
 +static const GCM_TEST_CASE test_case_17 = {
@@ -3407,48 +3413,48 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +/***** Test Case 18 *****/
 +static const unsigned char test_case_18_key[] = {
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
-+  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08, 
-+  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c, 
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
++  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08,
++  0xfe, 0xff, 0xe9, 0x92, 0x86, 0x65, 0x73, 0x1c,
 +  0x6d, 0x6a, 0x8f, 0x94, 0x67, 0x30, 0x83, 0x08
 +};
 +static const unsigned char test_case_18_iv[] = {
-+  0x93, 0x13, 0x22, 0x5d, 0xf8, 0x84, 0x06, 0xe5, 
-+  0x55, 0x90, 0x9c, 0x5a, 0xff, 0x52, 0x69, 0xaa, 
-+  0x6a, 0x7a, 0x95, 0x38, 0x53, 0x4f, 0x7d, 0xa1, 
-+  0xe4, 0xc3, 0x03, 0xd2, 0xa3, 0x18, 0xa7, 0x28, 
-+  0xc3, 0xc0, 0xc9, 0x51, 0x56, 0x80, 0x95, 0x39, 
-+  0xfc, 0xf0, 0xe2, 0x42, 0x9a, 0x6b, 0x52, 0x54, 
-+  0x16, 0xae, 0xdb, 0xf5, 0xa0, 0xde, 0x6a, 0x57, 
++  0x93, 0x13, 0x22, 0x5d, 0xf8, 0x84, 0x06, 0xe5,
++  0x55, 0x90, 0x9c, 0x5a, 0xff, 0x52, 0x69, 0xaa,
++  0x6a, 0x7a, 0x95, 0x38, 0x53, 0x4f, 0x7d, 0xa1,
++  0xe4, 0xc3, 0x03, 0xd2, 0xa3, 0x18, 0xa7, 0x28,
++  0xc3, 0xc0, 0xc9, 0x51, 0x56, 0x80, 0x95, 0x39,
++  0xfc, 0xf0, 0xe2, 0x42, 0x9a, 0x6b, 0x52, 0x54,
++  0x16, 0xae, 0xdb, 0xf5, 0xa0, 0xde, 0x6a, 0x57,
 +  0xa6, 0x37, 0xb3, 0x9b
 +};
 +static const unsigned char test_case_18_pt[] = {
-+  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5, 
-+  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a, 
-+  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda, 
-+  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72, 
-+  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53, 
-+  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25, 
-+  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57, 
++  0xd9, 0x31, 0x32, 0x25, 0xf8, 0x84, 0x06, 0xe5,
++  0xa5, 0x59, 0x09, 0xc5, 0xaf, 0xf5, 0x26, 0x9a,
++  0x86, 0xa7, 0xa9, 0x53, 0x15, 0x34, 0xf7, 0xda,
++  0x2e, 0x4c, 0x30, 0x3d, 0x8a, 0x31, 0x8a, 0x72,
++  0x1c, 0x3c, 0x0c, 0x95, 0x95, 0x68, 0x09, 0x53,
++  0x2f, 0xcf, 0x0e, 0x24, 0x49, 0xa6, 0xb5, 0x25,
++  0xb1, 0x6a, 0xed, 0xf5, 0xaa, 0x0d, 0xe6, 0x57,
 +  0xba, 0x63, 0x7b, 0x39
 +};
 +static const unsigned char test_case_18_ad[] = {
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
-+  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef, 
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
++  0xfe, 0xed, 0xfa, 0xce, 0xde, 0xad, 0xbe, 0xef,
 +  0xab, 0xad, 0xda, 0xd2
 +};
 +static const unsigned char test_case_18_ct[] = {
-+  0x5a, 0x8d, 0xef, 0x2f, 0x0c, 0x9e, 0x53, 0xf1, 
-+  0xf7, 0x5d, 0x78, 0x53, 0x65, 0x9e, 0x2a, 0x20, 
-+  0xee, 0xb2, 0xb2, 0x2a, 0xaf, 0xde, 0x64, 0x19, 
-+  0xa0, 0x58, 0xab, 0x4f, 0x6f, 0x74, 0x6b, 0xf4, 
-+  0x0f, 0xc0, 0xc3, 0xb7, 0x80, 0xf2, 0x44, 0x45, 
-+  0x2d, 0xa3, 0xeb, 0xf1, 0xc5, 0xd8, 0x2c, 0xde, 
-+  0xa2, 0x41, 0x89, 0x97, 0x20, 0x0e, 0xf8, 0x2e, 
++  0x5a, 0x8d, 0xef, 0x2f, 0x0c, 0x9e, 0x53, 0xf1,
++  0xf7, 0x5d, 0x78, 0x53, 0x65, 0x9e, 0x2a, 0x20,
++  0xee, 0xb2, 0xb2, 0x2a, 0xaf, 0xde, 0x64, 0x19,
++  0xa0, 0x58, 0xab, 0x4f, 0x6f, 0x74, 0x6b, 0xf4,
++  0x0f, 0xc0, 0xc3, 0xb7, 0x80, 0xf2, 0x44, 0x45,
++  0x2d, 0xa3, 0xeb, 0xf1, 0xc5, 0xd8, 0x2c, 0xde,
++  0xa2, 0x41, 0x89, 0x97, 0x20, 0x0e, 0xf8, 0x2e,
 +  0x44, 0xae, 0x7e, 0x3f
 +};
 +static const unsigned char test_case_18_tag[] = {
-+  0xa4, 0x4a, 0x82, 0x66, 0xee, 0x1c, 0x8e, 0xb0, 
++  0xa4, 0x4a, 0x82, 0x66, 0xee, 0x1c, 0x8e, 0xb0,
 +  0xc8, 0xb5, 0xd4, 0xcf, 0x5a, 0xe9, 0xf1, 0x9a
 +};
 +static const GCM_TEST_CASE test_case_18 = {
@@ -3489,7 +3495,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +  &test_case_18
 +};
 +
-+    
++
 +static void run_test_case_mode(const GCM_TEST_CASE *tc, GCM_ACCEL accel) {
 +  AES_GCM_CTX *ctx = NULL;
 +  unsigned char *out = NULL;
@@ -3583,7 +3589,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +  if (ctx == NULL) {
 +    fprintf (stdout, "    malloc of AES_GCM_CTX for decrypt failed\n");
 +  }
-+  if (!AES_GCM_Init(ctx, (unsigned char *)tc->iv, tc->ivlen, 
++  if (!AES_GCM_Init(ctx, (unsigned char *)tc->iv, tc->ivlen,
 +		    (unsigned char *)tc->key, tc->keylen)) {
 +    fprintf(stdout, "    AES_GCM_Init for decrypt failed\n");
 +    goto exit;
@@ -3592,7 +3598,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +  /* 8. Update with any associated data */
 +  if (tc->adlen != 0) {
-+    if (!AES_GCM_DecryptUpdate(ctx, (unsigned char *)tc->ad, tc->adlen, 
++    if (!AES_GCM_DecryptUpdate(ctx, (unsigned char *)tc->ad, tc->adlen,
 +			       NULL, 0, NULL, NULL)) {
 +      fprintf(stdout, "    AES_GCM_DecryptUpdate failed for associated data\n");
 +      goto exit;
@@ -3641,7 +3647,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +
 +  /* 12. Print the result and clean up */
 +  fprintf(stdout, "    AES_GCM succeeded\n");
-+  
++
 +exit:
 +  if(NULL != out) {
 +    OPENSSL_free(out);
@@ -3650,14 +3656,14 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +  if(NULL != ctx) {
 +    AES_GCM_CTX_free(ctx);
 +    ctx = NULL;
-+  }  
++  }
 +  success++;
 +  fail--;
 +}
 +
 +static void run_test_case(const GCM_TEST_CASE *tc) {
 +  fprintf(stdout, "Executing Test: %s\n", tc->name);
-+  
++
 +  fprintf(stdout, "    No acceleration\n");
 +  run_test_case_mode(tc, GCM_ACCEL_noaccel);
 +  fprintf(stdout, "\n");
@@ -3699,9 +3705,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aesgcmtest.c openssl-1.0.0-beta4/c
 +  return 0;
 +}
 +
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes.h openssl-1.0.0-beta4/crypto/aes/aes.h
---- openssl-1.0.0-beta4.orig/crypto/aes/aes.h	2008-12-23 16:15:43.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/aes.h	2009-12-05 15:15:23.877754212 +0100
+Index: 1/crypto/aes/aes.h
+===================================================================
+--- 1.orig/crypto/aes/aes.h	2011-02-24 15:09:14.000000000 +0100
++++ 1/crypto/aes/aes.h	2011-02-24 15:09:49.000000000 +0100
 @@ -135,6 +135,51 @@
  		const unsigned char *in, unsigned int inlen);
  
@@ -3754,9 +3761,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/aes.h openssl-1.0.0-beta4/crypto/a
  #ifdef  __cplusplus
  }
  #endif
-diff -urN openssl-1.0.0-beta4.orig/crypto/aes/Makefile openssl-1.0.0-beta4/crypto/aes/Makefile
---- openssl-1.0.0-beta4.orig/crypto/aes/Makefile	2008-12-23 12:33:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/aes/Makefile	2009-12-05 15:15:23.877754212 +0100
+Index: 1/crypto/aes/Makefile
+===================================================================
+--- 1.orig/crypto/aes/Makefile	2011-02-24 15:09:14.000000000 +0100
++++ 1/crypto/aes/Makefile	2011-02-24 15:10:31.000000000 +0100
 @@ -19,18 +19,19 @@
  
  GENERAL=Makefile
@@ -3769,7 +3777,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/Makefile openssl-1.0.0-beta4/crypt
  LIBSRC=aes_core.c aes_misc.c aes_ecb.c aes_cbc.c aes_cfb.c aes_ofb.c \
 -       aes_ctr.c aes_ige.c aes_wrap.c
 -LIBOBJ=aes_misc.o aes_ecb.o aes_cfb.o aes_ofb.o aes_ctr.o aes_ige.o aes_wrap.o \
-+       aes_ctr.c aes_ige.c aes_ccm.c aes_gcm.c aes_wrap.c 
++       aes_ctr.c aes_ige.c aes_ccm.c aes_gcm.c aes_wrap.c
 +LIBOBJ=aes_misc.o aes_ecb.o aes_cfb.o aes_ofb.o aes_ctr.o aes_ige.o \
 +        aes_ccm.o aes_gcm.o aes_wrap.o \
         $(AES_ENC)
@@ -3781,31 +3789,32 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/aes/Makefile openssl-1.0.0-beta4/crypt
  HEADER= aes_locl.h $(EXHEADER)
  
  ALL=    $(GENERAL) $(SRC) $(HEADER)
-diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto/cmac/cmac.c
---- openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/cmac/cmac.c	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/cmac/cmac.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/cmac/cmac.c	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,528 @@
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007,2009
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
-+// 
++//
 +-----------------------------------------------------------------------------*/
 +
 +#include <string.h>
 +#include "openssl/evp.h"
 +#include "cmac.h"
 +
-+/* 
++/*
 +\debug Define: Uncomment this to debug the CMAC code
-+#define DEBUG_CMAC 
++#define DEBUG_CMAC
 +*/
 +
 +
-+/* 
++/*
 +   We reuse one buffer, which gets set to zero on the first
 +   CMAC_Update() operation. This is used as a flag to say the next
 +   update will be the first. It's possible to perform a CMAC
@@ -3880,7 +3889,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +#endif
 +
 +
-+/** @brief xor two buffers into a destination. 
++/** @brief xor two buffers into a destination.
 +    (Which may be one of the source buffers )
 +    @param dest the destination buffer
 +    @param s1 first source buffer
@@ -3919,7 +3928,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +/**
 +   @brief Call EVP_EncryptInit() for the CMAC context
 +          this is used in more than one place, and the logic is a bit messy
-+	  with the need to handle variable length keys	  
++	  with the need to handle variable length keys
 +    @param cmac_ctx a pointer to an CMAC_CTX_t
 +    @return 1 if O.K. 0 otherwise
 +*/
@@ -3943,7 +3952,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +      break;
 +    default:
 +      break;
-+    }    
++    }
 +    rv = EVP_EncryptInit(cmac_ctx->cctx,cmac_ctx->cip,cmac_ctx->key,(unsigned char *)iv);
 +    EVP_CIPHER_CTX_set_padding(cmac_ctx->cctx,0);
 +  } else { /* Alg's with variable length keys, RC2, RC4 etc */
@@ -3962,10 +3971,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +
 +/** @brief generate the CMAC subkeys
 +    @param pcb a pointer to an ICC library context
-+    @param cmac_ctx a pointer to an CMAC_CTX_t 
-+    @return 1 if O.K., 0 on failure (unsupported cipher block size etc).    
++    @param cmac_ctx a pointer to an CMAC_CTX_t
++    @return 1 if O.K., 0 on failure (unsupported cipher block size etc).
 +*/
-+    
++
 +static int SubKeys(CMAC_CTX_t *cmac_ctx)
 +{
 +  int rv = 1;
@@ -3988,15 +3997,15 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +      /* We need to encrypt with a block of 0's here */
 +      EVP_EncryptUpdate(cmac_ctx->cctx,
 +			     cmac_ctx->k1,&olen,(unsigned char *)iv, cmac_ctx->bs);
-+      
++
 +      /* k1 now contains one block of 0 encrypted with our key */
-+      
-+      /* We only need this for testing, save a copy of the encrypted key 
++
++      /* We only need this for testing, save a copy of the encrypted key
 +	 so we can verify it against NIST known answers.
 +	 This buffer is reused as a scratch area during CMAC_Update
 +      */
 +      memcpy(cmac_ctx->cip_k,cmac_ctx->k1, cmac_ctx->bs);
-+      
++
 +      if(0 == (cmac_ctx->k1[0] & 0x80)) { /* MSBit of K1 is zero */
 +	shl(cmac_ctx->k1, cmac_ctx->bs);
 +      } else {
@@ -4008,7 +4017,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +      if(0 == (cmac_ctx->k2[0] & 0x80)) { /* MSBit of K2 is zero */
 +	shl(cmac_ctx->k2, cmac_ctx->bs);
 +      } else {
-+	shl(cmac_ctx->k2, cmac_ctx->bs);      
++	shl(cmac_ctx->k2, cmac_ctx->bs);
 +	cmac_ctx->k2[cmac_ctx->bs-1] ^= R;
 +	/* xor(cmac_ctx->k2,cmac_ctx->k2,R,cmac_ctx->bs);*/
 +      }
@@ -4046,11 +4055,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +  }
 +  memset(cmac_ctx->key,0,clen);
 +}
-+/** @brief free an CMAC_CTX_t 
-+    @param pcb a pointer to an ICC library context 
++/** @brief free an CMAC_CTX_t
++    @param pcb a pointer to an ICC library context
 +    @param cmac a pointer to the CMAC_CTX to free
 +*/
-+void CMAC_CTX_free(CMAC_CTX *cmac) 
++void CMAC_CTX_free(CMAC_CTX *cmac)
 +{
 +  CMAC_CTX_t *cmac_ctx = (CMAC_CTX_t *)cmac;
 +
@@ -4069,7 +4078,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +  }
 +}
 +/** @brief Initialize a CMAC operation
-+    @param pcb a pointer to an ICC library context 
++    @param pcb a pointer to an ICC library context
 +    @param cmac a pointer to an CMAC_CTX
 +    @param cip a pointer to a cipher structure
 +    @param key a key buffer, the size must match that
@@ -4078,13 +4087,13 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +           Set this to zero for fixed length key algs
 +    @return 1 on success, 0 otherwise
 +*/
-+    
++
 +int CMAC_Init(CMAC_CTX *cmac,
 +	      const EVP_CIPHER *cip,
 +	      unsigned char *key,
-+	      unsigned int keylen) 
++	      unsigned int keylen)
 +{
-+  
++
 +  CMAC_CTX_t *cmac_ctx = (CMAC_CTX_t *)cmac;
 +  int rv = 1;
 +  unsigned int nid = 0;
@@ -4102,10 +4111,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +      cmac_ctx->k2 = (unsigned char *)CRYPTO_malloc(cmac_ctx->bs,__FILE__,__LINE__);
 +    }
 +    memset(cmac_ctx->k2,0,cmac_ctx->bs);
-+ 
++
 +    if(NULL == cmac_ctx->buf ) {
 +      cmac_ctx->buf = (unsigned char *)CRYPTO_malloc(cmac_ctx->bs,__FILE__,__LINE__);
-+    } 
++    }
 +    memset(cmac_ctx->buf,0,cmac_ctx->bs);
 +    if( 0 == keylen) {
 +      keylen = EVP_CIPHER_key_length(cip)*8;
@@ -4115,8 +4124,8 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +      cmac_ctx->key = (unsigned char *)CRYPTO_malloc(keylen+7/8,__FILE__,__LINE__);
 +    }
 +    memcpy(cmac_ctx->key,key,EVP_CIPHER_key_length(cip));
-+ 
-+    
++
++
 +    /* Used in Init() to hold the encrypted key,
 +       after that it's used as scratch storage for Update()
 +    */
@@ -4142,13 +4151,13 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +    case NID_des_cbc:
 +    case NID_des_ede3_cbc:
 +    case NID_cast5_cbc:
-+      cmac_ctx->keylen = 0; 
++      cmac_ctx->keylen = 0;
 +      break;
 +    default: /* RC2, RC4 */
 +      cmac_ctx->keylen = keylen;
 +      break;
 +    }
-+    
++
 +    if( 1 != SubKeys(cmac_ctx) ) {
 +      rv = 0;
 +    }
@@ -4157,11 +4166,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +  }
 +  return rv;
 +}
-+/* 
++/*
 +   This needs to be just a bit clever to cope with partial blocks
 +   and the special handling of the final block
-+   Basically CMAC_Final needs either a partial or a full block 
-+   left over. 
++   Basically CMAC_Final needs either a partial or a full block
++   left over.
 +   Since we'll be kind and allow partial blocks to be input here
 +   we need to be sure we'll have at least a partial block left,
 +   and possibly a full one.
@@ -4181,7 +4190,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +    survive incorrectly blocked/misaligned data
 +*/
 +int CMAC_Update(CMAC_CTX *cmac,
-+		unsigned char *in, 
++		unsigned char *in,
 +		unsigned int inlen)
 +{
 +  int rv = 1;
@@ -4191,14 +4200,14 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +
 +  /* We need to erase this buffer anyway - and we avoid allocating
 +     one extra buffer this way - is it worth it ? - Probably since
-+     we needed somewhere to save cip_k to pass the known answer tests 
++     we needed somewhere to save cip_k to pass the known answer tests
 +     and it still needs to be set to zero for the first block.
 +  */
 +  if(STUPID_VALUE == cmac_ctx->pbs) {
 +    memset(cmac_ctx->cip_k,0,cmac_ctx->bs);
 +    cmac_ctx->pbs = 0;
-+  } 
-+  /* This is a bit ugly, redundant memcpy's in what's hopefully 
++  }
++  /* This is a bit ugly, redundant memcpy's in what's hopefully
 +     the common case, but the cost of memcpy is minor
 +     compared with the encrypt and we have to deal with the possibility
 +     of misaligned input data at any time
@@ -4215,7 +4224,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +	/* Ci-1 ^ Mi */
 +	xor(cmac_ctx->buf,cmac_ctx->cip_k,cmac_ctx->buf,cmac_ctx->bs);
 +	/* Ci = CIPH(Ci-1 ^ Mi) */
-+	
++
 +	rv = CMAC_EVP_Init(cmac_ctx);
 +	if( 1 == rv) {
 +#if defined(DEBUG_CMAC)
@@ -4224,17 +4233,17 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +#endif
 +	  rv = EVP_EncryptUpdate(cmac_ctx->cctx,
 +				      cmac_ctx->cip_k,
-+				      &outl,cmac_ctx->buf,cmac_ctx->bs);      
++				      &outl,cmac_ctx->buf,cmac_ctx->bs);
 +	}
 +      }
 +      if(i > 0) {
-+	/* We have at most one block left over, 
-+	   copy that to our retain buffer and set the length of the left over segment       
++	/* We have at most one block left over,
++	   copy that to our retain buffer and set the length of the left over segment
 +	*/
 +	memcpy(cmac_ctx->buf,in,i);
 +	cmac_ctx->pbs = i;
 +      }
-+    } else { 
++    } else {
 +      /* O.K. someone is being a bit silly, we don't have enough data to do an update yet,
 +	 maybe doing the CMAC 3 bytes at a time perhaps ...
 +	 Just top up the retain buffer ... *sigh*
@@ -4257,7 +4266,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +
 +*/
 +int CMAC_Final(CMAC_CTX *cmac,
-+	       unsigned char *md, 
++	       unsigned char *md,
 +	       unsigned int maclen)
 +{
 +  int rv = 1;
@@ -4265,7 +4274,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +  CMAC_CTX_t *cmac_ctx = (CMAC_CTX_t *)cmac;
 +  if(maclen <= cmac_ctx->bs) {
 +    /* A CMAC is valid with no input data, so depending on the user CMAC
-+       logic we COULD hit this case. i.e. 
++       logic we COULD hit this case. i.e.
 +       CMAC_Init()
 +       for(i = 0; i < len ; i+= blocksize) {
 +          CMAC_Update()
@@ -4275,7 +4284,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +    if(STUPID_VALUE == cmac_ctx->pbs) {
 +      memset(cmac_ctx->cip_k,0,cmac_ctx->bs);
 +      cmac_ctx->pbs = 0;
-+    } 
++    }
 +
 +    if(cmac_ctx->pbs == cmac_ctx->bs) { /* Complete block */
 +      /* Mn = K1 ^ Mn* */
@@ -4302,7 +4311,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +				&outl,
 +				cmac_ctx->buf,cmac_ctx->bs);
 +    /* Return the requested amount of mac */
-+    memcpy(md,cmac_ctx->cip_k,maclen);    
++    memcpy(md,cmac_ctx->cip_k,maclen);
 +  } else {
 +    rv = 0; /* Invalid mac length */
 +  }
@@ -4313,18 +4322,19 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.c openssl-1.0.0-beta4/crypto
 +}
 +
 +
-diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.h openssl-1.0.0-beta4/crypto/cmac/cmac.h
---- openssl-1.0.0-beta4.orig/crypto/cmac/cmac.h	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/cmac/cmac.h	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/cmac/cmac.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/cmac/cmac.h	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,52 @@
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
-+// 
++//
 +-----------------------------------------------------------------------------*/
 +
 +#if !defined(CMAC_H)
@@ -4350,34 +4360,35 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac.h openssl-1.0.0-beta4/crypto
 +              const EVP_CIPHER *cip,
 +              unsigned char *key,
 +              unsigned int keylen);
-+              
++
 +int CMAC_Update(CMAC_CTX *cmac,
-+                unsigned char *in, 
++                unsigned char *in,
 +                unsigned int inlen);
-+                
++
 +int CMAC_Final(CMAC_CTX *cmac,
-+               unsigned char *md, 
++               unsigned char *md,
 +               unsigned int maclen);
-+               
++
 +CMAC_CTX * CMAC_CTX_new(void);
-+               
++
 +void CMAC_CTX_free(CMAC_CTX *cmac);
 +
-+               
-+                                              
-+                                              
-+                                          
++
++
++
++
 +
 +#endif
-diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/crypto/cmac/cmac_test.c
---- openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/cmac/cmac_test.c	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/cmac/cmac_test.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/cmac/cmac_test.c	2011-02-24 15:10:31.000000000 +0100
 @@ -0,0 +1,362 @@
 +/*----------------------------------------------------------------------------
-+// Licensed materials - Property of IBM                                      
++// Licensed materials - Property of IBM
 +//
 +// (C) Copyright IBM Corp.  2007
-+// This code was donated to the OpenSSL project under the terms of the 
++// This code was donated to the OpenSSL project under the terms of the
 +// OpenSSL license.
 +//
 +//--------------------------------------------------------------------------*/
@@ -4415,7 +4426,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +  out[0] = bin2xn(hi);
 +  out[1] = bin2xn(lo);
 +}
-+/* Convert a stream of bytes to hex 
++/* Convert a stream of bytes to hex
 +   We do 0 terminate the buffer
 +   return value is length of string (not including the 0 terminator)
 +*/
@@ -4430,12 +4441,12 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +    ptr = (unsigned char *)*out;
 +    for(i = 0; i < inlen; i ++,ptr += 2) {
 +      bin2x(in[i],ptr);
-+    }   
++    }
 +    *ptr = '\0';
 +  }
-+  return i*2;   
++  return i*2;
 +}
-+/* Convert a stream of hex data to binary 
++/* Convert a stream of hex data to binary
 +   We '\0' terminate the returned buffer IFF we allocate it
 +   return value is number of bytes returned
 +*/
@@ -4459,9 +4470,9 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +      } else {
 +	ptr[j] = hh << 4 | (unsigned char)x2bin(c);
 +	j++;
-+      }           
++      }
 +    }
-+    if(alloc) ptr[j] = '\0';    
++    if(alloc) ptr[j] = '\0';
 +  }
 +  return j;
 +}
@@ -4521,7 +4532,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +     {"6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e51","31b1e431dabc4eb8"},
 +   },
 +  },
-+#endif  
++#endif
 +  {"AES-128-CBC",
 +   "2b7e151628aed2a6abf7158809cf4f3c",
 +   "7df76b0c1ab899b33e42f047b91b546f",
@@ -4538,7 +4549,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +   "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b",
 +   "22452d8e49a8a5939f7321ceea6d514b",
 +   "448a5b1c93514b273ee6439dd4daa296",
-+   "8914b63926a2964e7dcc873ba9b5452c", 
++   "8914b63926a2964e7dcc873ba9b5452c",
 +   {
 +     {"","d17ddf46adaacde531cac483de7a9367"},
 +     {"6bc1bee22e409f96e93d7e117393172a","9e99a7bf31e710900662f65e617c5184"},
@@ -4564,10 +4575,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +
 +static int prthdr = 0;
 +
-+/** @brief regurgitate the input test data 
++/** @brief regurgitate the input test data
 +*/
 +static void dump_TestData(void)
-+{ 
++{
 +  int i,j;
 +
 +  for(i = 0; i < NTESTS; i++) {
@@ -4578,7 +4589,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +    printf("\n");
 +  }
 +}
-+static void cmac_hdr(CMAC_CTX_t *cmac_ctx,int i,int j) 
++static void cmac_hdr(CMAC_CTX_t *cmac_ctx,int i,int j)
 +{
 +  char *cip_k = NULL;
 +  char *k1 = NULL;
@@ -4587,11 +4598,11 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +
 +  if( (1 == prthdr) ) {
 +    prthdr = 0;
-+    
++
 +    Bin2HexBuffer((char *)cmac_ctx->cip_k,cmac_ctx->bs,&cip_k);
 +    Bin2HexBuffer((char *)cmac_ctx->k1,cmac_ctx->bs,&k1);
 +    Bin2HexBuffer((char *)cmac_ctx->k2,cmac_ctx->bs,&k2);
-+    
++
 +    if( (strcmp(ka[i].cip_k,cip_k) != 0 ) ||
 +	(strcmp(ka[i].k1,k1) != 0 ) ||
 +	(strcmp(ka[i].k2,k2) != 0 )
@@ -4609,18 +4620,18 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +    free(k1);
 +    k1 = NULL;
 +    free(k2);
-+    k2 = NULL;	
++    k2 = NULL;
 +  }
 +}
 +
-+void do_CMAC_test(CMAC_CTX *cmac_ctx,int i,int j, int stride) 
++void do_CMAC_test(CMAC_CTX *cmac_ctx,int i,int j, int stride)
 +{
 +  int allocd = 0;
 +  int mlen,keylen;
 +  char *key = NULL;
 +  char *data = NULL;
 +  unsigned char mac[16];
-+  char *machex = NULL; 
++  char *machex = NULL;
 +  const EVP_CIPHER *cip = NULL;
 +  int bs = 0;
 +  int k = 0;
@@ -4629,16 +4640,16 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +  cip = EVP_get_cipherbyname(ka[i].cname);
 +  if(NULL == cip) {
 +    printf("getcipherbyname failed [%s]\n",ka[i].cname);
-+    
++
 +  } else {
 +
-+    
++
 +    if(cmac_ctx == NULL) { /* One shot test, allocate our own */
 +      cmac_ctx = CMAC_CTX_new();
 +      allocd = 1;
 +    }
 +    /* Now torture our code a little - this is to make sure our buffer
-+       handling code is 100% O.K.	 
++       handling code is 100% O.K.
 +    */
 +    bs = EVP_CIPHER_block_size(cip);
 +    keylen = strlen(ka[i].key)/2;
@@ -4646,12 +4657,12 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +
 +    mlen = strlen(ka[i].tv[j].mess)/2;
 +    Hex2BinBuffer(ka[i].tv[j].mess,mlen*2,&data);
-+    
-+    
++
++
 +
 +    CMAC_Init(cmac_ctx,cip,(unsigned char *)key,keylen*8);
 +    /* Now keep a copy of the CMAC data NOW because some fields may
-+       be overwritten by the time we fail 
++       be overwritten by the time we fail
 +    */
 +    memcpy(&tmp,cmac_ctx,sizeof(CMAC_CTX_t));
 +    if(0 == stride) { /* Special case, do the first pass in one hit */
@@ -4664,10 +4675,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +	CMAC_Update(cmac_ctx,(unsigned char *)(data+k),mlen-k);
 +      }
 +    }
-+      
++
 +    CMAC_Final(cmac_ctx,mac,bs);
 +    Bin2HexBuffer((char *)mac,bs,&machex);
-+    
++
 +    if( 0 != strcmp(machex,ka[i].tv[j].cmac) ) {
 +      prthdr = 1;
 +      cmac_hdr(&tmp,i,j);
@@ -4682,7 +4693,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +    key = NULL;
 +    if(allocd) {
 +      CMAC_CTX_free(cmac_ctx);
-+    }   
++    }
 +  }
 +}
 +
@@ -4700,7 +4711,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +#if defined(DEBUG_CMAC)
 +    dump_TestData();
 +#endif
-+    
++
 +  /* Specific way to drive a particular case */
 +  if(argc > 3) { /* Expect i,j,stride */
 +    i = atoi(argv[1]);
@@ -4722,7 +4733,7 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +	}
 +      }
 +      CMAC_CTX_free(cmac_ctx);
-+      cmac_ctx = NULL;;  
++      cmac_ctx = NULL;;
 +    }
 +  }
 +
@@ -4735,9 +4746,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/cmac_test.c openssl-1.0.0-beta4/c
 +}
 +
 +
-diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/Makefile openssl-1.0.0-beta4/crypto/cmac/Makefile
---- openssl-1.0.0-beta4.orig/crypto/cmac/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ openssl-1.0.0-beta4/crypto/cmac/Makefile	2009-12-05 15:15:23.000000000 +0100
+Index: 1/crypto/cmac/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ 1/crypto/cmac/Makefile	2011-02-24 15:09:49.000000000 +0100
 @@ -0,0 +1,75 @@
 +#
 +# OpenSSL/crypto/cmac/Makefile
@@ -4814,9 +4826,10 @@ diff -urN openssl-1.0.0-beta4.orig/crypto/cmac/Makefile openssl-1.0.0-beta4/cryp
 +	rm -f *.o *.obj lib tags core .pure .nfs* *.old *.bak fluff
 +
 +# DO NOT DELETE THIS LINE -- make depend depends on it.
-diff -urN openssl-1.0.0-beta4.orig/Makefile.org openssl-1.0.0-beta4/Makefile.org
---- openssl-1.0.0-beta4.orig/Makefile.org	2009-10-16 01:44:11.000000000 +0200
-+++ openssl-1.0.0-beta4/Makefile.org	2009-12-05 15:15:23.877754212 +0100
+Index: 1/Makefile.org
+===================================================================
+--- 1.orig/Makefile.org	2011-02-24 15:09:14.000000000 +0100
++++ 1/Makefile.org	2011-02-24 15:09:49.000000000 +0100
 @@ -119,6 +119,7 @@
  	md2 md4 md5 sha mdc2 hmac ripemd whrlpool \
  	des aes rc2 rc4 rc5 idea bf cast camellia seed modes \
@@ -4825,9 +4838,10 @@ diff -urN openssl-1.0.0-beta4.orig/Makefile.org openssl-1.0.0-beta4/Makefile.org
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
  	cms pqueue ts jpake store
-diff -urN openssl-1.0.0-beta4.orig/test/Makefile openssl-1.0.0-beta4/test/Makefile
---- openssl-1.0.0-beta4.orig/test/Makefile	2009-10-18 16:44:50.000000000 +0200
-+++ openssl-1.0.0-beta4/test/Makefile	2009-12-05 15:17:00.016504442 +0100
+Index: 1/test/Makefile
+===================================================================
+--- 1.orig/test/Makefile	2011-02-24 15:09:14.000000000 +0100
++++ 1/test/Makefile	2011-02-24 15:09:49.000000000 +0100
 @@ -62,6 +62,8 @@
  IGETEST=	igetest
  JPAKETEST=	jpaketest
@@ -4912,30 +4926,10 @@ diff -urN openssl-1.0.0-beta4.orig/test/Makefile openssl-1.0.0-beta4/test/Makefi
  #$(AESTEST).o: $(AESTEST).c
  #	$(CC) -c $(CFLAGS) -DINTERMEDIATE_VALUE_KAT -DTRACE_KAT_MCT $(AESTEST).c
  
-diff -urN openssl-1.0.0-beta4.orig/util/libeay.num openssl-1.0.0-beta4/util/libeay.num
---- openssl-1.0.0-beta4.orig/util/libeay.num	2009-11-04 14:29:58.000000000 +0100
-+++ openssl-1.0.0-beta4/util/libeay.num	2009-12-05 15:18:49.416503991 +0100
-+AES_CCM_Decrypt                         4539 EXIST::FUNCTION:AES
-+AES_CCM_Encrypt                         4540 EXIST::FUNCTION:AES
-+GCM128                                  4541 EXIST::FUNCTION:
-+AES_GCM_CTX_new                         4542 EXIST::FUNCTION:AES
-+AES_GCM_CTX_free                        4543 EXIST::FUNCTION:AES
-+AES_GCM_CTX_ctrl                        4544 EXIST::FUNCTION:AES
-+AES_GCM_Init                            4545 EXIST::FUNCTION:AES
-+AES_GCM_EncryptUpdate                   4546 EXIST::FUNCTION:AES
-+AES_GCM_EncryptFinal                    4547 EXIST::FUNCTION:AES
-+AES_GCM_DecryptUpdate                   4548 EXIST::FUNCTION:AES
-+AES_GCM_DecryptFinal                    4549 EXIST::FUNCTION:AES
-+AES_GCM_GenerateIV                      4550 EXIST::FUNCTION:AES
-+GHASH                                   4551 EXIST::FUNCTION:
-+CMAC_Update                             4552 EXIST::FUNCTION:
-+CMAC_Final                              4553 EXIST::FUNCTION:
-+CMAC_CTX_new                            4554 EXIST::FUNCTION:
-+CMAC_Init                               4555 EXIST::FUNCTION:
-+CMAC_CTX_free                           4556 EXIST::FUNCTION:
-diff -urN openssl-1.0.0-beta4.orig/util/mkdef.pl openssl-1.0.0-beta4/util/mkdef.pl
---- openssl-1.0.0-beta4.orig/util/mkdef.pl	2009-05-15 18:01:42.000000000 +0200
-+++ openssl-1.0.0-beta4/util/mkdef.pl	2009-12-05 15:15:23.897754329 +0100
+Index: 1/util/mkdef.pl
+===================================================================
+--- 1.orig/util/mkdef.pl	2011-02-24 15:09:14.000000000 +0100
++++ 1/util/mkdef.pl	2011-02-24 15:09:49.000000000 +0100
 @@ -86,6 +86,7 @@
  			 "SHA256", "SHA512", "RIPEMD",
  			 "MDC2", "WHIRLPOOL", "RSA", "DSA", "DH", "EC", "ECDH", "ECDSA",
@@ -4952,18 +4946,19 @@ diff -urN openssl-1.0.0-beta4.orig/util/mkdef.pl openssl-1.0.0-beta4/util/mkdef.
  
  $crypto.=" crypto/engine/engine.h"; # unless $no_engine;
  $crypto.=" crypto/stack/stack.h" ; # unless $no_stack;
-@@ -317,6 +319,8 @@
- $crypto.=" crypto/cms/cms.h";
+@@ -318,6 +320,8 @@
  $crypto.=" crypto/jpake/jpake.h";
+ $crypto.=" crypto/modes/modes.h";
  
 +
 +
  my $symhacks="crypto/symhacks.h";
  
  my @ssl_symbols = &do_defs("SSLEAY", $ssl, $symhacks);
-diff -urN openssl-1.0.0-beta4.orig/util/mkfiles.pl openssl-1.0.0-beta4/util/mkfiles.pl
---- openssl-1.0.0-beta4.orig/util/mkfiles.pl	2008-12-23 16:15:44.000000000 +0100
-+++ openssl-1.0.0-beta4/util/mkfiles.pl	2009-12-05 15:15:23.897754329 +0100
+Index: 1/util/mkfiles.pl
+===================================================================
+--- 1.orig/util/mkfiles.pl	2011-02-24 15:09:14.000000000 +0100
++++ 1/util/mkfiles.pl	2011-02-24 15:09:49.000000000 +0100
 @@ -15,6 +15,7 @@
  "crypto/sha",
  "crypto/mdc2",

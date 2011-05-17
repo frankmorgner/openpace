@@ -6,7 +6,7 @@ PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
 # in the path (see http://www.cozmanova.com/node/10)
 # export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/ssl/bin:/usr/sfw/sbin/:/usr/sfw/bin:/usr/sbin:/usr/bin:/usr/ccs/bin
 #
-OPENSSL_VERSION=1.0.0c
+OPENSSL_VERSION=1.0.0d
 
 all: patch_with_openpace
 	$(MAKE) Makefile -C openssl-$(OPENSSL_VERSION) || \
@@ -27,12 +27,15 @@ patch_with_brainpool: openssl-$(OPENSSL_VERSION)
 	echo "Patched OpenSSL with Brainpool curves"
 
 patch_with_openpace: patch_with_brainpool patch_with_cmac
-	[ -r openssl-$(OPENSSL_VERSION)/crypto/pace/pace.h ] || (\
+	[ -r openssl-$(OPENSSL_VERSION)/crypto/eac/pace.h ] || (\
 	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < OpenPACE.patch && \
-	    ln -s ../../crypto/pace/pace.h openssl-$(OPENSSL_VERSION)/include/openssl && \
-	    ln -s ../crypto/pace/pacetest.c openssl-$(OPENSSL_VERSION)/test && \
-	    ln -s ../../crypto/cv_cert/cv_cert.h openssl-$(OPENSSL_VERSION)/include/openssl && \
-	    ln -s ../crypto/cv_cert/cv_cert_test.c openssl-$(OPENSSL_VERSION)/test)
+	    ln -s ../../crypto/eac/pace.h openssl-$(OPENSSL_VERSION)/include/openssl && \
+	    ln -s ../crypto/eac/eactest.c openssl-$(OPENSSL_VERSION)/test && \
+	    ln -s ../../crypto/eac/cv_cert.h openssl-$(OPENSSL_VERSION)/include/openssl && \
+	    ln -s /../crypto/eac/cv_cert_test.c openssl-$(OPENSSL_VERSION)/test && \
+	    ln -s ../../crypto/eac/ta.h openssl-$(OPENSSL_VERSION)/include/openssl && \
+	    ln -s ../../crypto/eac/ca.h openssl-$(OPENSSL_VERSION)/include/openssl && \
+	    ln -s ../../crypto/eac/eac.h openssl-$(OPENSSL_VERSION)/include/openssl)
 	echo "Patched OpenSSL with OpenPACE"
 
 test: all
