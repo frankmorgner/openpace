@@ -1,7 +1,7 @@
-Index: 1/crypto/aes/aes_ccm.c
+Index: openssl-1.0.0d/crypto/aes/aes_ccm.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/aes/aes_ccm.c	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/aes_ccm.c	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,510 @@
 +/*----------------------------------------------------------------------------
 +// Licensed materials - Property of IBM
@@ -513,10 +513,10 @@ Index: 1/crypto/aes/aes_ccm.c
 +
 +
 +
-Index: 1/crypto/aes/aes_ccm.h
+Index: openssl-1.0.0d/crypto/aes/aes_ccm.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/aes/aes_ccm.h	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/aes_ccm.h	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,10 @@
 +/* crypto/aes/aes_ccm.h */
 +/*----------------------------------------------------------------------------
@@ -528,10 +528,10 @@ Index: 1/crypto/aes/aes_ccm.h
 +//
 +//---------------------------------------------------------------------------*/
 +
-Index: 1/crypto/aes/AES_CCMVS.c
+Index: openssl-1.0.0d/crypto/aes/AES_CCMVS.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/aes/AES_CCMVS.c	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/AES_CCMVS.c	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,532 @@
 +/*----------------------------------------------------------------------------
 +// Licensed materials - Property of IBM
@@ -1065,10 +1065,10 @@ Index: 1/crypto/aes/AES_CCMVS.c
 +
 +  return(rv);
 +}
-Index: 1/crypto/aes/aes_gcm.c
+Index: openssl-1.0.0d/crypto/aes/aes_gcm.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/aes/aes_gcm.c	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/aes_gcm.c	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,1437 @@
 +/*----------------------------------------------------------------------------
 +// Licensed materials - Property of IBM
@@ -2507,10 +2507,10 @@ Index: 1/crypto/aes/aes_gcm.c
 +
 +
 +
-Index: 1/crypto/aes/aes_gcm.h
+Index: openssl-1.0.0d/crypto/aes/aes_gcm.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/aes/aes_gcm.h	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/aes_gcm.h	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,63 @@
 +/* crypto/aes/aes_gcm.h */
 +/*----------------------------------------------------------------------------
@@ -2575,10 +2575,10 @@ Index: 1/crypto/aes/aes_gcm.h
 +
 +
 +#endif
-Index: 1/crypto/aes/aesgcmtest.c
+Index: openssl-1.0.0d/crypto/aes/aesgcmtest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/aes/aesgcmtest.c	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/aesgcmtest.c	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,1125 @@
 +#include <stdio.h>
 +#include <string.h>
@@ -3705,10 +3705,10 @@ Index: 1/crypto/aes/aesgcmtest.c
 +  return 0;
 +}
 +
-Index: 1/crypto/aes/aes.h
+Index: openssl-1.0.0d/crypto/aes/aes.h
 ===================================================================
---- 1.orig/crypto/aes/aes.h	2011-02-24 15:09:14.000000000 +0100
-+++ 1/crypto/aes/aes.h	2011-02-24 15:09:49.000000000 +0100
+--- openssl-1.0.0d.orig/crypto/aes/aes.h	2008-12-23 16:15:43.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/aes.h	2011-05-17 15:36:41.000000000 +0200
 @@ -135,6 +135,51 @@
  		const unsigned char *in, unsigned int inlen);
  
@@ -3761,10 +3761,10 @@ Index: 1/crypto/aes/aes.h
  #ifdef  __cplusplus
  }
  #endif
-Index: 1/crypto/aes/Makefile
+Index: openssl-1.0.0d/crypto/aes/Makefile
 ===================================================================
---- 1.orig/crypto/aes/Makefile	2011-02-24 15:09:14.000000000 +0100
-+++ 1/crypto/aes/Makefile	2011-02-24 15:10:31.000000000 +0100
+--- openssl-1.0.0d.orig/crypto/aes/Makefile	2008-12-23 12:33:00.000000000 +0100
++++ openssl-1.0.0d/crypto/aes/Makefile	2011-05-17 15:37:29.000000000 +0200
 @@ -19,18 +19,19 @@
  
  GENERAL=Makefile
@@ -3789,10 +3789,40 @@ Index: 1/crypto/aes/Makefile
  HEADER= aes_locl.h $(EXHEADER)
  
  ALL=    $(GENERAL) $(SRC) $(HEADER)
-Index: 1/crypto/cmac/cmac.c
+@@ -102,6 +103,14 @@
+ 
+ aes_cbc.o: ../../include/openssl/aes.h ../../include/openssl/modes.h
+ aes_cbc.o: ../../include/openssl/opensslconf.h aes_cbc.c
++aes_ccm.o: ../../include/openssl/aes.h ../../include/openssl/asn1.h
++aes_ccm.o: ../../include/openssl/bio.h ../../include/openssl/crypto.h
++aes_ccm.o: ../../include/openssl/e_os2.h ../../include/openssl/evp.h
++aes_ccm.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
++aes_ccm.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
++aes_ccm.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
++aes_ccm.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
++aes_ccm.o: aes_ccm.c aes_locl.h
+ aes_cfb.o: ../../include/openssl/aes.h ../../include/openssl/modes.h
+ aes_cfb.o: ../../include/openssl/opensslconf.h aes_cfb.c
+ aes_core.o: ../../include/openssl/aes.h ../../include/openssl/e_os2.h
+@@ -110,6 +119,14 @@
+ aes_ctr.o: ../../include/openssl/opensslconf.h aes_ctr.c
+ aes_ecb.o: ../../include/openssl/aes.h ../../include/openssl/e_os2.h
+ aes_ecb.o: ../../include/openssl/opensslconf.h aes_ecb.c aes_locl.h
++aes_gcm.o: ../../include/openssl/aes.h ../../include/openssl/asn1.h
++aes_gcm.o: ../../include/openssl/bio.h ../../include/openssl/crypto.h
++aes_gcm.o: ../../include/openssl/e_os2.h ../../include/openssl/evp.h
++aes_gcm.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
++aes_gcm.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
++aes_gcm.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rand.h
++aes_gcm.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
++aes_gcm.o: ../../include/openssl/symhacks.h aes_gcm.c aes_gcm.h
+ aes_ige.o: ../../e_os.h ../../include/openssl/aes.h ../../include/openssl/bio.h
+ aes_ige.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
+ aes_ige.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
+Index: openssl-1.0.0d/crypto/cmac/cmac.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/cmac/cmac.c	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/cmac/cmac.c	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,528 @@
 +/*----------------------------------------------------------------------------
 +// Licensed materials - Property of IBM
@@ -4322,10 +4352,10 @@ Index: 1/crypto/cmac/cmac.c
 +}
 +
 +
-Index: 1/crypto/cmac/cmac.h
+Index: openssl-1.0.0d/crypto/cmac/cmac.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/cmac/cmac.h	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/cmac/cmac.h	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,52 @@
 +/*----------------------------------------------------------------------------
 +// Licensed materials - Property of IBM
@@ -4379,10 +4409,10 @@ Index: 1/crypto/cmac/cmac.h
 +
 +
 +#endif
-Index: 1/crypto/cmac/cmac_test.c
+Index: openssl-1.0.0d/crypto/cmac/cmac_test.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/cmac/cmac_test.c	2011-02-24 15:10:31.000000000 +0100
++++ openssl-1.0.0d/crypto/cmac/cmac_test.c	2011-05-17 15:36:41.000000000 +0200
 @@ -0,0 +1,362 @@
 +/*----------------------------------------------------------------------------
 +// Licensed materials - Property of IBM
@@ -4746,11 +4776,11 @@ Index: 1/crypto/cmac/cmac_test.c
 +}
 +
 +
-Index: 1/crypto/cmac/Makefile
+Index: openssl-1.0.0d/crypto/cmac/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ 1/crypto/cmac/Makefile	2011-02-24 15:09:49.000000000 +0100
-@@ -0,0 +1,75 @@
++++ openssl-1.0.0d/crypto/cmac/Makefile	2011-05-17 15:37:32.000000000 +0200
+@@ -0,0 +1,83 @@
 +#
 +# OpenSSL/crypto/cmac/Makefile
 +#
@@ -4826,10 +4856,18 @@ Index: 1/crypto/cmac/Makefile
 +	rm -f *.o *.obj lib tags core .pure .nfs* *.old *.bak fluff
 +
 +# DO NOT DELETE THIS LINE -- make depend depends on it.
-Index: 1/Makefile.org
++
++cmac.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
++cmac.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
++cmac.o: ../../include/openssl/evp.h ../../include/openssl/obj_mac.h
++cmac.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
++cmac.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
++cmac.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
++cmac.o: ../../include/openssl/symhacks.h cmac.c cmac.h
+Index: openssl-1.0.0d/Makefile.org
 ===================================================================
---- 1.orig/Makefile.org	2011-02-24 15:09:14.000000000 +0100
-+++ 1/Makefile.org	2011-02-24 15:09:49.000000000 +0100
+--- openssl-1.0.0d.orig/Makefile.org	2010-01-27 17:06:58.000000000 +0100
++++ openssl-1.0.0d/Makefile.org	2011-05-17 15:36:41.000000000 +0200
 @@ -119,6 +119,7 @@
  	md2 md4 md5 sha mdc2 hmac ripemd whrlpool \
  	des aes rc2 rc4 rc5 idea bf cast camellia seed modes \
@@ -4838,10 +4876,10 @@ Index: 1/Makefile.org
  	buffer bio stack lhash rand err \
  	evp asn1 pem x509 x509v3 conf txt_db pkcs7 pkcs12 comp ocsp ui krb5 \
  	cms pqueue ts jpake store
-Index: 1/test/Makefile
+Index: openssl-1.0.0d/test/Makefile
 ===================================================================
---- 1.orig/test/Makefile	2011-02-24 15:09:14.000000000 +0100
-+++ 1/test/Makefile	2011-02-24 15:09:49.000000000 +0100
+--- openssl-1.0.0d.orig/test/Makefile	2010-12-02 19:26:12.000000000 +0100
++++ openssl-1.0.0d/test/Makefile	2011-05-17 15:37:46.000000000 +0200
 @@ -62,6 +62,8 @@
  IGETEST=	igetest
  JPAKETEST=	jpaketest
@@ -4926,10 +4964,42 @@ Index: 1/test/Makefile
  #$(AESTEST).o: $(AESTEST).c
  #	$(CC) -c $(CFLAGS) -DINTERMEDIATE_VALUE_KAT -DTRACE_KAT_MCT $(AESTEST).c
  
-Index: 1/util/mkdef.pl
+@@ -461,6 +479,15 @@
+ 
+ # DO NOT DELETE THIS LINE -- make depend depends on it.
+ 
++aesgcmtest.o: ../include/openssl/aes.h ../include/openssl/aes_gcm.h
++aesgcmtest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
++aesgcmtest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
++aesgcmtest.o: ../include/openssl/err.h ../include/openssl/evp.h
++aesgcmtest.o: ../include/openssl/lhash.h ../include/openssl/obj_mac.h
++aesgcmtest.o: ../include/openssl/objects.h ../include/openssl/opensslconf.h
++aesgcmtest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
++aesgcmtest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
++aesgcmtest.o: ../include/openssl/symhacks.h aesgcmtest.c
+ asn1test.o: ../include/openssl/asn1.h ../include/openssl/asn1_mac.h
+ asn1test.o: ../include/openssl/bio.h ../include/openssl/buffer.h
+ asn1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
+@@ -491,6 +518,15 @@
+ bntest.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h bntest.c
+ casttest.o: ../e_os.h ../include/openssl/cast.h ../include/openssl/e_os2.h
+ casttest.o: ../include/openssl/opensslconf.h casttest.c
++cmac_test.o: ../include/openssl/asn1.h ../include/openssl/bio.h
++cmac_test.o: ../include/openssl/cmac.h ../include/openssl/crypto.h
++cmac_test.o: ../include/openssl/e_os2.h ../include/openssl/err.h
++cmac_test.o: ../include/openssl/evp.h ../include/openssl/lhash.h
++cmac_test.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
++cmac_test.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++cmac_test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
++cmac_test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
++cmac_test.o: cmac_test.c
+ destest.o: ../include/openssl/des.h ../include/openssl/des_old.h
+ destest.o: ../include/openssl/e_os2.h ../include/openssl/opensslconf.h
+ destest.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
+Index: openssl-1.0.0d/util/mkdef.pl
 ===================================================================
---- 1.orig/util/mkdef.pl	2011-02-24 15:09:14.000000000 +0100
-+++ 1/util/mkdef.pl	2011-02-24 15:09:49.000000000 +0100
+--- openssl-1.0.0d.orig/util/mkdef.pl	2010-07-25 18:56:06.000000000 +0200
++++ openssl-1.0.0d/util/mkdef.pl	2011-05-17 15:36:41.000000000 +0200
 @@ -86,6 +86,7 @@
  			 "SHA256", "SHA512", "RIPEMD",
  			 "MDC2", "WHIRLPOOL", "RSA", "DSA", "DH", "EC", "ECDH", "ECDSA",
@@ -4955,10 +5025,10 @@ Index: 1/util/mkdef.pl
  my $symhacks="crypto/symhacks.h";
  
  my @ssl_symbols = &do_defs("SSLEAY", $ssl, $symhacks);
-Index: 1/util/mkfiles.pl
+Index: openssl-1.0.0d/util/mkfiles.pl
 ===================================================================
---- 1.orig/util/mkfiles.pl	2011-02-24 15:09:14.000000000 +0100
-+++ 1/util/mkfiles.pl	2011-02-24 15:09:49.000000000 +0100
+--- openssl-1.0.0d.orig/util/mkfiles.pl	2008-12-23 16:15:44.000000000 +0100
++++ openssl-1.0.0d/util/mkfiles.pl	2011-05-17 15:36:41.000000000 +0200
 @@ -15,6 +15,7 @@
  "crypto/sha",
  "crypto/mdc2",
@@ -4967,3 +5037,29 @@ Index: 1/util/mkfiles.pl
  "crypto/ripemd",
  "crypto/des",
  "crypto/rc2",
+Index: openssl-1.0.0d/util/libeay.num
+===================================================================
+--- openssl-1.0.0d.orig/util/libeay.num	2011-05-17 15:36:55.000000000 +0200
++++ openssl-1.0.0d/util/libeay.num	2011-05-17 15:37:26.000000000 +0200
+@@ -4189,3 +4189,21 @@
+ CRYPTO_cbc128_decrypt                   4561	EXIST::FUNCTION:
+ CRYPTO_cfb128_encrypt                   4562	EXIST::FUNCTION:
+ CRYPTO_cfb128_8_encrypt                 4563	EXIST::FUNCTION:
++CMAC_CTX_free                           4564	EXIST::FUNCTION:
++AES_GCM_Init                            4565	EXIST::FUNCTION:AES
++AES_GCM_CTX_free                        4566	EXIST::FUNCTION:AES
++AES_GCM_DecryptFinal                    4567	EXIST::FUNCTION:AES
++AES_GCM_DecryptUpdate                   4568	EXIST::FUNCTION:AES
++AES_GCM_EncryptFinal                    4569	EXIST::FUNCTION:AES
++AES_GCM_EncryptUpdate                   4570	EXIST::FUNCTION:AES
++CMAC_Init                               4571	EXIST::FUNCTION:
++CMAC_Update                             4572	EXIST::FUNCTION:
++GCM128                                  4573	EXIST::FUNCTION:AES
++AES_GCM_GenerateIV                      4574	EXIST::FUNCTION:AES
++AES_GCM_CTX_ctrl                        4575	EXIST::FUNCTION:AES
++GHASH                                   4576	EXIST::FUNCTION:AES
++AES_CCM_Decrypt                         4577	EXIST::FUNCTION:AES
++CMAC_CTX_new                            4578	EXIST::FUNCTION:
++AES_CCM_Encrypt                         4579	EXIST::FUNCTION:AES
++CMAC_Final                              4580	EXIST::FUNCTION:
++AES_GCM_CTX_new                         4581	EXIST::FUNCTION:AES

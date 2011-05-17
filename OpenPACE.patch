@@ -1,7 +1,7 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2011-05-17 11:24:28.695716131 +0200
-+++ openssl/Configure	2011-05-17 11:24:28.615716131 +0200
+--- openssl.orig/Configure	2011-05-17 16:14:04.000000000 +0200
++++ openssl/Configure	2011-05-17 16:14:03.000000000 +0200
 @@ -670,6 +670,7 @@
  		 "gmp"		  => "default",
                   "jpake"          => "experimental",
@@ -21,8 +21,8 @@ Index: openssl/Configure
  # To remove something from %disabled, use "enable-foo" (unless it's experimental).
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2011-05-17 11:24:28.695716131 +0200
-+++ openssl/Makefile.org	2011-05-17 11:24:28.615716131 +0200
+--- openssl.orig/Makefile.org	2011-05-17 16:14:04.000000000 +0200
++++ openssl/Makefile.org	2011-05-17 16:14:03.000000000 +0200
 @@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
@@ -34,8 +34,8 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/bn/bn.h
 ===================================================================
---- openssl.orig/crypto/bn/bn.h	2011-05-17 11:24:28.665716131 +0200
-+++ openssl/crypto/bn/bn.h	2011-05-17 11:24:26.505716131 +0200
+--- openssl.orig/crypto/bn/bn.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/bn/bn.h	2011-05-17 16:14:01.000000000 +0200
 @@ -126,6 +126,7 @@
  #define HEADER_BN_H
  
@@ -62,8 +62,8 @@ Index: openssl/crypto/bn/bn.h
  int	BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 Index: openssl/crypto/bn/bn_lib.c
 ===================================================================
---- openssl.orig/crypto/bn/bn_lib.c	2011-05-17 11:24:28.675716131 +0200
-+++ openssl/crypto/bn/bn_lib.c	2011-05-17 11:24:26.505716131 +0200
+--- openssl.orig/crypto/bn/bn_lib.c	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/bn/bn_lib.c	2011-05-17 16:14:01.000000000 +0200
 @@ -66,6 +66,7 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -98,8 +98,8 @@ Index: openssl/crypto/bn/bn_lib.c
  	int i;
 Index: openssl/crypto/buffer/buffer.c
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.c	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/buffer/buffer.c	2011-05-17 11:24:27.415716131 +0200
+--- openssl.orig/crypto/buffer/buffer.c	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/buffer/buffer.c	2011-05-17 16:14:02.000000000 +0200
 @@ -242,3 +242,59 @@
  			}
  		}
@@ -162,8 +162,8 @@ Index: openssl/crypto/buffer/buffer.c
 +}
 Index: openssl/crypto/buffer/buffer.h
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.h	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/buffer/buffer.h	2011-05-17 11:24:27.415716131 +0200
+--- openssl.orig/crypto/buffer/buffer.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/buffer/buffer.h	2011-05-17 16:14:02.000000000 +0200
 @@ -89,6 +89,34 @@
  char *	BUF_strndup(const char *str, size_t siz);
  void *	BUF_memdup(const void *data, size_t siz);
@@ -201,8 +201,8 @@ Index: openssl/crypto/buffer/buffer.h
  size_t BUF_strlcpy(char *dst,const char *src,size_t siz);
 Index: openssl/crypto/crypto-lib.com
 ===================================================================
---- openssl.orig/crypto/crypto-lib.com	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/crypto-lib.com	2011-05-17 11:24:27.475716131 +0200
+--- openssl.orig/crypto/crypto-lib.com	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/crypto-lib.com	2011-05-17 16:14:02.000000000 +0200
 @@ -305,6 +305,9 @@
  	"ts_rsp_sign,ts_rsp_verify,ts_verify_ctx,ts_lib,ts_conf,"+ -
  	"ts_asn1"
@@ -216,7 +216,7 @@ Index: openssl/crypto/crypto-lib.com
 Index: openssl/crypto/eac/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/Makefile	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/Makefile	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,303 @@
 +#
 +# OpenSSL/crypto/eac/Makefile
@@ -524,7 +524,7 @@ Index: openssl/crypto/eac/Makefile
 Index: openssl/crypto/eac/ca.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ca.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/ca.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,163 @@
 +/**
 + * @file
@@ -692,7 +692,7 @@ Index: openssl/crypto/eac/ca.c
 Index: openssl/crypto/eac/ca.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ca.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/ca.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,129 @@
 +/**
 + * @file ca.h
@@ -826,7 +826,7 @@ Index: openssl/crypto/eac/ca.h
 Index: openssl/crypto/eac/ca_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ca_lib.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/ca_lib.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,55 @@
 +/**
 + * @file
@@ -886,7 +886,7 @@ Index: openssl/crypto/eac/ca_lib.c
 Index: openssl/crypto/eac/ca_lib.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ca_lib.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/ca_lib.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,41 @@
 +/**
 + * @file
@@ -932,7 +932,7 @@ Index: openssl/crypto/eac/ca_lib.h
 Index: openssl/crypto/eac/cv_cert.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/cv_cert.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/cv_cert.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,891 @@
 +/**
 + * @file
@@ -1828,7 +1828,7 @@ Index: openssl/crypto/eac/cv_cert.c
 Index: openssl/crypto/eac/cv_cert.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/cv_cert.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/cv_cert.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,391 @@
 +/**
 + * @file
@@ -2224,7 +2224,7 @@ Index: openssl/crypto/eac/cv_cert.h
 Index: openssl/crypto/eac/cv_cert_test.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/cv_cert_test.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/cv_cert_test.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,320 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
@@ -2549,7 +2549,7 @@ Index: openssl/crypto/eac/cv_cert_test.c
 Index: openssl/crypto/eac/eac.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,254 @@
 +/**
 + * @file
@@ -2808,7 +2808,7 @@ Index: openssl/crypto/eac/eac.c
 Index: openssl/crypto/eac/eac.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,600 @@
 +/**
 + * @file eac.h
@@ -3413,7 +3413,7 @@ Index: openssl/crypto/eac/eac.h
 Index: openssl/crypto/eac/eac_asn1.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_asn1.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_asn1.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,1030 @@
 +/**
 + * @file
@@ -4448,7 +4448,7 @@ Index: openssl/crypto/eac/eac_asn1.c
 Index: openssl/crypto/eac/eac_asn1.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_asn1.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_asn1.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,44 @@
 +/**
 + * @file
@@ -4497,7 +4497,7 @@ Index: openssl/crypto/eac/eac_asn1.h
 Index: openssl/crypto/eac/eac_dh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_dh.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_dh.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,518 @@
 +/**
 + * @file
@@ -5020,7 +5020,7 @@ Index: openssl/crypto/eac/eac_dh.c
 Index: openssl/crypto/eac/eac_dh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_dh.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_dh.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,85 @@
 +/**
 + * @file
@@ -5110,7 +5110,7 @@ Index: openssl/crypto/eac/eac_dh.h
 Index: openssl/crypto/eac/eac_ecdh.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_ecdh.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_ecdh.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,161 @@
 +/**
 + * @file
@@ -5276,7 +5276,7 @@ Index: openssl/crypto/eac/eac_ecdh.c
 Index: openssl/crypto/eac/eac_ecdh.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_ecdh.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_ecdh.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,46 @@
 +/**
 + * @file
@@ -5327,7 +5327,7 @@ Index: openssl/crypto/eac/eac_ecdh.h
 Index: openssl/crypto/eac/eac_err.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_err.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_err.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,228 @@
 +/* crypto/eac/eac_err.c */
 +/* ====================================================================
@@ -5560,7 +5560,7 @@ Index: openssl/crypto/eac/eac_err.c
 Index: openssl/crypto/eac/eac_kdf.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_kdf.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_kdf.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,121 @@
 +/**
 + * @file
@@ -5686,7 +5686,7 @@ Index: openssl/crypto/eac/eac_kdf.c
 Index: openssl/crypto/eac/eac_kdf.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_kdf.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_kdf.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,60 @@
 +/**
 + * @file
@@ -5751,7 +5751,7 @@ Index: openssl/crypto/eac/eac_kdf.h
 Index: openssl/crypto/eac/eac_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_lib.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_lib.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,375 @@
 +/**
 + * @file
@@ -6131,7 +6131,7 @@ Index: openssl/crypto/eac/eac_lib.c
 Index: openssl/crypto/eac/eac_lib.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_lib.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_lib.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,35 @@
 +/**
 + * @file
@@ -6171,7 +6171,7 @@ Index: openssl/crypto/eac/eac_lib.h
 Index: openssl/crypto/eac/eac_print.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_print.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_print.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,201 @@
 +/**
 + * @file
@@ -6377,7 +6377,7 @@ Index: openssl/crypto/eac/eac_print.c
 Index: openssl/crypto/eac/eac_util.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_util.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_util.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,1271 @@
 +/**
 + * @file
@@ -7653,7 +7653,7 @@ Index: openssl/crypto/eac/eac_util.c
 Index: openssl/crypto/eac/eac_util.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_util.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eac_util.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,204 @@
 +/**
 + * @file
@@ -7862,7 +7862,7 @@ Index: openssl/crypto/eac/eac_util.h
 Index: openssl/crypto/eac/eactest.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eactest.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/eactest.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,2531 @@
 +#include <openssl/opensslconf.h>    /* for OPENSSL_NO_PACE */
 +#include <stdio.h>
@@ -10398,7 +10398,7 @@ Index: openssl/crypto/eac/eactest.c
 Index: openssl/crypto/eac/pace.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/pace.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/pace.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,194 @@
 +/**
 + * @file
@@ -10597,7 +10597,7 @@ Index: openssl/crypto/eac/pace.c
 Index: openssl/crypto/eac/pace.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/pace.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/pace.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,208 @@
 +/**
 + * @file pace.h
@@ -10810,7 +10810,7 @@ Index: openssl/crypto/eac/pace.h
 Index: openssl/crypto/eac/pace_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/pace_lib.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/pace_lib.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,282 @@
 +/**
 + * @file
@@ -11097,7 +11097,7 @@ Index: openssl/crypto/eac/pace_lib.c
 Index: openssl/crypto/eac/pace_lib.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/pace_lib.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/pace_lib.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,35 @@
 +/**
 + * @file
@@ -11137,7 +11137,7 @@ Index: openssl/crypto/eac/pace_lib.h
 Index: openssl/crypto/eac/pace_mappings.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/pace_mappings.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/pace_mappings.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,475 @@
 +/**
 + * @file
@@ -11617,7 +11617,7 @@ Index: openssl/crypto/eac/pace_mappings.c
 Index: openssl/crypto/eac/pace_mappings.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/pace_mappings.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/pace_mappings.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,73 @@
 +/**
 + * @file
@@ -11695,7 +11695,7 @@ Index: openssl/crypto/eac/pace_mappings.h
 Index: openssl/crypto/eac/ta.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ta.c	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/ta.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,184 @@
 +/**
 + * @file ta.c
@@ -11884,7 +11884,7 @@ Index: openssl/crypto/eac/ta.c
 Index: openssl/crypto/eac/ta.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ta.h	2011-05-17 11:24:27.375716131 +0200
++++ openssl/crypto/eac/ta.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,119 @@
 +/**
 + * @file ta.h
@@ -12008,7 +12008,7 @@ Index: openssl/crypto/eac/ta.h
 Index: openssl/crypto/eac/ta_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ta_lib.c	2011-05-17 11:24:27.385716131 +0200
++++ openssl/crypto/eac/ta_lib.c	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,154 @@
 +/**
 + * @file ta_lib.c
@@ -12167,7 +12167,7 @@ Index: openssl/crypto/eac/ta_lib.c
 Index: openssl/crypto/eac/ta_lib.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ta_lib.h	2011-05-17 11:24:27.365716131 +0200
++++ openssl/crypto/eac/ta_lib.h	2011-05-17 16:14:02.000000000 +0200
 @@ -0,0 +1,41 @@
 +/**
 + * @file ta_lib.h
@@ -12212,8 +12212,8 @@ Index: openssl/crypto/eac/ta_lib.h
 +#endif
 Index: openssl/crypto/ec/ec.h
 ===================================================================
---- openssl.orig/crypto/ec/ec.h	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/ec/ec.h	2011-05-17 11:24:26.615716131 +0200
+--- openssl.orig/crypto/ec/ec.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/ec/ec.h	2011-05-17 16:14:01.000000000 +0200
 @@ -1094,6 +1094,19 @@
  #define EC_R_UNSUPPORTED_FIELD				 131
  #define EC_R_WRONG_ORDER				 130
@@ -12236,8 +12236,8 @@ Index: openssl/crypto/ec/ec.h
  #endif
 Index: openssl/crypto/ec/ec_print.c
 ===================================================================
---- openssl.orig/crypto/ec/ec_print.c	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/ec/ec_print.c	2011-05-17 11:24:26.615716131 +0200
+--- openssl.orig/crypto/ec/ec_print.c	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/ec/ec_print.c	2011-05-17 16:14:01.000000000 +0200
 @@ -54,6 +54,7 @@
   */
  
@@ -12274,8 +12274,8 @@ Index: openssl/crypto/ec/ec_print.c
 +}
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2011-05-17 11:24:28.695716131 +0200
-+++ openssl/crypto/ecdh/ecdh.h	2011-05-17 11:24:26.555716131 +0200
+--- openssl.orig/crypto/ecdh/ecdh.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/ecdh/ecdh.h	2011-05-17 16:14:01.000000000 +0200
 @@ -86,6 +86,7 @@
  #endif
  
@@ -12286,8 +12286,8 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2011-05-17 11:24:28.695716131 +0200
-+++ openssl/crypto/ecdh/ech_ossl.c	2011-05-17 11:24:26.555716131 +0200
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/ecdh/ech_ossl.c	2011-05-17 16:14:01.000000000 +0200
 @@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
  	return(ret);
@@ -12404,8 +12404,8 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	}
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/err/err.c	2011-05-17 11:24:27.415716131 +0200
+--- openssl.orig/crypto/err/err.c	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/err/err.c	2011-05-17 16:14:02.000000000 +0200
 @@ -156,6 +156,7 @@
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
  {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
@@ -12416,8 +12416,8 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/err/err.h	2011-05-17 11:24:27.415716131 +0200
+--- openssl.orig/crypto/err/err.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/err/err.h	2011-05-17 16:14:02.000000000 +0200
 @@ -198,6 +198,7 @@
  #define ERR_LIB_TS		47
  #define ERR_LIB_HMAC		48
@@ -12436,8 +12436,8 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/err/err_all.c	2011-05-17 11:24:27.415716131 +0200
+--- openssl.orig/crypto/err/err_all.c	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/err/err_all.c	2011-05-17 16:14:02.000000000 +0200
 @@ -102,6 +102,9 @@
  #ifndef OPENSSL_NO_JPAKE
  #include <openssl/jpake.h>
@@ -12460,8 +12460,8 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/err/openssl.ec	2011-05-17 11:24:27.415716131 +0200
+--- openssl.orig/crypto/err/openssl.ec	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/err/openssl.ec	2011-05-17 16:14:02.000000000 +0200
 @@ -35,6 +35,7 @@
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
  L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
@@ -12472,8 +12472,8 @@ Index: openssl/crypto/err/openssl.ec
  L NONE		crypto/x509/x509_vfy.h		NONE
 Index: openssl/crypto/install.com
 ===================================================================
---- openssl.orig/crypto/install.com	2011-05-17 11:24:28.685716131 +0200
-+++ openssl/crypto/install.com	2011-05-17 11:24:27.475716131 +0200
+--- openssl.orig/crypto/install.com	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/install.com	2011-05-17 16:14:02.000000000 +0200
 @@ -49,7 +49,7 @@
  		 BUFFER,BIO,STACK,LHASH,RAND,ERR,-
  		 EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,-
@@ -12494,8 +12494,8 @@ Index: openssl/crypto/install.com
  $	EXE_DIR := [-.'ARCH'.EXE.CRYPTO]
 Index: openssl/crypto/objects/obj_dat.h
 ===================================================================
---- openssl.orig/crypto/objects/obj_dat.h	2011-05-17 11:24:28.675716131 +0200
-+++ openssl/crypto/objects/obj_dat.h	2011-05-17 11:24:27.475716131 +0200
+--- openssl.orig/crypto/objects/obj_dat.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/objects/obj_dat.h	2011-05-17 16:14:02.000000000 +0200
 @@ -62,12 +62,12 @@
   * [including the GNU Public Licence.]
   */
@@ -13239,8 +13239,8 @@ Index: openssl/crypto/objects/obj_dat.h
  753,	/* OBJ_camellia_256_cbc             1 2 392 200011 61 1 1 1 4 */
 Index: openssl/crypto/objects/obj_mac.h
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.h	2011-05-17 11:24:28.675716131 +0200
-+++ openssl/crypto/objects/obj_mac.h	2011-05-17 11:24:27.465716131 +0200
+--- openssl.orig/crypto/objects/obj_mac.h	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/objects/obj_mac.h	2011-05-17 16:14:02.000000000 +0200
 @@ -3968,3 +3968,359 @@
  #define NID_brainpoolP512t1		906
  #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
@@ -13603,8 +13603,8 @@ Index: openssl/crypto/objects/obj_mac.h
 +
 Index: openssl/crypto/objects/obj_mac.num
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.num	2011-05-17 11:24:28.675716131 +0200
-+++ openssl/crypto/objects/obj_mac.num	2011-05-17 11:24:27.475716131 +0200
+--- openssl.orig/crypto/objects/obj_mac.num	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/objects/obj_mac.num	2011-05-17 16:14:02.000000000 +0200
 @@ -904,3 +904,87 @@
  brainpoolP384t1		904
  brainpoolP512r1		905
@@ -13695,8 +13695,8 @@ Index: openssl/crypto/objects/obj_mac.num
 +id_PT		990
 Index: openssl/crypto/objects/objects.txt
 ===================================================================
---- openssl.orig/crypto/objects/objects.txt	2011-05-17 11:24:28.675716131 +0200
-+++ openssl/crypto/objects/objects.txt	2011-05-17 11:24:27.465716131 +0200
+--- openssl.orig/crypto/objects/objects.txt	2011-05-17 16:14:04.000000000 +0200
++++ openssl/crypto/objects/objects.txt	2011-05-17 16:14:02.000000000 +0200
 @@ -1276,3 +1276,117 @@
  1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
  1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
@@ -13817,8 +13817,8 @@ Index: openssl/crypto/objects/objects.txt
 +id-AuxiliaryData 3 :    id-CommunityID
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2011-05-17 11:24:28.695716131 +0200
-+++ openssl/makevms.com	2011-05-17 11:24:28.615716131 +0200
+--- openssl.orig/makevms.com	2011-05-17 16:14:04.000000000 +0200
++++ openssl/makevms.com	2011-05-17 16:14:03.000000000 +0200
 @@ -259,6 +259,8 @@
  		     HMAC,-
  		     IDEA,-
@@ -13848,8 +13848,8 @@ Index: openssl/makevms.com
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2011-05-17 11:24:28.655716131 +0200
-+++ openssl/test/Makefile	2011-05-17 11:24:26.495716131 +0200
+--- openssl.orig/test/Makefile	2011-05-17 16:14:04.000000000 +0200
++++ openssl/test/Makefile	2011-05-17 16:14:01.000000000 +0200
 @@ -64,11 +64,14 @@
  ASN1TEST=	asn1test
  GCMTESTA=	aesgcmtest
@@ -13922,35 +13922,10 @@ Index: openssl/test/Makefile
  #$(AESTEST).o: $(AESTEST).c
  #	$(CC) -c $(CFLAGS) -DINTERMEDIATE_VALUE_KAT -DTRACE_KAT_MCT $(AESTEST).c
  
-@@ -479,6 +496,15 @@
- 
- # DO NOT DELETE THIS LINE -- make depend depends on it.
- 
-+aesgcmtest.o: ../include/openssl/aes.h ../include/openssl/aes_gcm.h
-+aesgcmtest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
-+aesgcmtest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
-+aesgcmtest.o: ../include/openssl/err.h ../include/openssl/evp.h
-+aesgcmtest.o: ../include/openssl/lhash.h ../include/openssl/obj_mac.h
-+aesgcmtest.o: ../include/openssl/objects.h ../include/openssl/opensslconf.h
-+aesgcmtest.o: ../include/openssl/opensslv.h ../include/openssl/ossl_typ.h
-+aesgcmtest.o: ../include/openssl/safestack.h ../include/openssl/stack.h
-+aesgcmtest.o: ../include/openssl/symhacks.h aesgcmtest.c
- asn1test.o: ../include/openssl/asn1.h ../include/openssl/asn1_mac.h
- asn1test.o: ../include/openssl/bio.h ../include/openssl/buffer.h
- asn1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
-@@ -509,36 +535,71 @@
- bntest.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h bntest.c
- casttest.o: ../e_os.h ../include/openssl/cast.h ../include/openssl/e_os2.h
- casttest.o: ../include/openssl/opensslconf.h casttest.c
-+cmac_test.o: ../include/openssl/asn1.h ../include/openssl/bio.h
-+cmac_test.o: ../include/openssl/cmac.h ../include/openssl/crypto.h
-+cmac_test.o: ../include/openssl/e_os2.h ../include/openssl/err.h
-+cmac_test.o: ../include/openssl/evp.h ../include/openssl/lhash.h
-+cmac_test.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
-+cmac_test.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
-+cmac_test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
-+cmac_test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
-+cmac_test.o: cmac_test.c
+@@ -527,36 +544,62 @@
+ cmac_test.o: ../include/openssl/ossl_typ.h ../include/openssl/safestack.h
+ cmac_test.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
+ cmac_test.o: cmac_test.c
 +cv_cert_test.o: ../include/openssl/asn1.h ../include/openssl/asn1t.h
 +cv_cert_test.o: ../include/openssl/bio.h ../include/openssl/crypto.h
 +cv_cert_test.o: ../include/openssl/cv_cert.h ../include/openssl/e_os2.h
@@ -14032,7 +14007,7 @@ Index: openssl/test/Makefile
  ecdsatest.o: ../include/openssl/asn1.h ../include/openssl/bio.h
  ecdsatest.o: ../include/openssl/bn.h ../include/openssl/buffer.h
  ecdsatest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
-@@ -593,12 +654,12 @@
+@@ -611,12 +654,12 @@
  evp_test.o: ../include/openssl/symhacks.h ../include/openssl/x509.h
  evp_test.o: ../include/openssl/x509_vfy.h evp_test.c
  exptest.o: ../e_os.h ../include/openssl/bio.h ../include/openssl/bn.h
@@ -14051,7 +14026,7 @@ Index: openssl/test/Makefile
  hmactest.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
  hmactest.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
  hmactest.o: ../include/openssl/evp.h ../include/openssl/hmac.h
-@@ -666,13 +727,13 @@
+@@ -684,13 +727,13 @@
  rmdtest.o: ../include/openssl/ripemd.h ../include/openssl/safestack.h
  rmdtest.o: ../include/openssl/stack.h ../include/openssl/symhacks.h rmdtest.c
  rsa_test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
@@ -14074,11 +14049,11 @@ Index: openssl/test/Makefile
  sha1test.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h
 Index: openssl/test/cvca-eid.cv
 ===================================================================
-Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2011-05-17 11:24:26.495716131 +0200 differ
+Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2011-05-17 16:14:01.000000000 +0200 differ
 Index: openssl/test/maketests.com
 ===================================================================
---- openssl.orig/test/maketests.com	2011-05-17 11:24:28.655716131 +0200
-+++ openssl/test/maketests.com	2011-05-17 11:24:26.495716131 +0200
+--- openssl.orig/test/maketests.com	2011-05-17 16:14:04.000000000 +0200
++++ openssl/test/maketests.com	2011-05-17 16:14:01.000000000 +0200
 @@ -112,7 +112,7 @@
  	       "MDC2TEST,RMDTEST,"+ -
  	       "RANDTEST,DHTEST,ENGINETEST,"+ -
@@ -14099,8 +14074,8 @@ Index: openssl/test/maketests.com
  $ TCPIP_PROGRAMS = ",,"
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2011-05-17 11:24:28.655716131 +0200
-+++ openssl/test/tests.com	2011-05-17 11:24:26.485716131 +0200
+--- openssl.orig/test/tests.com	2011-05-17 16:14:04.000000000 +0200
++++ openssl/test/tests.com	2011-05-17 16:14:01.000000000 +0200
 @@ -40,7 +40,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
@@ -14134,10 +14109,59 @@ Index: openssl/test/tests.com
  $
  $
  $ exit:
+Index: openssl/util/libeay.num
+===================================================================
+--- openssl.orig/util/libeay.num	2011-05-17 16:14:04.000000000 +0200
++++ openssl/util/libeay.num	2011-05-17 16:14:03.000000000 +0200
+@@ -4207,3 +4207,44 @@
+ AES_CCM_Encrypt                         4579	EXIST::FUNCTION:AES
+ CMAC_Final                              4580	EXIST::FUNCTION:
+ AES_GCM_CTX_new                         4581	EXIST::FUNCTION:AES
++PACE_STEP3B_generate_ephemeral_key      4582	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_print_ctx   4583	EXIST::FUNCTION:
++ECDH_OpenSSL_Point                      4584	EXIST::FUNCTION:ECDH
++CVC_CHAT_free                           4585	EXIST::FUNCTION:
++CVC_CERT_print_ctx                      4586	EXIST::FUNCTION:
++cvc_get_chat                            4587	EXIST::FUNCTION:
++CVC_CERT_new                            4588	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_it          4589	EXIST:!EXPORT_VAR_AS_FUNCTION:VARIABLE:
++CVC_CERTIFICATE_DESCRIPTION_it          4589	EXIST:EXPORT_VAR_AS_FUNCTION:FUNCTION:
++PACE_STEP3A_generate_mapping_data       4590	EXIST::FUNCTION:
++i2d_CVC_CERT                            4591	EXIST::FUNCTION:
++PACE_STEP3C_derive_keys                 4592	EXIST::FUNCTION:
++PACE_STEP3D_verify_authentication_token 4593	EXIST::FUNCTION:
++CVC_CHAT_new                            4594	EXIST::FUNCTION:
++BUF_MEM_create                          4595	EXIST::FUNCTION:
++BUF_MEM_dup                             4596	EXIST::FUNCTION:
++CVC_check_cert                          4597	EXIST::FUNCTION:
++PACE_STEP3B_compute_shared_secret       4598	EXIST::FUNCTION:
++certificate_description_print           4599	EXIST::FUNCTION:
++cvc_print                               4600	EXIST::FUNCTION:
++d2i_CVC_CHAT                            4601	EXIST::FUNCTION:
++PACE_STEP3A_map_generator               4602	EXIST::FUNCTION:
++CVC_get_pubkey                          4603	EXIST::FUNCTION:
++CVC_d2i_CVC_CERT                        4604	EXIST::FUNCTION:
++cvc_chat_print                          4605	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_free        4606	EXIST::FUNCTION:
++PACE_STEP1_enc_nonce                    4607	EXIST::FUNCTION:
++i2d_CVC_CERTIFICATE_DESCRIPTION         4608	EXIST::FUNCTION:
++CVC_CHAT_it                             4609	EXIST:!EXPORT_VAR_AS_FUNCTION:VARIABLE:
++CVC_CHAT_it                             4609	EXIST:EXPORT_VAR_AS_FUNCTION:FUNCTION:
++PACE_STEP2_dec_nonce                    4610	EXIST::FUNCTION:
++CVC_CERTIFICATE_DESCRIPTION_new         4611	EXIST::FUNCTION:
++PACE_SEC_new                            4612	EXIST::FUNCTION:
++i2d_CVC_CHAT                            4613	EXIST::FUNCTION:
++PACE_SEC_clear_free                     4614	EXIST::FUNCTION:
++BUF_MEM_create_init                     4615	EXIST::FUNCTION:
++DECLARE_ASN1_PRINT_FUNCTION             4616	EXIST::FUNCTION:
++CVC_verify_signature                    4617	EXIST::FUNCTION:
++CVC_CERT_free                           4618	EXIST::FUNCTION:
++PACE_STEP3D_compute_authentication_token 4619	EXIST::FUNCTION:
++BN_bn2buf                               4620	EXIST::FUNCTION:
 Index: openssl/util/mk1mf.pl
 ===================================================================
---- openssl.orig/util/mk1mf.pl	2011-05-17 11:24:28.655716131 +0200
-+++ openssl/util/mk1mf.pl	2011-05-17 11:24:28.615716131 +0200
+--- openssl.orig/util/mk1mf.pl	2011-05-17 16:14:04.000000000 +0200
++++ openssl/util/mk1mf.pl	2011-05-17 16:14:03.000000000 +0200
 @@ -271,6 +271,7 @@
  $cflags.=" -DOPENSSL_NO_ENGINE"   if $no_engine;
  $cflags.=" -DOPENSSL_NO_HW"   if $no_hw;
@@ -14164,8 +14188,8 @@ Index: openssl/util/mk1mf.pl
  		"no-krb5" => \$no_krb5,
 Index: openssl/util/mkdef.pl
 ===================================================================
---- openssl.orig/util/mkdef.pl	2011-05-17 11:24:28.655716131 +0200
-+++ openssl/util/mkdef.pl	2011-05-17 11:24:28.605716131 +0200
+--- openssl.orig/util/mkdef.pl	2011-05-17 16:14:04.000000000 +0200
++++ openssl/util/mkdef.pl	2011-05-17 16:14:03.000000000 +0200
 @@ -128,7 +128,7 @@
  my $no_ec; my $no_ecdsa; my $no_ecdh; my $no_engine; my $no_hw;
  my $no_fp_api; my $no_static_engine=1; my $no_gmp; my $no_deprecated;
@@ -14194,8 +14218,8 @@ Index: openssl/util/mkdef.pl
  
 Index: openssl/util/mkfiles.pl
 ===================================================================
---- openssl.orig/util/mkfiles.pl	2011-05-17 11:24:28.655716131 +0200
-+++ openssl/util/mkfiles.pl	2011-05-17 11:24:28.605716131 +0200
+--- openssl.orig/util/mkfiles.pl	2011-05-17 16:14:04.000000000 +0200
++++ openssl/util/mkfiles.pl	2011-05-17 16:14:03.000000000 +0200
 @@ -51,6 +51,7 @@
  "crypto/cms",
  "crypto/conf",
