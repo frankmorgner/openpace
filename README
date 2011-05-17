@@ -1,18 +1,18 @@
 Title            : OpenPACE
 Authors          : Dominik Oepen <oepen@informatik.hu-berlin.de>
                    Frank Morgner <morgner@informatik.hu-berlin.de>
-Version          : 0.6  17 Dec 2010
+Version          : 0.6  17 May 2011
 License          : See file COPYING
 Tested Platforms : Linux 2.6 (Debian, Ubuntu, Om 2008)
 
-OpenPACE is an implementation of the protocols used in the Extended
-Access Control version 2, specified in BSI TR-03110 version 2.05.
-OpenPACE implements the Password Authenticated Connection Establishment
-Protocol (PACE), as well as Terminal Authentication (TA) and Chip 
-Authentication (CA). It also contains support for Card Verifiable
-Certificates (CV certificates).
-OpenPACE enables applications to establish a strong session key using a weak
-password independent from the use of a smart card.
+OpenPACE is an implementation of the protocols used in the Extended Access
+Control version 2, specified in BSI TR-03110 version 2.05.  OpenPACE implements
+the Password Authenticated Connection Establishment Protocol (PACE), as well as
+Terminal Authentication (TA) and Chip Authentication (CA). It also contains
+support for Card Verifiable Certificates (CV certificates).
+
+PACE itself (and thus OpenPACE) enables applications to establish a strong
+session key using a weak password independent from the use of a smart card.
 OpenPACE is implemented as a patch for the OpenSSL library (see
 http://openssl.org)
 
@@ -21,12 +21,13 @@ NOTE
 ----
 
 OpenPACE does only provide the cryptopgraphic primitives to use the PACE
-protocol in you application. If you want to access the new German ID card (nPA)
-using OpenPACE, you still need code to correctly format, transmit and receive
-APDUs.  For a program that uses OpenPACE to connect to a nPA check out the
-Virtual Smart Card Architecture (http://sourceforge.net/projects/vsmartcard/).
-It includes the program pace-tool which can change and resume a PIN and is able
-to send arbitrary APDUs through a SM channel established with PACE.
+protocol, Terminal Authentication and Chip Authentication in your application.
+If you want to access the new German ID card (nPA) using OpenPACE, you still
+need code to correctly format, transmit and receive APDUs.  For a program that
+uses OpenPACE to connect to a nPA check out the Virtual Smart Card Architecture
+(http://sourceforge.net/projects/vsmartcard/).  It includes the program
+npa-tool which can change and resume a PIN and is able to send arbitrary APDUs
+through a SM channel established with PACE.
 
 
 FEEDBACK:
