@@ -1,7 +1,7 @@
 Index: openssl/Configure
 ===================================================================
---- openssl.orig/Configure	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/Configure	2011-05-17 16:14:03.000000000 +0200
+--- openssl.orig/Configure	2011-05-23 15:15:12.000000000 +0200
++++ openssl/Configure	2011-05-23 15:14:51.000000000 +0200
 @@ -670,6 +670,7 @@
  		 "gmp"		  => "default",
                   "jpake"          => "experimental",
@@ -21,8 +21,8 @@ Index: openssl/Configure
  # To remove something from %disabled, use "enable-foo" (unless it's experimental).
 Index: openssl/Makefile.org
 ===================================================================
---- openssl.orig/Makefile.org	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/Makefile.org	2011-05-17 16:14:03.000000000 +0200
+--- openssl.orig/Makefile.org	2011-05-23 15:15:11.000000000 +0200
++++ openssl/Makefile.org	2011-05-23 15:14:51.000000000 +0200
 @@ -122,7 +122,7 @@
  	cmac \
  	buffer bio stack lhash rand err \
@@ -34,8 +34,8 @@ Index: openssl/Makefile.org
  
 Index: openssl/crypto/bn/bn.h
 ===================================================================
---- openssl.orig/crypto/bn/bn.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/bn/bn.h	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/crypto/bn/bn.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/bn/bn.h	2011-05-23 15:14:51.000000000 +0200
 @@ -126,6 +126,7 @@
  #define HEADER_BN_H
  
@@ -62,8 +62,8 @@ Index: openssl/crypto/bn/bn.h
  int	BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 Index: openssl/crypto/bn/bn_lib.c
 ===================================================================
---- openssl.orig/crypto/bn/bn_lib.c	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/bn/bn_lib.c	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/crypto/bn/bn_lib.c	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/bn/bn_lib.c	2011-05-23 15:14:51.000000000 +0200
 @@ -66,6 +66,7 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -98,8 +98,8 @@ Index: openssl/crypto/bn/bn_lib.c
  	int i;
 Index: openssl/crypto/buffer/buffer.c
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.c	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/buffer/buffer.c	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/buffer/buffer.c	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/buffer/buffer.c	2011-05-23 15:14:51.000000000 +0200
 @@ -242,3 +242,59 @@
  			}
  		}
@@ -162,8 +162,8 @@ Index: openssl/crypto/buffer/buffer.c
 +}
 Index: openssl/crypto/buffer/buffer.h
 ===================================================================
---- openssl.orig/crypto/buffer/buffer.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/buffer/buffer.h	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/buffer/buffer.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/buffer/buffer.h	2011-05-23 15:14:51.000000000 +0200
 @@ -89,6 +89,34 @@
  char *	BUF_strndup(const char *str, size_t siz);
  void *	BUF_memdup(const void *data, size_t siz);
@@ -201,22 +201,20 @@ Index: openssl/crypto/buffer/buffer.h
  size_t BUF_strlcpy(char *dst,const char *src,size_t siz);
 Index: openssl/crypto/crypto-lib.com
 ===================================================================
---- openssl.orig/crypto/crypto-lib.com	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/crypto-lib.com	2011-05-17 16:14:02.000000000 +0200
-@@ -305,6 +305,9 @@
+--- openssl.orig/crypto/crypto-lib.com	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/crypto-lib.com	2011-05-23 15:16:58.000000000 +0200
+@@ -305,6 +305,7 @@
  	"ts_rsp_sign,ts_rsp_verify,ts_verify_ctx,ts_lib,ts_conf,"+ -
  	"ts_asn1"
  $ LIB_JPAKE = "jpake,jpake_err"
-+$ LIB_PACE = "pace_asn1.c,pace.c,pace_dh.c,pace_ecdh.c,pace_err.c,"+ -
-+	"pace_kdf.c,pace_lib.c,pace_mappings.c,pace_util.c"
-+$ LIB_CV_CERT = "cv_cert.c"
++$ LIB_PACE = "eac_ca,eac_asn1,eac_err,pace_mappings,ca_lib,eac,eac_kdf,eac_util,ta,cv_cert,eac_dh,eac_lib,pace,ta_lib,eac_ecdh,eac_print,pace_lib"
  $!
  $! Setup exceptional compilations
  $!
 Index: openssl/crypto/eac/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/Makefile	2011-05-17 16:14:02.000000000 +0200
++++ openssl/crypto/eac/Makefile	2011-05-23 15:18:59.000000000 +0200
 @@ -0,0 +1,303 @@
 +#
 +# OpenSSL/crypto/eac/Makefile
@@ -240,11 +238,11 @@ Index: openssl/crypto/eac/Makefile
 +APPS=
 +
 +LIB=$(TOP)/libcrypto.a
-+LIBSRC=eac_err.c pace_lib.c eac_util.c pace.c eac_dh.c eac_kdf.c eac_ecdh.c pace_mappings.c eac_asn1.c eac.c ta_lib.c ca_lib.c eac_lib.c ca.c ta.c cv_cert.c eac_print.c
-+LIBOBJ=eac_err.o pace_lib.o eac_util.o pace.o eac_dh.o eac_kdf.o eac_ecdh.o pace_mappings.o eac_asn1.o eac.o ta_lib.o ca_lib.o eac_lib.o ca.o ta.o cv_cert.o eac_print.o
++LIBSRC=eac_err.c pace_lib.c eac_util.c pace.c eac_dh.c eac_kdf.c eac_ecdh.c pace_mappings.c eac_asn1.c eac.c ta_lib.c ca_lib.c eac_lib.c eac_ca.c ta.c cv_cert.c eac_print.c
++LIBOBJ=eac_err.o pace_lib.o eac_util.o pace.o eac_dh.o eac_kdf.o eac_ecdh.o pace_mappings.o eac_asn1.o eac.o ta_lib.o ca_lib.o eac_lib.o eac_ca.o ta.o cv_cert.o eac_print.o
 +SRC= $(LIBSRC)
 +
-+EXHEADER=pace.h eac.h
++EXHEADER=pace.h eac.h ca.h ta.h cv_cert.h
 +HEADER=	$(EXHEADER)
 +
 +ALL=    $(GENERAL) $(SRC) $(HEADER)
@@ -296,20 +294,6 @@ Index: openssl/crypto/eac/Makefile
 +
 +# DO NOT DELETE THIS LINE -- make depend depends on it.
 +
-+ca.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
-+ca.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
-+ca.o: ../../include/openssl/buffer.h ../../include/openssl/ca.h
-+ca.o: ../../include/openssl/cmac.h ../../include/openssl/crypto.h
-+ca.o: ../../include/openssl/cv_cert.h ../../include/openssl/dh.h
-+ca.o: ../../include/openssl/e_os2.h ../../include/openssl/eac.h
-+ca.o: ../../include/openssl/ec.h ../../include/openssl/err.h
-+ca.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+ca.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+ca.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+ca.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pace.h
-+ca.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+ca.o: ../../include/openssl/symhacks.h ca.c eac_asn1.h eac_kdf.h eac_lib.h
-+ca.o: eac_util.h
 +ca_lib.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
 +ca_lib.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 +ca_lib.o: ../../include/openssl/buffer.h ../../include/openssl/cmac.h
@@ -361,6 +345,20 @@ Index: openssl/crypto/eac/Makefile
 +eac_asn1.o: ../../include/openssl/pace.h ../../include/openssl/safestack.h
 +eac_asn1.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
 +eac_asn1.o: eac_asn1.c eac_asn1.h eac_dh.h pace_lib.h
++eac_ca.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
++eac_ca.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
++eac_ca.o: ../../include/openssl/buffer.h ../../include/openssl/ca.h
++eac_ca.o: ../../include/openssl/cmac.h ../../include/openssl/crypto.h
++eac_ca.o: ../../include/openssl/cv_cert.h ../../include/openssl/dh.h
++eac_ca.o: ../../include/openssl/e_os2.h ../../include/openssl/eac.h
++eac_ca.o: ../../include/openssl/ec.h ../../include/openssl/err.h
++eac_ca.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
++eac_ca.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
++eac_ca.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
++eac_ca.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pace.h
++eac_ca.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
++eac_ca.o: ../../include/openssl/symhacks.h eac_asn1.h eac_ca.c eac_kdf.h
++eac_ca.o: eac_lib.h eac_util.h
 +eac_dh.o: ../../include/openssl/asn1.h ../../include/openssl/asn1t.h
 +eac_dh.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
 +eac_dh.o: ../../include/openssl/buffer.h ../../include/openssl/cmac.h
@@ -521,174 +519,6 @@ Index: openssl/crypto/eac/Makefile
 +ta_lib.o: ../../include/openssl/rsa.h ../../include/openssl/safestack.h
 +ta_lib.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
 +ta_lib.o: ../../include/openssl/ta.h eac_asn1.h eac_util.h ta_lib.c
-Index: openssl/crypto/eac/ca.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/ca.c	2011-05-17 16:14:02.000000000 +0200
-@@ -0,0 +1,163 @@
-+/**
-+ * @file
-+ * @brief Chip Authentication implementation
-+ *
-+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
-+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
-+ */
-+
-+#include "eac_asn1.h"
-+#include "eac_kdf.h"
-+#include "eac_util.h"
-+#include "eac_lib.h"
-+#include <openssl/ca.h>
-+#include <openssl/evp.h>
-+#include <openssl/ec.h>
-+#include <openssl/dh.h>
-+#include <openssl/crypto.h>
-+#include <openssl/err.h>
-+#include <openssl/pace.h>
-+#include <string.h>
-+
-+BUF_MEM *
-+CA_STEP1_get_pubkey(const EAC_CTX *ctx)
-+{
-+	if (!ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx) {
-+		EACerr(EAC_F_CA_STEP1_GET_PUBKEY, EAC_R_INVALID_ARGUMENTS);
-+		return NULL;
-+	}
-+
-+	return asn1_pubkey(ctx->ca_ctx->protocol, ctx->ca_ctx->ka_ctx->key,
-+			ctx->bn_ctx, ctx->tr_version);
-+}
-+
-+BUF_MEM *
-+CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx)
-+{
-+	if (!ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx) {
-+		EACerr(EAC_F_CA_STEP2_GET_EPH_PUBKEY, EAC_R_INVALID_ARGUMENTS);
-+		return NULL;
-+	}
-+
-+	return get_pubkey(ctx->ca_ctx->ka_ctx->key, ctx->bn_ctx);
-+}
-+
-+int
-+CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
-+        const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey)
-+{
-+    BUF_MEM *my_comp_pubkey = NULL;
-+    int r = -1;
-+
-+    if (!ctx || !ctx->ca_ctx || !comp_pubkey || !ctx->ca_ctx->ka_ctx) {
-+		EACerr(EAC_F_CA_STEP3_CHECK_PCD_PUBKEY, EAC_R_INVALID_ARGUMENTS);
-+        goto err;
-+	}
-+
-+    /* Compress own public key */
-+    my_comp_pubkey = Comp(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx, ctx->md_ctx);
-+    if (!my_comp_pubkey)
-+        goto err;
-+
-+    /* Check whether or not the received data fits the own data */
-+    if (my_comp_pubkey->length != comp_pubkey->length
-+            || memcmp(my_comp_pubkey->data, comp_pubkey->data, comp_pubkey->length) != 0) {
-+		EACerr(EAC_F_CA_STEP3_CHECK_PCD_PUBKEY, EAC_R_WRONG_PUBLIC_KEY);
-+        r = 0;
-+	} else
-+        r = 1;
-+
-+err:
-+    if (my_comp_pubkey)
-+        BUF_MEM_free(my_comp_pubkey);
-+
-+    return r;
-+}
-+
-+int
-+CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey)
-+{
-+	if (!ctx || !ctx->ca_ctx
-+			|| !KA_CTX_compute_key(ctx->ca_ctx->ka_ctx, pubkey, ctx->bn_ctx)) {
-+		EACerr(EAC_F_CA_STEP4_COMPUTE_SHARED_SECRET, EAC_R_INVALID_ARGUMENTS);
-+		return 0;
-+	}
-+
-+	return 1;
-+}
-+
-+BUF_MEM *
-+CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)
-+{
-+	return NULL;
-+}
-+
-+int
-+CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
-+			   	BUF_MEM **nonce, BUF_MEM **token)
-+{
-+	BUF_MEM *r = NULL;
-+	BUF_MEM *authentication_token = NULL;
-+
-+	if (!ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx || !nonce || !token) {
-+		EACerr(EAC_F_CA_STEP5_DERIVE_KEYS, EAC_R_INVALID_ARGUMENTS);
-+		goto err;
-+	}
-+
-+	/* Generate nonce  and derive k_mac and k_enc*/
-+	r = randb(EVP_CIPHER_block_size(ctx->ca_ctx->ka_ctx->cipher));
-+	if (!r || !KA_CTX_derive_keys(ctx->ca_ctx->ka_ctx, r, ctx->md_ctx))
-+		goto err;
-+
-+	/* Compute authentication token */
-+	authentication_token = get_authentication_token(ctx->ca_ctx->protocol,
-+			ctx->ca_ctx->ka_ctx, ctx->bn_ctx, ctx->tr_version,
-+			pub);
-+	if (!authentication_token)
-+		goto err;
-+
-+	*nonce = r;
-+	*token = authentication_token;
-+
-+	return 1;
-+
-+err:
-+	BUF_MEM_clear_free(r);
-+	if (authentication_token) {
-+		BUF_MEM_free(authentication_token);
-+	}
-+
-+	return 0;
-+}
-+
-+int
-+CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)
-+{
-+	int rv = -1;
-+
-+	if (!ctx || !ctx->ca_ctx) {
-+		EACerr(EAC_F_CA_STEP6_DERIVE_KEYS, EAC_R_INVALID_ARGUMENTS);
-+		goto err;
-+	}
-+
-+	if (!KA_CTX_derive_keys(ctx->ca_ctx->ka_ctx, nonce, ctx->md_ctx))
-+		goto err;
-+
-+	rv = verify_authentication_token(ctx->ca_ctx->protocol,
-+			ctx->ca_ctx->ka_ctx,
-+			ctx->bn_ctx, ctx->tr_version, token);
-+	if (rv < 0)
-+		goto err;
-+
-+	/* PACE, TA and CA were successful. Update the trust anchor! */
-+	if (rv) {
-+		if (ctx->ta_ctx->new_trust_anchor) {
-+			CVC_CERT_free(ctx->ta_ctx->trust_anchor);
-+			ctx->ta_ctx->trust_anchor = ctx->ta_ctx->new_trust_anchor;
-+			ctx->ta_ctx->new_trust_anchor = NULL;
-+		}
-+	}
-+
-+err:
-+	return rv;
-+}
 Index: openssl/crypto/eac/ca.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
@@ -932,7 +762,7 @@ Index: openssl/crypto/eac/ca_lib.h
 Index: openssl/crypto/eac/cv_cert.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/cv_cert.c	2011-05-17 16:14:02.000000000 +0200
++++ openssl/crypto/eac/cv_cert.c	2011-05-23 13:44:54.000000000 +0200
 @@ -0,0 +1,891 @@
 +/**
 + * @file
@@ -1828,7 +1658,7 @@ Index: openssl/crypto/eac/cv_cert.c
 Index: openssl/crypto/eac/cv_cert.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/cv_cert.h	2011-05-17 16:14:02.000000000 +0200
++++ openssl/crypto/eac/cv_cert.h	2011-05-23 13:44:54.000000000 +0200
 @@ -0,0 +1,391 @@
 +/**
 + * @file
@@ -2224,7 +2054,7 @@ Index: openssl/crypto/eac/cv_cert.h
 Index: openssl/crypto/eac/cv_cert_test.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/cv_cert_test.c	2011-05-17 16:14:02.000000000 +0200
++++ openssl/crypto/eac/cv_cert_test.c	2011-05-23 13:44:54.000000000 +0200
 @@ -0,0 +1,320 @@
 +#include <openssl/opensslconf.h>	/* for OPENSSL_NO_PACE */
 +#include <stdio.h>
@@ -5751,7 +5581,7 @@ Index: openssl/crypto/eac/eac_kdf.h
 Index: openssl/crypto/eac/eac_lib.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ openssl/crypto/eac/eac_lib.c	2011-05-17 16:14:02.000000000 +0200
++++ openssl/crypto/eac/eac_lib.c	2011-05-18 12:56:40.000000000 +0200
 @@ -0,0 +1,375 @@
 +/**
 + * @file
@@ -12212,8 +12042,8 @@ Index: openssl/crypto/eac/ta_lib.h
 +#endif
 Index: openssl/crypto/ec/ec.h
 ===================================================================
---- openssl.orig/crypto/ec/ec.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/ec/ec.h	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/crypto/ec/ec.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/ec/ec.h	2011-05-23 15:14:51.000000000 +0200
 @@ -1094,6 +1094,19 @@
  #define EC_R_UNSUPPORTED_FIELD				 131
  #define EC_R_WRONG_ORDER				 130
@@ -12236,8 +12066,8 @@ Index: openssl/crypto/ec/ec.h
  #endif
 Index: openssl/crypto/ec/ec_print.c
 ===================================================================
---- openssl.orig/crypto/ec/ec_print.c	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/ec/ec_print.c	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/crypto/ec/ec_print.c	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/ec/ec_print.c	2011-05-23 15:14:51.000000000 +0200
 @@ -54,6 +54,7 @@
   */
  
@@ -12274,8 +12104,8 @@ Index: openssl/crypto/ec/ec_print.c
 +}
 Index: openssl/crypto/ecdh/ecdh.h
 ===================================================================
---- openssl.orig/crypto/ecdh/ecdh.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/ecdh/ecdh.h	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/crypto/ecdh/ecdh.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/ecdh/ecdh.h	2011-05-23 15:14:51.000000000 +0200
 @@ -86,6 +86,7 @@
  #endif
  
@@ -12286,8 +12116,8 @@ Index: openssl/crypto/ecdh/ecdh.h
  const ECDH_METHOD *ECDH_get_default_method(void);
 Index: openssl/crypto/ecdh/ech_ossl.c
 ===================================================================
---- openssl.orig/crypto/ecdh/ech_ossl.c	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/ecdh/ech_ossl.c	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/crypto/ecdh/ech_ossl.c	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/ecdh/ech_ossl.c	2011-05-23 15:14:51.000000000 +0200
 @@ -211,3 +211,113 @@
  	if (buf) OPENSSL_free(buf);
  	return(ret);
@@ -12404,8 +12234,8 @@ Index: openssl/crypto/ecdh/ech_ossl.c
 +	}
 Index: openssl/crypto/err/err.c
 ===================================================================
---- openssl.orig/crypto/err/err.c	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/err/err.c	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/err/err.c	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/err/err.c	2011-05-23 15:14:51.000000000 +0200
 @@ -156,6 +156,7 @@
  {ERR_PACK(ERR_LIB_FIPS,0,0)		,"FIPS routines"},
  {ERR_PACK(ERR_LIB_CMS,0,0)		,"CMS routines"},
@@ -12416,8 +12246,8 @@ Index: openssl/crypto/err/err.c
  
 Index: openssl/crypto/err/err.h
 ===================================================================
---- openssl.orig/crypto/err/err.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/err/err.h	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/err/err.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/err/err.h	2011-05-23 15:14:51.000000000 +0200
 @@ -198,6 +198,7 @@
  #define ERR_LIB_TS		47
  #define ERR_LIB_HMAC		48
@@ -12436,8 +12266,8 @@ Index: openssl/crypto/err/err.h
   * the pre-processor :-( */
 Index: openssl/crypto/err/err_all.c
 ===================================================================
---- openssl.orig/crypto/err/err_all.c	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/err/err_all.c	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/err/err_all.c	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/err/err_all.c	2011-05-23 15:14:51.000000000 +0200
 @@ -102,6 +102,9 @@
  #ifndef OPENSSL_NO_JPAKE
  #include <openssl/jpake.h>
@@ -12460,8 +12290,8 @@ Index: openssl/crypto/err/err_all.c
  	}
 Index: openssl/crypto/err/openssl.ec
 ===================================================================
---- openssl.orig/crypto/err/openssl.ec	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/err/openssl.ec	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/err/openssl.ec	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/err/openssl.ec	2011-05-23 15:14:51.000000000 +0200
 @@ -35,6 +35,7 @@
  L HMAC		crypto/hmac/hmac.h		crypto/hmac/hmac_err.c
  L CMS		crypto/cms/cms.h		crypto/cms/cms_err.c
@@ -12472,30 +12302,29 @@ Index: openssl/crypto/err/openssl.ec
  L NONE		crypto/x509/x509_vfy.h		NONE
 Index: openssl/crypto/install.com
 ===================================================================
---- openssl.orig/crypto/install.com	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/install.com	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/install.com	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/install.com	2011-05-23 15:14:51.000000000 +0200
 @@ -49,7 +49,7 @@
  		 BUFFER,BIO,STACK,LHASH,RAND,ERR,-
  		 EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,-
  		 UI,KRB5,-
 -		 STORE,CMS,PQUEUE,TS,JPAKE
-+		 STORE,CMS,PQUEUE,TS,JPAKE,PACE,CV_CERT
++		 STORE,CMS,PQUEUE,TS,JPAKE,EAC
  $	EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
  $	EXHEADER__'ARCH' := opensslconf.h
  $	EXHEADER_OBJECTS := objects.h,obj_mac.h
-@@ -106,6 +106,8 @@
+@@ -106,6 +106,7 @@
  $	EXHEADER_PQUEUE := pqueue.h
  $	EXHEADER_TS := ts.h
  $	EXHEADER_JPAKE := jpake.h
-+$	EXHEADER_PACE := pace.h
-+$	EXHEADER_CV_CERT := cv_cert.h
++$	EXHEADER_PACE := pace.h,eac.h,ta.h,ca.h,ct_cert.h
  $	LIBS := LIBCRYPTO,LIBCRYPTO32
  $
  $	EXE_DIR := [-.'ARCH'.EXE.CRYPTO]
 Index: openssl/crypto/objects/obj_dat.h
 ===================================================================
---- openssl.orig/crypto/objects/obj_dat.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/objects/obj_dat.h	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/objects/obj_dat.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/objects/obj_dat.h	2011-05-23 15:14:51.000000000 +0200
 @@ -62,12 +62,12 @@
   * [including the GNU Public Licence.]
   */
@@ -13239,8 +13068,8 @@ Index: openssl/crypto/objects/obj_dat.h
  753,	/* OBJ_camellia_256_cbc             1 2 392 200011 61 1 1 1 4 */
 Index: openssl/crypto/objects/obj_mac.h
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.h	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/objects/obj_mac.h	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/objects/obj_mac.h	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/objects/obj_mac.h	2011-05-23 15:14:51.000000000 +0200
 @@ -3968,3 +3968,359 @@
  #define NID_brainpoolP512t1		906
  #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
@@ -13603,8 +13432,8 @@ Index: openssl/crypto/objects/obj_mac.h
 +
 Index: openssl/crypto/objects/obj_mac.num
 ===================================================================
---- openssl.orig/crypto/objects/obj_mac.num	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/objects/obj_mac.num	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/objects/obj_mac.num	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/objects/obj_mac.num	2011-05-23 15:14:51.000000000 +0200
 @@ -904,3 +904,87 @@
  brainpoolP384t1		904
  brainpoolP512r1		905
@@ -13695,8 +13524,8 @@ Index: openssl/crypto/objects/obj_mac.num
 +id_PT		990
 Index: openssl/crypto/objects/objects.txt
 ===================================================================
---- openssl.orig/crypto/objects/objects.txt	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/crypto/objects/objects.txt	2011-05-17 16:14:02.000000000 +0200
+--- openssl.orig/crypto/objects/objects.txt	2011-05-23 15:15:12.000000000 +0200
++++ openssl/crypto/objects/objects.txt	2011-05-23 15:14:51.000000000 +0200
 @@ -1276,3 +1276,117 @@
  1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
  1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
@@ -13817,39 +13646,37 @@ Index: openssl/crypto/objects/objects.txt
 +id-AuxiliaryData 3 :    id-CommunityID
 Index: openssl/makevms.com
 ===================================================================
---- openssl.orig/makevms.com	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/makevms.com	2011-05-17 16:14:03.000000000 +0200
-@@ -259,6 +259,8 @@
+--- openssl.orig/makevms.com	2011-05-23 15:15:12.000000000 +0200
++++ openssl/makevms.com	2011-05-23 15:14:51.000000000 +0200
+@@ -259,6 +259,7 @@
  		     HMAC,-
  		     IDEA,-
  		     JPAKE,-
 +		     PACE,-
-+		     CV_CERT,-
  		     KRB5,-
  		     LHASH,-
  		     MD2,-
-@@ -645,7 +647,7 @@
+@@ -645,7 +646,7 @@
     BN,EC,RSA,DSA,ECDSA,DH,ECDH,DSO,ENGINE,-
     BUFFER,BIO,STACK,LHASH,RAND,ERR,-
     EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,UI,KRB5,-
 -   STORE,CMS,PQUEUE,TS,JPAKE
-+   STORE,CMS,PQUEUE,TS,JPAKE,PACE,CV_CERT
++   STORE,CMS,PQUEUE,TS,JPAKE,PACE
  $ EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
  $ EXHEADER__'ARCH' := opensslconf.h
  $ EXHEADER_OBJECTS := objects.h,obj_mac.h
-@@ -702,6 +704,8 @@
+@@ -702,6 +703,7 @@
  $ EXHEADER_PQUEUE := pqueue.h
  $ EXHEADER_TS := ts.h
  $ EXHEADER_JPAKE := jpake.h
-+$ EXHEADER_PACE := pace.h
-+$ EXHEADER_CV_CERT := cv_cert.h
++$ EXHEADER_PACE := pace.h,eac.h,ta.h,ca.h,cv_cert.h
  $
  $ I = 0
  $ LOOP_SDIRS: 
 Index: openssl/test/Makefile
 ===================================================================
---- openssl.orig/test/Makefile	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/test/Makefile	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/test/Makefile	2011-05-23 15:15:12.000000000 +0200
++++ openssl/test/Makefile	2011-05-23 15:19:03.000000000 +0200
 @@ -64,11 +64,14 @@
  ASN1TEST=	asn1test
  GCMTESTA=	aesgcmtest
@@ -14047,13 +13874,10 @@ Index: openssl/test/Makefile
  sha1test.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
  sha1test.o: ../include/openssl/crypto.h ../include/openssl/e_os2.h
  sha1test.o: ../include/openssl/evp.h ../include/openssl/obj_mac.h
-Index: openssl/test/cvca-eid.cv
-===================================================================
-Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2011-05-17 16:14:01.000000000 +0200 differ
 Index: openssl/test/maketests.com
 ===================================================================
---- openssl.orig/test/maketests.com	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/test/maketests.com	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/test/maketests.com	2011-05-23 15:15:12.000000000 +0200
++++ openssl/test/maketests.com	2011-05-23 15:14:51.000000000 +0200
 @@ -112,7 +112,7 @@
  	       "MDC2TEST,RMDTEST,"+ -
  	       "RANDTEST,DHTEST,ENGINETEST,"+ -
@@ -14067,15 +13891,15 @@ Index: openssl/test/maketests.com
  $ T_D_EVP_TEST   := [-.crypto.evp]
  $ T_D_IGETEST    := [-.test]
  $ T_D_JPAKETEST  := [-.crypto.jpake]
-+$ T_D_PACETEST   := [-.crypto.pace]
-+$ T_D_CV_CERT_TEST := [-.crypto.cv_cert]
++$ T_D_PACETEST   := [-.crypto.eac]
++$ T_D_CV_CERT_TEST := [-.crypto.eac]
  $ T_D_ASN1TEST   := [-.test]
  $!
  $ TCPIP_PROGRAMS = ",,"
 Index: openssl/test/tests.com
 ===================================================================
---- openssl.orig/test/tests.com	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/test/tests.com	2011-05-17 16:14:01.000000000 +0200
+--- openssl.orig/test/tests.com	2011-05-23 15:15:12.000000000 +0200
++++ openssl/test/tests.com	2011-05-23 15:14:51.000000000 +0200
 @@ -40,7 +40,7 @@
  	test_enc,test_x509,test_rsa,test_crl,test_sid,-
  	test_gen,test_req,test_pkcs7,test_verify,test_dh,test_dsa,-
@@ -14089,7 +13913,7 @@ Index: openssl/test/tests.com
  $	IGETEST :=	igetest
  $	JPAKETEST :=	jpaketest
  $	ASN1TEST :=	asn1test
-+$	PACETEST :=	pacetest
++$	PACETEST :=	eactest
 +$	CVCERTTEST :=	cv_cert_test
  $
  $	tests_i = 0
@@ -14099,8 +13923,8 @@ Index: openssl/test/tests.com
  $	perl CMS-TEST.PL
  $	return
 +$ test_pace:
-+$	write sys$output "Test PACE"
-+$	mcr 'texe_dir''pacetest'
++$	write sys$output "Test EAC"
++$	mcr 'texe_dir''eactest'
 +$	return
 +$ test_cv_cert:
 +$   write sys$output "Test CV Certificate Parsing"
@@ -14111,9 +13935,9 @@ Index: openssl/test/tests.com
  $ exit:
 Index: openssl/util/libeay.num
 ===================================================================
---- openssl.orig/util/libeay.num	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/util/libeay.num	2011-05-17 16:14:03.000000000 +0200
-@@ -4207,3 +4207,44 @@
+--- openssl.orig/util/libeay.num	2011-05-23 15:15:12.000000000 +0200
++++ openssl/util/libeay.num	2011-05-23 15:18:43.000000000 +0200
+@@ -4207,3 +4207,71 @@
  AES_CCM_Encrypt                         4579	EXIST::FUNCTION:AES
  CMAC_Final                              4580	EXIST::FUNCTION:
  AES_GCM_CTX_new                         4581	EXIST::FUNCTION:AES
@@ -14158,10 +13982,37 @@ Index: openssl/util/libeay.num
 +CVC_CERT_free                           4618	EXIST::FUNCTION:
 +PACE_STEP3D_compute_authentication_token 4619	EXIST::FUNCTION:
 +BN_bn2buf                               4620	EXIST::FUNCTION:
++EAC_hash_certificate_description        4621	EXIST::FUNCTION:
++EAC_decrypt                             4622	EXIST::FUNCTION:
++CA_STEP5_derive_keys                    4623	EXIST::FUNCTION:
++TA_STEP6_verify                         4624	EXIST::FUNCTION:
++CA_STEP1_get_pubkey                     4625	EXIST::FUNCTION:
++EAC_CTX_init_ef_cardaccess              4626	EXIST::FUNCTION:
++EAC_CTX_init_pace                       4627	EXIST::FUNCTION:
++CA_STEP6_derive_keys                    4628	EXIST::FUNCTION:
++EAC_authenticate                        4629	EXIST::FUNCTION:
++TA_STEP5_sign                           4630	EXIST::FUNCTION:
++CA_STEP2_get_eph_pubkey                 4631	EXIST::FUNCTION:
++TA_STEP2_import_certificate             4632	EXIST::FUNCTION:
++EAC_encrypt                             4633	EXIST::FUNCTION:
++CA_STEP4_compute_shared_secret          4634	EXIST::FUNCTION:
++EAC_CTX_clear_free                      4635	EXIST::FUNCTION:
++TA_STEP4_get_nonce                      4636	EXIST::FUNCTION:
++EAC_CTX_init_ca                         4637	EXIST::FUNCTION:
++EAC_CTX_print_private                   4638	EXIST::FUNCTION:
++EAC_Comp                                4639	EXIST::FUNCTION:
++ERR_load_EAC_strings                    4640	EXIST::FUNCTION:
++EAC_CTX_new                             4641	EXIST::FUNCTION:
++TA_STEP3_generate_ephemeral_key         4642	EXIST::FUNCTION:
++EAC_add_iso_pad                         4643	EXIST::FUNCTION:
++EAC_CTX_init_ta                         4644	EXIST::FUNCTION:
++CA_get_pubkey                           4645	EXIST::FUNCTION:
++EAC_CTX_set_encryption_ctx              4646	EXIST::FUNCTION:
++CA_STEP3_check_pcd_pubkey               4647	EXIST::FUNCTION:
 Index: openssl/util/mk1mf.pl
 ===================================================================
---- openssl.orig/util/mk1mf.pl	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/util/mk1mf.pl	2011-05-17 16:14:03.000000000 +0200
+--- openssl.orig/util/mk1mf.pl	2011-05-23 15:15:12.000000000 +0200
++++ openssl/util/mk1mf.pl	2011-05-23 15:14:51.000000000 +0200
 @@ -271,6 +271,7 @@
  $cflags.=" -DOPENSSL_NO_ENGINE"   if $no_engine;
  $cflags.=" -DOPENSSL_NO_HW"   if $no_hw;
@@ -14174,7 +14025,7 @@ Index: openssl/util/mk1mf.pl
  	return("") if $no_gost   && $dir =~ /\/ccgost/;
  	return("") if $no_cms  && $dir =~ /\/cms/;
  	return("") if $no_jpake  && $dir =~ /\/jpake/;
-+	return("") if $no_pace  && $dir =~ /\/pace/;
++	return("") if $no_pace  && $dir =~ /\/eac/;
  	if ($no_des && $dir =~ /\/des/)
  		{
  		if ($val =~ /read_pwd/)
@@ -14188,8 +14039,8 @@ Index: openssl/util/mk1mf.pl
  		"no-krb5" => \$no_krb5,
 Index: openssl/util/mkdef.pl
 ===================================================================
---- openssl.orig/util/mkdef.pl	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/util/mkdef.pl	2011-05-17 16:14:03.000000000 +0200
+--- openssl.orig/util/mkdef.pl	2011-05-23 15:15:12.000000000 +0200
++++ openssl/util/mkdef.pl	2011-05-23 15:14:51.000000000 +0200
 @@ -128,7 +128,7 @@
  my $no_ec; my $no_ecdsa; my $no_ecdh; my $no_engine; my $no_hw;
  my $no_fp_api; my $no_static_engine=1; my $no_gmp; my $no_deprecated;
@@ -14207,19 +14058,22 @@ Index: openssl/util/mkdef.pl
  	}
  
  
-@@ -318,6 +319,8 @@
+@@ -318,6 +319,11 @@
  $crypto.=" crypto/pqueue/pqueue.h";
  $crypto.=" crypto/cms/cms.h";
  $crypto.=" crypto/jpake/jpake.h";
 +$crypto.=" crypto/eac/pace.h";
 +$crypto.=" crypto/eac/cv_cert.h";
++$crypto.=" crypto/eac/eac.h";
++$crypto.=" crypto/eac/ta.h";
++$crypto.=" crypto/eac/ca.h";
  $crypto.=" crypto/modes/modes.h";
  
  
 Index: openssl/util/mkfiles.pl
 ===================================================================
---- openssl.orig/util/mkfiles.pl	2011-05-17 16:14:04.000000000 +0200
-+++ openssl/util/mkfiles.pl	2011-05-17 16:14:03.000000000 +0200
+--- openssl.orig/util/mkfiles.pl	2011-05-23 15:15:12.000000000 +0200
++++ openssl/util/mkfiles.pl	2011-05-23 15:14:51.000000000 +0200
 @@ -51,6 +51,7 @@
  "crypto/cms",
  "crypto/conf",
@@ -14228,3 +14082,174 @@ Index: openssl/util/mkfiles.pl
  "crypto/txt_db",
  "crypto/pkcs7",
  "crypto/pkcs12",
+Index: openssl/crypto/eac/eac_ca.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ openssl/crypto/eac/eac_ca.c	2011-05-23 15:17:37.000000000 +0200
+@@ -0,0 +1,163 @@
++/**
++ * @file
++ * @brief Chip Authentication implementation
++ *
++ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
++ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
++ */
++
++#include "eac_asn1.h"
++#include "eac_kdf.h"
++#include "eac_util.h"
++#include "eac_lib.h"
++#include <openssl/ca.h>
++#include <openssl/evp.h>
++#include <openssl/ec.h>
++#include <openssl/dh.h>
++#include <openssl/crypto.h>
++#include <openssl/err.h>
++#include <openssl/pace.h>
++#include <string.h>
++
++BUF_MEM *
++CA_STEP1_get_pubkey(const EAC_CTX *ctx)
++{
++	if (!ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx) {
++		EACerr(EAC_F_CA_STEP1_GET_PUBKEY, EAC_R_INVALID_ARGUMENTS);
++		return NULL;
++	}
++
++	return asn1_pubkey(ctx->ca_ctx->protocol, ctx->ca_ctx->ka_ctx->key,
++			ctx->bn_ctx, ctx->tr_version);
++}
++
++BUF_MEM *
++CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx)
++{
++	if (!ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx) {
++		EACerr(EAC_F_CA_STEP2_GET_EPH_PUBKEY, EAC_R_INVALID_ARGUMENTS);
++		return NULL;
++	}
++
++	return get_pubkey(ctx->ca_ctx->ka_ctx->key, ctx->bn_ctx);
++}
++
++int
++CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
++        const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey)
++{
++    BUF_MEM *my_comp_pubkey = NULL;
++    int r = -1;
++
++    if (!ctx || !ctx->ca_ctx || !comp_pubkey || !ctx->ca_ctx->ka_ctx) {
++		EACerr(EAC_F_CA_STEP3_CHECK_PCD_PUBKEY, EAC_R_INVALID_ARGUMENTS);
++        goto err;
++	}
++
++    /* Compress own public key */
++    my_comp_pubkey = Comp(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx, ctx->md_ctx);
++    if (!my_comp_pubkey)
++        goto err;
++
++    /* Check whether or not the received data fits the own data */
++    if (my_comp_pubkey->length != comp_pubkey->length
++            || memcmp(my_comp_pubkey->data, comp_pubkey->data, comp_pubkey->length) != 0) {
++		EACerr(EAC_F_CA_STEP3_CHECK_PCD_PUBKEY, EAC_R_WRONG_PUBLIC_KEY);
++        r = 0;
++	} else
++        r = 1;
++
++err:
++    if (my_comp_pubkey)
++        BUF_MEM_free(my_comp_pubkey);
++
++    return r;
++}
++
++int
++CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey)
++{
++	if (!ctx || !ctx->ca_ctx
++			|| !KA_CTX_compute_key(ctx->ca_ctx->ka_ctx, pubkey, ctx->bn_ctx)) {
++		EACerr(EAC_F_CA_STEP4_COMPUTE_SHARED_SECRET, EAC_R_INVALID_ARGUMENTS);
++		return 0;
++	}
++
++	return 1;
++}
++
++BUF_MEM *
++CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)
++{
++	return NULL;
++}
++
++int
++CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
++			   	BUF_MEM **nonce, BUF_MEM **token)
++{
++	BUF_MEM *r = NULL;
++	BUF_MEM *authentication_token = NULL;
++
++	if (!ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx || !nonce || !token) {
++		EACerr(EAC_F_CA_STEP5_DERIVE_KEYS, EAC_R_INVALID_ARGUMENTS);
++		goto err;
++	}
++
++	/* Generate nonce  and derive k_mac and k_enc*/
++	r = randb(EVP_CIPHER_block_size(ctx->ca_ctx->ka_ctx->cipher));
++	if (!r || !KA_CTX_derive_keys(ctx->ca_ctx->ka_ctx, r, ctx->md_ctx))
++		goto err;
++
++	/* Compute authentication token */
++	authentication_token = get_authentication_token(ctx->ca_ctx->protocol,
++			ctx->ca_ctx->ka_ctx, ctx->bn_ctx, ctx->tr_version,
++			pub);
++	if (!authentication_token)
++		goto err;
++
++	*nonce = r;
++	*token = authentication_token;
++
++	return 1;
++
++err:
++	BUF_MEM_clear_free(r);
++	if (authentication_token) {
++		BUF_MEM_free(authentication_token);
++	}
++
++	return 0;
++}
++
++int
++CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)
++{
++	int rv = -1;
++
++	if (!ctx || !ctx->ca_ctx) {
++		EACerr(EAC_F_CA_STEP6_DERIVE_KEYS, EAC_R_INVALID_ARGUMENTS);
++		goto err;
++	}
++
++	if (!KA_CTX_derive_keys(ctx->ca_ctx->ka_ctx, nonce, ctx->md_ctx))
++		goto err;
++
++	rv = verify_authentication_token(ctx->ca_ctx->protocol,
++			ctx->ca_ctx->ka_ctx,
++			ctx->bn_ctx, ctx->tr_version, token);
++	if (rv < 0)
++		goto err;
++
++	/* PACE, TA and CA were successful. Update the trust anchor! */
++	if (rv) {
++		if (ctx->ta_ctx->new_trust_anchor) {
++			CVC_CERT_free(ctx->ta_ctx->trust_anchor);
++			ctx->ta_ctx->trust_anchor = ctx->ta_ctx->new_trust_anchor;
++			ctx->ta_ctx->new_trust_anchor = NULL;
++		}
++	}
++
++err:
++	return rv;
++}
+Index: openssl/test/cvca-eid.cv
+===================================================================
+Binary files /dev/null	1970-01-01 00:00:00.000000000 +0000 and openssl/test/cvca-eid.cv	2011-05-17 16:14:01.000000000 +0200 differ
