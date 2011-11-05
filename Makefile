@@ -17,7 +17,7 @@ all: patch_with_openpace
 # This patch is modified to be compliant with OpenSSL $(OPENSSL_VERSION) 
 patch_with_cmac: openssl-$(OPENSSL_VERSION)
 	[ -r openssl-$(OPENSSL_VERSION)/crypto/cmac/cmac.h ] || (\
-	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < ibm4_2.patch && \
+	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < ibm4.patch && \
 	    ln -s ../../crypto/cmac/cmac.h openssl-$(OPENSSL_VERSION)/include/openssl)
 	echo "Patched OpenSSL with CMAC"
 
