@@ -6,44 +6,47 @@ PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
 # in the path (see http://www.cozmanova.com/node/10)
 # export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/ssl/bin:/usr/sfw/sbin/:/usr/sfw/bin:/usr/sbin:/usr/bin:/usr/ccs/bin
 #
-OPENSSL_VERSION=1.0.0d
+OPENSSL_VERSION=1.0.0e
 
 all: patch_with_openpace
-	$(MAKE) Makefile -C openssl-$(OPENSSL_VERSION) || \
-	    (cd openssl-$(OPENSSL_VERSION) && sleep 1 && ./config experimental-pace)
-	$(MAKE) -C openssl-$(OPENSSL_VERSION)
+	$(MAKE) Makefile -C openpace || \
+	    (cd openpace && sleep 1 && ./config experimental-pace)
+	$(MAKE) -C openpace
 
 # see http://rt.openssl.org/Ticket/Display.html?id=2092&user=guest&pass=guest
 # This patch is modified to be compliant with OpenSSL $(OPENSSL_VERSION) 
-patch_with_cmac: openssl-$(OPENSSL_VERSION)
-	[ -r openssl-$(OPENSSL_VERSION)/crypto/cmac/cmac.h ] || (\
-	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < ibm4.patch && \
-	    ln -s ../../crypto/cmac/cmac.h openssl-$(OPENSSL_VERSION)/include/openssl)
+patch_with_cmac: openpace
+	[ -r openpace/crypto/cmac/cmac.h ] || (\
+	    $(PATCH) -d openpace -p1 < ibm4.patch && \
+	    ln -s ../../crypto/cmac/cmac.h openpace/include/openssl)
 	echo "Patched OpenSSL with CMAC"
 
-patch_with_brainpool: openssl-$(OPENSSL_VERSION)
-	grep brainpool openssl-$(OPENSSL_VERSION)/crypto/ec/ec_curve.c > /dev/null || \
-	    patch -d openssl-$(OPENSSL_VERSION) -p1 < BP.patch
+patch_with_brainpool: openpace
+	grep brainpool openpace/crypto/ec/ec_curve.c > /dev/null || \
+	    patch -d openpace -p1 < BP.patch
 	echo "Patched OpenSSL with Brainpool curves"
 
 patch_with_openpace: patch_with_brainpool patch_with_cmac
-	[ -r openssl-$(OPENSSL_VERSION)/crypto/eac/pace.h ] || (\
-	    $(PATCH) -d openssl-$(OPENSSL_VERSION) -p1 < OpenPACE.patch && \
-	    ln -s ../../crypto/eac/pace.h openssl-$(OPENSSL_VERSION)/include/openssl && \
-	    ln -s ../crypto/eac/eactest.c openssl-$(OPENSSL_VERSION)/test && \
-	    ln -s ../../crypto/eac/cv_cert.h openssl-$(OPENSSL_VERSION)/include/openssl && \
-	    ln -s /../crypto/eac/cv_cert_test.c openssl-$(OPENSSL_VERSION)/test && \
-	    ln -s ../../crypto/eac/ta.h openssl-$(OPENSSL_VERSION)/include/openssl && \
-	    ln -s ../../crypto/eac/ca.h openssl-$(OPENSSL_VERSION)/include/openssl && \
-	    ln -s ../../crypto/eac/eac.h openssl-$(OPENSSL_VERSION)/include/openssl)
+	[ -r openpace/crypto/eac/pace.h ] || (\
+	    $(PATCH) -d openpace -p1 < OpenPACE.patch && \
+	    ln -s ../../crypto/eac/pace.h openpace/include/openssl && \
+	    ln -s ../crypto/eac/eactest.c openpace/test && \
+	    ln -s ../../crypto/eac/cv_cert.h openpace/include/openssl && \
+	    ln -s /../crypto/eac/cv_cert_test.c openpace/test && \
+	    ln -s ../../crypto/eac/ta.h openpace/include/openssl && \
+	    ln -s ../../crypto/eac/ca.h openpace/include/openssl && \
+	    ln -s ../../crypto/eac/eac.h openpace/include/openssl)
 	echo "Patched OpenSSL with OpenPACE"
 
 test: all
-	openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh openssl-$(OPENSSL_VERSION)/test/eactest
+	openpace/util/shlib_wrap.sh openpace/test/eactest
 	for file in cv_cert/*.cvcert; do \
-		openssl-$(OPENSSL_VERSION)/util/shlib_wrap.sh \
-			openssl-$(OPENSSL_VERSION)/test/cv_cert_test -f "$$file"; \
+		openpace/util/shlib_wrap.sh \
+			openpace/test/cv_cert_test -f "$$file"; \
 		done
+
+openpace: openssl-$(OPENSSL_VERSION)
+	cp -r openssl-$(OPENSSL_VERSION) openpace
 
 openssl-$(OPENSSL_VERSION): openssl-$(OPENSSL_VERSION).tar.gz
 	gunzip -c openssl-$(OPENSSL_VERSION).tar.gz | tar xf -
@@ -52,7 +55,7 @@ openssl-$(OPENSSL_VERSION).tar.gz:
 	wget http://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
 clean:
-	rm -rf openssl-$(OPENSSL_VERSION)
+	rm -rf openpace
 
 dist-clean: clean
-	rm -rf openssl-$(OPENSSL_VERSION).tar.gz
+	rm -rf openssl-$(OPENSSL_VERSION) openssl-$(OPENSSL_VERSION).tar.gz
