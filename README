@@ -1,7 +1,7 @@
 Title            : OpenPACE
 Authors          : Dominik Oepen <oepen@informatik.hu-berlin.de>
                    Frank Morgner <morgner@informatik.hu-berlin.de>
-Version          : 0.7  04 April 2012
+Version          : 0.8
 License          : See file COPYING
 Tested Platforms : Windows, Linux (Debian, Ubuntu, Om 2008)
 
