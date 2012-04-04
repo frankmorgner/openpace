@@ -23,7 +23,7 @@ following commands:
 2. ms\do_ms.bat
 3. nmake -f ms\nt.mak install
 
-Since MSVC 2010 Visual Studio ships with stdint.h, which is needed for
-OpenPACE. If you are using an older version you should to get an additional
-header file, for example from here
+MSVC 2010 Visual Studio ships with stdint.h, which is needed for OpenPACE. If
+you are using an older version you should to get an additional header file, for
+example from here
 http://msinttypes.googlecode.com/svn/trunk/stdint.h

@@ -1,9 +1,9 @@
 Title            : OpenPACE
 Authors          : Dominik Oepen <oepen@informatik.hu-berlin.de>
                    Frank Morgner <morgner@informatik.hu-berlin.de>
-Version          : 0.7  17 May 2011
+Version          : 0.7  04 April 2012
 License          : See file COPYING
-Tested Platforms : Linux 2.6 (Debian, Ubuntu, Om 2008)
+Tested Platforms : Windows, Linux (Debian, Ubuntu, Om 2008)
 
 OpenPACE is an implementation of the protocols used in the Extended Access
 Control version 2, specified in BSI TR-03110 version 2.05.  OpenPACE implements
