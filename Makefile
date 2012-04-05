@@ -1,7 +1,7 @@
 #MAKEFLAGS         += -rR --no-print-directory
 
 # workaround for old patch versions on Solaris
-PATCH := $(shell [ -x /bin/gpatch ] && echo /bin/gpatch || echo patch)
+PATCH := $(shell which gpatch 2>/dev/null || echo patch)
 # On Solaris you might also want to put the directories of the gnu-utils first
 # in the path (see http://www.cozmanova.com/node/10)
 # export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/ssl/bin:/usr/sfw/sbin/:/usr/sfw/bin:/usr/sbin:/usr/bin:/usr/ccs/bin
@@ -15,7 +15,7 @@ all: patch_with_openpace
 
 patch_with_brainpool: openpace
 	grep brainpool openpace/crypto/ec/ec_curve.c > /dev/null || \
-	    patch -d openpace -p1 < BP.patch
+	    $(PATCH) -d openpace -p1 < BP.patch
 	echo "Patched OpenSSL with Brainpool curves"
 
 patch_with_openpace: patch_with_brainpool
