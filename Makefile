@@ -6,7 +6,7 @@ PATCH := $(shell which gpatch 2>/dev/null || echo patch)
 # in the path (see http://www.cozmanova.com/node/10)
 # export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/ssl/bin:/usr/sfw/sbin/:/usr/sfw/bin:/usr/sbin:/usr/bin:/usr/ccs/bin
 #
-OPENSSL_VERSION=1.0.1
+OPENSSL_VERSION=1.0.1c
 
 all: patch_with_openpace
 	$(MAKE) Makefile -C openpace || \
