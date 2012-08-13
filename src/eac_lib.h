@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2010-2012 Dominik Oepen and Frank Morgner
+ *
+ * This file is part of OpenPACE.
+ *
+ * OpenPACE is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * OpenPACE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+/**
+ * @file eac_lib.h
+ * @brief Interface for EAC library functions
+ *
+ * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
+ */
+
+#ifndef EAC_LIB_H_
+#define EAC_LIB_H_
+
+#include <eac/eac.h>
+#include <openssl/bn.h>
+#include <openssl/buffer.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+BUF_MEM *
+KA_CTX_generate_key(const KA_CTX *ctx, BN_CTX *bn_ctx);
+int
+KA_CTX_compute_key(KA_CTX *ctx, const BUF_MEM *in, BN_CTX *bn_ctx);
+int
+KA_CTX_derive_keys(KA_CTX *ka_ctx, const BUF_MEM *nonce, EVP_MD_CTX *md_ctx);
+
+void KA_CTX_clear_free(KA_CTX *ctx);
+KA_CTX *KA_CTX_new(void);
+KA_CTX *KA_CTX_dup(const KA_CTX *ka_ctx);
+int KA_CTX_set_protocol(KA_CTX *ctx, int protocol);
+
+#ifdef  __cplusplus
+}
+#endif
+#endif

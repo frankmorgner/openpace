@@ -1,0 +1,561 @@
+diff -ur openssl.org/crypto/objects/objects.txt openssl.patched/crypto/objects/objects.txt
+--- openssl.org/crypto/objects/objects.txt	2012-04-22 16:00:22.000000000 +0200
++++ openssl.patched/crypto/objects/objects.txt	2012-05-06 14:33:07.244281157 +0200
+@@ -1311,4 +1311,114 @@
+ 1 3 36 3 3 2 8 1 1 11 : brainpoolP384r1
+ 1 3 36 3 3 2 8 1 1 12 : brainpoolP384t1
+ 1 3 36 3 3 2 8 1 1 13 : brainpoolP512r1
+-1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1            
++1 3 36 3 3 2 8 1 1 14 : brainpoolP512t1
++
++# BSI Extensions TR 3110 Version 2.01
++!Alias bsi-de           0 4 0 127 0 7
++bsi-de 1 2 :            standardizedDomainParameters
++
++!Alias id-PK            bsi-de 2 2 1
++id-PK 1 :               id-PK-DH
++id-PK 2 :               id-PK-ECDH
++
++bsi-de 2 2 2 :          id-TA
++id-TA 1 :               id-TA-RSA
++id-TA-RSA 1 :           id-TA-RSA-v1-5-SHA-1
++id-TA-RSA 2 :           id-TA-RSA-v1-5-SHA-256
++id-TA-RSA 3 :           id-TA-RSA-PSS-SHA-1
++id-TA-RSA 4 :           id-TA-RSA-PSS-SHA-256
++id-TA-RSA 5 :           id-TA-RSA-v1-5-SHA-512
++id-TA-RSA 6 :           id-TA-RSA-PSS-SHA-512
++id-TA 2 :               id-TA-ECDSA
++id-TA-ECDSA 1 :         id-TA-ECDSA-SHA-1
++id-TA-ECDSA 2 :         id-TA-ECDSA-SHA-224
++id-TA-ECDSA 3 :         id-TA-ECDSA-SHA-256
++id-TA-ECDSA 4 :         id-TA-ECDSA-SHA-384
++id-TA-ECDSA 5 :         id-TA-ECDSA-SHA-512
++
++!Alias id-CA            bsi-de 2 2 3
++id-CA 1 :               id-CA-DH
++id-CA-DH 1 :            id-CA-DH-3DES-CBC-CBC
++id-CA-DH 2 :            id-CA-DH-AES-CBC-CMAC-128
++id-CA-DH 3 :            id-CA-DH-AES-CBC-CMAC-192
++id-CA-DH 4 :            id-CA-DH-AES-CBC-CMAC-256
++id-CA 2 :               id-CA-ECDH
++id-CA-ECDH 1 :          id-CA-ECDH-3DES-CBC-CBC
++id-CA-ECDH 2 :          id-CA-ECDH-AES-CBC-CMAC-128
++id-CA-ECDH 3 :          id-CA-ECDH-AES-CBC-CMAC-192
++id-CA-ECDH 4 :          id-CA-ECDH-AES-CBC-CMAC-256
++
++!Alias id-PACE          bsi-de 2 2 4
++id-PACE 1 :             id-PACE-DH-GM
++id-PACE-DH-GM 1 :       id-PACE-DH-GM-3DES-CBC-CBC
++id-PACE-DH-GM 2 :       id-PACE-DH-GM-AES-CBC-CMAC-128
++id-PACE-DH-GM 3 :       id-PACE-DH-GM-AES-CBC-CMAC-192
++id-PACE-DH-GM 4 :       id-PACE-DH-GM-AES-CBC-CMAC-256
++id-PACE 2 :             id-PACE-ECDH-GM
++id-PACE-ECDH-GM 1 :     id-PACE-ECDH-GM-3DES-CBC-CBC
++id-PACE-ECDH-GM 2 :     id-PACE-ECDH-GM-AES-CBC-CMAC-128
++id-PACE-ECDH-GM 3 :     id-PACE-ECDH-GM-AES-CBC-CMAC-192
++id-PACE-ECDH-GM 4 :     id-PACE-ECDH-GM-AES-CBC-CMAC-256
++id-PACE 3 :             id-PACE-DH-IM
++id-PACE-DH-IM 1 :       id-PACE-DH-IM-3DES-CBC-CBC
++id-PACE-DH-IM 2 :       id-PACE-DH-IM-AES-CBC-CMAC-128
++id-PACE-DH-IM 3 :       id-PACE-DH-IM-AES-CBC-CMAC-192
++id-PACE-DH-IM 4 :       id-PACE-DH-IM-AES-CBC-CMAC-256
++id-PACE 4 :             id-PACE-ECDH-IM
++id-PACE-ECDH-IM 1 :     id-PACE-ECDH-IM-3DES-CBC-CBC
++id-PACE-ECDH-IM 2 :     id-PACE-ECDH-IM-AES-CBC-CMAC-128
++id-PACE-ECDH-IM 3 :     id-PACE-ECDH-IM-AES-CBC-CMAC-192
++id-PACE-ECDH-IM 4 :     id-PACE-ECDH-IM-AES-CBC-CMAC-256
++
++!Alias id-RI            bsi-de 2 2 5
++id-RI 1 :               id-RI-DH
++id-RI-DH 1 :            id-RI-DH-SHA-1
++id-RI-DH 2 :            id-RI-DH-SHA-224
++id-RI-DH 3 :            id-RI-DH-SHA-256
++id-RI-DH 4 :            id-RI-DH-SHA-384
++id-RI-DH 5 :            id-RI-DH-SHA-512
++id-RI 2 :               id-RI-ECDH
++id-RI-ECDH 1 :          id-RI-ECDH-SHA-1
++id-RI-ECDH 2 :          id-RI-ECDH-SHA-224
++id-RI-ECDH 3 :          id-RI-ECDH-SHA-256
++id-RI-ECDH 4 :          id-RI-ECDH-SHA-384
++id-RI-ECDH 5 :          id-RI-ECDH-SHA-512
++
++bsi-de 2 2 6 :          id-CI
++bsi-de 2 2 7 :          id-eIDSecurity
++bsi-de 2 2 8 :          id-PT
++
++bsi-de 2 2 6 :          cardInfoLocator
++bsi-de 2 2 7 :          eID
++
++# BSI extensions TR-03111
++!Alias id-ecc   bsi-de 1 1
++!Alias ecka-dh  id-ecc 5 2
++ecka-dh 2 :          ecka-dh-SessionKDF
++ecka-dh 2 1 :        ecka-dh-SessionKDF-DES3
++ecka-dh 2 2 :        ecka-dh-SessionKDF-AES128
++ecka-dh 2 3 :        ecka-dh-SessionKDF-AES192
++ecka-dh 2 4 :        ecka-dh-SessionKDF-AES256
++
++# Role OIDs for CV certificates according to 03110
++!Alias id-roles bsi-de 3 1 2
++id-roles 1 :    id-IS
++id-roles 2 :    id-AT
++id-roles 3 :    id-ST
++
++# Description and extension OIDs from TR-03110
++!Alias id-extensions bsi-de 3 1 3
++id-extensions 1 :   id-description
++id-description 1 :  id-plainFormat
++id-description 2 :  id-htmlFormat
++id-description 3 :  id-pdfFormat
++id-extensions 2 :   id-sector
++
++!Alias id-eID bsi-de 3 2
++id-eID 1 :  id-SecurityObject
++
++#Auxiliary Data OIDS
++!Alias id-AuxiliaryData bsi-de 3 1 4
++id-AuxiliaryData 1 :    id-DateOfBirth
++id-AuxiliaryData 2 :    id-DateOfExpiry
++id-AuxiliaryData 3 :    id-CommunityID
+Only in openssl.patched/crypto/objects: objects.txt~
+diff -ur openssl.org/crypto/objects/obj_mac.h openssl.patched/crypto/objects/obj_mac.h
+--- openssl.org/crypto/objects/obj_mac.h	2012-04-22 16:00:22.000000000 +0200
++++ openssl.patched/crypto/objects/obj_mac.h	2012-05-06 14:33:17.001138057 +0200
+@@ -4091,3 +4091,349 @@
+ #define NID_brainpoolP512t1		934
+ #define OBJ_brainpoolP512t1		1L,3L,36L,3L,3L,2L,8L,1L,1L,14L
+ 
++#define OBJ_bsi_de		0L,4L,0L,127L,0L,7L
++
++#define SN_standardizedDomainParameters		"standardizedDomainParameters"
++#define NID_standardizedDomainParameters		935
++#define OBJ_standardizedDomainParameters		OBJ_bsi_de,1L,2L
++
++#define OBJ_id_PK		OBJ_bsi_de,2L,2L,1L
++
++#define SN_id_PK_DH		"id-PK-DH"
++#define NID_id_PK_DH		936
++#define OBJ_id_PK_DH		OBJ_id_PK,1L
++
++#define SN_id_PK_ECDH		"id-PK-ECDH"
++#define NID_id_PK_ECDH		937
++#define OBJ_id_PK_ECDH		OBJ_id_PK,2L
++
++#define SN_id_TA		"id-TA"
++#define NID_id_TA		938
++#define OBJ_id_TA		OBJ_bsi_de,2L,2L,2L
++
++#define SN_id_TA_RSA		"id-TA-RSA"
++#define NID_id_TA_RSA		939
++#define OBJ_id_TA_RSA		OBJ_id_TA,1L
++
++#define SN_id_TA_RSA_v1_5_SHA_1		"id-TA-RSA-v1-5-SHA-1"
++#define NID_id_TA_RSA_v1_5_SHA_1		940
++#define OBJ_id_TA_RSA_v1_5_SHA_1		OBJ_id_TA_RSA,1L
++
++#define SN_id_TA_RSA_v1_5_SHA_256		"id-TA-RSA-v1-5-SHA-256"
++#define NID_id_TA_RSA_v1_5_SHA_256		941
++#define OBJ_id_TA_RSA_v1_5_SHA_256		OBJ_id_TA_RSA,2L
++
++#define SN_id_TA_RSA_PSS_SHA_1		"id-TA-RSA-PSS-SHA-1"
++#define NID_id_TA_RSA_PSS_SHA_1		942
++#define OBJ_id_TA_RSA_PSS_SHA_1		OBJ_id_TA_RSA,3L
++
++#define SN_id_TA_RSA_PSS_SHA_256		"id-TA-RSA-PSS-SHA-256"
++#define NID_id_TA_RSA_PSS_SHA_256		943
++#define OBJ_id_TA_RSA_PSS_SHA_256		OBJ_id_TA_RSA,4L
++
++#define SN_id_TA_RSA_v1_5_SHA_512		"id-TA-RSA-v1-5-SHA-512"
++#define NID_id_TA_RSA_v1_5_SHA_512		944
++#define OBJ_id_TA_RSA_v1_5_SHA_512		OBJ_id_TA_RSA,5L
++
++#define SN_id_TA_RSA_PSS_SHA_512		"id-TA-RSA-PSS-SHA-512"
++#define NID_id_TA_RSA_PSS_SHA_512		945
++#define OBJ_id_TA_RSA_PSS_SHA_512		OBJ_id_TA_RSA,6L
++
++#define SN_id_TA_ECDSA		"id-TA-ECDSA"
++#define NID_id_TA_ECDSA		946
++#define OBJ_id_TA_ECDSA		OBJ_id_TA,2L
++
++#define SN_id_TA_ECDSA_SHA_1		"id-TA-ECDSA-SHA-1"
++#define NID_id_TA_ECDSA_SHA_1		947
++#define OBJ_id_TA_ECDSA_SHA_1		OBJ_id_TA_ECDSA,1L
++
++#define SN_id_TA_ECDSA_SHA_224		"id-TA-ECDSA-SHA-224"
++#define NID_id_TA_ECDSA_SHA_224		948
++#define OBJ_id_TA_ECDSA_SHA_224		OBJ_id_TA_ECDSA,2L
++
++#define SN_id_TA_ECDSA_SHA_256		"id-TA-ECDSA-SHA-256"
++#define NID_id_TA_ECDSA_SHA_256		949
++#define OBJ_id_TA_ECDSA_SHA_256		OBJ_id_TA_ECDSA,3L
++
++#define SN_id_TA_ECDSA_SHA_384		"id-TA-ECDSA-SHA-384"
++#define NID_id_TA_ECDSA_SHA_384		950
++#define OBJ_id_TA_ECDSA_SHA_384		OBJ_id_TA_ECDSA,4L
++
++#define SN_id_TA_ECDSA_SHA_512		"id-TA-ECDSA-SHA-512"
++#define NID_id_TA_ECDSA_SHA_512		951
++#define OBJ_id_TA_ECDSA_SHA_512		OBJ_id_TA_ECDSA,5L
++
++#define OBJ_id_CA		OBJ_bsi_de,2L,2L,3L
++
++#define SN_id_CA_DH		"id-CA-DH"
++#define NID_id_CA_DH		952
++#define OBJ_id_CA_DH		OBJ_id_CA,1L
++
++#define SN_id_CA_DH_3DES_CBC_CBC		"id-CA-DH-3DES-CBC-CBC"
++#define NID_id_CA_DH_3DES_CBC_CBC		953
++#define OBJ_id_CA_DH_3DES_CBC_CBC		OBJ_id_CA_DH,1L
++
++#define SN_id_CA_DH_AES_CBC_CMAC_128		"id-CA-DH-AES-CBC-CMAC-128"
++#define NID_id_CA_DH_AES_CBC_CMAC_128		954
++#define OBJ_id_CA_DH_AES_CBC_CMAC_128		OBJ_id_CA_DH,2L
++
++#define SN_id_CA_DH_AES_CBC_CMAC_192		"id-CA-DH-AES-CBC-CMAC-192"
++#define NID_id_CA_DH_AES_CBC_CMAC_192		955
++#define OBJ_id_CA_DH_AES_CBC_CMAC_192		OBJ_id_CA_DH,3L
++
++#define SN_id_CA_DH_AES_CBC_CMAC_256		"id-CA-DH-AES-CBC-CMAC-256"
++#define NID_id_CA_DH_AES_CBC_CMAC_256		956
++#define OBJ_id_CA_DH_AES_CBC_CMAC_256		OBJ_id_CA_DH,4L
++
++#define SN_id_CA_ECDH		"id-CA-ECDH"
++#define NID_id_CA_ECDH		957
++#define OBJ_id_CA_ECDH		OBJ_id_CA,2L
++
++#define SN_id_CA_ECDH_3DES_CBC_CBC		"id-CA-ECDH-3DES-CBC-CBC"
++#define NID_id_CA_ECDH_3DES_CBC_CBC		958
++#define OBJ_id_CA_ECDH_3DES_CBC_CBC		OBJ_id_CA_ECDH,1L
++
++#define SN_id_CA_ECDH_AES_CBC_CMAC_128		"id-CA-ECDH-AES-CBC-CMAC-128"
++#define NID_id_CA_ECDH_AES_CBC_CMAC_128		959
++#define OBJ_id_CA_ECDH_AES_CBC_CMAC_128		OBJ_id_CA_ECDH,2L
++
++#define SN_id_CA_ECDH_AES_CBC_CMAC_192		"id-CA-ECDH-AES-CBC-CMAC-192"
++#define NID_id_CA_ECDH_AES_CBC_CMAC_192		960
++#define OBJ_id_CA_ECDH_AES_CBC_CMAC_192		OBJ_id_CA_ECDH,3L
++
++#define SN_id_CA_ECDH_AES_CBC_CMAC_256		"id-CA-ECDH-AES-CBC-CMAC-256"
++#define NID_id_CA_ECDH_AES_CBC_CMAC_256		961
++#define OBJ_id_CA_ECDH_AES_CBC_CMAC_256		OBJ_id_CA_ECDH,4L
++
++#define OBJ_id_PACE		OBJ_bsi_de,2L,2L,4L
++
++#define SN_id_PACE_DH_GM		"id-PACE-DH-GM"
++#define NID_id_PACE_DH_GM		962
++#define OBJ_id_PACE_DH_GM		OBJ_id_PACE,1L
++
++#define SN_id_PACE_DH_GM_3DES_CBC_CBC		"id-PACE-DH-GM-3DES-CBC-CBC"
++#define NID_id_PACE_DH_GM_3DES_CBC_CBC		963
++#define OBJ_id_PACE_DH_GM_3DES_CBC_CBC		OBJ_id_PACE_DH_GM,1L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_128		"id-PACE-DH-GM-AES-CBC-CMAC-128"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_128		964
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_GM,2L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_192		"id-PACE-DH-GM-AES-CBC-CMAC-192"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_192		965
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_GM,3L
++
++#define SN_id_PACE_DH_GM_AES_CBC_CMAC_256		"id-PACE-DH-GM-AES-CBC-CMAC-256"
++#define NID_id_PACE_DH_GM_AES_CBC_CMAC_256		966
++#define OBJ_id_PACE_DH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_GM,4L
++
++#define SN_id_PACE_ECDH_GM		"id-PACE-ECDH-GM"
++#define NID_id_PACE_ECDH_GM		967
++#define OBJ_id_PACE_ECDH_GM		OBJ_id_PACE,2L
++
++#define SN_id_PACE_ECDH_GM_3DES_CBC_CBC		"id-PACE-ECDH-GM-3DES-CBC-CBC"
++#define NID_id_PACE_ECDH_GM_3DES_CBC_CBC		968
++#define OBJ_id_PACE_ECDH_GM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_GM,1L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128		"id-PACE-ECDH-GM-AES-CBC-CMAC-128"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128		969
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_GM,2L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192		"id-PACE-ECDH-GM-AES-CBC-CMAC-192"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192		970
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_GM,3L
++
++#define SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256		"id-PACE-ECDH-GM-AES-CBC-CMAC-256"
++#define NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256		971
++#define OBJ_id_PACE_ECDH_GM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_GM,4L
++
++#define SN_id_PACE_DH_IM		"id-PACE-DH-IM"
++#define NID_id_PACE_DH_IM		972
++#define OBJ_id_PACE_DH_IM		OBJ_id_PACE,3L
++
++#define SN_id_PACE_DH_IM_3DES_CBC_CBC		"id-PACE-DH-IM-3DES-CBC-CBC"
++#define NID_id_PACE_DH_IM_3DES_CBC_CBC		973
++#define OBJ_id_PACE_DH_IM_3DES_CBC_CBC		OBJ_id_PACE_DH_IM,1L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_128		"id-PACE-DH-IM-AES-CBC-CMAC-128"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_128		974
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_DH_IM,2L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_192		"id-PACE-DH-IM-AES-CBC-CMAC-192"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_192		975
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_DH_IM,3L
++
++#define SN_id_PACE_DH_IM_AES_CBC_CMAC_256		"id-PACE-DH-IM-AES-CBC-CMAC-256"
++#define NID_id_PACE_DH_IM_AES_CBC_CMAC_256		976
++#define OBJ_id_PACE_DH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_DH_IM,4L
++
++#define SN_id_PACE_ECDH_IM		"id-PACE-ECDH-IM"
++#define NID_id_PACE_ECDH_IM		977
++#define OBJ_id_PACE_ECDH_IM		OBJ_id_PACE,4L
++
++#define SN_id_PACE_ECDH_IM_3DES_CBC_CBC		"id-PACE-ECDH-IM-3DES-CBC-CBC"
++#define NID_id_PACE_ECDH_IM_3DES_CBC_CBC		978
++#define OBJ_id_PACE_ECDH_IM_3DES_CBC_CBC		OBJ_id_PACE_ECDH_IM,1L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128		"id-PACE-ECDH-IM-AES-CBC-CMAC-128"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128		979
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_128		OBJ_id_PACE_ECDH_IM,2L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192		"id-PACE-ECDH-IM-AES-CBC-CMAC-192"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192		980
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_192		OBJ_id_PACE_ECDH_IM,3L
++
++#define SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256		"id-PACE-ECDH-IM-AES-CBC-CMAC-256"
++#define NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256		981
++#define OBJ_id_PACE_ECDH_IM_AES_CBC_CMAC_256		OBJ_id_PACE_ECDH_IM,4L
++
++#define OBJ_id_RI		OBJ_bsi_de,2L,2L,5L
++
++#define SN_id_RI_DH		"id-RI-DH"
++#define NID_id_RI_DH		982
++#define OBJ_id_RI_DH		OBJ_id_RI,1L
++
++#define SN_id_RI_DH_SHA_1		"id-RI-DH-SHA-1"
++#define NID_id_RI_DH_SHA_1		983
++#define OBJ_id_RI_DH_SHA_1		OBJ_id_RI_DH,1L
++
++#define SN_id_RI_DH_SHA_224		"id-RI-DH-SHA-224"
++#define NID_id_RI_DH_SHA_224		984
++#define OBJ_id_RI_DH_SHA_224		OBJ_id_RI_DH,2L
++
++#define SN_id_RI_DH_SHA_256		"id-RI-DH-SHA-256"
++#define NID_id_RI_DH_SHA_256		985
++#define OBJ_id_RI_DH_SHA_256		OBJ_id_RI_DH,3L
++
++#define SN_id_RI_DH_SHA_384		"id-RI-DH-SHA-384"
++#define NID_id_RI_DH_SHA_384		986
++#define OBJ_id_RI_DH_SHA_384		OBJ_id_RI_DH,4L
++
++#define SN_id_RI_DH_SHA_512		"id-RI-DH-SHA-512"
++#define NID_id_RI_DH_SHA_512		987
++#define OBJ_id_RI_DH_SHA_512		OBJ_id_RI_DH,5L
++
++#define SN_id_RI_ECDH		"id-RI-ECDH"
++#define NID_id_RI_ECDH		988
++#define OBJ_id_RI_ECDH		OBJ_id_RI,2L
++
++#define SN_id_RI_ECDH_SHA_1		"id-RI-ECDH-SHA-1"
++#define NID_id_RI_ECDH_SHA_1		989
++#define OBJ_id_RI_ECDH_SHA_1		OBJ_id_RI_ECDH,1L
++
++#define SN_id_RI_ECDH_SHA_224		"id-RI-ECDH-SHA-224"
++#define NID_id_RI_ECDH_SHA_224		990
++#define OBJ_id_RI_ECDH_SHA_224		OBJ_id_RI_ECDH,2L
++
++#define SN_id_RI_ECDH_SHA_256		"id-RI-ECDH-SHA-256"
++#define NID_id_RI_ECDH_SHA_256		991
++#define OBJ_id_RI_ECDH_SHA_256		OBJ_id_RI_ECDH,3L
++
++#define SN_id_RI_ECDH_SHA_384		"id-RI-ECDH-SHA-384"
++#define NID_id_RI_ECDH_SHA_384		992
++#define OBJ_id_RI_ECDH_SHA_384		OBJ_id_RI_ECDH,4L
++
++#define SN_id_RI_ECDH_SHA_512		"id-RI-ECDH-SHA-512"
++#define NID_id_RI_ECDH_SHA_512		993
++#define OBJ_id_RI_ECDH_SHA_512		OBJ_id_RI_ECDH,5L
++
++#define SN_id_CI		"id-CI"
++#define NID_id_CI		994
++#define OBJ_id_CI		OBJ_bsi_de,2L,2L,6L
++
++#define SN_id_eIDSecurity		"id-eIDSecurity"
++#define NID_id_eIDSecurity		995
++#define OBJ_id_eIDSecurity		OBJ_bsi_de,2L,2L,7L
++
++#define SN_id_PT		"id-PT"
++#define NID_id_PT		996
++#define OBJ_id_PT		OBJ_bsi_de,2L,2L,8L
++
++#define SN_cardInfoLocator		"cardInfoLocator"
++#define NID_cardInfoLocator		997
++#define OBJ_cardInfoLocator		OBJ_bsi_de,2L,2L,6L
++
++#define SN_eID		"eID"
++#define NID_eID		998
++#define OBJ_eID		OBJ_bsi_de,2L,2L,7L
++
++#define OBJ_id_ecc		OBJ_bsi_de,1L,1L
++
++#define OBJ_ecka_dh		OBJ_id_ecc,5L,2L
++
++#define SN_ecka_dh_SessionKDF		"ecka-dh-SessionKDF"
++#define NID_ecka_dh_SessionKDF		999
++#define OBJ_ecka_dh_SessionKDF		OBJ_ecka_dh,2L
++
++#define SN_ecka_dh_SessionKDF_DES3		"ecka-dh-SessionKDF-DES3"
++#define NID_ecka_dh_SessionKDF_DES3		1000
++#define OBJ_ecka_dh_SessionKDF_DES3		OBJ_ecka_dh,2L,1L
++
++#define SN_ecka_dh_SessionKDF_AES128		"ecka-dh-SessionKDF-AES128"
++#define NID_ecka_dh_SessionKDF_AES128		1001
++#define OBJ_ecka_dh_SessionKDF_AES128		OBJ_ecka_dh,2L,2L
++
++#define SN_ecka_dh_SessionKDF_AES192		"ecka-dh-SessionKDF-AES192"
++#define NID_ecka_dh_SessionKDF_AES192		1002
++#define OBJ_ecka_dh_SessionKDF_AES192		OBJ_ecka_dh,2L,3L
++
++#define SN_ecka_dh_SessionKDF_AES256		"ecka-dh-SessionKDF-AES256"
++#define NID_ecka_dh_SessionKDF_AES256		1003
++#define OBJ_ecka_dh_SessionKDF_AES256		OBJ_ecka_dh,2L,4L
++
++#define OBJ_id_roles		OBJ_bsi_de,3L,1L,2L
++
++#define SN_id_IS		"id-IS"
++#define NID_id_IS		1004
++#define OBJ_id_IS		OBJ_id_roles,1L
++
++#define SN_id_AT		"id-AT"
++#define NID_id_AT		1005
++#define OBJ_id_AT		OBJ_id_roles,2L
++
++#define SN_id_ST		"id-ST"
++#define NID_id_ST		1006
++#define OBJ_id_ST		OBJ_id_roles,3L
++
++#define OBJ_id_extensions		OBJ_bsi_de,3L,1L,3L
++
++#define SN_id_description		"id-description"
++#define NID_id_description		1007
++#define OBJ_id_description		OBJ_id_extensions,1L
++
++#define SN_id_plainFormat		"id-plainFormat"
++#define NID_id_plainFormat		1008
++#define OBJ_id_plainFormat		OBJ_id_description,1L
++
++#define SN_id_htmlFormat		"id-htmlFormat"
++#define NID_id_htmlFormat		1009
++#define OBJ_id_htmlFormat		OBJ_id_description,2L
++
++#define SN_id_pdfFormat		"id-pdfFormat"
++#define NID_id_pdfFormat		1010
++#define OBJ_id_pdfFormat		OBJ_id_description,3L
++
++#define SN_id_sector		"id-sector"
++#define NID_id_sector		1011
++#define OBJ_id_sector		OBJ_id_extensions,2L
++
++#define OBJ_id_eID		OBJ_bsi_de,3L,2L
++
++#define SN_id_SecurityObject		"id-SecurityObject"
++#define NID_id_SecurityObject		1012
++#define OBJ_id_SecurityObject		OBJ_id_eID,1L
++
++#define OBJ_id_AuxiliaryData		OBJ_bsi_de,3L,1L,4L
++
++#define SN_id_DateOfBirth		"id-DateOfBirth"
++#define NID_id_DateOfBirth		1013
++#define OBJ_id_DateOfBirth		OBJ_id_AuxiliaryData,1L
++
++#define SN_id_DateOfExpiry		"id-DateOfExpiry"
++#define NID_id_DateOfExpiry		1014
++#define OBJ_id_DateOfExpiry		OBJ_id_AuxiliaryData,2L
++
++#define SN_id_CommunityID		"id-CommunityID"
++#define NID_id_CommunityID		1015
++#define OBJ_id_CommunityID		OBJ_id_AuxiliaryData,3L
++
+diff -ur openssl.org/crypto/objects/obj_mac.num openssl.patched/crypto/objects/obj_mac.num
+--- openssl.org/crypto/objects/obj_mac.num	2012-04-22 16:00:22.000000000 +0200
++++ openssl.patched/crypto/objects/obj_mac.num	2012-05-06 14:33:17.001138057 +0200
+@@ -932,3 +932,84 @@
+ brainpoolP384t1		932
+ brainpoolP512r1		933
+ brainpoolP512t1		934
++standardizedDomainParameters		935
++id_PK_DH		936
++id_PK_ECDH		937
++id_TA		938
++id_TA_RSA		939
++id_TA_RSA_v1_5_SHA_1		940
++id_TA_RSA_v1_5_SHA_256		941
++id_TA_RSA_PSS_SHA_1		942
++id_TA_RSA_PSS_SHA_256		943
++id_TA_RSA_v1_5_SHA_512		944
++id_TA_RSA_PSS_SHA_512		945
++id_TA_ECDSA		946
++id_TA_ECDSA_SHA_1		947
++id_TA_ECDSA_SHA_224		948
++id_TA_ECDSA_SHA_256		949
++id_TA_ECDSA_SHA_384		950
++id_TA_ECDSA_SHA_512		951
++id_CA_DH		952
++id_CA_DH_3DES_CBC_CBC		953
++id_CA_DH_AES_CBC_CMAC_128		954
++id_CA_DH_AES_CBC_CMAC_192		955
++id_CA_DH_AES_CBC_CMAC_256		956
++id_CA_ECDH		957
++id_CA_ECDH_3DES_CBC_CBC		958
++id_CA_ECDH_AES_CBC_CMAC_128		959
++id_CA_ECDH_AES_CBC_CMAC_192		960
++id_CA_ECDH_AES_CBC_CMAC_256		961
++id_PACE_DH_GM		962
++id_PACE_DH_GM_3DES_CBC_CBC		963
++id_PACE_DH_GM_AES_CBC_CMAC_128		964
++id_PACE_DH_GM_AES_CBC_CMAC_192		965
++id_PACE_DH_GM_AES_CBC_CMAC_256		966
++id_PACE_ECDH_GM		967
++id_PACE_ECDH_GM_3DES_CBC_CBC		968
++id_PACE_ECDH_GM_AES_CBC_CMAC_128		969
++id_PACE_ECDH_GM_AES_CBC_CMAC_192		970
++id_PACE_ECDH_GM_AES_CBC_CMAC_256		971
++id_PACE_DH_IM		972
++id_PACE_DH_IM_3DES_CBC_CBC		973
++id_PACE_DH_IM_AES_CBC_CMAC_128		974
++id_PACE_DH_IM_AES_CBC_CMAC_192		975
++id_PACE_DH_IM_AES_CBC_CMAC_256		976
++id_PACE_ECDH_IM		977
++id_PACE_ECDH_IM_3DES_CBC_CBC		978
++id_PACE_ECDH_IM_AES_CBC_CMAC_128		979
++id_PACE_ECDH_IM_AES_CBC_CMAC_192		980
++id_PACE_ECDH_IM_AES_CBC_CMAC_256		981
++id_RI_DH		982
++id_RI_DH_SHA_1		983
++id_RI_DH_SHA_224		984
++id_RI_DH_SHA_256		985
++id_RI_DH_SHA_384		986
++id_RI_DH_SHA_512		987
++id_RI_ECDH		988
++id_RI_ECDH_SHA_1		989
++id_RI_ECDH_SHA_224		990
++id_RI_ECDH_SHA_256		991
++id_RI_ECDH_SHA_384		992
++id_RI_ECDH_SHA_512		993
++id_CI		994
++id_eIDSecurity		995
++id_PT		996
++cardInfoLocator		997
++eID		998
++ecka_dh_SessionKDF		999
++ecka_dh_SessionKDF_DES3		1000
++ecka_dh_SessionKDF_AES128		1001
++ecka_dh_SessionKDF_AES192		1002
++ecka_dh_SessionKDF_AES256		1003
++id_IS		1004
++id_AT		1005
++id_ST		1006
++id_description		1007
++id_plainFormat		1008
++id_htmlFormat		1009
++id_pdfFormat		1010
++id_sector		1011
++id_SecurityObject		1012
++id_DateOfBirth		1013
++id_DateOfExpiry		1014
++id_CommunityID		1015

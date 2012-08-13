@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: Crypto library for the Extended Access Control version 2
+Version: @VERSION@
+Requires: libcrypto
+Libs: -L${libdir} -leac @OPENSC_LIBS@
+Cflags: -I${includedir}
