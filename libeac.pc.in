@@ -7,5 +7,5 @@ Name: @PACKAGE_NAME@
 Description: Crypto library for the Extended Access Control version 2
 Version: @VERSION@
 Requires: libcrypto
-Libs: -L${libdir} -leac @OPENSC_LIBS@
+Libs: -L${libdir} -leac @WS2_32@
 Cflags: -I${includedir}

@@ -20,12 +20,18 @@ noinst_HEADERS = ca_lib.h \
 				 ta_lib.h
 
 libeac_la_SOURCES = ca_lib.c cv_cert.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c
-libeac_la_LIBADD = $(CRYPTO_LIBS)
 libeac_la_CPPFLAGS = $(CRYPTO_CFLAGS)
+libeac_la_LDFLAGS = -no-undefined
+libeac_la_LIBADD = $(CRYPTO_LIBS)
+
+if WIN32
+CPPFLAGS = -DWIN32_LEAN_AND_MEAN
+libeac_la_LIBADD += -lws2_32
+endif
 
 
 noinst_PROGRAMS = eactest cv_cert_test
-EAC_LIBS = $(CRYPTO_LIBS) libeac.la
+EAC_LIBS = $(CRYPTO_LIBS) libeac.la 
 EAC_CFLAGS = $(CRYPTO_CFLAGS)
 
 eactest_SOURCES = eactest.c

@@ -26,6 +26,15 @@ ifdef(
 	]
 )
 
+dnl Check for windows build
+case "${host}" in
+    *-mingw*|*-winnt*)
+        WIN32="yes"
+        ;;
+    *-cygwin*)
+        WIN32="yes"
+        ;;
+esac
 
 # Checks for libraries.
 PKG_CHECK_EXISTS([libcrypto],
@@ -67,7 +76,10 @@ AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_CHECK_FUNCS([memset])
 
+AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
+
 AC_CONFIG_FILES([Makefile
+                 win32/Makefile
                  src/Makefile])
 cat << EOF
 
