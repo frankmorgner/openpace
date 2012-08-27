@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src win32
 
-EXTRA_DIST = libeac.pc.in
+EXTRA_DIST = libeac.pc.in bootstrap oids.patch
 
 if WIN32
 WS2_32 = -lws2_32
@@ -26,3 +26,7 @@ win:
 
 clean-local:
 	rm -f libeac.pc
+
+check-local:
+	WD=$(abs_builddir)/bootstrap MAKE=$(MAKE) $(srcdir)/bootstrap
+	rm -rf $(abs_builddir)/bootstrap

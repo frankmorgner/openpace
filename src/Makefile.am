@@ -25,13 +25,13 @@ libeac_la_LDFLAGS = -no-undefined
 libeac_la_LIBADD = $(CRYPTO_LIBS)
 
 if WIN32
-CPPFLAGS = -DWIN32_LEAN_AND_MEAN
+AM_CPPFLAGS = -DWIN32_LEAN_AND_MEAN
 libeac_la_LIBADD += -lws2_32
 endif
 
 
 noinst_PROGRAMS = eactest cv_cert_test
-EAC_LIBS = $(CRYPTO_LIBS) libeac.la 
+EAC_LIBS = libeac.la $(CRYPTO_LIBS)
 EAC_CFLAGS = $(CRYPTO_CFLAGS)
 
 eactest_SOURCES = eactest.c
@@ -41,7 +41,3 @@ eactest_CFLAGS = $(EAC_CFLAGS)
 cv_cert_test_SOURCES = cv_cert_test.c
 cv_cert_test_LDADD = $(EAC_LIBS)
 cv_cert_test_CFLAGS = $(EAC_CFLAGS)
-
-
-check-local:
-	$(builddir)/eactest

@@ -1,16 +1,23 @@
 #!/bin/sh
 
-AUTORECONF=autoreconf
-CVS=cvs
-MAKE=make
-PATCH=patch
-WD=`pwd`
+AUTORECONF=${AUTORECONF:-autoreconf}
+CVS=${CVS:-cvs}
+MAKE=${MAKE:-make}
+PATCH=${PATCH:-patch}
+WD=${WD:-${PWD}}
+SD=$(cd $(dirname $0) && echo ${PWD})
 OPENSSL_DIR=${WD}/openssl
+
+if ! test -d ${WD}
+then
+    mkdir -p ${WD} && cd ${WD} \
+        || exit $?
+fi
 
 # Fetch OpenSSL
 if ! test -d ${OPENSSL_DIR}
 then
-	${CVS} -d anonymous@cvs.openssl.org:/openssl-cvs co `basename ${OPENSSL_DIR}` \
+    ${CVS} -d anonymous@cvs.openssl.org:/openssl-cvs co -rOpenSSL_1_0_2-stable `basename ${OPENSSL_DIR}` \
         || exit $?
 fi
 
@@ -26,7 +33,7 @@ fi
 # Patch OpenSSL with OpenPACE object identifiers
 if ! grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 ${OPENSSL_DIR}/include/openssl/obj_mac.h > /dev/null
 then
-	${PATCH} --directory=${OPENSSL_DIR} -p1 < oids.patch \
+	${PATCH} --directory=${OPENSSL_DIR} -p1 < ${SD}/oids.patch \
         || exit $?
 fi
 
@@ -40,29 +47,29 @@ then
 fi
 
 # Create autoconf files
-if ! test -x configure
+if ! test -x ${SD}/configure
 then
-    ${AUTORECONF} --verbose --install --symlink \
+    cd ${SD} && ${AUTORECONF} --verbose --install --symlink \
         || exit $?
 fi
 
 # Configure OpenPACE
-if ! test -r Makefile
+if ! test -r ${SD}/Makefile
 then
-	./configure \
+	${SD}/configure \
         CRYPTO_CFLAGS=-I${OPENSSL_DIR}/include \
         CRYPTO_LIBS="${OPENSSL_DIR}/libcrypto.a -ldl" \
         || exit $?
 fi
 
 # Build OpenPACE
-if ! test -x src/eactest
+if ! test -x ${WD}/src/eactest
 then
-    ${MAKE} \
+    ${MAKE} -C ${WD} \
         || exit $?
     echo "Built OpenPACE"
     echo ""
 fi
 
-src/eactest \
+${WD}/src/eactest \
     || exit $?
