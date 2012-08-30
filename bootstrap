@@ -17,7 +17,7 @@ fi
 # Fetch OpenSSL
 if ! test -d ${OPENSSL_DIR}
 then
-    ${CVS} -d anonymous@cvs.openssl.org:/openssl-cvs co -rOpenSSL_1_0_2-stable `basename ${OPENSSL_DIR}` \
+    CVS_RSH=ssh ${CVS} -d anonymous@cvs.openssl.org:/openssl-cvs co -rOpenSSL_1_0_2-stable `basename ${OPENSSL_DIR}` \
         || exit $?
 fi
 
