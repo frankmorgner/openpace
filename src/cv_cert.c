@@ -375,14 +375,15 @@ err:
 }
 
 int
-CVC_get_role(CVC_CHAT *chat) {
-
+CVC_get_role(CVC_CHAT *chat)
+{
     if (!chat || !chat->relative_authorization
-            || !chat->relative_authorization->data)
+            || !chat->relative_authorization->data
+            || chat->relative_authorization->length < 1)
         return -1;
 
-    /* The two most significant bits encode the terminal type */
-    return (chat->relative_authorization->data[chat->relative_authorization->length - 1] >> 6) & 3;
+    /* The left most bits encode the terminal type */
+    return (chat->relative_authorization->data[0] >> 6) & 3;
 }
 
 EVP_PKEY *
