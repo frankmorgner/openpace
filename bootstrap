@@ -4,46 +4,12 @@ AUTORECONF=${AUTORECONF:-autoreconf}
 CVS=${CVS:-cvs}
 MAKE=${MAKE:-make}
 PATCH=${PATCH:-patch}
-WD=${WD:-${PWD}}
 SD=$(cd $(dirname $0) && echo ${PWD})
-OPENSSL_DIR=${WD}/openssl
 
 if ! test -d ${WD}
 then
     mkdir -p ${WD} && cd ${WD} \
         || exit $?
-fi
-
-# Fetch OpenSSL
-if ! test -d ${OPENSSL_DIR}
-then
-    CVS_RSH=ssh ${CVS} -d anonymous@cvs.openssl.org:/openssl-cvs co -rOpenSSL_1_0_2-stable `basename ${OPENSSL_DIR}` \
-        || exit $?
-fi
-
-# Configure OpenSSL (and create ${OPENSSL_DIR}/include/openssl/obj_mac.h)
-if ! test -r ${OPENSSL_DIR}/Makefile
-then
-	cd ${OPENSSL_DIR} \
-        && ./config -fPIC shared \
-        || exit $?
-    cd ${WD}
-fi
-
-# Patch OpenSSL with OpenPACE object identifiers
-if ! grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 ${OPENSSL_DIR}/include/openssl/obj_mac.h > /dev/null
-then
-	${PATCH} --directory=${OPENSSL_DIR} -p1 < ${SD}/oids.patch \
-        || exit $?
-fi
-
-# Build OpenSSL
-if ! test -r ${OPENSSL_DIR}/libcrypto.a
-then
-	${MAKE} -C ${OPENSSL_DIR} \
-        || exit $?
-    echo "Built OpenSSL with OpenPACE object identifiers"
-    echo ""
 fi
 
 # Create autoconf files
@@ -57,8 +23,6 @@ fi
 if ! test -r ${SD}/Makefile
 then
 	${SD}/configure \
-        CRYPTO_CFLAGS=-I${OPENSSL_DIR}/include \
-        CRYPTO_LIBS="${OPENSSL_DIR}/libcrypto.a -ldl" \
         || exit $?
 fi
 
@@ -67,8 +31,6 @@ if ! test -x ${WD}/src/eactest
 then
     ${MAKE} -C ${WD} \
         || exit $?
-    echo "Built OpenPACE"
-    echo ""
 fi
 
 ${WD}/src/eactest \

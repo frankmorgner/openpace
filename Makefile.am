@@ -8,6 +8,7 @@ WS2_32 = -lws2_32
 endif
 
 do_subst = $(SED) \
+	   -e 's,[@]CRYPTO_DEPEND[@],$(CRYPTO_DEPEND),g' \
 	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
 	   -e 's,[@]VERSION[@],$(VERSION),g' \
 	   -e 's,[@]WS2_32[@],$(WS2_32),g' \

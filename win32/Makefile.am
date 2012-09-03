@@ -4,9 +4,7 @@ EXTRA_DIST = gentoo.config-1.0.0
 all-local:
 	@echo Use \`$(MAKE) win\` to cross compile for Windows
 
-CVS ?= cvs
 MINGW ?= x86_64-w64-mingw32
-PATCH ?= patch
 
 LIBEAC=$(WIN32_DIR)/bin/libeac.dll
 MINGW_DIR=/usr/$(MINGW)

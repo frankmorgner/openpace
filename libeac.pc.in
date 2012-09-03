@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: @PACKAGE_NAME@
 Description: Crypto library for the Extended Access Control version 2
 Version: @VERSION@
-Requires: libcrypto
+Requires: @CRYPTO_DEPEND@
 Libs: -L${libdir} -leac @WS2_32@
 Cflags: -I${includedir}
