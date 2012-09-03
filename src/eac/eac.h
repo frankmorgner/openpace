@@ -539,5 +539,7 @@ int EAC_CTX_print_private(BIO *out, const EAC_CTX *ctx, int indent);
 int BUF_MEM_print(BIO *out, const BUF_MEM *buf, int indent);
 
 /** @} ***********************************************************************/
-
+#ifdef __cplusplus
+}
+#endif
 #endif
