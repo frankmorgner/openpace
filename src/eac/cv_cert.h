@@ -29,6 +29,10 @@
 #ifndef CVC_CERT_H_
 #define CVC_CERT_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
 #include <openssl/bio.h>
@@ -439,4 +443,7 @@ typedef struct pace_ec_parameters_st {
     } PACE_ECPARAMETERS;
 /** @endcond */
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* CVC_CERT_H_ */
