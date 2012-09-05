@@ -106,6 +106,8 @@ CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)
     return NULL;
 }
 
+/* Nonce for CA is always 8 bytes long */
+#define CA_NONCE_SIZE 8
 int
 CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
                    BUF_MEM **nonce, BUF_MEM **token)
@@ -117,7 +119,7 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
             "Invalid arguments");
 
     /* Generate nonce  and derive k_mac and k_enc*/
-    r = randb(EVP_CIPHER_block_size(ctx->ca_ctx->ka_ctx->cipher));
+    r = randb(CA_NONCE_SIZE));
     if (!r || !KA_CTX_derive_keys(ctx->ca_ctx->ka_ctx, r, ctx->md_ctx))
         goto err;
 
