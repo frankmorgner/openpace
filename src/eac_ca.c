@@ -119,7 +119,7 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
             "Invalid arguments");
 
     /* Generate nonce  and derive k_mac and k_enc*/
-    r = randb(CA_NONCE_SIZE));
+    r = randb(CA_NONCE_SIZE);
     if (!r || !KA_CTX_derive_keys(ctx->ca_ctx->ka_ctx, r, ctx->md_ctx))
         goto err;
 
