@@ -15,8 +15,6 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CXX
-AC_PATH_PROG(PATCH, patch, false // No patch found //)
-AC_PATH_PROG(CVS, cvs, false // No cvs found //)
 ifdef(
 	[LT_INIT],
 	[
@@ -65,11 +63,11 @@ else
                       openssl/ecdh.h openssl/dh.h openssl/evp.h openssl/cmac.h \
                       openssl/sha.h openssl/aes.h openssl/des.h], [],
                      [AC_MSG_WARN([Required OpenSSL headers not found])
-                     BUILD_OPENSSL=yes])
+                      BUILD_OPENSSL=yes])
     AC_CHECK_DECL(NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256,
                   ,
                   [AC_MSG_WARN([OpenSSL patched with OpenPACE object identifiers not found])
-                  BUILD_OPENSSL=yes],
+                   BUILD_OPENSSL=yes],
                   [#include <openssl/obj_mac.h>])
     CPPFLAGS="$saved_CPPFLAGS"
 
@@ -79,17 +77,29 @@ else
     AC_TRY_LINK_FUNC(OPENSSL_cleanse,
                      [AC_MSG_RESULT([yes])],
                      [AC_MSG_WARN([Cannot link against libcrypto])
-                     BUILD_OPENSSL=yes])
+                      BUILD_OPENSSL=yes])
     AC_MSG_CHECKING([for EVP_sha256])
     AC_TRY_LINK_FUNC(EVP_sha256,
                      [AC_MSG_RESULT([yes])],
                      [AC_MSG_WARN([Need OpenSSL with SHA-256 support])
-                     BUILD_OPENSSL=yes])
+                      BUILD_OPENSSL=yes])
     LIBS="$saved_LIBS"
 
 
     if test "${BUILD_OPENSSL}" = "yes"
     then
+        AC_ARG_VAR([CVS],
+                   [absolute path to cvs used for checking out OpenSSL])
+        AC_PATH_PROG([CVS],
+                     [cvs],
+                     [not found])
+        AC_ARG_VAR([PATCH],
+                   [absolute path to patch used for patching OpenSSL])
+        AC_PATH_PROG([PATCH],
+                     [patch],
+                     [not found])
+        AC_ARG_VAR([OPENSSL_CONFIG_EXTRA],
+                   [options for configuring OpenSSL])
         if test "${enable_openssl_build}" = "no"
         then
             AC_MSG_ERROR([No suitable OpenSSL installation was found])
@@ -98,9 +108,13 @@ else
             CRYPTO_CFLAGS=""
             CRYPTO_DEPEND=""
             AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
-            if test -z "${PATCH}" -o -z "${CVS}"
+            if test "${PATCH}" = "not found"
             then
-                AC_MSG_ERROR([Need patch and cvs to build OpenSSL])
+                AC_MSG_ERROR([Need patch to build OpenSSL])
+            fi
+            if test "${CVS}" = "not found"
+            then
+                AC_MSG_ERROR([Need cvs to build OpenSSL])
             fi
         fi
     else
@@ -132,13 +146,11 @@ AC_OUTPUT
 
 cat << EOF
 
-${PACKAGE} has been configured with following options:
+${PACKAGE} ${PACKAGE_VERSION} has been configured with following options:
 
-Version:               ${PACKAGE_VERSION}
 User binaries:         $(eval eval eval echo "${bindir}")
 Libraries:             $(eval eval eval echo "${libdir}")
 Configuration files:   $(eval eval eval echo "${sysconfdir}")
-
 
 Host:                  ${host}
 Compiler:              ${CXX}
@@ -146,7 +158,12 @@ Preprocessor flags:    ${CPPFLAGS}
 Compiler flags:        ${CFLAGS}
 Linker flags:          ${LDFLAGS}
 Libraries:             ${LIBS}
-Build patched OpenSSL  ${BUILD_OPENSSL}
+
 CRYPTO_CFLAGS:         ${CRYPTO_CFLAGS}
 CRYPTO_LIBS:           ${CRYPTO_LIBS}
+
+Build patched OpenSSL: ${BUILD_OPENSSL}
+PATCH:                 ${PATCH}
+CVS:                   ${CVS}
+OPENSSL_CONFIG_EXTRA:  ${OPENSSL_CONFIG_EXTRA}
 EOF
