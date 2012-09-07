@@ -19,6 +19,8 @@ do_subst = $(SED) \
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libeac.pc
+
+.PHONY: libeac.pc
 libeac.pc: libeac.pc.in
 	$(do_subst) < $(srcdir)/libeac.pc.in > libeac.pc
 

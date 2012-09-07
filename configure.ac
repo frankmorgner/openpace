@@ -106,7 +106,6 @@ else
         else
             CRYPTO_LIBS=""
             CRYPTO_CFLAGS=""
-            CRYPTO_DEPEND=""
             AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
             if test "${PATCH}" = "not found"
             then
@@ -118,9 +117,7 @@ else
             fi
         fi
     else
-        AC_DEFINE([CRYPTO_DEPEND],
-                  [libcrypto],
-                  [OpenSSL dependancy used for pkg-config])
+        AC_SUBST([CRYPTO_DEPEND], [libcrypto])
     fi
 fi
 AM_CONDITIONAL([BUILD_OPENSSL], [test "${BUILD_OPENSSL}" = "yes"])
