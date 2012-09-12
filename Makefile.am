@@ -33,3 +33,8 @@ clean-local:
 check-local:
 	WD=$(abs_builddir)/bootstrap MAKE=$(MAKE) $(srcdir)/bootstrap
 	rm -rf $(abs_builddir)/bootstrap
+
+
+# Install OpenSSL
+install-openssl:
+	$(MAKE) -C src $@

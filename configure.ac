@@ -41,6 +41,22 @@ AC_ARG_ENABLE([openssl-build],
               [AS_HELP_STRING([--enable-openssl-build],[enable build of a patched version of OpenSSL @<:@detect@:>@])],
               ,
               [enable_openssl_build="detect"])
+AC_ARG_ENABLE([openssl-install],
+              [AS_HELP_STRING([--enable-openssl-install],[enable installation of a patched version of OpenSSL @<:@no@:>@])],
+              ,
+              [enable_openssl_install="no"])
+
+if test "${enable_openssl_install}" = "yes"
+then
+    INSTALL_OPENSSL=yes
+    if test ! "${enable_openssl_build}" = "yes"
+    then
+        enable_openssl_build=yes
+        AC_MSG_NOTICE([A patched version of OpenSSL will be built in order to be installed])
+    fi
+else
+    INSTALL_OPENSSL=no
+fi
 
 if test "${enable_openssl_build}" = "yes"
 then
@@ -84,43 +100,42 @@ else
                      [AC_MSG_WARN([Need OpenSSL with SHA-256 support])
                       BUILD_OPENSSL=yes])
     LIBS="$saved_LIBS"
-
-
-    if test "${BUILD_OPENSSL}" = "yes"
+fi
+if test "${BUILD_OPENSSL}" = "yes"
+then
+    AC_ARG_VAR([CVS],
+               [absolute path to cvs used for checking out OpenSSL])
+    AC_PATH_PROG([CVS],
+                 [cvs],
+                 [not found])
+    AC_ARG_VAR([PATCH],
+               [absolute path to patch used for patching OpenSSL])
+    AC_PATH_PROG([PATCH],
+                 [patch],
+                 [not found])
+    AC_ARG_VAR([OPENSSL_CONFIG_EXTRA],
+               [options for configuring OpenSSL])
+    if test "${enable_openssl_build}" = "no"
     then
-        AC_ARG_VAR([CVS],
-                   [absolute path to cvs used for checking out OpenSSL])
-        AC_PATH_PROG([CVS],
-                     [cvs],
-                     [not found])
-        AC_ARG_VAR([PATCH],
-                   [absolute path to patch used for patching OpenSSL])
-        AC_PATH_PROG([PATCH],
-                     [patch],
-                     [not found])
-        AC_ARG_VAR([OPENSSL_CONFIG_EXTRA],
-                   [options for configuring OpenSSL])
-        if test "${enable_openssl_build}" = "no"
-        then
-            AC_MSG_ERROR([No suitable OpenSSL installation was found])
-        else
-            CRYPTO_LIBS=""
-            CRYPTO_CFLAGS=""
-            AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
-            if test "${PATCH}" = "not found"
-            then
-                AC_MSG_ERROR([Need patch to build OpenSSL])
-            fi
-            if test "${CVS}" = "not found"
-            then
-                AC_MSG_ERROR([Need cvs to build OpenSSL])
-            fi
-        fi
+        AC_MSG_ERROR([No suitable OpenSSL installation was found])
     else
-        AC_SUBST([CRYPTO_DEPEND], [libcrypto])
+        CRYPTO_LIBS=""
+        CRYPTO_CFLAGS=""
+        AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
+        if test "${PATCH}" = "not found"
+        then
+            AC_MSG_ERROR([Need patch to build OpenSSL])
+        fi
+        if test "${CVS}" = "not found"
+        then
+            AC_MSG_ERROR([Need cvs to build OpenSSL])
+        fi
     fi
+else
+    AC_SUBST([CRYPTO_DEPEND], [libcrypto])
 fi
 AM_CONDITIONAL([BUILD_OPENSSL], [test "${BUILD_OPENSSL}" = "yes"])
+AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h limits.h stdint.h string.h])
@@ -149,18 +164,19 @@ User binaries:         $(eval eval eval echo "${bindir}")
 Libraries:             $(eval eval eval echo "${libdir}")
 Configuration files:   $(eval eval eval echo "${sysconfdir}")
 
-Host:                  ${host}
-Compiler:              ${CXX}
-Preprocessor flags:    ${CPPFLAGS}
-Compiler flags:        ${CFLAGS}
-Linker flags:          ${LDFLAGS}
-Libraries:             ${LIBS}
+Host:                    ${host}
+Compiler:                ${CXX}
+Preprocessor flags:      ${CPPFLAGS}
+Compiler flags:          ${CFLAGS}
+Linker flags:            ${LDFLAGS}
+Libraries:               ${LIBS}
 
-CRYPTO_CFLAGS:         ${CRYPTO_CFLAGS}
-CRYPTO_LIBS:           ${CRYPTO_LIBS}
+CRYPTO_CFLAGS:           ${CRYPTO_CFLAGS}
+CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
-Build patched OpenSSL: ${BUILD_OPENSSL}
-PATCH:                 ${PATCH}
-CVS:                   ${CVS}
-OPENSSL_CONFIG_EXTRA:  ${OPENSSL_CONFIG_EXTRA}
+Build patched OpenSSL:   ${BUILD_OPENSSL}
+Install patched OpenSSL: ${INSTALL_OPENSSL}
+PATCH:                   ${PATCH}
+CVS:                     ${CVS}
+OPENSSL_CONFIG_EXTRA:    ${OPENSSL_CONFIG_EXTRA}
 EOF

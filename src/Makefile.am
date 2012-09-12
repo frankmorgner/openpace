@@ -60,7 +60,7 @@ $(OPENSSL_CONFIG):
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
 $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
 	cd $(OPENSSL_DIR) \
-		&& $(OPENSSL_CONFIG) $(OPENSSL_CONFIG_EXTRA)
+		&& $(OPENSSL_CONFIG) shared --prefix=$(prefix) $(OPENSSL_CONFIG_EXTRA)
 
 # Patch OpenSSL with OpenPACE object identifiers
 .PHONY: patch_openssl
@@ -71,6 +71,11 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 # Build OpenSSL
 $(OPENSSL_LIBCRYPTO): patch_openssl
 	$(MAKE) -C $(OPENSSL_DIR)
+
+# Install OpenSSL
+install-openssl: $(OPENSSL_LIBCRYPTO)
+	$(MAKE) -C $(OPENSSL_DIR) INSTALL_PREFIX=$(DESTDIR) install_sw
+
 
 # We require the patched headers of OpenSSL
 $(libeac_la_SOURCES) $(nobase_include_HEADERS): patch_openssl
@@ -86,7 +91,16 @@ EAC_LIBS              += $(OPENSSL_LIBCRYPTO) -ldl -lz
 clean-local:
 	test ! -r $(OPENSSL_MAKEFILE) \
 		|| $(MAKE) -C $(OPENSSL_DIR) clean
+	rm -f $(OPENSSL_MAKEFILE)
 
 distclean-local:
 	rm -rf $(OPENSSL_DIR)
+
+if INSTALL_OPENSSL
+install-exec-local: install-openssl
+endif
+
+else
+install-openssl:
+	@echo Nothing to install. OpenSSL was not built together with OpenPACE. Use \`./configure --enable-openssl-build\` if this is what you want.
 endif
