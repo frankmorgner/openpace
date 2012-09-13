@@ -8,7 +8,7 @@ WS2_32 = -lws2_32
 endif
 
 do_subst = $(SED) \
-	   -e 's,[@]CRYPTO_DEPEND[@],$(CRYPTO_DEPEND),g' \
+	   -e 's,[@]PKG_REQUIRES[@],$(PKG_REQUIRES),g' \
 	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
 	   -e 's,[@]VERSION[@],$(VERSION),g' \
 	   -e 's,[@]WS2_32[@],$(WS2_32),g' \
@@ -20,7 +20,6 @@ do_subst = $(SED) \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libeac.pc
 
-.PHONY: libeac.pc
 libeac.pc: libeac.pc.in
 	$(do_subst) < $(srcdir)/libeac.pc.in > libeac.pc
 

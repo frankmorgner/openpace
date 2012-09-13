@@ -45,12 +45,17 @@ cv_cert_test_CFLAGS  = $(EAC_CFLAGS)
 
 
 if BUILD_OPENSSL
-OPENSSL_DIR       = $(abs_builddir)/openssl
-OPENSSL_CONFIG    = $(OPENSSL_DIR)/config
-OPENSSL_INCLUDES  = $(OPENSSL_DIR)/include
-OPENSSL_LIBCRYPTO = $(OPENSSL_DIR)/libcrypto.a
-OPENSSL_MAKEFILE  = $(OPENSSL_DIR)/Makefile
-OPENSSL_OBJ_MAC   = $(OPENSSL_INCLUDES)/openssl/obj_mac.h
+OPENSSL_DIR           = $(abs_builddir)/openssl
+OPENSSL_CONFIG        = $(OPENSSL_DIR)/config
+OPENSSL_INCLUDES      = $(OPENSSL_DIR)/include
+OPENSSL_LIBCRYPTO_A   = $(OPENSSL_DIR)/libcrypto.a
+OPENSSL_LIBCRYPTO_SO  = $(OPENSSL_DIR)/libcrypto.so
+OPENSSL_MAKEFILE      = $(OPENSSL_DIR)/Makefile
+OPENSSL_OBJ_MAC       = $(OPENSSL_INCLUDES)/openssl/obj_mac.h
+OPENSSL_LIBS_PRIVATE  = `grep Libs.private $(OPENSSL_DIR)/libcrypto.pc | $(SED) "-e" 's,Libs.private:\s*,,'`
+if INSTALL_OPENSSL
+OPENSSL_CONFIG_EXTRA += shared
+endif
 
 
 # Fetch OpenSSL
@@ -60,7 +65,7 @@ $(OPENSSL_CONFIG):
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
 $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
 	cd $(OPENSSL_DIR) \
-		&& $(OPENSSL_CONFIG) shared --prefix=$(prefix) $(OPENSSL_CONFIG_EXTRA)
+		&& $(OPENSSL_CONFIG) --prefix=$(prefix) $(OPENSSL_CONFIG_EXTRA)
 
 # Patch OpenSSL with OpenPACE object identifiers
 .PHONY: patch_openssl
@@ -69,11 +74,11 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 		|| $(PATCH) --directory=$(OPENSSL_DIR) -p1 < $(abs_top_srcdir)/oids.patch
 
 # Build OpenSSL
-$(OPENSSL_LIBCRYPTO): patch_openssl
+$(OPENSSL_LIBCRYPTO_A): patch_openssl
 	$(MAKE) -C $(OPENSSL_DIR)
 
 # Install OpenSSL
-install-openssl: $(OPENSSL_LIBCRYPTO)
+install-openssl: $(OPENSSL_LIBCRYPTO_A)
 	$(MAKE) -C $(OPENSSL_DIR) INSTALL_PREFIX=$(DESTDIR) install_sw
 
 
@@ -81,23 +86,33 @@ install-openssl: $(OPENSSL_LIBCRYPTO)
 $(libeac_la_SOURCES) $(nobase_include_HEADERS): patch_openssl
 
 
-libeac_la_DEPENDENCIES = $(OPENSSL_LIBCRYPTO)
-libeac_la_LIBADD      += $(OPENSSL_LIBCRYPTO)
+libeac_la_DEPENDENCIES = $(OPENSSL_LIBCRYPTO_A)
+if INSTALL_OPENSSL
+libeac_la_LIBADD      += $(OPENSSL_LIBCRYPTO_SO)
+EAC_LIBS              += $(OPENSSL_LIBCRYPTO_SO)
+else
+libeac_la_LIBADD      += $(OPENSSL_LIBCRYPTO_A) $(OPENSSL_LIBS_PRIVATE)
+EAC_LIBS              += $(OPENSSL_LIBCRYPTO_A)
+endif
 libeac_la_CPPFLAGS    += -I$(OPENSSL_INCLUDES)
 EAC_CFLAGS            += -I$(OPENSSL_INCLUDES)
-EAC_LIBS              += $(OPENSSL_LIBCRYPTO) -ldl -lz
 
 
-clean-local:
-	test ! -r $(OPENSSL_MAKEFILE) \
-		|| $(MAKE) -C $(OPENSSL_DIR) clean
-	rm -f $(OPENSSL_MAKEFILE)
+#clean-local:
+#	test ! -r $(OPENSSL_MAKEFILE) \
+#		|| $(MAKE) -C $(OPENSSL_DIR) clean
+#	rm -f $(OPENSSL_MAKEFILE)
 
 distclean-local:
 	rm -rf $(OPENSSL_DIR)
 
 if INSTALL_OPENSSL
 install-exec-local: install-openssl
+else
+all-local: $(OPENSSL_LIBCRYPTO_A)
+	$(MAKE) -C $(top_srcdir) libeac.pc
+	grep "Libs.private: " ../libeac.pc > /dev/null || \
+		echo "Libs.private: $(OPENSSL_LIBS_PRIVATE)" >> ../libeac.pc
 endif
 
 else

@@ -49,6 +49,7 @@ AC_ARG_ENABLE([openssl-install],
 if test "${enable_openssl_install}" = "yes"
 then
     INSTALL_OPENSSL=yes
+    AC_SUBST([PKG_REQUIRES], [libcrypto])
     if test ! "${enable_openssl_build}" = "yes"
     then
         enable_openssl_build=yes
@@ -132,7 +133,7 @@ then
         fi
     fi
 else
-    AC_SUBST([CRYPTO_DEPEND], [libcrypto])
+    AC_SUBST([PKG_REQUIRES], [libcrypto])
 fi
 AM_CONDITIONAL([BUILD_OPENSSL], [test "${BUILD_OPENSSL}" = "yes"])
 AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])

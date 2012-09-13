@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: @PACKAGE_NAME@
-Description: Crypto library for the Extended Access Control version 2
+Description: Cryptography library for the Extended Access Control version 2
 Version: @VERSION@
-Requires: @CRYPTO_DEPEND@
+Requires: @PKG_REQUIRES@
 Libs: -L${libdir} -leac @WS2_32@
 Cflags: -I${includedir}
