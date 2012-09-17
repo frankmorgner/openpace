@@ -374,7 +374,7 @@ err:
     return r;
 }
 
-int
+enum cvc_terminal_role
 CVC_get_role(CVC_CHAT *chat)
 {
     if (!chat || !chat->relative_authorization

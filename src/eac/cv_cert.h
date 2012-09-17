@@ -39,7 +39,7 @@ extern "C" {
 
 /** There are three types of certificates specified by their terminal type:
  * CVCA certificates, DV certificates and terminal certificates */
-enum cvc_terminal_type {
+enum cvc_terminal_role {
     /** @brief Regular terminal */
     CVC_Terminal = 0,
     /** @brief Document verifier */
@@ -359,7 +359,7 @@ EVP_PKEY *CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CT
  * - \c CVC_DocVer (DVCA certificate)
  * - \c CVC_Terminal (terminal certificate)
  */
-int
+enum cvc_terminal_role
 CVC_get_role(CVC_CHAT *chat);
 
 /**
