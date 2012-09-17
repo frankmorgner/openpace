@@ -330,7 +330,7 @@ cvc_print(BIO *bio, CVC_CERT *cv, int indent);
 
  *  @return Pointer to the CHAT of \a cvc or NULL in case of an error
  */
-CVC_CHAT *
+const CVC_CHAT *
 cvc_get_chat(CVC_CERT *cvc);
 
 /** @} ***********************************************************************/

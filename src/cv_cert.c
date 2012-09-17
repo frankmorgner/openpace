@@ -856,7 +856,7 @@ certificate_description_print(BIO *bio, CVC_CERTIFICATE_DESCRIPTION *desc,
     return ret;
 }
 
-CVC_CHAT*
+const CVC_CHAT *
 cvc_get_chat(CVC_CERT *cvc)
 {
 
