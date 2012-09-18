@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+"""
+setup.py file for OpenPACE wrapper
+"""
+from distutils.core import setup, Extension
+import shlex
+
+#The following variables are set by autotools at build-time
+OPENPACE_LIBS = '@OPENPACE_LIBS@'
+OPENPACE_CFLAGS = '@OPENPACE_CFLAGS@'
+OPENSSL_LIBS = '@OPENSSL_LIBS@'
+OPENSSL_CFLAGS = '@OPENSSL_CFLAGS@'
+CFLAGS = '@CFLAGS@'
+CPPFLAGS = '@CPPFLAGS@'
+LIBS = '@LIBS@'
+
+all_libs = shlex.split(CPPFLAGS + ' ' + CFLAGS + ' ' + OPENPACE_LIBS + ' ' + OPENSSL_LIBS)
+all_cflags = shlex.split(LIBS + ' ' + OPENPACE_CFLAGS + ' ' + OPENSSL_CFLAGS)
+
+#Prepare the external module that we want to build
+pace_module = Extension('_pace',
+                           sources=['pace.i'],
+                           swig_opts=['-modern', '-outdir', '@builddir@', '-I@top_srcdir@/src/'],
+                           extra_compile_args=all_cflags,
+                           extra_link_args=all_libs,
+                          )
+
+#Setup Distutils
+setup (name         = '@PACKAGE_NAME@',
+       version      = '@PACKAGE_VERSION@',
+       author       = "Dominik Oepen",
+       author_email = "oepen@informatik.hu-berlin.de",
+       url          = "http://openpace.sourceforge.net",
+       description  = """Python wrapper for the OpenPACE library""",
+       classifiers  = [ 'Intended Audience :: Developers',
+                        'Operating System :: POSIX',
+                        'License :: OSI Approved :: GNU General Public License (GPL)',
+                        'Operating System :: POSIX :: Linux',
+                      ],
+       ext_modules  = [pace_module],
+       py_modules   = ['pace', 'chat', 'pace_entity'],
+      )
