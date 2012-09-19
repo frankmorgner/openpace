@@ -151,6 +151,14 @@ typedef struct ri_info_st {
     ASN1_INTEGER *maxKeyLen;
 } RI_INFO;
 
+/** RI domain parameter info */
+typedef struct ri_dp_info_st {
+    /** OID of the type of domain parameters*/
+    ASN1_OBJECT *protocol;
+    /** The actual domain parameters */
+    ALGORITHM_IDENTIFIER *aid;
+} RI_DP_INFO;
+
 /** Card Info Locator */
 typedef struct card_info_locator_st {
     /** OID */
@@ -304,7 +312,6 @@ ASN1_SEQUENCE(CA_DP_INFO) = {
     ASN1_SIMPLE(CA_DP_INFO, aid, ALGORITHM_IDENTIFIER),
     ASN1_OPT(CA_DP_INFO, keyId, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(CA_DP_INFO)
-
 IMPLEMENT_ASN1_FUNCTIONS(CA_DP_INFO)
 
 /* ChipAuthenticationPublicKeyInfo */
@@ -313,6 +320,7 @@ ASN1_SEQUENCE(CA_PUBLIC_KEY_INFO) = {
         ASN1_SIMPLE(CA_PUBLIC_KEY_INFO, chipAuthenticationPublicKeyInfo, SUBJECT_PUBLIC_KEY_INFO),
         ASN1_OPT(CA_PUBLIC_KEY_INFO, keyId, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(CA_PUBLIC_KEY_INFO)
+IMPLEMENT_ASN1_FUNCTIONS(CA_PUBLIC_KEY_INFO)
 
 /* FileId */
 ASN1_SEQUENCE(FILE_ID) = {
@@ -342,7 +350,12 @@ ASN1_SEQUENCE(RI_INFO) = {
     ASN1_OPT(RI_INFO, maxKeyLen, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(RI_INFO)
 
-/* TODO: RestrictedIdentificationDomainParameterInfo */
+/* RestrictedIdentificationDomainParameterInfo */
+ASN1_SEQUENCE(RI_DP_INFO) = {
+    ASN1_SIMPLE(RI_DP_INFO, protocol, ASN1_OBJECT),
+    ASN1_SIMPLE(RI_DP_INFO, aid, ALGORITHM_IDENTIFIER),
+} ASN1_SEQUENCE_END(RI_DP_INFO)
+IMPLEMENT_ASN1_FUNCTIONS(RI_DP_INFO)
 
 /* CardInfoLocator */
 ASN1_SEQUENCE(CARD_INFO_LOCATOR) = {
@@ -576,10 +589,13 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
     int nid, ret = 0;
     PACE_INFO *tmp_info = NULL;
     PACE_DP_INFO *tmp_dp_info = NULL;
-TA_INFO *tmp_ta_info = NULL;
+    TA_INFO *tmp_ta_info = NULL;
     CA_INFO *tmp_ca_info = NULL;
     CA_DP_INFO *tmp_ca_dp_info = NULL;
+    RI_DP_INFO *tmp_ri_dp_info = NULL;
+    CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
     EC_KEY *tmp_ec = NULL;
+    BUF_MEM *pubkey = NULL;
 
     check((in && ctx  && ctx->pace_ctx && ctx->ca_ctx && ctx->ta_ctx),
         "Invalid arguments");
@@ -730,7 +746,7 @@ TA_INFO *tmp_ta_info = NULL;
                 CA_INFO_free(tmp_ca_info);
                 tmp_ca_info = NULL;
                 break;
-            /* CADomainParameterInfo */
+            /* ChipAuthenticationDomainParameterInfo */
             case NID_id_CA_DH:
             case NID_id_CA_ECDH:
                 /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
@@ -738,23 +754,87 @@ TA_INFO *tmp_ta_info = NULL;
                 tmp_ca_dp_info = d2i_CA_DP_INFO(NULL, &seq_pos, len+3);
                 check(tmp_ca_dp_info, "Could not decode CA domain parameter info");
 
-                /* TODO: Copy all the public keys into the EAC context. As of now
-                 * EAC_CTX can only hold one CA public key. */
+                /* TODO: Copy all the public keys into the EAC context.  As of
+                 * now EAC_CTX can only hold one CA public key.  We could use
+                 * EVP_PKEY_set_std_dp here, but we leave this to
+                 * EAC_CTX_init_ca called by the user */
 
                 CA_DP_INFO_free(tmp_ca_dp_info);
                 tmp_ca_dp_info = NULL;
                 break;
-            /* CAPublicKeyInfo */
+            /* ChipAuthenticationPublicKeyInfo */
             case NID_id_PK_DH:
             case NID_id_PK_ECDH:
+                /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
+                 * RestrictedIdentificationDomainParameterInfo */
+                ca_public_key_info = d2i_CA_PUBLIC_KEY_INFO(NULL, &seq_pos, len+3);
+                check(ca_public_key_info, "Could not decode CA PK domain parameter info");
+
+                if (!EVP_PKEY_set_std_dp(ctx->ca_ctx->ka_ctx->key,
+                            ASN1_INTEGER_get(ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier->standardizedDomainParameters)))
+                    goto err;
+
+                if (nid == NID_id_PK_DH) {
+                    /* FIXME the public key for DH is actually an ASN.1
+                     * UNSIGNED INTEGER, which is an ASN.1 INTEGER that is
+                     * always positive. Parsing the unsigned integer should be
+                     * done in EVP_PKEY_set_pubkey. */
+                    const unsigned char *p = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
+                    ASN1_INTEGER *i = d2i_ASN1_UINTEGER(NULL, &p,
+                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
+                    pubkey = BUF_MEM_create_init(i->data, i->length);
+                    ASN1_INTEGER_free(i);
+                } else {
+                    pubkey = BUF_MEM_create_init(
+                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data,
+                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
+                }
+
+                CA_PUBLIC_KEY_INFO_free(ca_public_key_info);
+                ca_public_key_info = NULL;
+
+                if (!EVP_PKEY_set_pubkey(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
+                    goto err;
+
+                BUF_MEM_free(pubkey);
+                pubkey = NULL;
                 break;
             /* ChipIdentifer */
             case NID_id_CI:
                 break;
             case NID_id_PT:
                 break;
+            case NID_id_RI_DH_SHA_1:
+            case NID_id_RI_DH_SHA_224:
+            case NID_id_RI_DH_SHA_256:
+            case NID_id_RI_DH_SHA_384:
+            case NID_id_RI_DH_SHA_512:
+            case NID_id_RI_ECDH_SHA_1:
+            case NID_id_RI_ECDH_SHA_224:
+            case NID_id_RI_ECDH_SHA_256:
+            case NID_id_RI_ECDH_SHA_384:
+            case NID_id_RI_ECDH_SHA_512:
+                if (!RI_CTX_set_protocol(ctx->ri_ctx, nid))
+                    goto err;
+                break;
+            /* RestrictedIdentificationDomainParameterInfo */
+            case NID_id_RI_DH:
+            case NID_id_RI_ECDH:
+                /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
+                /* RestrictedIdentificationDomainParameterInfo */
+                tmp_ri_dp_info = d2i_RI_DP_INFO(NULL, &seq_pos, len+3);
+                check(tmp_ri_dp_info, "Could not decode RI domain parameter info");
+
+                /* TODO: Copy all the public keys into the EAC context.  As of
+                 * now EAC_CTX can only hold one RI public key.  We could use
+                 * EVP_PKEY_set_std_dp here, but we leave this to
+                 * EAC_CTX_init_ri called by the user */
+
+                RI_DP_INFO_free(tmp_ri_dp_info);
+                tmp_ri_dp_info = NULL;
+                break;
             default:
-                log_err("Unknown parameters");
+                log_err("Unknown parameter: %s", OBJ_nid2sn(nid));
                 break;
         }
     }
@@ -774,6 +854,9 @@ err:
         CA_INFO_free(tmp_ca_info);
     if (tmp_ec)
         EC_KEY_free(tmp_ec);
+    if (pubkey)
+        BUF_MEM_free(pubkey);
+
     return ret;
 }
 

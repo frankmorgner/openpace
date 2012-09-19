@@ -37,6 +37,8 @@
 #include <openssl/ec.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
+#include <openssl/obj_mac.h>
+#include <openssl/pkcs7.h>
 #include <string.h>
 
 BUF_MEM *
@@ -100,10 +102,41 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey)
     return 1;
 }
 
+/* TODO verify signature */
+/* TODO check and initialize a given EAC_CTX */
 BUF_MEM *
 CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)
 {
-    return NULL;
+	PKCS7 *p7 = NULL, *signed_data;
+    ASN1_OCTET_STRING *os;
+    BUF_MEM *pubkey = NULL;
+    EAC_CTX *signed_ctx = NULL;
+
+    if (!d2i_PKCS7(&p7, &ef_cardsecurity, ef_cardsecurity_len)
+            || !PKCS7_type_is_signed(p7))
+        goto err;
+
+    signed_data = p7->d.sign->contents;
+    if (OBJ_obj2nid(signed_data->type) != NID_id_SecurityObject
+            || ASN1_TYPE_get(signed_data->d.other) != V_ASN1_OCTET_STRING)
+        goto err;
+    os = signed_data->d.other->value.octet_string;
+
+    signed_ctx = EAC_CTX_new();
+
+    if (!EAC_CTX_init_ef_cardaccess(os->data, os->length, signed_ctx)
+            || !signed_ctx || !signed_ctx->ca_ctx
+            || !signed_ctx->ca_ctx->ka_ctx)
+        goto err;
+
+    pubkey = get_pubkey(signed_ctx->ca_ctx->ka_ctx->key, signed_ctx->bn_ctx);
+
+err:
+    EAC_CTX_clear_free(signed_ctx);
+    if (p7)
+        PKCS7_free(p7);
+
+    return pubkey;
 }
 
 /* Nonce for CA is always 8 bytes long */
