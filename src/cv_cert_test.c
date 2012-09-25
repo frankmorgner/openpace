@@ -217,7 +217,7 @@ static int parse_cv_file(char *filename) {
 
     FILE *fp = NULL;
     int fail = 1;
-    long filesize = 0;
+    size_t filesize = 0;
     unsigned char *cv_data = NULL;
 
     fp = fopen(filename, "rb");

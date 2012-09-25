@@ -155,7 +155,7 @@ static char tc_ecdh_ef_cardaccess[] = {
     0x00, 0x7F, 0x00, 0x07, 0x02, 0x02, 0x03, 0x02, 0x30, 0x0C, 0x06, 0x07, 0x04, 0x00, 0x7F, 0x00,  /* ........0....... */
     0x07, 0x01, 0x02, 0x02, 0x01, 0x0D, 0x02, 0x01, 0x02,                                            /* ......... */
 };
-static unsigned char tc_ecdh_ef_cardsecurity[] = {
+static char tc_ecdh_ef_cardsecurity[] = {
     0x30, 0x82, 0x07, 0xE7, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x02, 0xA0, /*0.....*.H.......*/
     0x82, 0x07, 0xD8, 0x30, 0x82, 0x07, 0xD4, 0x02, 0x01, 0x03, 0x31, 0x0F, 0x30, 0x0D, 0x06, 0x09, /*...0......1.0...*/
     0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x30, 0x82, 0x01, 0x4D, 0x06, /*`.H.e......0..M.*/
@@ -2934,7 +2934,8 @@ err:
 static int
 do_dynamic_eac_tests(void)
 {
-    int i, j, k, l, m, failed = 0;
+    size_t i, j, k, l, m;
+    int failed = 0;
 
     printf("Dynamic EAC tests:\n");
 
@@ -3346,7 +3347,8 @@ err:
 static int
 test_worked_examples(void)
 {
-    int i, failed = 0;
+    size_t i;
+    int failed = 0;
 
     printf("EAC worked examples:\n");
 
@@ -3457,7 +3459,8 @@ err:
 static int
 test_parsing(void)
 {
-    int i, failed = 0;
+    size_t i;
+    int failed = 0;
 
     printf("Parsing capabilities:\n");
 
@@ -3489,6 +3492,7 @@ int
 main(int argc, char *argv[])
 {
     int i;
+    size_t j;
     int failed = 0;
     unsigned char c;
 
@@ -3540,11 +3544,11 @@ main(int argc, char *argv[])
     }
 
     /* all possible characters as character string */
-    for (c = 0x20, i = 0; i < sizeof pace_raw; c++, i++) {
+    for (c = 0x20, j = 0; j < sizeof pace_raw; c++, j++) {
         while (c <= 0x1f || (c >= 0x7f && c <= 0x9f)) {
             c++;
         }
-        pace_raw[i] = c;
+        pace_raw[j] = c;
     }
 
     /*printf("%s:%d\n", __FILE__, __LINE__);*/
