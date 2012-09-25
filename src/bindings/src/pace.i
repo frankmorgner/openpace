@@ -298,7 +298,7 @@ PACE_STEP3C_derive_keys(const EAC_CTX *ctx);
 
 int
 PACE_STEP3D_verify_authentication_token(const EAC_CTX *ctx, const BUF_MEM *token);
-%rename(PACE_STEP3D_verify_authentication_token) verify_authentication_token;
+%rename(PACE_STEP3D_verify_authentication_token) pace_step3d_verify_authentication_token;
 %inline %{
     static int verify_authentication_token(const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
