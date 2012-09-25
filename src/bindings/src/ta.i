@@ -16,7 +16,7 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
         size_t in_len);
 %rename(TA_STEP2_import_certificate) import_certificate;
 %inline %{
-    int import_certificate(const EAC_CTX *ctx, char *in, int in_len) {
+    static int import_certificate(const EAC_CTX *ctx, char *in, int in_len) {
         if (in_len < 0)
             return 0;
         else
@@ -27,7 +27,7 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
 #ifdef SWIGPYTHON
 %rename(TA_STEP3_generate_ephemeral_key) generate_ephemeral_ta_key;
 %inline %{
-    void generate_ephemeral_ta_key(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void generate_ephemeral_ta_key(char **out, int *out_len, const EAC_CTX *ctx) {
 
         BUF_MEM *out_buf = NULL;
 
@@ -56,7 +56,7 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
 
 %rename(TA_STEP4_get_nonce) get_nonce;
 %inline %{
-    void get_nonce(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void get_nonce(char **out, int *out_len, const EAC_CTX *ctx) {
 
         BUF_MEM *out_buf = NULL;
 

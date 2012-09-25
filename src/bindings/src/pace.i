@@ -95,7 +95,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 #ifdef SWIGPYTHON
 %rename(PACE_STEP1_enc_nonce) enc_nonce;
 %inline %{
-    void enc_nonce(char **out, int *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
+    static void enc_nonce(char **out, int *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
 
         BUF_MEM *enc_nonce = NULL;
 
@@ -123,7 +123,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
 %rename(PACE_STEP2_dec_nonce) dec_nonce;
 %inline %{
-    int dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi, char *in, int in_len) {
+    static int dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -139,7 +139,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
 %rename(PACE_STEP3A_generate_mapping_data) generate_mapping_data;
 %inline %{
-    void generate_mapping_data(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void generate_mapping_data(char **out, int *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3A_generate_mapping_data(ctx);
@@ -164,7 +164,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
 %rename(PACE_STEP3B_generate_ephemeral_key) generate_ephemeral_pace_key;
 %inline %{
-    void generate_ephemeral_pace_key(char **out, int *out_len, EAC_CTX *ctx) {
+    static void generate_ephemeral_pace_key(char **out, int *out_len, EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3B_generate_ephemeral_key(ctx);
@@ -189,7 +189,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
 %rename(PACE_STEP3D_compute_authentication_token) compute_authentication_token;
 %inline %{
-    void compute_authentication_token(char **out, int *out_len,
+    static void compute_authentication_token(char **out, int *out_len,
             const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
@@ -222,7 +222,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
 %rename(PACE_STEP1_enc_nonce) enc_nonce;
 %inline %{
-    BUF_MEM *enc_nonce(const EAC_CTX *ctx, const PACE_SEC *pi) {
+    static BUF_MEM *enc_nonce(const EAC_CTX *ctx, const PACE_SEC *pi) {
 
         BUF_MEM *enc_nonce = NULL;
 
@@ -258,7 +258,7 @@ int
 PACE_STEP3A_map_generator(const EAC_CTX *ctx, const BUF_MEM *in);
 %rename(PACE_STEP3A_map_generator) map_generator;
 %inline %{
-    int map_generator(const EAC_CTX *ctx, char *in, int in_len) {
+    static int map_generator(const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -279,7 +279,7 @@ int
 PACE_STEP3B_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *in);
 %rename(PACE_STEP3B_compute_shared_secret) compute_shared_secret;
 %inline %{
-    int compute_shared_secret(const EAC_CTX *ctx, char *in, int in_len) {
+    static int compute_shared_secret(const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -300,7 +300,7 @@ int
 PACE_STEP3D_verify_authentication_token(const EAC_CTX *ctx, const BUF_MEM *token);
 %rename(PACE_STEP3D_verify_authentication_token) verify_authentication_token;
 %inline %{
-    int verify_authentication_token(const EAC_CTX *ctx, char *in, int in_len) {
+    static int verify_authentication_token(const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 

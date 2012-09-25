@@ -32,7 +32,7 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 
 %rename(CA_STEP1_get_pubkey) ca_step1_get_pubkey;
 %inline %{
-    void ca_step1_get_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void ca_step1_get_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = CA_STEP1_get_pubkey(ctx);
         if (!out_buf)
             return;
@@ -50,9 +50,12 @@ err:
     }
 %}
 
+BUF_MEM *
+CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len);
+
 %rename(CA_STEP2_get_eph_pubkey) ca_step2_get_eph_pubkey;
 %inline %{
-    void ca_step2_get_eph_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void ca_step2_get_eph_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = CA_STEP2_get_eph_pubkey(ctx);
         if (!out_buf)
             return;
@@ -86,7 +89,7 @@ CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
         const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey);
 %rename(CA_STEP3_check_pcd_pubkey) ca_step3_check_pcd_pubkey;
 %inline %{
-    int ca_step3_check_pcd_pubkey (const EAC_CTX *ctx,
+    static int ca_step3_check_pcd_pubkey (const EAC_CTX *ctx,
             char *comp_pubkey, int comp_pubkey_len, /* typemap applied */
             char *pubkey, int pubkey_len) /* typemap applied */ {
         BUF_MEM *comp_pubkey_buf = NULL, *pubkey_buf = NULL;
@@ -112,7 +115,7 @@ int
 CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
 %rename(CA_STEP4_compute_shared_secret) ca_step4_compute_shared_secret;
 %inline %{
-    int ca_step4_compute_shared_secret (const EAC_CTX *ctx,
+    static int ca_step4_compute_shared_secret (const EAC_CTX *ctx,
             char *pubkey, int pubkey_len) /* typemap applied */ {
         BUF_MEM *pubkey_buf = NULL;
         int ret = -1;
@@ -136,7 +139,7 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
 #ifdef SWIGPYTHON
 %rename(CA_STEP5_derive_keys) ca_step5_derive_keys;
 %inline %{
-    PyObject* ca_step5_derive_keys (const EAC_CTX *ctx,
+    static PyObject* ca_step5_derive_keys (const EAC_CTX *ctx,
             char *pubkey, int pubkey_len) /* typemap applied */ {
         BUF_MEM *pubkey_buf = NULL, *nonce = NULL, *token = NULL;
         PyObject *out = NULL, *nonce_str = NULL, *token_str = NULL;

@@ -20,7 +20,7 @@ OBJ_txt2nid(char *in);
 
 %inline %{
     /*Dumps a BUF_MEM structure to stdout for debugging purposes */
-    void hexdump(const char *title, const BUF_MEM *s) {
+    static void hexdump(const char *title, const BUF_MEM *s) {
         unsigned int n=0;
 
         if (!s) return;
@@ -36,7 +36,7 @@ OBJ_txt2nid(char *in);
 %}
 
 %inline %{
-    void set_tr_version(EAC_CTX *ctx, int version) {
+    static void set_tr_version(EAC_CTX *ctx, int version) {
         ctx->tr_version = version;
         return;
     }
@@ -44,7 +44,7 @@ OBJ_txt2nid(char *in);
 
 %inline %{
     /* Converts a binary string and a length into a BUF_MEM structure */
-    BUF_MEM * get_buf(char *in, int in_len) {
+    static BUF_MEM * get_buf(char *in, int in_len) {
         BUF_MEM *buf = NULL;
 
         if (in_len <= 0)
@@ -58,7 +58,7 @@ OBJ_txt2nid(char *in);
 
 %inline %{
     /* Print the OpenSSL error stack to stdout */
-    void print_ossl_err() {
+    static void print_ossl_err() {
         /* Might be better to load the strings once on program startup */
         ERR_load_crypto_strings();
         ERR_print_errors_fp(stdout);
@@ -70,7 +70,7 @@ OBJ_txt2nid(char *in);
 #ifdef SWIGPYTHON
 
 %inline %{
-    void buf2string(BUF_MEM *buf, char **out, int *out_len) {
+    static void buf2string(BUF_MEM *buf, char **out, int *out_len) {
         if (!buf) { /* Return a NULL pointer on error */
             *out = NULL;
             out_len = 0;

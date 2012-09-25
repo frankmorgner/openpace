@@ -33,7 +33,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_encrypt) eac_encrypt;
 %inline %{
-    void eac_encrypt(char **out, int *out_len, const EAC_CTX *ctx,
+    static void eac_encrypt(char **out, int *out_len, const EAC_CTX *ctx,
             unsigned long ssc, char *in, int in_len) {
         BIGNUM *bn = NULL;
         BUF_MEM *out_buf = NULL, *data = NULL;
@@ -77,7 +77,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_decrypt) eac_decrypt;
 %inline %{
-    void eac_decrypt(char **out, int *out_len, const EAC_CTX *ctx,
+    static void eac_decrypt(char **out, int *out_len, const EAC_CTX *ctx,
             unsigned long ssc, char *in, int in_len) {
         BIGNUM *bn = NULL;
         BUF_MEM *out_buf = NULL, *data = NULL;
@@ -121,7 +121,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_authenticate) eac_authenticate;
 %inline %{
-    void eac_authenticate(char **out, int *out_len, const EAC_CTX *ctx,
+    static void eac_authenticate(char **out, int *out_len, const EAC_CTX *ctx,
             unsigned long ssc, char *in, int in_len) {
         BIGNUM *bn = NULL;
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
@@ -165,7 +165,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_Comp) eac_comp;
 %inline %{
-    void eac_comp(char **out, int *out_len, const EAC_CTX *ctx, int id,
+    static void eac_comp(char **out, int *out_len, const EAC_CTX *ctx, int id,
             char *in, int in_len) {
 
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
@@ -201,7 +201,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename (EAC_CTX_print_private) print_eac_ctx;
 %inline %{
-    void print_eac_ctx(char **out, int *out_len, EAC_CTX *eac_ctx, int indent) {
+    static void print_eac_ctx(char **out, int *out_len, EAC_CTX *eac_ctx, int indent) {
         BIO *bio = BIO_new(BIO_s_mem());
         if (!bio)
             goto err;
@@ -252,7 +252,7 @@ int
 EAC_CTX_init_ef_cardaccess(unsigned char *in, unsigned int in_len, EAC_CTX *ctx);
 %rename(EAC_CTX_init_ef_cardaccess) parse_ef_cardaccess;
 %inline %{
-    int parse_ef_cardaccess(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
+    static int parse_ef_cardaccess(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
         if (in_len < 0)
             return 0;
         else
@@ -268,7 +268,7 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
     const unsigned char *car, size_t car_len);
 %rename(EAC_CTX_init_ta) init_ta;
 %inline %{
-    int init_ta(const EAC_CTX *ctx,
+    static int init_ta(const EAC_CTX *ctx,
             char *privkey, int privkey_len, char *cert, int cert_len,
             char *car, int car_len) {
         return EAC_CTX_init_ta(ctx,
@@ -285,7 +285,7 @@ EAC_CTX_init_ca(const EAC_CTX *ctx, int protocol, int curve,
     const unsigned char *pub, size_t pub_len);
 %rename(EAC_CTX_init_ca) init_ca;
 %inline %{
-    int init_ca(const EAC_CTX *ctx, int protocol, int curve,
+    static int init_ca(const EAC_CTX *ctx, int protocol, int curve,
             char *privkey, int privkey_len, /* typemap applied (see ta.i) */
             char *pubkey, int pubkey_len) {
         return EAC_CTX_init_ca(ctx, protocol, curve,

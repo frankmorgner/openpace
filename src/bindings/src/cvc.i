@@ -24,7 +24,7 @@ CVC_CERT
 
 %rename (CVC_d2i_CVC_CERT) str_to_cv_cert;
 %inline %{ /* typemap applied */
-    CVC_CERT *str_to_cv_cert(char *in, int in_len) {
+    static CVC_CERT *str_to_cv_cert(char *in, int in_len) {
         CVC_CERT *cvc = NULL;
         const unsigned char **p = (const unsigned char **) &in;
         cvc = CVC_d2i_CVC_CERT(NULL, p, in_len);
@@ -47,7 +47,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
         const unsigned char **in, long len);
 %rename (d2i_CVC_CERTIFICATE_DESCRIPTION) str_to_cert_desc;
 %inline %{ /* typemap applied */
-    CVC_CERTIFICATE_DESCRIPTION *str_to_cert_desc(char *in, int in_len) {
+    static CVC_CERTIFICATE_DESCRIPTION *str_to_cert_desc(char *in, int in_len) {
         CVC_CERTIFICATE_DESCRIPTION *description = NULL;
         const unsigned char **p = (const unsigned char **) &in;
         description = d2i_CVC_CERTIFICATE_DESCRIPTION(NULL, p, in_len);
@@ -58,7 +58,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 #ifdef SWIGPYTHON
 
 %inline %{
-    void get_termsOfUsage(CVC_CERTIFICATE_DESCRIPTION *desc, char **out,
+    static void get_termsOfUsage(CVC_CERTIFICATE_DESCRIPTION *desc, char **out,
             int *out_len) {
 
         /*XXX: We only deal with plain text TOUs. What should we do with pdf or
@@ -79,7 +79,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    void get_issuer_name(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_issuer_name(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->issuerName)
             return;
 
@@ -94,7 +94,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    void get_subject_name(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_subject_name(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->issuerName)
             return;
 
@@ -109,7 +109,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    void get_subject_url(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_subject_url(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->subjectURL)
             return;
 
@@ -124,7 +124,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    void get_issuer_url(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_issuer_url(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->issuerURL)
             return;
 
@@ -148,7 +148,7 @@ CVC_CHAT *
 d2i_CVC_CHAT(CVC_CHAT **chat, const unsigned char **in, long len);
 %rename (d2i_CVC_CHAT) str_to_chat;
 %inline %{ /* typemap applied */
-    CVC_CHAT *str_to_chat(char *in, int in_len) {
+    static CVC_CHAT *str_to_chat(char *in, int in_len) {
         CVC_CHAT *chat = NULL;
         const unsigned char **p = (const unsigned char **) &in;
         chat = d2i_CVC_CHAT(NULL, p, (long) in_len);
@@ -165,7 +165,7 @@ cvc_get_chat(CVC_CERT *cvc);
 void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
 %rename (cvc_chat_print) print_chat;
 %inline %{
-    void print_chat(CVC_CHAT *chat, int indent) {
+    static void print_chat(CVC_CHAT *chat, int indent) {
         BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
         if (!bio_stdout)
             return;
@@ -175,7 +175,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
 %}
 
 %inline %{
-    void print_binary_chat(char *in, int in_len) {
+    static void print_binary_chat(char *in, int in_len) {
         CVC_CHAT *chat = NULL;
         if (!in || (in_len <= 0))
             return;
@@ -199,7 +199,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
 #ifdef SWIGPYTHON
 
 %inline %{
-    void get_binary_chat(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_binary_chat(CVC_CHAT *chat, char **out, int *out_len) {
 
         if (!chat || !chat->relative_authorization) {
             /* Return a NULL pointer on error */
@@ -218,7 +218,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
 
 
 %inline %{
-    void get_chat_role(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_role(CVC_CHAT *chat, char **out, int *out_len) {
         int role = 0;
 
         if (!chat || !out || !out_len)
@@ -272,7 +272,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
 %}
 
 %inline %{
-    void get_chat_terminal_type(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_terminal_type(CVC_CHAT *chat, char **out, int *out_len) {
         const char *terminal_type = NULL;
 
         if (!chat || !out || !out_len)
@@ -305,7 +305,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
     /**
      * @brief Get a string representation of a CHAT.
      */
-    void get_chat_rel_auth(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_rel_auth(CVC_CHAT *chat, char **out, int *out_len) {
         BIO *bio =  NULL;
 
         if (!out || !out_len)
@@ -345,7 +345,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
     /**
      * @brief Get a string representation of a CHAT.
      */
-    void get_chat_repr(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_repr(CVC_CHAT *chat, char **out, int *out_len) {
         BIO *bio =  NULL;
 
         if (!out || !out_len)
