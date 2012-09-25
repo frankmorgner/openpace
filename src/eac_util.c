@@ -609,21 +609,18 @@ err:
     return NULL;
 }
 
-static EVP_PKEY *
-EVP_PKEY_from_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
+int
+EVP_PKEY_set_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
 {
-    EVP_PKEY *out = NULL;
     DH *dh = NULL;
     EC_KEY *ec = NULL;
     EC_POINT *ecp = NULL;
 
-    out = EVP_PKEY_dup(key);
+    check(key, "Invalid arguments");
 
-    check(out, "Invalid arguments");
-
-    switch (EVP_PKEY_type(out->type)) {
+    switch (EVP_PKEY_type(key->type)) {
         case EVP_PKEY_DH:
-            dh = EVP_PKEY_get1_DH(out);
+            dh = EVP_PKEY_get1_DH(key);
             if (!dh)
                 goto err;
 
@@ -631,11 +628,11 @@ EVP_PKEY_from_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
                     dh->pub_key);
             if (!dh->pub_key)
                 goto err;
-            EVP_PKEY_set1_DH(out, dh);
+            EVP_PKEY_set1_DH(key, dh);
             DH_free(dh);
             break;
         case EVP_PKEY_EC:
-            ec = EVP_PKEY_get1_EC_KEY(out);
+            ec = EVP_PKEY_get1_EC_KEY(key);
             if (!ec)
                 goto err;
 
@@ -644,7 +641,7 @@ EVP_PKEY_from_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
                     (unsigned char *) pub->data, pub->length, bn_ctx)
                      || !EC_KEY_set_public_key(ec, ecp))
                 goto err;
-            EVP_PKEY_set1_EC_KEY(out, ec);
+            EVP_PKEY_set1_EC_KEY(key, ec);
             EC_POINT_free(ecp);
             EC_KEY_free(ec);
             break;
@@ -653,7 +650,7 @@ EVP_PKEY_from_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
             goto err;
     }
 
-    return out;
+    return 1;
 
 err:
     if (dh)
@@ -662,9 +659,25 @@ err:
         EC_KEY_free(ec);
     if (ecp)
         EC_POINT_free(ecp);
-    if (out)
+
+    return 0;
+}
+
+static EVP_PKEY *
+EVP_PKEY_from_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
+{
+    EVP_PKEY *out = NULL;
+
+    out = EVP_PKEY_dup(key);
+    if (!out)
+        return NULL;
+
+    if (!EVP_PKEY_set_pubkey(out, pub, bn_ctx)) {
         EVP_PKEY_free(out);
-    return NULL;
+        return NULL;
+    }
+
+    return out;
 }
 
 BUF_MEM *

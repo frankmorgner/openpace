@@ -39,7 +39,7 @@ extern "C" {
 
 /** There are three types of certificates specified by their terminal type:
  * CVCA certificates, DV certificates and terminal certificates */
-enum cvc_terminal_type {
+enum cvc_terminal_role {
     /** @brief Regular terminal */
     CVC_Terminal = 0,
     /** @brief Document verifier */
@@ -283,8 +283,8 @@ void CVC_CERT_free(CVC_CERT *a);
  *
  * @return 1 on success or 0 in case of an error
  */
-int certificate_description_print(BIO *bio, CVC_CERTIFICATE_DESCRIPTION *desc,
-        int indent);
+int certificate_description_print(BIO *bio,
+        const CVC_CERTIFICATE_DESCRIPTION *desc, int indent);
 
 /**
  * @brief Print CHAT in human readable form
@@ -296,7 +296,7 @@ int certificate_description_print(BIO *bio, CVC_CERTIFICATE_DESCRIPTION *desc,
  * @return 1 on success or 0 in case of an error
  * */
 int
-cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
+cvc_chat_print(BIO *bio, const CVC_CHAT *chat, int indent);
 
 /**
  * @brief Print the relative authorization contained in a CHAT in human readable
@@ -309,7 +309,7 @@ cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
  * @return 1 on success or 0 in case of an error
  * */
 int
-cvc_chat_print_authorizations(BIO *bio, CVC_CHAT *chat, int indent);
+cvc_chat_print_authorizations(BIO *bio, const CVC_CHAT *chat, int indent);
 
 /**
  * @brief Print CV certificate in human readable form
@@ -321,7 +321,7 @@ cvc_chat_print_authorizations(BIO *bio, CVC_CHAT *chat, int indent);
  * @return 1 on success or 0 in case of an error
  * */
 int
-cvc_print(BIO *bio, CVC_CERT *cv, int indent);
+cvc_print(BIO *bio, const CVC_CERT *cv, int indent);
 
 /**
  *  @brief Get the CHAT contained in a CV certifcate.
@@ -330,8 +330,8 @@ cvc_print(BIO *bio, CVC_CERT *cv, int indent);
 
  *  @return Pointer to the CHAT of \a cvc or NULL in case of an error
  */
-CVC_CHAT *
-cvc_get_chat(CVC_CERT *cvc);
+const CVC_CHAT *
+cvc_get_chat(const CVC_CERT *cvc);
 
 /** @} ***********************************************************************/
 
@@ -346,7 +346,8 @@ cvc_get_chat(CVC_CERT *cvc);
  *
  * @return An EVP_PKEY container with the public key or NULL in case of an error
  */
-EVP_PKEY *CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx);
+EVP_PKEY *
+CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx);
 
 /**
  * @brief Extract the terminal-type (terminal, DV, CVCA) from the CHAT
@@ -359,8 +360,8 @@ EVP_PKEY *CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CT
  * - \c CVC_DocVer (DVCA certificate)
  * - \c CVC_Terminal (terminal certificate)
  */
-int
-CVC_get_role(CVC_CHAT *chat);
+enum cvc_terminal_role
+CVC_get_role(const CVC_CHAT *chat);
 
 /**
  * @brief Verify the signature of a CV certificate using the public key of the
@@ -387,7 +388,7 @@ CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key);
  * case of an error.
  */
 int
-CVC_check_description(CVC_CERT *cv, const unsigned char *cert_desc_in,
+CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
         const unsigned int cert_desc_in_len);
 
 /** @cond */

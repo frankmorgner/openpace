@@ -79,7 +79,7 @@ get_ta_sigdata(const BUF_MEM *pcd_ta_comp_eph_pubkey,
     size_t len;
     BUF_MEM *data = NULL;
 
-    check_return((nonce || pcd_ta_comp_eph_pubkey), "Invalid arguments");
+    check_return(nonce && pcd_ta_comp_eph_pubkey, "Invalid arguments");
 
     /* Data to be signed: ID PICC || r PICC || Comp(~PK_PCD) || APCD */
 
@@ -113,7 +113,7 @@ TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx)
 {
     BUF_MEM *comp_pub_key, *pub_key = NULL;
 
-    check_return((ctx || ctx->ca_ctx || ctx->ca_ctx->ka_ctx),
+    check_return(ctx && ctx->ca_ctx && ctx->ca_ctx->ka_ctx,
             "Invalid arguments");
 
     pub_key = KA_CTX_generate_key(ctx->ca_ctx->ka_ctx, ctx->bn_ctx);
@@ -132,7 +132,7 @@ TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx)
 BUF_MEM *
 TA_STEP4_get_nonce(const EAC_CTX *ctx)
 {
-    check_return((ctx || ctx->ta_ctx), "Invalid arguments");
+    check_return(ctx && ctx->ta_ctx, "Invalid arguments");
 
     BUF_MEM_clear_free(ctx->ta_ctx->nonce);
     ctx->ta_ctx->nonce = randb(TA_NONCE_SIZE);
@@ -146,7 +146,7 @@ int
 TA_STEP4_set_nonce(const EAC_CTX *ctx, const BUF_MEM *nonce) {
     int r = 0;
 
-    check((ctx || ctx->ta_ctx || nonce), "Invalid arguments");
+    check(ctx && ctx->ta_ctx && nonce, "Invalid arguments");
 
     if (ctx->ta_ctx->nonce)
       BUF_MEM_free(ctx->ta_ctx->nonce);
@@ -165,7 +165,7 @@ TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_comp_eph_pubkey,
 {
     BUF_MEM *data = NULL, *signature = NULL;
 
-    check((ctx || ctx->ta_ctx), "Invalid arguments");
+    check(ctx && ctx->ta_ctx, "Invalid arguments");
 
     /* Get the data to be signed */
     data = get_ta_sigdata(my_ta_comp_eph_pubkey, opp_pace_comp_eph_pubkey,
@@ -187,7 +187,7 @@ TA_STEP6_verify(const EAC_CTX *ctx, const BUF_MEM *opp_ta_comp_eph_pubkey,
     BUF_MEM *data = NULL;
     int r = -1;
 
-    check((ctx || ctx->ta_ctx), "Invalid arguments");
+    check(ctx && ctx->ta_ctx, "Invalid arguments");
 
     check(ctx->ta_ctx->nonce, "Conditions not satisfied");
 

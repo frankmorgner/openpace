@@ -374,8 +374,8 @@ err:
     return r;
 }
 
-int
-CVC_get_role(CVC_CHAT *chat)
+enum cvc_terminal_role
+CVC_get_role(const CVC_CHAT *chat)
 {
     if (!chat || !chat->relative_authorization
             || !chat->relative_authorization->data
@@ -555,7 +555,7 @@ err:
 }
 
 int
-cvc_print(BIO *bio, CVC_CERT *cv, int indent)
+cvc_print(BIO *bio, const CVC_CERT *cv, int indent)
 {
     int r = 0;
     char *effective_date = NULL, *expiration_date = NULL;
@@ -605,7 +605,7 @@ err:
 }
 
 int
-cvc_chat_print_authorizations(BIO *bio, CVC_CHAT *chat, int indent)
+cvc_chat_print_authorizations(BIO *bio, const CVC_CHAT *chat, int indent)
 {
 	int ok = 0, nid = 0, rel_auth_len = 0, rel_auth_num_bytes = 0, i, j = 1;
 	const char **strings;
@@ -660,7 +660,7 @@ err:
 }
 
 int
-cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent)
+cvc_chat_print(BIO *bio, const CVC_CHAT *chat, int indent)
 {
 
     int ok = 0, nid = 0, role;
@@ -797,8 +797,8 @@ cvc_get_date_string(ASN1_OCTET_STRING *date)
 }
 
 int
-certificate_description_print(BIO *bio, CVC_CERTIFICATE_DESCRIPTION *desc,
-        int indent)
+certificate_description_print(BIO *bio,
+        const CVC_CERTIFICATE_DESCRIPTION *desc, int indent)
 {
     int ret, nid;
 
@@ -856,8 +856,8 @@ certificate_description_print(BIO *bio, CVC_CERTIFICATE_DESCRIPTION *desc,
     return ret;
 }
 
-CVC_CHAT*
-cvc_get_chat(CVC_CERT *cvc)
+const CVC_CHAT *
+cvc_get_chat(const CVC_CERT *cvc)
 {
 
     if (!cvc || !cvc->body)
@@ -867,7 +867,7 @@ cvc_get_chat(CVC_CERT *cvc)
 }
 
 int
-CVC_check_description(CVC_CERT *cv, const unsigned char *cert_desc_in,
+CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
         const unsigned int cert_desc_in_len)
 {
 

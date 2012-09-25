@@ -149,7 +149,8 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
     int oid, ok = 0, i;
     EVP_PKEY *pub = NULL;
 
-    check((ctx || next_cert || next_cert->body || next_cert->body->chat),
+    check(ctx && next_cert && next_cert->body && next_cert->body->chat &&
+            next_cert->body->certificate_authority_reference,
            "Invalid arguments");
 
     /* Check date to see if the certificate is still valid
