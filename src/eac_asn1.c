@@ -29,10 +29,12 @@
 #include "eac_asn1.h"
 #include "eac_dh.h"
 #include "eac_err.h"
+#include "eac_util.h"
 #include "misc.h"
 #include "pace_lib.h"
 #include <eac/eac.h>
 #include <eac/pace.h>
+#include <eac/ri.h>
 #include <openssl/asn1.h>
 #include <openssl/dh.h>
 #include <openssl/ec.h>
