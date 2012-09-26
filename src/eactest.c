@@ -2967,7 +2967,7 @@ test_enc(EAC_CTX *ctx, unsigned int send_sequence_counter,
         const BUF_MEM *data, const BUF_MEM *enc)
 {
     int ok = 0;
-    BUF_MEM *pad = NULL, *enc_buf = NULL, *dec_buf = NULL;
+    BUF_MEM *pad = NULL, *enc_buf = NULL, *dec_buf = NULL, *unpadded = NULL;
     BIGNUM *ssc = NULL;
 
     ssc = BN_new();
@@ -2982,6 +2982,10 @@ test_enc(EAC_CTX *ctx, unsigned int send_sequence_counter,
     dec_buf = EAC_decrypt(ctx, ssc, enc_buf);
     CHECK(0, buf_eq_buf(dec_buf, pad),
             "Decrypting");
+
+    unpadded = EAC_remove_iso_pad(dec_buf);
+    CHECK(0, buf_eq_buf(unpadded, data),
+            "Removing padding");
 
     CHECK(1, 1, "Encrypting/Decrypting");
 

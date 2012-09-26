@@ -413,6 +413,15 @@ int EAC_CTX_init_ef_cardaccess(unsigned const char * in, unsigned int in_len,
  */
 BUF_MEM *
 EAC_add_iso_pad(const BUF_MEM * m, int block_size);
+/**
+ * @brief Remove ISO/IEC 9797-1 padding method 2 from a message
+ *
+ * @param[in] padded Padded message
+ *
+ * @return Unpadded message or NULL in case of an error
+ */
+BUF_MEM *
+EAC_remove_iso_pad(const BUF_MEM * m);
 
 /**
  * @brief Encrypts data according to TR-03110 F.2.

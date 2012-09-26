@@ -68,6 +68,40 @@ err:
 }
 
 BUF_MEM *
+EAC_remove_iso_pad(const BUF_MEM *padded)
+{
+    BUF_MEM *out = NULL;
+    unsigned int m_len;
+
+    check(padded, "Invalid arguments");
+
+    /* Find length of unpadded message */
+    m_len = padded->length - 1;
+    while (m_len >= 1) {
+        if (padded->data[m_len] == (char) 0x80)
+            break;
+        check(padded->data != 0x00, "Invalid padding");
+        m_len--;
+    }
+    check(m_len != 0, "Invalid padding");
+
+    /* Copy unpadded message to output buffer */
+    out = BUF_MEM_create(m_len);
+    check(out, "Out of memory");
+
+    /* Flawfinder: ignore */
+    memcpy(out->data, padded->data, m_len);
+
+    return out;
+
+err:
+    if (out)
+        BUF_MEM_free(out);
+
+    return NULL;
+}
+
+BUF_MEM *
 EAC_encrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data)
 {
     check_return((ctx && ctx->key_ctx), "Invalid arguments");
