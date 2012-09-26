@@ -37,34 +37,11 @@
 #include <string.h>
 
 BUF_MEM *
-EAC_add_iso_pad(const BUF_MEM * m, int block_size)
+EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m)
 {
-    BUF_MEM * out = NULL;
-    int p_len;
+    check_return(eac_ctx && eac_ctx->key_ctx, "Invalid arguments");
 
-    check(m, "Invalid arguments");
-
-    /* calculate length of padded message */
-    p_len = (m->length / block_size) * block_size + block_size;
-
-    out = BUF_MEM_create(p_len);
-    if (!out)
-        goto err;
-
-    /* Flawfinder: ignore */
-    memcpy(out->data, m->data, m->length);
-
-    /* now add iso padding */
-    memset(out->data + m->length, 0x80, 1);
-    memset(out->data + m->length + 1, 0, p_len - m->length - 1);
-
-    return out;
-
-err:
-    if (out)
-        BUF_MEM_free(out);
-
-    return NULL;
+    return add_iso_pad(m, EVP_CIPHER_block_size(eac_ctx->key_ctx->cipher));
 }
 
 BUF_MEM *

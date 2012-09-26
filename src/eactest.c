@@ -2974,7 +2974,7 @@ test_enc(EAC_CTX *ctx, unsigned int send_sequence_counter,
     CHECK(0, ssc && BN_set_word(ssc, send_sequence_counter),
             "Initializing Send Sequence Counter");
 
-    pad = EAC_add_iso_pad(data, EVP_CIPHER_block_size(ctx->key_ctx->cipher));
+    pad = EAC_add_iso_pad(ctx, data);
     enc_buf = EAC_encrypt(ctx, ssc, pad);
     CHECK(0, buf_eq_buf(enc_buf, enc),
             "Encrypting");
@@ -3019,7 +3019,7 @@ test_auth(EAC_CTX *ctx, unsigned int send_sequence_counter,
     CHECK(0, ssc && BN_set_word(ssc, send_sequence_counter),
             "Initializing Send Sequence Counter");
 
-    pad = EAC_add_iso_pad(data, EVP_CIPHER_block_size(ctx->key_ctx->cipher));
+    pad = EAC_add_iso_pad(ctx, data);
     auth = EAC_authenticate(ctx, ssc, pad);
     CHECK(1, buf_eq_buf(auth, mac), "Authenticating");
 

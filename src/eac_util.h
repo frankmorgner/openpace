@@ -104,6 +104,8 @@ cmac(CMAC_CTX *ctx, const EVP_CIPHER *type, const BUF_MEM * key,
 /**
  * @defgroup encoding               Encoding
  * @{ ************************************************************************/
+BUF_MEM *
+add_iso_pad(const BUF_MEM * m, int block_size);
 
 /**
  * @brief Encodes a send sequence counter according to TR-3110 F.3

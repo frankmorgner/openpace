@@ -366,6 +366,37 @@ err:
     return NULL;
 }
 
+BUF_MEM *
+add_iso_pad(const BUF_MEM * m, int block_size)
+{
+    BUF_MEM * out = NULL;
+    int p_len;
+
+    check(m, "Invalid arguments");
+
+    /* calculate length of padded message */
+    p_len = (m->length / block_size) * block_size + block_size;
+
+    out = BUF_MEM_create(p_len);
+    if (!out)
+        goto err;
+
+    /* Flawfinder: ignore */
+    memcpy(out->data, m->data, m->length);
+
+    /* now add iso padding */
+    memset(out->data + m->length, 0x80, 1);
+    memset(out->data + m->length + 1, 0, p_len - m->length - 1);
+
+    return out;
+
+err:
+    if (out)
+        BUF_MEM_free(out);
+
+    return NULL;
+}
+
 int encode_ssc(const BIGNUM *ssc, const KA_CTX *ctx, unsigned char **encoded)
 {
     unsigned char *p;
@@ -716,7 +747,7 @@ compute_authentication_token(int protocol, const KA_CTX *ka_ctx, EVP_PKEY *opp_k
 
     /* ISO 9797-1 algorithm 3 retail MAC now needs extra padding (padding method 2) */
     if (EVP_CIPHER_nid(ka_ctx->cipher) == NID_des_ede_cbc) {
-        pad = EAC_add_iso_pad(asn1, EVP_CIPHER_block_size(ka_ctx->cipher));
+        pad = add_iso_pad(asn1, EVP_CIPHER_block_size(ka_ctx->cipher));
         if (!pad)
             goto err;
         out = authenticate(ka_ctx, pad);

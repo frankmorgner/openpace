@@ -406,13 +406,15 @@ int EAC_CTX_init_ef_cardaccess(unsigned const char * in, unsigned int in_len,
 /**
  * @brief Pad a buffer using ISO/IEC 9797-1 padding method 2.
  *
+ * The block size is calculated from the currently selected SM context.
+ *
+ * @param[in] ctx EAC context
  * @param[in] m Buffer to pad
- * @param[in] block_size Pad to this block size
  *
  * @return Padded input or NULL in case of an error
  */
 BUF_MEM *
-EAC_add_iso_pad(const BUF_MEM * m, int block_size);
+EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m);
 /**
  * @brief Remove ISO/IEC 9797-1 padding method 2 from a message
  *
