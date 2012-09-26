@@ -3000,6 +3000,8 @@ err:
         BUF_MEM_free(enc_buf);
     if (dec_buf)
         BUF_MEM_free(dec_buf);
+    if (unpadded)
+        BUF_MEM_free(unpadded);
 
     return ok;
 }
