@@ -465,7 +465,6 @@ EAC_decrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
  * @param[in] ctx EAC context
  * @param[in] ssc Send sequence counter
  * @param[in] data Data to authenticate
- * @param[in] datalen Length of \a data
  *
  * @return MAC or NULL in case of an error
  *
@@ -473,6 +472,19 @@ EAC_decrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
  */
 BUF_MEM *
 EAC_authenticate(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+/**
+ * @brief Verify authenticated data according to TR-03110 F.2
+ *
+ * @param[in] ctx EAC context
+ * @param[in] ssc Send sequence counter
+ * @param[in] data Data to authenticate
+ * @param[in] mac The MAC that is going to be verified
+ *
+ * @return 1 if the MAC can be correctly verified, 0 otherwise
+ */
+int
+EAC_verify_authentication(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data,
+        const BUF_MEM *mac);
 
 /**
  * @brief Compresse a public key according to TR-03110 Table A.2.

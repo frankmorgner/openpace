@@ -3023,6 +3023,8 @@ test_auth(EAC_CTX *ctx, unsigned int send_sequence_counter,
     auth = EAC_authenticate(ctx, ssc, pad);
     CHECK(1, buf_eq_buf(auth, mac), "Authenticating");
 
+    CHECK(1, EAC_verify_authentication(ctx, ssc, pad, mac), "Verifying");
+
     ok = 1;
 
 err:

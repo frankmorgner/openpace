@@ -137,6 +137,31 @@ err:
     return out;
 }
 
+int
+EAC_verify_authentication(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data,
+        const BUF_MEM *mac)
+{
+    BUF_MEM *my_mac = NULL;
+    int ret = 0;
+
+    check((ctx && data), "Invalid arguments");
+
+    my_mac = EAC_authenticate(ctx, ssc, data);
+    check(my_mac, "Failed to compute MAC");
+
+    /* NOTE: The following MAC verification is not side channel resistent */
+
+    if (my_mac->length != mac->length)
+        goto err;
+    if (memcmp(my_mac->data, mac->data, my_mac->length) == 0)
+        ret = 1;
+
+err:
+    if (my_mac)
+        BUF_MEM_free(my_mac);
+    return ret;
+}
+
 BUF_MEM *
 EAC_Comp(const EAC_CTX *ctx, int id, const BUF_MEM *pub)
 {
