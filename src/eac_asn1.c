@@ -765,9 +765,9 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                         "Could not decode CA info");
 
                 ctx->ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
-                if (ctx->ta_ctx->version <= 0 || ctx->ta_ctx->version > 2)
+                if (ctx->ca_ctx->version <= 0 || ctx->ca_ctx->version > 2
+                        || !CA_CTX_set_protocol(ctx->ca_ctx, nid))
                     goto err;
-                ctx->ca_ctx->protocol = OBJ_obj2nid(tmp_ca_info->protocol);
                 break;
             /* ChipAuthenticationDomainParameterInfo */
             case NID_id_CA_DH:
