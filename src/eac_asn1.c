@@ -580,6 +580,59 @@ err:
     return 0;
 }
 
+static EVP_PKEY *
+aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
+{
+    EC_KEY *tmp_ec = NULL;
+    EVP_PKEY *tmp_key;
+
+    /* If there is no key, allocate memory */
+    if (!key || !*key) {
+        tmp_key = EVP_PKEY_new();
+        if (!tmp_key)
+            goto err;
+    } else
+        tmp_key = *key;
+
+    /* Extract actual parameters */
+    switch (OBJ_obj2nid(aid->algorithm)) {
+        case NID_dhpublicnumber:
+            EVP_PKEY_set1_DH(tmp_key, aid->parameters.dh);
+            break;
+        case NID_X9_62_id_ecPublicKey:
+        case NID_ecka_dh_SessionKDF_DES3:
+        case NID_ecka_dh_SessionKDF_AES128:
+        case NID_ecka_dh_SessionKDF_AES192:
+        case NID_ecka_dh_SessionKDF_AES256:
+            tmp_ec = ec_key_from_PACE_ECPARAMETERS(aid->parameters.ec, bn_ctx);
+            check(tmp_ec, "Could not decode EC key");
+
+            EVP_PKEY_set1_EC_KEY(tmp_key, tmp_ec);
+            break;
+        case NID_standardizedDomainParameters:
+            if (!EVP_PKEY_set_std_dp(tmp_key,
+                        ASN1_INTEGER_get(aid->standardizedDomainParameters)))
+                goto err;
+            break;
+        default:
+            log_err("Unknown parameter: %s", OBJ_nid2sn(OBJ_obj2nid(aid->algorithm)));
+    }
+
+    if (tmp_ec)
+        EC_KEY_free(tmp_ec);
+
+    if (key)
+        *key = tmp_key;
+    return tmp_key;
+
+err:
+    if (tmp_ec)
+        EC_KEY_free(tmp_ec);
+
+    if (!key || !*key)
+        EVP_PKEY_free(tmp_key);
+    return NULL;
+}
 int
 EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
         EAC_CTX *ctx)
@@ -596,7 +649,6 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
     CA_DP_INFO *tmp_ca_dp_info = NULL;
     RI_DP_INFO *tmp_ri_dp_info = NULL;
     CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
-    EC_KEY *tmp_ec = NULL;
     BUF_MEM *pubkey = NULL;
 
     check((in && ctx  && ctx->pace_ctx && ctx->ca_ctx && ctx->ta_ctx),
@@ -685,32 +737,9 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                 tmp_dp_info = d2i_PACE_DP_INFO(NULL, &seq_pos, len+3);
                 check(tmp_dp_info, "Could not decode PACE domain parameter information");
 
-                /* If there is no key, allocate memory */
-                if (!ctx->pace_ctx->static_key)
-                    ctx->pace_ctx->static_key = EVP_PKEY_new();
-                if (!ctx->pace_ctx->static_key)
+                if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
                     goto err;
 
-                /* Extract actual parameters */
-                switch (OBJ_obj2nid(tmp_dp_info->aid->algorithm)) {
-                    case NID_dhpublicnumber:
-                        EVP_PKEY_set1_DH(ctx->pace_ctx->static_key,
-                                tmp_dp_info->aid->parameters.dh);
-                        break;
-                    case NID_X9_62_id_ecPublicKey:
-                    case NID_ecka_dh_SessionKDF_DES3:
-                    case NID_ecka_dh_SessionKDF_AES128:
-                    case NID_ecka_dh_SessionKDF_AES192:
-                    case NID_ecka_dh_SessionKDF_AES256:
-                        tmp_ec = ec_key_from_PACE_ECPARAMETERS(tmp_dp_info->aid->parameters.ec, ctx->bn_ctx);
-                        check(tmp_ec, "Could not decode EC key");
-
-                        EVP_PKEY_set1_EC_KEY(ctx->pace_ctx->static_key,
-                                tmp_ec);
-                        break;
-                    default:
-                        log_err("Unknown PACE parameters");
-                }
                 PACE_DP_INFO_free(tmp_dp_info);
                 tmp_dp_info = NULL;
                 break;
@@ -756,10 +785,8 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                 tmp_ca_dp_info = d2i_CA_DP_INFO(NULL, &seq_pos, len+3);
                 check(tmp_ca_dp_info, "Could not decode CA domain parameter info");
 
-                /* TODO: Copy all the public keys into the EAC context.  As of
-                 * now EAC_CTX can only hold one CA public key.  We could use
-                 * EVP_PKEY_set_std_dp here, but we leave this to
-                 * EAC_CTX_init_ca called by the user */
+                if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
+                    goto err;
 
                 CA_DP_INFO_free(tmp_ca_dp_info);
                 tmp_ca_dp_info = NULL;
@@ -772,8 +799,9 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                 ca_public_key_info = d2i_CA_PUBLIC_KEY_INFO(NULL, &seq_pos, len+3);
                 check(ca_public_key_info, "Could not decode CA PK domain parameter info");
 
-                if (!EVP_PKEY_set_std_dp(ctx->ca_ctx->ka_ctx->key,
-                            ASN1_INTEGER_get(ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier->standardizedDomainParameters)))
+                if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key,
+                            ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier,
+                            ctx->bn_ctx))
                     goto err;
 
                 if (nid == NID_id_PK_DH) {
@@ -823,7 +851,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_RI_DH:
             case NID_id_RI_ECDH:
                 /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
-                /* RestrictedIdentificationDomainParameterInfo */
+                 * RestrictedIdentificationDomainParameterInfo */
                 tmp_ri_dp_info = d2i_RI_DP_INFO(NULL, &seq_pos, len+3);
                 check(tmp_ri_dp_info, "Could not decode RI domain parameter info");
 
@@ -854,8 +882,6 @@ err:
         TA_INFO_free(tmp_ta_info);
     if (tmp_ca_info)
         CA_INFO_free(tmp_ca_info);
-    if (tmp_ec)
-        EC_KEY_free(tmp_ec);
     if (pubkey)
         BUF_MEM_free(pubkey);
 
