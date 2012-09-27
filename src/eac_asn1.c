@@ -650,6 +650,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
     RI_DP_INFO *tmp_ri_dp_info = NULL;
     CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
     BUF_MEM *pubkey = NULL;
+    ASN1_INTEGER *i = NULL;
 
     check((in && ctx  && ctx->pace_ctx && ctx->ca_ctx && ctx->ta_ctx),
         "Invalid arguments");
@@ -703,8 +704,8 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
             case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
             case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-                tmp_info = d2i_PACE_INFO(NULL, &seq_pos, len+2);
-                check(tmp_info, "Could not decode PACE info");
+                check(d2i_PACE_INFO(&tmp_info, &seq_pos, len+2),
+                        "Could not decode PACE info");
 
                 ctx->pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
                 if (ctx->pace_ctx->version <= 0 || ctx->pace_ctx->version > 2)
@@ -726,27 +727,22 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                     if (!PACE_CTX_set_protocol(ctx->pace_ctx, ctx->pace_ctx->protocol, ctx->tr_version))
                         goto err;
                 }
-                PACE_INFO_free(tmp_info);
-                tmp_info = NULL;
                 break;
             /* PACEDomainParameterInfo */
             case NID_id_PACE_ECDH_GM:
             case NID_id_PACE_ECDH_IM:
             case NID_id_PACE_DH_GM:
             case NID_id_PACE_DH_IM:
-                tmp_dp_info = d2i_PACE_DP_INFO(NULL, &seq_pos, len+3);
-                check(tmp_dp_info, "Could not decode PACE domain parameter information");
+                check(d2i_PACE_DP_INFO(&tmp_dp_info, &seq_pos, len+3),
+                        "Could not decode PACE domain parameter information");
 
                 if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
                     goto err;
-
-                PACE_DP_INFO_free(tmp_dp_info);
-                tmp_dp_info = NULL;
                 break;
             /* TAInfo */
             case NID_id_TA:
-                tmp_ta_info = d2i_TA_INFO(NULL, &seq_pos, len+2);
-                check(tmp_ta_info, "Could not decode TA info");
+                check(d2i_TA_INFO(&tmp_ta_info, &seq_pos, len+2),
+                        "Could not decode TA info");
 
                 ctx->ta_ctx->version = ASN1_INTEGER_get(tmp_ta_info->version);
                 if (ctx->ta_ctx->version <= 0 || ctx->ta_ctx->version > 2)
@@ -755,8 +751,6 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                  * Therefore this OID will be overwritten when we import a certificate
                  * later on.*/
                 ctx->ta_ctx->protocol = OBJ_obj2nid(tmp_ta_info->protocol);
-                TA_INFO_free(tmp_ta_info);
-                tmp_ta_info = NULL;
                 break;
             /* CAINfo */
             case NID_id_CA_DH_3DES_CBC_CBC:
@@ -767,37 +761,32 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_CA_ECDH_AES_CBC_CMAC_128 :
             case NID_id_CA_ECDH_AES_CBC_CMAC_192 :
             case NID_id_CA_ECDH_AES_CBC_CMAC_256 :
-                tmp_ca_info = d2i_CA_INFO(NULL, &seq_pos, len+2);
-                check(tmp_ca_info, "Could not decode CA info");
+                check(d2i_CA_INFO(&tmp_ca_info, &seq_pos, len+2),
+                        "Could not decode CA info");
 
                 ctx->ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
                 if (ctx->ta_ctx->version <= 0 || ctx->ta_ctx->version > 2)
                     goto err;
                 ctx->ca_ctx->protocol = OBJ_obj2nid(tmp_ca_info->protocol);
-                CA_INFO_free(tmp_ca_info);
-                tmp_ca_info = NULL;
                 break;
             /* ChipAuthenticationDomainParameterInfo */
             case NID_id_CA_DH:
             case NID_id_CA_ECDH:
                 /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
                  * CADomainParameterInfo */
-                tmp_ca_dp_info = d2i_CA_DP_INFO(NULL, &seq_pos, len+3);
-                check(tmp_ca_dp_info, "Could not decode CA domain parameter info");
+                check(d2i_CA_DP_INFO(&tmp_ca_dp_info, &seq_pos, len+3),
+                        "Could not decode CA domain parameter info");
 
                 if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
                     goto err;
-
-                CA_DP_INFO_free(tmp_ca_dp_info);
-                tmp_ca_dp_info = NULL;
                 break;
             /* ChipAuthenticationPublicKeyInfo */
             case NID_id_PK_DH:
             case NID_id_PK_ECDH:
                 /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
                  * RestrictedIdentificationDomainParameterInfo */
-                ca_public_key_info = d2i_CA_PUBLIC_KEY_INFO(NULL, &seq_pos, len+3);
-                check(ca_public_key_info, "Could not decode CA PK domain parameter info");
+                check(d2i_CA_PUBLIC_KEY_INFO(&ca_public_key_info, &seq_pos, len+3),
+                        "Could not decode CA PK domain parameter info");
 
                 if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key,
                             ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier,
@@ -810,18 +799,15 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                      * always positive. Parsing the unsigned integer should be
                      * done in EVP_PKEY_set_pubkey. */
                     const unsigned char *p = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
-                    ASN1_INTEGER *i = d2i_ASN1_UINTEGER(NULL, &p,
-                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
+                    check(d2i_ASN1_UINTEGER(&i, &p,
+                                ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length),
+                            "Could not decode CA PK");
                     pubkey = BUF_MEM_create_init(i->data, i->length);
-                    ASN1_INTEGER_free(i);
                 } else {
                     pubkey = BUF_MEM_create_init(
                             ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data,
                             ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
                 }
-
-                CA_PUBLIC_KEY_INFO_free(ca_public_key_info);
-                ca_public_key_info = NULL;
 
                 if (!EVP_PKEY_set_pubkey(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
                     goto err;
@@ -852,16 +838,13 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_RI_ECDH:
                 /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
                  * RestrictedIdentificationDomainParameterInfo */
-                tmp_ri_dp_info = d2i_RI_DP_INFO(NULL, &seq_pos, len+3);
-                check(tmp_ri_dp_info, "Could not decode RI domain parameter info");
+                check(d2i_RI_DP_INFO(&tmp_ri_dp_info, &seq_pos, len+3),
+                        "Could not decode RI domain parameter info");
 
                 /* TODO: Copy all the public keys into the EAC context.  As of
                  * now EAC_CTX can only hold one RI public key.  We could use
                  * EVP_PKEY_set_std_dp here, but we leave this to
                  * EAC_CTX_init_ri called by the user */
-
-                RI_DP_INFO_free(tmp_ri_dp_info);
-                tmp_ri_dp_info = NULL;
                 break;
             default:
                 log_err("Unknown parameter: %s", OBJ_nid2sn(nid));
@@ -882,8 +865,12 @@ err:
         TA_INFO_free(tmp_ta_info);
     if (tmp_ca_info)
         CA_INFO_free(tmp_ca_info);
+    if (tmp_ri_dp_info)
+        RI_DP_INFO_free(tmp_ri_dp_info);
     if (pubkey)
         BUF_MEM_free(pubkey);
+    if (i)
+        ASN1_INTEGER_free(i);
 
     return ret;
 }
