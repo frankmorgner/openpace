@@ -85,5 +85,7 @@ BUF_MEM *
 EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
 
 const ECDH_METHOD *ECDH_OpenSSL_Point(void);
+int
+consttime_memcmp(const BUF_MEM *a, const BUF_MEM *b);
 #endif
 
