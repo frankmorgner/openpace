@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012 Dominik Oepen and Frank Morgner
+ * Copyright (c) 2010-2012 Frank Morgner and Dominik Oepen
  *
  * This file is part of OpenPACE.
  *
