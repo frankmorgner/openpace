@@ -42,6 +42,12 @@
 #include <openssl/rsa.h>
 #include <string.h>
 
+void TA_disable_checks(EAC_CTX *ctx)
+{
+    if (ctx && ctx->ta_ctx)
+        ctx->ta_ctx->flags = TA_FLAG_SKIP_TIMECHECK;
+}
+
 int
 TA_STEP2_import_certificate(const EAC_CTX *ctx,
            const unsigned char *cert, size_t cert_len)

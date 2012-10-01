@@ -50,6 +50,9 @@ extern "C" {
 /** Skip checking effective and expiration date of cv certificate against current time */
 #define TA_FLAG_SKIP_TIMECHECK 1
 
+void
+TA_disable_checks(EAC_CTX *ctx);
+
 /**
  * @addtogroup taproto
  *
