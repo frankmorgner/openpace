@@ -155,7 +155,7 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
 
     /* Check date to see if the certificate is still valid
      * (not for link certificates). */
-    if (!(ctx->flags & TA_FLAG_SKIP_TIMECHECK)
+    if (ctx->flags & TA_FLAG_SKIP_TIMECHECK != TA_FLAG_SKIP_TIMECHECK
             && CVC_get_role(next_cert->body->chat) != CVC_CVCA
             && cvc_check_time(next_cert) != 1)
         goto err;
