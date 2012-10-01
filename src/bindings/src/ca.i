@@ -179,3 +179,30 @@ err:
 %}
 #endif
 
+BUF_MEM*
+CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t
+        ef_cardsecurity_len);
+#ifdef SWIGPYTHON
+%rename(CA_get_pubkey) ca_get_pubkey;
+%inline %{
+    static PyObject* ca_get_pubkey (char *ef_cardsecurity, int
+            ef_cardsecurity_len) /* typemap applied */ {
+        BUF_MEM *ef_cardsecurity_buf = NULL;
+        PyObject *out = NULL;
+
+        if (ef_cardsecurity_len <= 0)
+            goto err;
+
+        ef_cardsecurity_buf = CA_get_pubkey((unsigned char*) ef_cardsecurity,
+                (size_t) ef_cardsecurity_len);
+
+        out = PyString_FromStringAndSize(ef_cardsecurity_buf->data,
+                ef_cardsecurity_buf->length);
+
+    err:
+        if (ef_cardsecurity_buf)
+            BUF_MEM_clear_free(ef_cardsecurity_buf);
+        return out;
+    }
+%}
+#endif
