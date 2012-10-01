@@ -1,10 +1,7 @@
 #!/bin/sh
 
 AUTORECONF=${AUTORECONF:-autoreconf}
-CVS=${CVS:-cvs}
 MAKE=${MAKE:-make}
-PATCH=${PATCH:-patch}
-SD=$(cd $(dirname $0) && echo ${PWD})
 
 if ! test -d ${WD}
 then
@@ -13,25 +10,25 @@ then
 fi
 
 # Create autoconf files
-if ! test -x ${SD}/configure
+if ! test -x configure
 then
-    cd ${SD} && ${AUTORECONF} --verbose --install --symlink \
+    ${AUTORECONF} --verbose --install --symlink \
         || exit $?
 fi
 
 # Configure OpenPACE
-if ! test -r ${SD}/Makefile
+if ! test -r Makefile
 then
-	${SD}/configure \
+	./configure \
         || exit $?
 fi
 
 # Build OpenPACE
-if ! test -x ${WD}/src/eactest
+if ! test -x src/eactest
 then
-    ${MAKE} -C ${WD} \
+    ${MAKE} \
         || exit $?
 fi
 
-${WD}/src/eactest \
+src/eactest \
     || exit $?

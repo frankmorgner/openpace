@@ -30,8 +30,7 @@ clean-local:
 	rm -f libeac.pc
 
 check-local:
-	WD=$(abs_builddir)/bootstrap MAKE=$(MAKE) $(srcdir)/bootstrap
-	rm -rf $(abs_builddir)/bootstrap
+	$(builddir)/src/eactest
 
 
 # Install OpenSSL
