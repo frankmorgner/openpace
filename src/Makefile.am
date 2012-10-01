@@ -53,9 +53,6 @@ OPENSSL_LIBCRYPTO_SO  = $(OPENSSL_DIR)/libcrypto.so
 OPENSSL_MAKEFILE      = $(OPENSSL_DIR)/Makefile
 OPENSSL_OBJ_MAC       = $(OPENSSL_INCLUDES)/openssl/obj_mac.h
 OPENSSL_LIBS_PRIVATE  = `grep Libs.private $(OPENSSL_DIR)/libcrypto.pc | $(SED) "-e" 's,Libs.private:\s*,,'`
-if INSTALL_OPENSSL
-OPENSSL_CONFIG_EXTRA += shared
-endif
 
 
 # Fetch OpenSSL

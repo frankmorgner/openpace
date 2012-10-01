@@ -114,8 +114,6 @@ then
     AC_PATH_PROG([PATCH],
                  [patch],
                  [not found])
-    AC_ARG_VAR([OPENSSL_CONFIG_EXTRA],
-               [options for configuring OpenSSL])
     if test "${enable_openssl_build}" = "no"
     then
         AC_MSG_ERROR([No suitable OpenSSL installation was found])
@@ -130,6 +128,18 @@ then
         if test "${CVS}" = "not found"
         then
             AC_MSG_ERROR([Need cvs to build OpenSSL])
+        fi
+    fi
+
+    AC_ARG_VAR([OPENSSL_CONFIG_EXTRA],
+               [options for configuring OpenSSL])
+    if test -z "$OPENSSL_CONFIG_EXTRA"
+    then
+        if test "${INSTALL_OPENSSL}" = "yes"
+        then
+            OPENSSL_CONFIG_EXTRA=shared
+        else
+            OPENSSL_CONFIG_EXTRA=-fPIC
         fi
     fi
 else
