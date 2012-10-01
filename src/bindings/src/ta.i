@@ -11,6 +11,9 @@
 #include <string.h>
 %}
 
+void
+TA_disable_checks(EAC_CTX *ctx);
+
 int
 TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
         size_t in_len);

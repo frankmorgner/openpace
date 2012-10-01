@@ -3217,8 +3217,8 @@ static_eac_test(struct eac_worked_example tc)
                 (unsigned char *) tc.ca_picc_pub_key.data, tc.ca_picc_pub_key.length),
             "Initializing Chip Authentication");
 
-    picc_ctx->ta_ctx->flags |= TA_FLAG_SKIP_TIMECHECK;
-    pcd_ctx->ta_ctx->flags |= TA_FLAG_SKIP_TIMECHECK;
+    TA_disable_checks(picc_ctx);
+    TA_disable_checks(pcd_ctx);
     /* Initialize the TA contexts. The PICC gets initialized with the trust anchor
      * (CVCA) and the PCD gets initialized with the terminal certificate */
     CHECK(1, EAC_CTX_init_ta(pcd_ctx, (unsigned char *) tc.ta_pcd_key.data,
