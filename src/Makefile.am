@@ -107,7 +107,7 @@ if INSTALL_OPENSSL
 install-exec-local: install-openssl
 else
 all-local: $(OPENSSL_LIBCRYPTO_A)
-	$(MAKE) -C $(top_srcdir) libeac.pc
+	$(MAKE) -C $(top_builddir) libeac.pc
 	grep "Libs.private: " ../libeac.pc > /dev/null || \
 		echo "Libs.private: $(OPENSSL_LIBS_PRIVATE)" >> ../libeac.pc
 endif
