@@ -231,9 +231,11 @@ EAC_CTX_init_ca(const EAC_CTX *ctx, int protocol, int curve,
         return 0;
     }
 
-    if (!CA_CTX_set_protocol(ctx->ca_ctx, protocol)
+    if (protocol) {
+        if (!CA_CTX_set_protocol(ctx->ca_ctx, protocol)
                 || !EVP_PKEY_set_std_dp(ctx->ca_ctx->ka_ctx->key, curve))
-        return 0;
+            return 0;
+    }
 
     if (priv && !pub) {
         if (!d2i_AutoPrivateKey(&ctx->ca_ctx->ka_ctx->key, &priv, priv_len))
