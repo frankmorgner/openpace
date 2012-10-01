@@ -69,9 +69,6 @@ err:
     }
 %}
 
-BUF_MEM *
-CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len);
-
 %rename(CA_STEP2_get_eph_pubkey) ca_step2_get_eph_pubkey;
 %inline %{
     static void ca_step2_get_eph_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
@@ -204,24 +201,27 @@ CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t
 #ifdef SWIGPYTHON
 %rename(CA_get_pubkey) ca_get_pubkey;
 %inline %{
-    static PyObject* ca_get_pubkey (char *ef_cardsecurity, int
-            ef_cardsecurity_len) /* typemap applied */ {
-        BUF_MEM *ef_cardsecurity_buf = NULL;
-        PyObject *out = NULL;
+    static void ca_get_pubkey (char **out, int *out_len, char *in, int
+            in_len) /* typemap applied */ {
+        BUF_MEM *pubkey = NULL;
 
-        if (ef_cardsecurity_len <= 0)
+        if (in_len <= 0)
             goto err;
 
-        ef_cardsecurity_buf = CA_get_pubkey((unsigned char*) ef_cardsecurity,
-                (size_t) ef_cardsecurity_len);
+        pubkey = CA_get_pubkey((unsigned char*) in,
+                (size_t) in_len);
 
-        out = PyString_FromStringAndSize(ef_cardsecurity_buf->data,
-                ef_cardsecurity_buf->length);
+        *out = malloc(pubkey->length);
+        if (!*out)
+            goto err;
 
-    err:
-        if (ef_cardsecurity_buf)
-            BUF_MEM_clear_free(ef_cardsecurity_buf);
-        return out;
+        *out_len = pubkey->length;
+        memcpy(*out, pubkey->data, (size_t) *out_len);
+
+err:
+        if (pubkey)
+            BUF_MEM_clear_free(pubkey);
+        return;
     }
 %}
 #endif
