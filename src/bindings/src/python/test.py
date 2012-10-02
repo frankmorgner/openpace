@@ -84,6 +84,9 @@ def tatest():
     if nonce is None:
         raise PACEException("Failed to generate nonce", "Terminal Authentication", "PICC")
 
+def catest():
+    pace.CA_get_pubkey(EF_CARDSECURITY)
+
 def oidtest():
     print(pace.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128"))
     print(pace.id_CA_ECDH_AES_CBC_CMAC_128)
@@ -93,4 +96,5 @@ if __name__ == "__main__":
     pacetest()
     cvctest()
     tatest()
+    catest()
     oidtest()
