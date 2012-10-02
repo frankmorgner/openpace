@@ -207,6 +207,8 @@ CA_get_pubkey(const unsigned char *in, size_t in_len);
             goto err;
 
         pubkey = CA_get_pubkey((unsigned char*) in, (size_t) in_len);
+        if (!pubkey)
+            goto err;
 
         *out = malloc(pubkey->length);
         if (!*out)
