@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2010-2012 Dominik Oepen
+ *
+ * This file is part of OpenPACE.
+ *
+ * OpenPACE is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * OpenPACE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OpenPACE.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * @date 2012-01-04
  * @version 0.2
@@ -49,9 +68,6 @@ err:
         return;
     }
 %}
-
-BUF_MEM *
-CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len);
 
 %rename(CA_STEP2_get_eph_pubkey) ca_step2_get_eph_pubkey;
 %inline %{
@@ -181,26 +197,27 @@ err:
 
 BUF_MEM*
 CA_get_pubkey(const unsigned char *in, size_t in_len);
-#ifdef SWIGPYTHON
 %rename(CA_get_pubkey) ca_get_pubkey;
 %inline %{
-    static PyObject* ca_get_pubkey (char *in, int in_len) /* typemap applied */ {
+    static void ca_get_pubkey (char **out, int *out_len, char *in, int
+            in_len) /* typemap applied */ {
         BUF_MEM *pubkey = NULL;
-        PyObject *out = NULL;
 
         if (in_len <= 0)
             goto err;
 
-        pubkey = CA_get_pubkey((unsigned char*) in, in_len);
-        if (!pubkey)
+        pubkey = CA_get_pubkey((unsigned char*) in, (size_t) in_len);
+
+        *out = malloc(pubkey->length);
+        if (!*out)
             goto err;
 
-        out = PyString_FromStringAndSize(pubkey->data, pubkey->length);
+        *out_len = pubkey->length;
+        memcpy(*out, pubkey->data, (size_t) *out_len);
 
-    err:
+err:
         if (pubkey)
             BUF_MEM_clear_free(pubkey);
-        return out;
+        return;
     }
 %}
-#endif
