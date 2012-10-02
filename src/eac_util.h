@@ -234,5 +234,4 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
            BN_CTX *bn_ctx);
 BUF_MEM *
 get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx);
-
-#endif /*PACE_DH_H_*/
+#endif /*PACE_UTIL_H_*/
