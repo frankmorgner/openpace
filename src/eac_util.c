@@ -1056,8 +1056,7 @@ convert_to_plain_sig(const BUF_MEM *x962_sig)
     tmp_sig = ECDSA_SIG_new();
     if (!tmp_sig)
         goto err;
-    tmp_sig = d2i_ECDSA_SIG(&tmp_sig, &tmp, x962_sig->length);
-    if (!tmp_sig)
+    if (!d2i_ECDSA_SIG(&tmp_sig, &tmp, x962_sig->length))
         goto err;
 
     /* Extract the parameters r and s*/
@@ -1282,10 +1281,10 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data)
     if (!signature)
         goto err;
     if (EVP_PKEY_sign(tmp_key_ctx,
-                   (unsigned char *) signature->data,
+                (unsigned char *) signature->data,
                 &signature->length,
-                   (unsigned char*) signature_data->data,
-                   signature_data->length) <= 0)
+                (unsigned char*) signature_data->data,
+                signature_data->length) <= 0)
         goto err;
 
 
