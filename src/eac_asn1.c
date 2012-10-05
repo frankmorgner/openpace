@@ -870,6 +870,10 @@ err:
         BUF_MEM_free(pubkey);
     if (i)
         ASN1_INTEGER_free(i);
+    if (tmp_ca_dp_info)
+        CA_DP_INFO_free(tmp_ca_dp_info);
+    if (ca_public_key_info)
+        CA_PUBLIC_KEY_INFO_free(ca_public_key_info);
 
     return ret;
 }
