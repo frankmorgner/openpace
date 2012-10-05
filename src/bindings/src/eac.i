@@ -53,25 +53,17 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 %rename(EAC_encrypt) eac_encrypt;
 %inline %{
     static void eac_encrypt(char **out, int *out_len, const EAC_CTX *ctx,
-            unsigned long ssc, char *in, int in_len) {
-        BIGNUM *bn = NULL;
+            char *in, int in_len) {
         BUF_MEM *out_buf = NULL, *data = NULL;
 
         if (in_len < 0)
-            goto err;
-
-        bn = BN_new();
-        if (!bn)
-            goto err;
-        BN_init(bn);
-        if (!BN_set_word(bn, ssc))
             goto err;
 
         data = get_buf(in, in_len);
         if (!data)
             goto err;
 
-        out_buf = EAC_encrypt(ctx, bn, data);
+        out_buf = EAC_encrypt(ctx, data);
         if (!out_buf)
             goto err;
 
@@ -84,8 +76,6 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
         memcpy(*out, out_buf->data, *out_len);
 
     err:
-        if (bn)
-            BN_clear_free(bn);
         if (data)
             BUF_MEM_clear_free(data);
         if (out_buf)
@@ -97,25 +87,17 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 %rename(EAC_decrypt) eac_decrypt;
 %inline %{
     static void eac_decrypt(char **out, int *out_len, const EAC_CTX *ctx,
-            unsigned long ssc, char *in, int in_len) {
-        BIGNUM *bn = NULL;
+            char *in, int in_len) {
         BUF_MEM *out_buf = NULL, *data = NULL;
 
         if (in_len < 0)
-            goto err;
-
-        bn = BN_new();
-        if (!bn)
-            goto err;
-        BN_init(bn);
-        if (!BN_set_word(bn, ssc))
             goto err;
 
         data = get_buf(in, in_len);
         if (!data)
             goto err;
 
-        out_buf = EAC_decrypt(ctx, bn, data);
+        out_buf = EAC_decrypt(ctx, data);
         if (!out_buf)
             goto err;
 
@@ -128,8 +110,6 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
         memcpy(*out, out_buf->data, *out_len);
 
     err:
-        if (bn)
-            BN_clear_free(bn);
         if (data)
             BUF_MEM_clear_free(data);
         if (out_buf)
@@ -141,25 +121,17 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 %rename(EAC_authenticate) eac_authenticate;
 %inline %{
     static void eac_authenticate(char **out, int *out_len, const EAC_CTX *ctx,
-            unsigned long ssc, char *in, int in_len) {
-        BIGNUM *bn = NULL;
+            char *in, int in_len) {
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
         if (in_len < 0)
-            goto err;
-
-        bn = BN_new();
-        if (!bn)
-            goto err;
-        BN_init(bn);
-        if (!BN_set_word(bn, ssc))
             goto err;
 
         in_buf = get_buf(in, in_len);
         if (!in_buf)
             goto err;
 
-        out_buf = EAC_authenticate(ctx, bn, in_buf);
+        out_buf = EAC_authenticate(ctx, in_buf);
         if (!out_buf)
             goto err;
 
@@ -172,8 +144,6 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
         memcpy(*out, out_buf->data, *out_len);
 
     err:
-        if (bn)
-            BN_clear_free(bn);
         if (in_buf)
             BUF_MEM_clear_free(in_buf);
         if (out_buf)
@@ -313,3 +283,11 @@ EAC_CTX_init_ca(const EAC_CTX *ctx, int protocol, int curve,
     }
 %}
 
+int
+EAC_increment_ssc(const EAC_CTX *ctx);
+
+int
+EAC_reset_ssc(const EAC_CTX *ctx);
+
+int
+EAC_set_ssc(const EAC_CTX *ctx, unsigned long ssc);
