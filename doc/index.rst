@@ -9,7 +9,7 @@ Welcome to OpenPACE's documentation!
 
 .. toctree::
 
-    INSTALL
+    install
     protocols
     bindings/README
 
