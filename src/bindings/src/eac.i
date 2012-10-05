@@ -220,13 +220,13 @@ err:
 #else
 
 BUF_MEM *
-EAC_encrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+EAC_encrypt(const EAC_CTX *ctx, const BUF_MEM *data);
 
 BUF_MEM *
-EAC_decrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+EAC_decrypt(const EAC_CTX *ctx, const BUF_MEM *data);
 
 BUF_MEM *
-EAC_authenticate(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data);
 
 BUF_MEM *
 EAC_Comp(const EAC_CTX *ctx, int id, const BUF_MEM *pub);
