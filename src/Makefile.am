@@ -1,3 +1,5 @@
+SUBDIRS = bindings
+
 nobase_include_HEADERS = eac/ca.h \
 						 eac/cv_cert.h \
 						 eac/eac.h \

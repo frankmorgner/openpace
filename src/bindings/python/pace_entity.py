@@ -173,6 +173,8 @@ class PICC(PACEEntity):
 
     def generate_nonce(self):
         self._enc_nonce = pace.PACE_STEP1_enc_nonce(self.ctx, self.sec)
+        if not self._enc_nonce:
+            raise PACEException("Could not generate nonce", "Step 1", "PICC")
         return self._enc_nonce
 
     def verify_authentication_token(self, token):

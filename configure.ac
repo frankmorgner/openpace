@@ -13,8 +13,10 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 # Checks for programs.
 AC_PROG_CC
-AM_PROG_CC_C_O
 AC_PROG_CXX
+AC_PROG_SED
+AM_PROG_CC_C_O
+PKG_PROG_PKG_CONFIG
 ifdef(
 	[LT_INIT],
 	[
@@ -38,11 +40,11 @@ esac
 
 # Checks for libcrypto.
 AC_ARG_ENABLE([openssl-build],
-              [AS_HELP_STRING([--enable-openssl-build],[enable build of a patched version of OpenSSL @<:@detect@:>@])],
+              [AS_HELP_STRING([--enable-openssl-build],[enable build of a patched version of OpenSSL @<:@default=detect@:>@])],
               ,
               [enable_openssl_build="detect"])
 AC_ARG_ENABLE([openssl-install],
-              [AS_HELP_STRING([--enable-openssl-install],[enable installation of a patched version of OpenSSL @<:@no@:>@])],
+              [AS_HELP_STRING([--enable-openssl-install],[enable installation of a patched version of OpenSSL @<:@default=no@:>@])],
               ,
               [enable_openssl_install="no"])
 
@@ -148,6 +150,63 @@ fi
 AM_CONDITIONAL([BUILD_OPENSSL], [test "${BUILD_OPENSSL}" = "yes"])
 AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
 
+
+AC_ARG_ENABLE([python],AS_HELP_STRING([--enable-python],[Enable python interface generation.]),[enable_python=$enableval],[enable_python="no"])
+AC_ARG_ENABLE([java],AS_HELP_STRING([--enable-java],[Enable java interface generation.]),[enable_java=$enableval],[enable_java="no"])
+if test x"$enable_python" = "xyes" -o x"$enable_java" = "xyes"
+then
+    AX_PKG_SWIG([],[], [AC_MSG_ERROR([SWIG is required to build the bindings]) ])
+fi
+
+# Python support (default: no)
+if test x"$enable_python" = "xyes"
+then
+    AM_PATH_PYTHON(,,AC_MSG_ERROR([Python is required to build the Python bindings]))
+    AC_ARG_VAR([PYTHON_INCLUDE], [Include flags for python, bypassing python-config])
+    AC_ARG_VAR([PYTHON_CONFIG], [Path to python-config])
+    AS_IF([test -z "$PYTHON_INCLUDE"], [
+        AS_IF([test -z "$PYTHON_CONFIG"], [
+            AC_PATH_PROGS([PYTHON_CONFIG],
+                [python$PYTHON_VERSION-config python-config],
+                [no],
+                [`dirname $PYTHON`])
+            AS_IF([test "$PYTHON_CONFIG" = no], [AC_MSG_WARN([cannot find python-config for $PYTHON.])])
+        ])
+        AC_MSG_CHECKING([python include flags])
+        PYTHON_INCLUDE=`$PYTHON_CONFIG --includes`
+        AC_MSG_RESULT([$PYTHON_INCLUDE])
+    ])
+    saved_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDE"
+    AC_CHECK_HEADERS(Python.h, [], [AC_MSG_WARN([Python.h not found]) ])
+    CPPFLAGS="$saved_CPPFLAGS"
+fi
+AM_CONDITIONAL(PYTHON_ENABLED, [test x"$enable_python" = "xyes"])
+
+# Java support (default: no)
+if test x"$enable_java" = "xyes"
+then
+    AC_ARG_VAR([JAVA_CFLAGS], [Java C compiler flags])
+    AC_ARG_VAR([JAVACFLAGS], [Java byte compiler flags])
+    AC_PROG_JAVAC
+    if test -z "${JAVA_CFLAGS}"
+    then
+        AC_JNI_INCLUDE_DIR
+        #The JNI code must be compiled as position independent code
+        JAVA_CFLAGS="-fpic -shared"
+        for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
+        do
+            JAVA_CFLAGS="$JAVA_CFLAGS -I$JNI_INCLUDE_DIR"
+        done
+    fi
+    saved_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS $JAVA_CFLAGS"
+    AC_CHECK_HEADERS(jni.h, [], [AC_MSG_ERROR([jni.h not found]) ])
+    CPPFLAGS="$saved_CPPFLAGS"
+fi
+AM_CONDITIONAL(JAVA_ENABLED, [test x"$enable_java" = "xyes"])
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h limits.h stdint.h string.h])
 
@@ -158,13 +217,18 @@ AC_TYPE_UINT32_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
-AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([memset memcpy])
 
 AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([
+                 Makefile
+                 src/Makefile
+                 src/bindings/Makefile
+                 src/bindings/java/Makefile
+                 src/bindings/python/Makefile
                  win32/Makefile
-                 src/Makefile])
+                 ])
 AC_OUTPUT
 
 cat << EOF
@@ -174,6 +238,11 @@ ${PACKAGE} ${PACKAGE_VERSION} has been configured with following options:
 User binaries:         $(eval eval eval echo "${bindir}")
 Libraries:             $(eval eval eval echo "${libdir}")
 Configuration files:   $(eval eval eval echo "${sysconfdir}")
+
+Build patched OpenSSL:   ${BUILD_OPENSSL}
+Install patched OpenSSL: ${INSTALL_OPENSSL}
+Python Bindings:         ${enable_python}
+Java Bindings:           ${enable_java}
 
 Host:                    ${host}
 Compiler:                ${CXX}
@@ -185,9 +254,11 @@ Libraries:               ${LIBS}
 CRYPTO_CFLAGS:           ${CRYPTO_CFLAGS}
 CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
-Build patched OpenSSL:   ${BUILD_OPENSSL}
-Install patched OpenSSL: ${INSTALL_OPENSSL}
 PATCH:                   ${PATCH}
 CVS:                     ${CVS}
 OPENSSL_CONFIG_EXTRA:    ${OPENSSL_CONFIG_EXTRA}
+
+SWIG:                    ${SWIG}
+JAVA_CFLAGS:             ${JAVA_CFLAGS}
+JAVACFLAGS:              ${JAVACFLAGS}
 EOF

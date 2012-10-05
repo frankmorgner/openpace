@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!@PYTHON@
 
 """
 setup.py file for OpenPACE wrapper
@@ -9,19 +9,19 @@ import shlex
 #The following variables are set by autotools at build-time
 OPENPACE_LIBS = '@OPENPACE_LIBS@'
 OPENPACE_CFLAGS = '@OPENPACE_CFLAGS@'
-OPENSSL_LIBS = '@OPENSSL_LIBS@'
-OPENSSL_CFLAGS = '@OPENSSL_CFLAGS@'
+CRYPTO_LIBS = '@CRYPTO_LIBS@'
+CRYPTO_CFLAGS = '@CRYPTO_CFLAGS@'
 CFLAGS = '@CFLAGS@'
 CPPFLAGS = '@CPPFLAGS@'
 LIBS = '@LIBS@'
 
-all_libs = shlex.split(CPPFLAGS + ' ' + CFLAGS + ' ' + OPENPACE_LIBS + ' ' + OPENSSL_LIBS)
-all_cflags = shlex.split(LIBS + ' ' + OPENPACE_CFLAGS + ' ' + OPENSSL_CFLAGS)
+all_libs = shlex.split(CPPFLAGS + ' ' + CFLAGS + ' ' + OPENPACE_LIBS + ' ' + CRYPTO_LIBS)
+all_cflags = shlex.split(LIBS + ' ' + OPENPACE_CFLAGS + ' ' + CRYPTO_CFLAGS)
 
 #Prepare the external module that we want to build
 pace_module = Extension('_pace',
                            sources=['pace.i'],
-                           swig_opts=['-modern', '-outdir', '@builddir@', '-I@top_srcdir@/src/'],
+                           swig_opts=['-modern', '-outdir', '@builddir@', '-I@srcdir@/..'],
                            extra_compile_args=all_cflags,
                            extra_link_args=all_libs,
                           )
@@ -31,8 +31,8 @@ setup (name         = '@PACKAGE_NAME@',
        version      = '@PACKAGE_VERSION@',
        author       = "Dominik Oepen",
        author_email = "oepen@informatik.hu-berlin.de",
-       url          = "http://openpace.sourceforge.net",
-       description  = """Python wrapper for the OpenPACE library""",
+       url          = "@PACKAGE_URL@",
+       description  = """Python wrapper for @PACKAGE_NAME@""",
        classifiers  = [ 'Intended Audience :: Developers',
                         'Operating System :: POSIX',
                         'License :: OSI Approved :: GNU General Public License (GPL)',
