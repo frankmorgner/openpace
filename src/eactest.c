@@ -2968,18 +2968,16 @@ test_enc(EAC_CTX *ctx, unsigned int send_sequence_counter,
 {
     int ok = 0;
     BUF_MEM *pad = NULL, *enc_buf = NULL, *dec_buf = NULL, *unpadded = NULL;
-    BIGNUM *ssc = NULL;
 
-    ssc = BN_new();
-    CHECK(0, ssc && BN_set_word(ssc, send_sequence_counter),
+    CHECK(0, EAC_set_ssc(ctx, send_sequence_counter),
             "Initializing Send Sequence Counter");
 
     pad = EAC_add_iso_pad(ctx, data);
-    enc_buf = EAC_encrypt(ctx, ssc, pad);
+    enc_buf = EAC_encrypt(ctx, pad);
     CHECK(0, buf_eq_buf(enc_buf, enc),
             "Encrypting");
 
-    dec_buf = EAC_decrypt(ctx, ssc, enc_buf);
+    dec_buf = EAC_decrypt(ctx, enc_buf);
     CHECK(0, buf_eq_buf(dec_buf, pad),
             "Decrypting");
 
@@ -2992,8 +2990,6 @@ test_enc(EAC_CTX *ctx, unsigned int send_sequence_counter,
     ok = 1;
 
 err:
-    if (ssc)
-        BN_clear_free(ssc);
     if (pad)
         BUF_MEM_free(pad);
     if (enc_buf)
@@ -3013,23 +3009,19 @@ test_auth(EAC_CTX *ctx, unsigned int send_sequence_counter,
 {
     int ok = 0;
     BUF_MEM *pad = NULL, *auth = NULL;
-    BIGNUM *ssc = NULL;
 
-    ssc = BN_new();
-    CHECK(0, ssc && BN_set_word(ssc, send_sequence_counter),
+    CHECK(0, EAC_set_ssc(ctx, send_sequence_counter),
             "Initializing Send Sequence Counter");
 
     pad = EAC_add_iso_pad(ctx, data);
-    auth = EAC_authenticate(ctx, ssc, pad);
+    auth = EAC_authenticate(ctx, pad);
     CHECK(1, buf_eq_buf(auth, mac), "Authenticating");
 
-    CHECK(1, EAC_verify_authentication(ctx, ssc, pad, mac), "Verifying");
+    CHECK(1, EAC_verify_authentication(ctx, pad, mac), "Verifying");
 
     ok = 1;
 
 err:
-    if (ssc)
-        BN_clear_free(ssc);
     if (pad)
         BUF_MEM_free(pad);
     if (auth)

@@ -77,30 +77,54 @@ err:
     return NULL;
 }
 
+int EAC_increment_ssc(const EAC_CTX *ctx)
+{
+    if (!ctx)
+        return 0;
+
+    return BN_add_word(ctx->ssc, 1);
+}
+
+int EAC_reset_ssc(const EAC_CTX *ctx)
+{
+    if (!ctx)
+        return 0;
+
+    return BN_zero(ctx->ssc);
+}
+
+int EAC_set_ssc(const EAC_CTX *ctx, unsigned long ssc)
+{
+    if (!ctx)
+        return 0;
+
+    return BN_set_word(ctx->ssc, ssc);
+}
+
 BUF_MEM *
-EAC_encrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data)
+EAC_encrypt(const EAC_CTX *ctx, const BUF_MEM *data)
 {
     check_return((ctx && ctx->key_ctx), "Invalid arguments");
 
-    if (!update_iv(ctx->key_ctx, ctx->cipher_ctx, ssc))
+    if (!update_iv(ctx->key_ctx, ctx->cipher_ctx, ctx->ssc))
         return NULL;
 
     return cipher_no_pad(ctx->key_ctx, ctx->cipher_ctx, ctx->key_ctx->k_enc, data, 1);
 }
 
 BUF_MEM *
-EAC_decrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data)
+EAC_decrypt(const EAC_CTX *ctx, const BUF_MEM *data)
 {
     check_return((ctx && ctx->key_ctx), "Invalid arguments");
 
-    if (!update_iv(ctx->key_ctx, ctx->cipher_ctx, ssc))
+    if (!update_iv(ctx->key_ctx, ctx->cipher_ctx, ctx->ssc))
         return NULL;
 
     return cipher_no_pad(ctx->key_ctx, ctx->cipher_ctx, ctx->key_ctx->k_enc, data, 0);
 }
 
 BUF_MEM *
-EAC_authenticate(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data)
+EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data)
 {
     int l;
     BUF_MEM *out = NULL, *to_authenticate = NULL;
@@ -108,7 +132,7 @@ EAC_authenticate(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data)
 
     check((ctx && data), "invalid arguments");
 
-    l = encode_ssc(ssc, ctx->key_ctx, &ssc_buf);
+    l = encode_ssc(ctx->ssc, ctx->key_ctx, &ssc_buf);
     if (l < 0) {
         goto err;
     }
@@ -137,7 +161,7 @@ err:
 }
 
 int
-EAC_verify_authentication(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data,
+EAC_verify_authentication(const EAC_CTX *ctx, const BUF_MEM *data,
         const BUF_MEM *mac)
 {
     BUF_MEM *my_mac = NULL;
@@ -145,7 +169,7 @@ EAC_verify_authentication(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *
 
     check((ctx && data), "Invalid arguments");
 
-    my_mac = EAC_authenticate(ctx, ssc, data);
+    my_mac = EAC_authenticate(ctx, data);
     check(my_mac, "Failed to compute MAC");
 
     /* NOTE: The following MAC verification is not side channel resistent */
@@ -251,7 +275,7 @@ EAC_CTX_set_encryption_ctx(EAC_CTX *ctx, int id)
     if (!ctx->key_ctx)
         return 0;
 
-    return 1;
+    return EAC_reset_ssc(ctx);
 }
 
 BUF_MEM *

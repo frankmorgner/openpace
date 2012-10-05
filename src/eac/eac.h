@@ -289,6 +289,8 @@ typedef struct eac_ctx {
     CA_CTX *ca_ctx;
     /** @brief Context for secure messaging established with PACE or CA */
     KA_CTX *key_ctx;
+    /** Send sequence counter */
+    BIGNUM *ssc;
 } EAC_CTX;
 
 /** @brief TR-03110 always uses CMAC of 8 bytes length for AES MAC */
@@ -425,12 +427,36 @@ BUF_MEM *
 EAC_remove_iso_pad(const BUF_MEM * m);
 
 /**
+ * @brief Increment the Send Sequence Counter
+ *
+ * @param ctx
+ *
+ * @return 1 or 0 in case of an error
+ */
+int EAC_increment_ssc(const EAC_CTX *ctx);
+
+/**
+ * @brief Reset the Send Sequence Counter
+ *
+ * @param ctx
+ *
+ * @return 1 or 0 in case of an error
+ */
+int EAC_reset_ssc(const EAC_CTX *ctx);
+/**
+ * @brief Set the Send Sequence Counter
+ *
+ * @param ctx
+ * @param ssc
+ *
+ * @return 1 or 0 in case of an error
+ */
+int EAC_set_ssc(const EAC_CTX *ctx, unsigned long ssc);
+
+/**
  * @brief Encrypts data according to TR-03110 F.2.
  *
- * \a ssc is used to generate initialization vector for encryption.
- *
  * @param[in] ctx EAC context
- * @param[in] ssc Send sequence counter
  * @param[in] data Data to encrypt
  *
  * @return Encrypted data or NULL in case of an error
@@ -438,15 +464,12 @@ EAC_remove_iso_pad(const BUF_MEM * m);
  * @note \a data must already be padded to block length
  */
 BUF_MEM *
-EAC_encrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+EAC_encrypt(const EAC_CTX *ctx, const BUF_MEM *data);
 
 /**
  * @brief Decrypt data according to TR-03110 F.2.
  *
- * \a ssc is used to generate initialisation vector for decryption.
- *
  * @param[in] ctx EAC context
- * @param[in] ssc Send sequence counter
  * @param[in] data Data to decrypt
  *
  * @return Decrypted data or NULL in case of an error
@@ -454,15 +477,12 @@ EAC_encrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
  * @note \a data must already be padded to block length
  */
 BUF_MEM *
-EAC_decrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+EAC_decrypt(const EAC_CTX *ctx, const BUF_MEM *data);
 
 /**
  * @brief Authenticate data according to TR-03110 F.2.
  *
- * \a ssc is encoded and prepended to the data.
- *
  * @param[in] ctx EAC context
- * @param[in] ssc Send sequence counter
  * @param[in] data Data to authenticate
  *
  * @return MAC or NULL in case of an error
@@ -470,19 +490,18 @@ EAC_decrypt(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
  * @note \a data must already be padded to block length
  */
 BUF_MEM *
-EAC_authenticate(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data);
+EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data);
 /**
  * @brief Verify authenticated data according to TR-03110 F.2
  *
  * @param[in] ctx EAC context
- * @param[in] ssc Send sequence counter
  * @param[in] data Data to authenticate
  * @param[in] mac The MAC that is going to be verified
  *
  * @return 1 if the MAC can be correctly verified, 0 otherwise
  */
 int
-EAC_verify_authentication(const EAC_CTX *ctx, const BIGNUM *ssc, const BUF_MEM *data,
+EAC_verify_authentication(const EAC_CTX *ctx, const BUF_MEM *data,
         const BUF_MEM *mac);
 
 /**
@@ -523,6 +542,8 @@ EAC_hash_certificate_description(const unsigned char *cert_desc,
 
 /**
  * @brief Set the SM context for encryption, decryption and authentication.
+ *
+ * Calls \a EAC_reset_ssc()
  *
  * @param[in,out] ctx EAC context
  * @param[in] id accepts \c EAC_ID_PACE, \c EAC_ID_CA, \c EAC_ID_EAC

@@ -130,9 +130,10 @@ EAC_CTX_new(void)
     ctx->ca_ctx = CA_CTX_new();
     ctx->cipher_ctx = EVP_CIPHER_CTX_new();
     ctx->ri_ctx = RI_CTX_new();
+    ctx->ssc = BN_new();
 
     if (!ctx->bn_ctx || !ctx->md_ctx || !ctx->pace_ctx || !ctx->ta_ctx
-                       || !ctx->ca_ctx || !ctx->cipher_ctx || !ctx->ri_ctx)
+            || !ctx->ca_ctx || !ctx->cipher_ctx || !ctx->ri_ctx || !ctx->ssc)
         goto err;
 
     ctx->tr_version = EAC_TR_VERSION_2_02;
@@ -285,16 +286,13 @@ EAC_CTX_clear_free(EAC_CTX *ctx) {
             EVP_MD_CTX_destroy(ctx->md_ctx);
         if (ctx->cipher_ctx)
             EVP_CIPHER_CTX_free(ctx->cipher_ctx);
-        if (ctx->pace_ctx)
-            PACE_CTX_clear_free(ctx->pace_ctx);
-        if (ctx->ta_ctx)
-            TA_CTX_clear_free(ctx->ta_ctx);
-        if (ctx->ca_ctx)
-            CA_CTX_clear_free(ctx->ca_ctx);
-        if (ctx->key_ctx)
-            KA_CTX_clear_free(ctx->key_ctx);
-        if (ctx->ri_ctx)
-            RI_CTX_clear_free(ctx->ri_ctx);
+        PACE_CTX_clear_free(ctx->pace_ctx);
+        TA_CTX_clear_free(ctx->ta_ctx);
+        CA_CTX_clear_free(ctx->ca_ctx);
+        KA_CTX_clear_free(ctx->key_ctx);
+        RI_CTX_clear_free(ctx->ri_ctx);
+        if (ctx->ssc)
+            BN_clear_free(ctx->ssc);
         OPENSSL_free(ctx);
     }
 }
