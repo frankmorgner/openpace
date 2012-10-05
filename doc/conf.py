@@ -166,7 +166,7 @@ html_show_sphinx = False
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'OpenPACEdoc'
 
-breathe_projects = {"OpenPACE": "doxygen/xml"}
+breathe_projects = {"OpenPACE": "_static/doxygen/xml"}
 breathe_default_project = "OpenPACE"
-doxylink = { 'OpenPACE' : ('../doxygen/OpenPACE.tag', '_static/doxygen/'), }
+doxylink = { 'OpenPACE' : ('_static/doxygen/OpenPACE.tag', '_static/doxygen/'), }
 #mathjax_path = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
