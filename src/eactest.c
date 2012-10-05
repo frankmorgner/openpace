@@ -3035,7 +3035,9 @@ static int
 test_consttime_memcmp(void)
 {
     BUF_MEM *test_a = NULL, *test_b = NULL, *test_c = NULL;
-    int ok = 1;
+    int failed = 1;
+
+    printf("consttime_memcmp tests ");
 
     test_a = BUF_MEM_create_init("Chicken", 7);
     test_b = BUF_MEM_create_init("Waffles", 7);
@@ -3051,7 +3053,7 @@ test_consttime_memcmp(void)
     CHECK(1, consttime_memcmp(test_a, test_c) != 0,
             "Comparing different strings of different length");
 
-    ok = 0;
+    failed = 0;
 
 err:
     if (test_a)
@@ -3060,7 +3062,8 @@ err:
         BUF_MEM_free(test_b);
     if (test_c)
         BUF_MEM_free(test_c);
-    return ok;
+
+    END
 }
 
 /* Perform one EAC protocol run using static test data */
