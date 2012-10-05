@@ -6,11 +6,11 @@ Welcome to OpenPACE's documentation!
 
 .. include:: ../README
 
-
 .. toctree::
+    :hidden:
 
     protocols
-    bindings/README
+    bindings/README.rst
 
 Where to download OpenPACE
 ==========================
@@ -48,10 +48,14 @@ customized by a number of parameters for the `configure` command. See
 How to use OpenPACE
 ===================
 
-You can find the OpenPACE API `here <_static/doxygen/modules.html>`_.
+If you want to know how to use OpenPACE, have a look at our `API documentation
+<_static/doxygen/html/modules.html>`_.
 
 If you want to lear more about the EAC protocols, you can find a nice
 :ref:`summary <protocols>`.
+
+If you don't want to use C but another programming language for your project,
+you can use our SWIG based :ref:`bindings`.
 
 Where to get help
 =================
