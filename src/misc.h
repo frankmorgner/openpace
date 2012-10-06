@@ -84,6 +84,17 @@ BUF_MEM *
 EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp);
 
 const ECDH_METHOD *ECDH_OpenSSL_Point(void);
+
+/**
+ * @brief Compare two buffers. The length of the first buffer is leaked but no
+ * other information should be leaked via the time this function requires.
+ *
+ * @param[in] a The reference buffer. The length of this buffer is leaked if an
+ * attacker controls the second buffer.
+ * @param[in] b The buffer that is compared against the reference buffer.
+ *
+ * @return 0 iff both buffer are equal
+ */
 int
 consttime_memcmp(const BUF_MEM *a, const BUF_MEM *b);
 #endif

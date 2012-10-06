@@ -33,7 +33,6 @@
 #include <eac/eac.h>
 #include <eac/pace.h>
 #include <openssl/err.h>
-#include <string.h>
 
 BUF_MEM *
 EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m)
@@ -172,11 +171,7 @@ EAC_verify_authentication(const EAC_CTX *ctx, const BUF_MEM *data,
     my_mac = EAC_authenticate(ctx, data);
     check(my_mac, "Failed to compute MAC");
 
-    /* NOTE: The following MAC verification is not side channel resistent */
-
-    if (my_mac->length != mac->length)
-        goto err;
-    if (memcmp(my_mac->data, mac->data, my_mac->length) == 0)
+    if (consttime_memcmp(my_mac, mac) == 0)
         ret = 1;
 
 err:

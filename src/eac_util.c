@@ -41,7 +41,6 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
-#include <string.h>
 
 /**
  * @brief Wrapper to the OpenSSL encryption functions.
@@ -782,7 +781,7 @@ verify_authentication_token(int protocol, const KA_CTX *ka_ctx, BN_CTX *bn_ctx,
         return -1;
 
     if (token_verify->length != token->length
-                       || memcmp(token_verify->data, token->data, token->length) != 0)
+                || consttime_memcmp(token_verify, token) != 0)
         rv = 0;
     else
         rv = 1;
