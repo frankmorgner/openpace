@@ -220,30 +220,20 @@ const ECDH_METHOD *ECDH_OpenSSL_Point(void)
 int
 consttime_memcmp(const BUF_MEM *a, const BUF_MEM *b)
 {
-    BUF_MEM *rnd = NULL, *to_compare = NULL;
-    unsigned char ret = 0x01;
+    unsigned int ret = 0x00;
     int i = 0;
 
     check((a && b), "Invalid arguments");
 
-    /* Generate a->length Bytes of random data */
-    rnd = randb(a->length);
-    check(rnd, "Failed to generate random data");
-    ret = 0x00;
-
     /* Decide whether to compare with given or random data.
      * This leaks the length of a. */
     if (a->length != b->length)
-        to_compare = rnd;
-    else
-        to_compare = b;
+        return 1;
 
     /* XOR all the Bytes */
-    for (i = 0; i < to_compare->length; i++)
-        ret |= (unsigned char) (a->data[i] ^ to_compare->data[i]);
+    for (i = 0; i < b->length; i++)
+        ret |= (unsigned char) (a->data[i] ^ b->data[i]);
 
 err:
-    if (rnd)
-        BUF_MEM_free(rnd);
-    return (ret != 0x00);
+    return (1 & ((ret -1) >> 8)) - 1;
 }
