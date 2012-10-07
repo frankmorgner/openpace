@@ -1,4 +1,14 @@
+INTERFACES = $(srcdir)/../ca.i \
+			 $(srcdir)/../cvc.i \
+			 $(srcdir)/../eac.i \
+			 $(srcdir)/../pace.i \
+			 $(srcdir)/../ta.i \
+			 $(srcdir)/../util.i
+
+BUILT_SOURCES = pace_wrap.c pace.py
+
 EXTRA_DIST = setup.py.in
+CLEANFILES = $(BUILT_SOURCES) installed_files.txt setup.py
 
 do_subst=$(SED)\
 	-e's,[@]CFLAGS[@],$(CFLAGS),g'\
@@ -16,6 +26,7 @@ do_subst=$(SED)\
 	-e's,[@]builddir[@],$(builddir),g'\
 	-e's,[@]srcdir[@],$(srcdir),g'
 
+
 all-local: pace.py
 
 $(top_builddir)/src/libeac.la:
@@ -24,7 +35,7 @@ $(top_builddir)/src/libeac.la:
 setup.py: setup.py.in $(top_builddir)/src/libeac.la
 	$(do_subst) < $(srcdir)/setup.py.in > setup.py
 
-pace.py: setup.py
+$(BUILT_SOURCES): $(INTERFACES) setup.py
 	python setup.py build_ext
 
 install-exec-local:
@@ -35,4 +46,3 @@ uninstall-local:
 
 clean-local:
 	rm -rf build
-	rm -f pace_wrap.c installed_files.txt setup.py pace.py
