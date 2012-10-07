@@ -94,7 +94,6 @@ class PACEEntity(object):
         self._enc_nonce = ""
         self._ephemeral_pubkey = ""
         self._opp_pubkey = ""
-        self._ssc = 1
 
     def __del__(self):
         if (self.ctx):
@@ -105,15 +104,6 @@ class PACEEntity(object):
     def __str__(self):
         ret_string = pace.EAC_CTX_print_private(self.ctx, 0)
         return ret_string
-
-    @property
-    def ssc(self):
-        """The Send Sequence Counter"""
-        return self._ssc
-
-    @ssc.setter
-    def ssc(self, value):
-        self._ssc = value
 
     def get_static_pubkey(self):
         self._static_pubkey = pace.PACE_STEP3A_generate_mapping_data(self.ctx)
@@ -139,9 +129,8 @@ class PACEEntity(object):
         """Encrypt a block of data using the secret established by the PACE
         protocol. This method can only be used after a successful run of PACE.
         """
-        enc = pace.EAC_encrypt(self.ctx, self._ssc, data)
-        self._ssc += 1
-        if (not enc):
+        enc = pace.EAC_encrypt(self.ctx, data)
+        if not enc or not pace.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to encrypt the following data: " + data)
         return enc
 
@@ -149,9 +138,8 @@ class PACEEntity(object):
         """Decrypt a block of data using the secret established by the PACE
         protocol. This method can only be used after a successful run of PACE.
         """
-        dec = pace.EAC_decrypt(self.ctx, self._ssc, data)
-        self._ssc += 1
-        if (not dec):
+        dec = pace.EAC_decrypt(self.ctx, data)
+        if not dec or not pace.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to decrypt the following data: " + data)
         return dec
 
@@ -160,9 +148,8 @@ class PACEEntity(object):
         PACE protocol. This method can only be used after a successful run of
         PACE.
         """
-        auth = pace.EAC_authenticate(self.ctx, self._ssc, data)
-        self._ssc += 1
-        if (not auth):
+        auth = pace.EAC_authenticate(self.ctx, data)
+        if not auth or not pace.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to compute MAC for: " + data)
         return auth
 
@@ -194,6 +181,9 @@ class PICC(PACEEntity):
             raise PACEException("Failed to verify authentication token")
         if (pace.EAC_CTX_set_encryption_ctx(self.ctx, pace.EAC_ID_PACE) == 0):
             raise PACEException("Failed to initialize Secure Messaging context")
+        # PICC starts with ssc = 1
+        if not pace.EAC_increment_ssc(self.ctx):
+            raise PACEException("Failed to incremement ssc")
         return ret
 
 class PCD(PACEEntity):
