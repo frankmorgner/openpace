@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src win32
 
 EXTRA_DIST = libeac.pc.in bootstrap oids.patch
-CHECKFLAGS = --enable-python --enable-java
+DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-java
 
 if WIN32
 WS2_32 = -lws2_32
