@@ -120,8 +120,6 @@ then
     then
         AC_MSG_ERROR([No suitable OpenSSL installation was found])
     else
-        CRYPTO_LIBS=""
-        CRYPTO_CFLAGS=""
         AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
         if test "${PATCH}" = "not found"
         then
@@ -143,6 +141,15 @@ then
         else
             OPENSSL_CONFIG_EXTRA=-fPIC
         fi
+    fi
+
+    builddir=`pwd`
+    CRYPTO_CFLAGS="-I${builddir}/src/openssl/include"
+    if test "${INSTALL_OPENSSL}" = "yes"
+    then
+        CRYPTO_LIBS="${builddir}/src/openssl/libcrypto.so"
+    else
+        CRYPTO_LIBS="${builddir}/src/openssl/libcrypto.a \`grep Libs.private ${builddir}/src/openssl/libcrypto.pc | ${SED} "-e" 's,Libs.private:\s*,,'\`"
     fi
 else
     AC_SUBST([PKG_REQUIRES], [libcrypto])

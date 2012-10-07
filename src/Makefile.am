@@ -86,15 +86,6 @@ $(libeac_la_SOURCES) $(nobase_include_HEADERS): patch_openssl
 
 
 libeac_la_DEPENDENCIES = $(OPENSSL_LIBCRYPTO_A)
-if INSTALL_OPENSSL
-libeac_la_LIBADD      += $(OPENSSL_LIBCRYPTO_SO)
-EAC_LIBS              += $(OPENSSL_LIBCRYPTO_SO)
-else
-libeac_la_LIBADD      += $(OPENSSL_LIBCRYPTO_A) $(OPENSSL_LIBS_PRIVATE)
-EAC_LIBS              += $(OPENSSL_LIBCRYPTO_A)
-endif
-libeac_la_CPPFLAGS    += -I$(OPENSSL_INCLUDES)
-EAC_CFLAGS            += -I$(OPENSSL_INCLUDES)
 
 
 #clean-local:
