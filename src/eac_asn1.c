@@ -25,6 +25,7 @@
  * @author Frank Morgner <morgner@informatik.hu-berlin.de>
  */
 
+#include "ca_lib.h"
 #include "eac_asn1.h"
 #include "eac_dh.h"
 #include "eac_err.h"
