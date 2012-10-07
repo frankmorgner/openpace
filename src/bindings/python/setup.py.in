@@ -15,8 +15,8 @@ CFLAGS = '@CFLAGS@'
 CPPFLAGS = '@CPPFLAGS@'
 LIBS = '@LIBS@'
 
-all_libs = shlex.split(CPPFLAGS + ' ' + CFLAGS + ' ' + OPENPACE_LIBS + ' ' + CRYPTO_LIBS)
-all_cflags = shlex.split(LIBS + ' ' + OPENPACE_CFLAGS + ' ' + CRYPTO_CFLAGS)
+all_libs = shlex.split(LIBS + ' ' + OPENPACE_LIBS + ' ' + CRYPTO_LIBS)
+all_cflags = shlex.split(CPPFLAGS + ' ' + CFLAGS + ' ' + OPENPACE_CFLAGS + ' ' + CRYPTO_CFLAGS)
 
 #Prepare the external module that we want to build
 pace_module = Extension('_pace',
