@@ -255,6 +255,15 @@ int i2d_CVC_CERT(CVC_CERT *a, unsigned char **out);
 #define CVC_CERT_dup(x) ASN1_dup_of(CVC_CERT, i2d_CVC_CERT, CVC_d2i_CVC_CERT, x)
 
 /**
+ * @brief Duplicate a CHAT 
+ *
+ * @param[in] x CHAT to duplicate
+ *
+ * @return Duplicated CHAT or NULL in case of an error
+ */
+#define CVC_CHAT_dup(x) ASN1_dup_of(CVC_CHAT, i2d_CVC_CHAT, d2i_CVC_CHAT, x)
+
+/**
  * @brief Allocate memory for a CV certificate
  * */
 CVC_CERT *CVC_CERT_new(void);

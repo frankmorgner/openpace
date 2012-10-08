@@ -41,6 +41,12 @@ CVC_CERT_free(CVC_CERT *a);
 CVC_CERT
 *CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len);
 
+CVC_CERT *
+CVC_CERT_dup(CVC_CERT *x)
+{
+    ASN1_dup_of(CVC_CERT, i2d_CVC_CERT, CVC_d2i_CVC_CERT, x);
+}
+
 %rename (CVC_d2i_CVC_CERT) str_to_cv_cert;
 %inline %{ /* typemap applied */
     static CVC_CERT *str_to_cv_cert(char *in, int in_len) {
@@ -200,6 +206,12 @@ CVC_CHAT_free(CVC_CHAT *);
 
 CVC_CHAT *
 cvc_get_chat(CVC_CERT *cvc);
+
+CVC_CHAT *
+CVC_CHAT_dup(CVC_CHAT *x)
+{
+    ASN1_dup_of(CVC_CHAT, i2d_CVC_CHAT, d2i_CVC_CHAT, x);
+}
 
 void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
 %rename (cvc_chat_print) print_chat;

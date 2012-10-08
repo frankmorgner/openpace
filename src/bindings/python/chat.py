@@ -43,15 +43,12 @@ class CHAT(object):
             self.chat = pace.d2i_CVC_CHAT(chat)
         elif (type(chat).__name__ == 'SwigPyObject'):
             self.asn1_string = pace.i2d_CVC_CHAT(chat)
-            self.chat = chat
+            self.chat = pace.CVC_CHAT_dup(chat)
         if (self.chat is None or self.asn1_string is None):
             raise CHATException("Failed to parse CHAT")
 
     def __del__(self):
-        pass
-        # Freeing the underlying C structure can result in double frees if there
-        # are other references to this CHAT (e.g. in an associated CVC object
-        # pace.CVC_CHAT_free(self.chat)
+        pace.CVC_CHAT_free(self.chat)
 
     def __str__(self):
         ret = pace.get_chat_repr(self.chat)
