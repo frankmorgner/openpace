@@ -375,6 +375,9 @@ def tatest():
     if pace.EAC_CTX_init_ca(ta.ctx, pace.id_CA_ECDH_AES_CBC_CMAC_128, 11, None, None) == 0:
         raise PACEException("Failed to initialize context", "Chip Authentication", "PICC")
 
+    # our certificates aren't up to date
+    pace.TA_disable_checks(ta.ctx)
+
     if pace.EAC_CTX_init_ta(ta.ctx, None, CVCA, None) == 0:
         raise PACEException("Failed to initialize context", "Terminal Authentication", "PICC")
 
