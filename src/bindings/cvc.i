@@ -175,6 +175,26 @@ d2i_CVC_CHAT(CVC_CHAT **chat, const unsigned char **in, long len);
     }
 %}
 
+int i2d_CVC_CHAT(CVC_CHAT *chat, unsigned char **out);
+%rename (i2d_CVC_CHAT) chat_to_str;
+%inline %{ /* typemap applied */
+    void chat_to_str(CVC_CHAT *chat, char **out, int *out_len) {
+        char *tmp;
+        int new_len;
+
+        if (!chat)
+            return;
+
+        *out_len = i2d_CVC_CHAT(chat, NULL);
+        *out = (char *) malloc(*out_len);
+        if (!*out)
+            return;
+
+        tmp = *out;
+        new_len = i2d_CVC_CHAT(chat, &tmp);
+        return;
+    }
+%}
 void
 CVC_CHAT_free(CVC_CHAT *);
 
