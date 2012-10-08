@@ -98,4 +98,9 @@ class CVC(object):
         pace.CVC_CERT_free(self.cvc)
 
     def __str__(self):
-        return str(self.chat)
+        ret = pace.get_cvc_repr(self.cvc)
+
+        if ret is None:
+            raise CHATException("Failed to parse CV certificate")
+
+        return ret

@@ -420,6 +420,46 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
     }
 %}
 
+%inline %{
+    /**
+     * @brief Get a string representation of a CHAT.
+     */
+    static void get_cvc_repr(CVC_CERT *chat, char **out, int *out_len) {
+        BIO *bio =  NULL;
+
+        if (!out || !out_len)
+            goto err;
+
+        bio = BIO_new(BIO_s_mem());
+        if (!bio)
+            return;
+
+        cvc_print(bio, chat, 0);
+
+        *out_len = BIO_ctrl_pending(bio);
+        *out = malloc(*out_len);
+        if (!*out)
+            goto err;
+
+        if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
+            goto err;
+
+        BIO_free_all(bio);
+        return;
+
+    err:
+        if (bio)
+            BIO_free_all(bio);
+        if (*out) {
+            free(*out);
+            *out = NULL;
+        }
+        out = NULL;
+        *out_len = 0;
+        return;
+    }
+%}
+
 #endif
 
 
