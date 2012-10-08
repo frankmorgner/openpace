@@ -88,12 +88,12 @@ $(libeac_la_SOURCES) $(nobase_include_HEADERS): patch_openssl
 libeac_la_DEPENDENCIES = $(OPENSSL_LIBCRYPTO_A)
 
 
-#clean-local:
-#	test ! -r $(OPENSSL_MAKEFILE) \
-#		|| $(MAKE) -C $(OPENSSL_DIR) clean
-#	rm -f $(OPENSSL_MAKEFILE)
-
 distclean-local:
+	test ! -r $(OPENSSL_MAKEFILE) \
+		|| $(MAKE) -C $(OPENSSL_DIR) clean
+	rm -f $(OPENSSL_MAKEFILE)
+
+maintainerclean-local:
 	rm -rf $(OPENSSL_DIR)
 
 if INSTALL_OPENSSL
