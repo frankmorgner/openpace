@@ -98,4 +98,4 @@ class CVC(object):
         pace.CVC_CERT_free(self.cvc)
 
     def __str__(self):
-        print self.chat
+        return str(self.chat)
