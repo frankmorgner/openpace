@@ -19,7 +19,7 @@
 #!/usr/bin/env python
 import pace
 
-from chat import CHAT
+from chat import CHAT, CVC
 from pace_entity import *
 
 TEST_CVC = "\x7F\x21\x82\x01\x41\x7F\x4E\x81\xFA\x5F\x29\x01\x00\x42\x0D\x5A\
@@ -347,10 +347,10 @@ def pacetest():
         print("An error occured")
 
 def cvctest():
-    cvc = pace.CVC_d2i_CVC_CERT(TEST_CVC)
+    cvc = CVC(TEST_CVC)
     cvc_desc = pace.d2i_CVC_CERTIFICATE_DESCRIPTION(TEST_DESCRIPTION)
-    chat = pace.cvc_get_chat(cvc)
-    pace.cvc_chat_print(chat, 4)
+    print cvc.chat
+    #pace.cvc_chat_print(cvc.chat, 4)
 
     asn1_chat="\x7F\x4C\x12\x06\x09\x04\x00\x7F\x00\x07\x03\x01\x02\x02\x53\x05\x00\x01\x01\x98\x04"
 
@@ -359,8 +359,15 @@ def cvctest():
     print(chat.get_role())
     print(chat.get_terminal_type())
     print(chat.get_relative_authorizations())
-    pace.CVC_CERT_free(cvc)
+
     pace.CVC_CERTIFICATE_DESCRIPTION_free(cvc_desc)
+
+    terminal_cert = CVC(CHAIN_CVC)
+    print terminal_cert
+    dvca_cert = CVC(DVCA)
+    print dvca_cert
+    cvca_cert = CVC(CVCA)
+    print cvca_cert
 
 def tatest():
     ta = PACEEntity("123456")

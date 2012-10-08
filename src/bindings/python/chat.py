@@ -27,6 +27,7 @@ OpenPACE
 """
 
 import pace
+from binascii import b2a_hex
 
 class CHATException(Exception):
     def __init__(self, value):
@@ -36,20 +37,27 @@ class CHATException(Exception):
         return self.value
 
 class CHAT(object):
-    def __init__(self, asn1_string):
-        self.asn1_string = asn1_string
-        self.chat = pace.d2i_CVC_CHAT(asn1_string)
-        if (self.chat is None):
-            raise CHATException("Failed to parse ASN1 representation")
+    def __init__(self, chat):
+        if (type(chat) == str):
+            self.asn1_string = chat
+            self.chat = pace.d2i_CVC_CHAT(chat)
+        elif (type(chat).__name__ == 'SwigPyObject'):
+            self.asn1_string = pace.i2d_CVC_CHAT(chat)
+            self.chat = chat
+        if (self.chat is None or self.asn1_string is None):
+            raise CHATException("Failed to parse CHAT")
 
     def __del__(self):
-        pace.CVC_CHAT_free(self.chat)
+        pass
+        # Freeing the underlying C structure can result in double frees if there
+        # are other references to this CHAT (e.g. in an associated CVC object
+        # pace.CVC_CHAT_free(self.chat)
 
     def __str__(self):
         ret = pace.get_chat_repr(self.chat)
 
         if ret is None:
-            raise ChatException("Failed to parse CHAT")
+            raise CHATException("Failed to parse CHAT")
 
         return ret
 
@@ -57,7 +65,7 @@ class CHAT(object):
         ret = pace.get_chat_role(self.chat)
 
         if ret is None:
-            raise ChatException("Failed to retrieve terminal role from CHAT")
+            raise CHATException("Failed to retrieve terminal role from CHAT")
 
         return ret
 
@@ -65,7 +73,7 @@ class CHAT(object):
         ret = pace.get_chat_terminal_type(self.chat)
 
         if ret is None:
-            raise ChatException("Failed to retrieve terminal type from CHAT")
+            raise CHATException("Failed to retrieve terminal type from CHAT")
 
         return ret
 
@@ -73,6 +81,21 @@ class CHAT(object):
         ret = pace.get_chat_rel_auth(self.chat)
 
         if ret is None:
-            raise ChatException("Failed to retrieve relative authorization from CHAT")
+            raise CHATException("Failed to retrieve relative authorization from CHAT")
 
         return ret
+
+
+class CVC(object):
+    def __init__(self, asn1_string):
+        self.asn1_string = asn1_string
+        self.cvc = pace.CVC_d2i_CVC_CERT(asn1_string)
+        if not self.cvc:
+            raise TypeError("Failed to parse certificate")
+        self.chat = CHAT(pace.cvc_get_chat(self.cvc))
+
+    def __del__(self):
+        pace.CVC_CERT_free(self.cvc)
+
+    def __str__(self):
+        print self.chat
