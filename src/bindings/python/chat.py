@@ -101,3 +101,39 @@ class CVC(object):
             raise CHATException("Failed to parse CV certificate")
 
         return ret
+
+    def get_car(self):
+        ret = pace.CVC_get_car(self.cvc)
+
+        if ret is None:
+            raise CHATException("Failed to extract CAR")
+
+        return ret
+
+    def get_chr(self):
+        ret = pace.CVC_get_chr(self.cvc)
+
+        if ret is None:
+            raise CHATException("Failed to extract CHR")
+
+        return ret
+
+    def get_effective_date(self):
+        ret = pace.CVC_get_effective_date(self.cvc)
+
+        if ret is None:
+            raise CHATException("Failed to extract effective date")
+
+        return ret
+
+    def get_expiration_date(self):
+        ret = pace.CVC_get_expiration_date(self.cvc)
+
+        if ret is None:
+            raise CHATException("Failed to extract expiration date")
+
+        return ret
+
+    def get_profile_identifier(self):
+        profile_id = pace.CVC_get_profile_identifier(self.cvc)
+        return profile_id

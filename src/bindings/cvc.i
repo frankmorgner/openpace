@@ -57,6 +57,92 @@ CVC_CERT_dup(CVC_CERT *x)
     }
 %}
 
+short
+CVC_get_profile_identifier(const CVC_CERT *cert);
+
+char *
+CVC_get_car(const CVC_CERT *cert);
+%rename (CVC_get_car) cvc_get_car;
+%inline %{
+    static void cvc_get_car(const CVC_CERT *cert, const char **out,
+            int *out_len) {
+        char *car = NULL;
+
+        car = CVC_get_car(cert);
+        if (car)
+            return;
+
+        strcpy(*out, car);
+        *out_len = strlen(car);
+
+        free(car);
+
+        return;
+    }
+%}
+
+char *
+CVC_get_chr(const CVC_CERT *cert);
+%rename (CVC_get_chr) cvc_get_chr;
+%inline %{
+    static void cvc_get_chr(const CVC_CERT *cert, const char **out,
+            int *out_len) {
+        char *chr = NULL;
+
+        chr = CVC_get_chr(cert);
+        if (chr)
+            return;
+
+        strcpy(*out, chr);
+        *out_len = strlen(chr);
+
+        free(chr);
+
+        return;
+    }
+%}
+
+char *
+CVC_get_effective_date(const CVC_CERT *cert);
+%rename (CVC_get_effective_date) cvc_get_effective_date;
+%inline %{
+    static void cvc_get_effective_date(const CVC_CERT *cert, const char **out,
+            int *out_len) {
+        char *date = NULL;
+
+        date = CVC_get_effective_date(date);
+        if (date)
+            return;
+
+        strcpy(*out, date);
+        *out_len = strlen(date);
+
+        free(date);
+
+        return;
+    }
+%}
+
+char *
+CVC_get_expiration_date(const CVC_CERT *cert);
+%rename (CVC_get_expiration_date) cvc_get_expiration_date;
+%inline %{
+    static void cvc_get_expiration_date(const CVC_CERT *cert, const char **out,
+            int *out_len) {
+        char *date = NULL;
+
+        date = CVC_get_expiration_date(date);
+        if (date)
+            return;
+
+        strcpy(*out, date);
+        *out_len = strlen(date);
+
+        free(date);
+
+        return;
+    }
+%}
 /*int i2d_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRPTION *a,
         unsigned char **out);*/
 
@@ -333,7 +419,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
         if (!terminal_type)
             goto err;
 
-        *out_len = strlen(terminal_type) + 1; 
+        *out_len = strlen(terminal_type) + 1;
         *out = malloc(*out_len);
         if (!*out)
             goto err;

@@ -367,7 +367,15 @@ def cvctest():
     dvca_cert = CVC(DVCA)
     print dvca_cert
     cvca_cert = CVC(CVCA)
-    print cvca_cert
+    print "Certificate chain:"
+    print cvca_cert.get_chr() + " -> " + dvca_cert.get_chr() + " -> " + terminal_cert.get_chr()
+    print terminal_cert.get_chr() + " -> " + terminal_cert.get_car() + " -> " + dvca_cert.get_car()
+    print "Terminal certificate validity period:"
+    print terminal_cert.get_effective_date()
+    print terminal_cert.get_expiration_date()
+    print "Terminal certificate profile identifier"
+    print terminal_cert.get_profile_identifier()
+
 
 def tatest():
     ta = PACEEntity("123456")
