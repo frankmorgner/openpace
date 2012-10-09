@@ -134,12 +134,13 @@ update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc);
 /**
  * @brief Checks if str is a character string according to TR-3110 D.2.1.4
  *
- * @param[in] str BUF_MEM object with the string to check
+ * @param[in] str The string to check
+ * @param[in] length Length of the string
  *
  * @return 1 if str is a character string or 0 if it is not
  */
 int
-is_char_str(const BUF_MEM * str);
+is_char_str(const unsigned char *str, const size_t length);
 /**
  * @brief Checks if \c is BCD encoded
  *

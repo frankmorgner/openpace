@@ -446,7 +446,7 @@ void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
         if (!bio)
             return;
 
-        cvc_print(bio, chat, 0);
+        CVC_print(bio, chat, 0);
 
         *out_len = BIO_ctrl_pending(bio);
         *out = malloc(*out_len);

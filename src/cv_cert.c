@@ -259,20 +259,17 @@ IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 /** @} ***********************************************************************/
 
 /** Convert the CAR or CHR to a human readable string */
-static BUF_MEM *
-cvc_get_reference_string(ASN1_OCTET_STRING *ref);
-/** Convert the profile identifier to an integer*/
-static short
-cvc_get_profile_identifier(ASN1_INTEGER *id);
-/**
- *  @brief Convert the effective date and expiration date,
- *         of a certificate to a string
- *
- *  @param[in] date Octet string that holds the date
- *
- *  @return Null terminated string representation of the date
- */
 static char *
+cvc_get_reference_string(ASN1_OCTET_STRING *ref);
+/**
+ *  @brief Convert the effective date of a certificate to a string
+ *
+ *  @param[in] cert The certificate
+ *
+ *  @return Null terminated string representation of the date or NULL in case
+ * of an error
+ */
+char *
 cvc_get_date_string(ASN1_OCTET_STRING *date);
 /**
  * @brief Extract the rsa public key from a CV certificate
@@ -371,6 +368,42 @@ err:
         BUF_MEM_free(signature);
 
     return r;
+}
+
+char *
+CVC_get_car(const CVC_CERT *cert)
+{
+    if (!cert || !cert->body)
+        return NULL;
+
+    return cvc_get_reference_string(cert->body->certificate_authority_reference);
+}
+
+char *
+CVC_get_chr(const CVC_CERT *cert)
+{
+    if (!cert || !cert->body)
+        return NULL;
+
+    return cvc_get_reference_string(cert->body->certificate_holder_reference);
+}
+
+char *
+CVC_get_effective_date(const CVC_CERT *cert)
+{
+    if (!cert || !cert->body)
+        return NULL;
+
+    return cvc_get_date_string(cert->body->certificate_effective_date);
+}
+
+char *
+CVC_get_expiration_date(const CVC_CERT *cert)
+{
+    if (!cert || !cert->body)
+        return NULL;
+
+    return cvc_get_date_string(cert->body->certificate_expiration_date);
 }
 
 enum cvc_terminal_role
@@ -554,30 +587,30 @@ err:
 }
 
 int
-cvc_print(BIO *bio, const CVC_CERT *cv, int indent)
+CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
 {
     int r = 0;
     char *effective_date = NULL, *expiration_date = NULL;
-    BUF_MEM *car = NULL, *chr = NULL;
+    char *car = NULL, *chr = NULL;
 
     if (!bio || !cv || !cv->body || !cv->body->public_key)
         goto err;
 
-    effective_date = cvc_get_date_string(cv->body->certificate_effective_date);
-    expiration_date = cvc_get_date_string(cv->body->certificate_expiration_date);
-    car = cvc_get_reference_string(cv->body->certificate_authority_reference);
-    chr = cvc_get_reference_string(cv->body->certificate_holder_reference);
+    effective_date = CVC_get_effective_date(cv);
+    expiration_date = CVC_get_expiration_date(cv);
+    car = CVC_get_car(cv);
+    chr = CVC_get_chr(cv);
 
     if (!effective_date || !expiration_date || !car || !chr)
         goto err;
 
     if (!BIO_indent(bio, indent, 80)
-            || !BIO_printf(bio, "Profile identifier: %d\n", cvc_get_profile_identifier(cv->body->certificate_profile_identifier))
+            || !BIO_printf(bio, "Profile identifier: %d\n", CVC_get_profile_identifier(cv))
             || !BIO_indent(bio, indent, 80)
-            || !BIO_printf(bio, "CAR: %s\n", car->data)
+            || !BIO_printf(bio, "CAR: %s\n", car)
             || !CVC_PUBKEY_print_ctx(bio, cv->body->public_key, indent, NULL)
             || !BIO_indent(bio, indent, 80)
-            || !BIO_printf(bio, "CHR: %s\n", chr->data)
+            || !BIO_printf(bio, "CHR: %s\n", chr)
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CHAT:\n")
             || !cvc_chat_print(bio, cvc_get_chat(cv), indent+2)
@@ -596,9 +629,9 @@ err:
     if (expiration_date)
         OPENSSL_free(expiration_date);
     if (car)
-        BUF_MEM_free(car);
+        OPENSSL_free(car);
     if (chr)
-        BUF_MEM_free(chr);
+        OPENSSL_free(chr);
 
     return r;
 }
@@ -724,45 +757,47 @@ err:
 }
 
 short
-cvc_get_profile_identifier(ASN1_INTEGER *id)
+CVC_get_profile_identifier(const CVC_CERT *cert)
 {
     long l;
-    if (!id || !id->data)
+
+    if (!cert || !cert->body || !cert->body->certificate_profile_identifier ||
+                !cert->body->certificate_profile_identifier->data)
         return -1;
-    l = ASN1_INTEGER_get(id);
+    l = ASN1_INTEGER_get(cert->body->certificate_profile_identifier);
     return (l == 0) ? 0 : -1; /* The only specified version number is 0 right now */
 }
 
-BUF_MEM *
+char *
 cvc_get_reference_string(ASN1_OCTET_STRING *ref)
 {
     /* Used to check CAR and CHR */
     /* Max length is 16 byte: 2 Byte country code (ASCII), max. 9 Byte Holder
      *      Mnemonic, 5 Byte Sequence Number (ASCII A-Z, 0-9) */
 
-    BUF_MEM *ret = NULL;
+    char *ret = NULL;
 
     if (!ref || !ref->data || ref->length > 16)
         return NULL;
 
-    ret = BUF_MEM_create_init(ref->data, ref->length);
+    ret = (char *) OPENSSL_malloc(ref->length + 1);
     if (!ret)
         return NULL;
 
-    if (!is_char_str(ret)) {
+    memcpy(ret, ref->data, ref->length);
+
+    if (!is_char_str((unsigned char*) ret, (size_t) ref->length)) {
         goto err;
     }
 
     /* Null-terminate string */
-    if (!BUF_MEM_grow(ret, ret->length + 1))
-        goto err;
-    ret->data[ret->length] = 0;
+    ret[ref->length] = 0;
 
     return ret;
 
 err:
     if (ret)
-        BUF_MEM_free(ret);
+        OPENSSL_free(ret);
     return NULL;
 }
 

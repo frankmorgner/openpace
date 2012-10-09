@@ -329,7 +329,7 @@ cvc_chat_print_authorizations(BIO *bio, const CVC_CHAT *chat, int indent);
  * @return 1 on success or 0 in case of an error
  * */
 int
-cvc_print(BIO *bio, const CVC_CERT *cv, int indent);
+CVC_print(BIO *bio, const CVC_CERT *cv, int indent);
 
 /**
  *  @brief Get the CHAT contained in a CV certifcate.
@@ -370,6 +370,54 @@ CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
  */
 enum cvc_terminal_role
 CVC_get_role(const CVC_CHAT *chat);
+
+/**
+  * @brief Return the profile identifier of a CV certificate as an integer
+  *
+  * @param[in] cert The certificate from which we want to return the profile identifier
+  *
+  * @return The profile identifier or -1 in case of an error
+  *  */
+short
+CVC_get_profile_identifier(const CVC_CERT *cert);
+/**
+  * @brief Return the CAR of a CV certificate as a string
+  *
+  * @param[in] cert The certificate from which we want to return the CAR
+  *
+  * @return CAR string or NULL in case of an error
+  *  */
+char *
+CVC_get_car(const CVC_CERT *cert);
+/**
+  * @brief Return the CAR of a CV certificate as a string
+  *
+  * @param[in] cert The certificate from which we want to return the CHR
+  *
+  * @return CHR string or NULL in case of an error
+  *  */
+char *
+CVC_get_chr(const CVC_CERT *cert);
+/**
+ *  @brief Convert the effective date and expiration date,
+ *         of a certificate to a string
+ *
+ *  @param[in] date Octet string that holds the date
+ *
+ *  @return Null terminated string representation of the date
+ */
+char *
+CVC_get_effective_date(const CVC_CERT *cert);
+/**
+ *  @brief Convert the expiration date of a certificate to a string
+ *
+ *  @param[in] cert The certificate
+ *
+ *  @return Null terminated string representation of the date or NULL in case
+ * of an error
+ */
+char *
+CVC_get_expiration_date(const CVC_CERT *cert);
 
 /**
  * @brief Verify the signature of a CV certificate using the public key of the

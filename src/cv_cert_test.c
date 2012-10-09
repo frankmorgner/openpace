@@ -176,7 +176,7 @@ static int parse_cv_cert(const unsigned char *cert, const unsigned int cert_len,
         err("Could not parse CV Cert");
     verb("Parsed CV Cert");
     if (debug) {
-        if (!cvc_print(bio_stdout, cvc_cert, 4))
+        if (!CVC_print(bio_stdout, cvc_cert, 4))
             err("Could not print CV certificate");
     }
 

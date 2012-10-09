@@ -3475,7 +3475,7 @@ err:
         bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
         if (bio) {
             BIO_printf(bio, "    Card Verifiable Certificate:\n");
-            cvc_print(bio, cvc_cert, 6);
+            CVC_print(bio, cvc_cert, 6);
             CVC_CERTIFICATE_DESCRIPTION_print_ctx(bio, desc, 4, NULL);
         }
     }

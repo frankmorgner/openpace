@@ -501,7 +501,7 @@ err:
 }
 
 int
-is_char_str(const BUF_MEM * str)
+is_char_str(const unsigned char *str, const size_t length)
 {
     const unsigned char *s = NULL;
     size_t i = 0;
@@ -509,8 +509,8 @@ is_char_str(const BUF_MEM * str)
     if (!str)
         return 0;
 
-    s = (unsigned char *) str->data;
-    i = str->length;
+    s = str;
+    i = length;
 
     while (i) {
         if (*s <= 0x1f || (0x7f <= *s && *s <= 0x9f)) {
