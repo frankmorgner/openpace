@@ -355,13 +355,15 @@ static char tc_ecdh_shared_secret_k[] = {
     0x2E, 0x2D, 0x00, 0xB6, 0xAD, 0xAF, 0x8A, 0x87, 0xA6, 0xED, 0xA7, 0x87, 0x40, 0xF1, 0x76, 0x06,  /* .-..........@.v. */
 };
 /* Note that  Worked Example for Extended Access Control (EAC) Version 1.0
- * contains a wrong key. The Log however contains a dump of the correct value
+ * contains a wrong key. The Log however contains a dump of the correct value.
+ * Fixed in Worked Example for Extended Access Control (EAC) Version 1.01.
  */
 static char tc_ecdh_k_mac[] = {
     0x73, 0xFF, 0x26, 0x87, 0x84, 0xF7, 0x2A, 0xF8, 0x33, 0xFD, 0xC9, 0x46, 0x40, 0x49, 0xAF, 0xC9,  /* s.&...*.3..F@I.. */
 };
 /* Note that  Worked Example for Extended Access Control (EAC) Version 1.0
- * contains a wrong key. The Log however contains a dump of the correct value
+ * contains a wrong key. The Log however contains a dump of the correct value.
+ * Fixed in Worked Example for Extended Access Control (EAC) Version 1.01.
  */
 static char tc_ecdh_k_enc[] = {
     0x68, 0x40, 0x6B, 0x41, 0x62, 0x10, 0x05, 0x63, 0xD9, 0xC9, 0x01, 0xA6, 0x15, 0x4D, 0x29, 0x01,  /* h@kAb..c.....M). */
@@ -826,7 +828,8 @@ static char tc_dh_pcd_pub_key[] = {
     0xD4,                                                                                            /* . */
 };
 /* Note that  Worked Example for Extended Access Control (EAC) Version 1.0
- * contains a wrong key. The Log however contains a dump of the correct value
+ * contains a wrong key. The Log however contains a dump of the correct value.
+ * Fixed in Worked Example for Extended Access Control (EAC) Version 1.01.
  */
 static char tc_dh_picc_priv_key[] = {
     0x02, 0x0F, 0x01, 0x8C, 0x72, 0x84, 0xB0, 0x47, 0xFA, 0x77, 0x21, 0xA3, 0x37, 0xEF, 0xB7, 0xAC,  /* ....r..G.w!.7... */
@@ -839,7 +842,8 @@ static char tc_dh_picc_priv_key[] = {
     0x43, 0xC1, 0xCA, 0xD2, 0xDD, 0x48, 0x4F, 0xEB, 0x4E, 0xD2, 0x2B, 0x59, 0x7D, 0x36, 0x68, 0x8E,  /* C....HO.N.+Y}6h. */
 };
 /* Note that  Worked Example for Extended Access Control (EAC) Version 1.0
- * contains a wrong key. The Log however contains a dump of the correct value
+ * contains a wrong key. The Log however contains a dump of the correct value.
+ * Fixed in Worked Example for Extended Access Control (EAC) Version 1.01.
  */
 static char tc_dh_picc_pub_key[] = {
     0x07, 0x56, 0x93, 0xD9, 0xAE, 0x94, 0x18, 0x77, 0x57, 0x3E, 0x63, 0x4B, 0x6E, 0x64, 0x4F, 0x8E,  /* .V.....wW>cKndO. */
@@ -852,7 +856,8 @@ static char tc_dh_picc_pub_key[] = {
     0x6D, 0x86, 0x6C, 0x79, 0xCE, 0x05, 0x84, 0xE4, 0x96, 0x87, 0xFF, 0x61, 0xBC, 0x29, 0xAE, 0xA1,  /* m.ly.......a.).. */
 };
 /* Note that  Worked Example for Extended Access Control (EAC) Version 1.0
- * contains a wrong key. The Log however contains a dump of the correct value
+ * contains a wrong key. The Log however contains a dump of the correct value.
+ * Fixed in Worked Example for Extended Access Control (EAC) Version 1.01.
  */
 static char tc_dh_shared_secret_k[] = {
     0x6B, 0xAB, 0xC7, 0xB3, 0xA7, 0x2B, 0xCD, 0x7E, 0xA3, 0x85, 0xE4, 0xC6, 0x2D, 0xB2, 0x62, 0x5B,  /* k....+.~....-.b[ */
