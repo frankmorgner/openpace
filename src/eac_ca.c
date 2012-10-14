@@ -39,7 +39,11 @@
 #include <openssl/evp.h>
 #include <openssl/obj_mac.h>
 #include <openssl/pkcs7.h>
+#include <openssl/x509.h>
 #include <string.h>
+
+static int CA_passive_authentication(const PKCS7 *ef_cardsecurity,
+        const unsigned char *csca, size_t csca_len);
 
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx)
@@ -102,7 +106,43 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey)
     return 1;
 }
 
-/* TODO verify signature */
+int
+CA_passive_authentication(const PKCS7 *ef_cardsecurity, const unsigned char *csca,
+        size_t csca_len) {
+    X509 *csca_cert = NULL;
+    X509_STORE *store = NULL;
+    STACK_OF(X509) *ds_certs = NULL;
+    int ret = 0;
+
+    /* Initialize the trust store and the corresponding CTX structure */
+    store = X509_STORE_new();
+    if (!store)
+        goto err;
+
+    /* Parse the CSCA certificate and add it to the trust store */
+    if (!d2i_X509(&csca_cert, &csca, csca_len))
+        goto err;
+    X509_STORE_add_cert(store, csca_cert);
+
+    /* Extract the DS certificates from the EF.CardSecurity */
+    ds_certs = PKCS7_get0_signers(ef_cardsecurity, NULL, 0);
+    if (!ds_certs)
+        goto err;
+
+    /* Verify the signature and the certificate chain */
+    ret = PKCS7_verify(ef_cardsecurity, ds_certs, store, NULL, NULL, 0);
+
+err:
+    if (csca_cert)
+        X509_free(csca_cert);
+    if (store)
+        X509_STORE_free(store);
+    if (ds_certs)
+        sk_X509_free(ds_certs);
+
+    return ret;
+}
+
 /* TODO check and initialize a given EAC_CTX */
 BUF_MEM *
 CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)
