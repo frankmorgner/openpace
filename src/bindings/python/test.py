@@ -400,7 +400,7 @@ def tatest():
         raise PACEException("Failed to generate nonce", "Terminal Authentication", "PICC")
 
 def catest():
-    assert (pace.CA_get_pubkey(EF_CARDSECURITY) is not None)
+    assert (pace.CA_get_pubkey(None, EF_CARDSECURITY) is not None)
 
 def oidtest():
     assert(pace.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128") == pace.id_CA_ECDH_AES_CBC_CMAC_128)
