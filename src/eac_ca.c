@@ -156,13 +156,14 @@ CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
     BUF_MEM *pubkey = NULL;
     EAC_CTX *signed_ctx = NULL;
 
-    check((ctx && ef_cardsecurity), "Invalid arguments");
+    check(ef_cardsecurity, "Invalid arguments");
 
     if (!d2i_PKCS7(&p7, &ef_cardsecurity, ef_cardsecurity_len)
             || !PKCS7_type_is_signed(p7))
         goto err;
 
-    if (!(ctx->ca_ctx->flags & CA_FLAG_DISABLE_PASSIVE_AUTH))
+    if (ctx && ctx->ca_ctx &&
+            !(ctx->ca_ctx->flags & CA_FLAG_DISABLE_PASSIVE_AUTH))
         check((CA_passive_authentication(ctx, p7) == 1),
                 "Failed to perform passive authentication");
 
