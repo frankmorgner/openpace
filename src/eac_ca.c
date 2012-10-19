@@ -75,8 +75,7 @@ CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
 
     /* Compress own public key */
     my_comp_pubkey = Comp(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx, ctx->md_ctx);
-    if (!my_comp_pubkey)
-        goto err;
+    check(my_comp_pubkey, "Failed to compress public key");
 
     /* Check whether or not the received data fits the own data */
     if (my_comp_pubkey->length != comp_pubkey->length
@@ -113,29 +112,24 @@ CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity) {
     unsigned long issuer_name_hash = 0;
     int ret = 0;
 
-    if (!ef_cardsecurity || !ctx || !ctx->ca_ctx)
-        goto err;
+    check((ef_cardsecurity && ctx && ctx->ca_ctx), "Invalid arguments");
 
     /* Extract the DS certificates from the EF.CardSecurity */
     ds_certs = PKCS7_get0_signers(ef_cardsecurity, NULL, 0);
-    if (!ds_certs)
-        goto err;
+    check(ds_certs, "Failed to retrieve certificates from EF.CardSecurity");
 
     /* NOTE: The following code assumes that there is only one certificate in
      * PKCS7 structure. ds_cert is implicitly freed together with ds_certs. */
     ds_cert = sk_X509_pop(ds_certs);
-    if (!ds_cert)
-        goto err;
+    check(ds_cert, "Failed to retrieve DS certificate from EF.CardSecurity");
 
     issuer_name_hash = X509_issuer_name_hash(ds_cert);
     csca_cert = ctx->ca_ctx->lookup_csca_cert(issuer_name_hash);
-    if (!csca_cert)
-        goto err;
+    check (csca_cert, "Failed to retrieve CSCA certificate");
 
     /* Initialize the trust store and the corresponding CTX structure */
     store = X509_STORE_new();
-    if (!store)
-        goto err;
+    check(store, "Failed to create truststore");
     X509_STORE_add_cert(store, csca_cert);
 
     /* Verify the signature and the certificate chain */
