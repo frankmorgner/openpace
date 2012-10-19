@@ -49,6 +49,13 @@ extern "C" {
 /** Skip checking effective and expiration date of cv certificate against current time */
 #define TA_FLAG_SKIP_TIMECHECK 1
 
+/**
+ * @brief Disable certificate checks for terminal authentication
+ *
+ * FIXME: Add better description
+ *
+ * @param[in] ctx EAC context for which to disable TA checks
+ */
 void
 TA_disable_checks(EAC_CTX *ctx);
 
