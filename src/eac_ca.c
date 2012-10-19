@@ -256,3 +256,12 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)
 err:
     return rv;
 }
+
+void
+CA_disable_passive_authentication (EAC_CTX *ctx)
+{
+    if (!ctx || !ctx->ca_ctx)
+        return;
+    ctx->ca_ctx->flags |= CA_FLAG_DISABLE_PASSIVE_AUTH;
+    return;
+}

@@ -45,6 +45,13 @@ extern "C" {
 #define CA_FLAG_DISABLE_PASSIVE_AUTH 1
 
 /**
+ * @brief Disable passive authentication for this EAC_CTX
+ *
+ * @param ctx EAC context
+ */
+void CA_disable_passive_authentication(EAC_CTX *ctx);
+
+/**
  * @brief Extract the public key from a EF.CardSecurity file
  *
  * @param[in] ctx EAC context
