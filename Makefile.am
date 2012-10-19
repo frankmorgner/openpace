@@ -42,9 +42,9 @@ test-eactest:
 	$(builddir)/src/eactest
 
 test-test.py:
-	cp $(builddir)/src/bindings/python/build/*/_pace.so $(builddir)/src/bindings/python
+	cp $(builddir)/src/bindings/python/build/*/_pace.*so $(builddir)/src/bindings/python
 	env LD_LIBRARY_PATH=$(abs_builddir)/src/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
 		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH}\
 		PYTHONPATH=$(abs_builddir)/src/bindings/python \
 		$(PYTHON) $(srcdir)/src/bindings/python/test.py
-	rm $(builddir)/src/bindings/python/_pace.so
+	rm $(builddir)/src/bindings/python/_pace.*so
