@@ -267,6 +267,8 @@ typedef struct ca_ctx {
     int protocol;
     /** @brief Key agreement object used with the PICC's private key */
     KA_CTX *ka_ctx;
+
+    X509 * (*lookup_csca_cert) (unsigned long issuer_name_hash);
 } CA_CTX;
 
 /** @brief Context for the Extended Access Control protocol */

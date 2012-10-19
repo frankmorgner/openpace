@@ -42,8 +42,7 @@
 #include <openssl/x509.h>
 #include <string.h>
 
-static int CA_passive_authentication(const PKCS7 *ef_cardsecurity,
-        const unsigned char *csca, size_t csca_len);
+static int CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity);
 
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx)
@@ -107,27 +106,37 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey)
 }
 
 int
-CA_passive_authentication(const PKCS7 *ef_cardsecurity, const unsigned char *csca,
-        size_t csca_len) {
-    X509 *csca_cert = NULL;
+CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity) {
+    X509 *csca_cert = NULL, *ds_cert = NULL;
     X509_STORE *store = NULL;
     STACK_OF(X509) *ds_certs = NULL;
+    unsigned long issuer_name_hash = 0;
     int ret = 0;
 
-    /* Initialize the trust store and the corresponding CTX structure */
-    store = X509_STORE_new();
-    if (!store)
+    if (!ef_cardsecurity || !ctx || !ctx->ca_ctx)
         goto err;
-
-    /* Parse the CSCA certificate and add it to the trust store */
-    if (!d2i_X509(&csca_cert, &csca, csca_len))
-        goto err;
-    X509_STORE_add_cert(store, csca_cert);
 
     /* Extract the DS certificates from the EF.CardSecurity */
     ds_certs = PKCS7_get0_signers(ef_cardsecurity, NULL, 0);
     if (!ds_certs)
         goto err;
+
+    /* NOTE: The following code assumes that there is only one certificate in
+     * PKCS7 structure. ds_cert is implicitly freed together with ds_certs. */
+    ds_cert = sk_X509_pop(ds_certs);
+    if (!ds_cert)
+        goto err;
+
+    issuer_name_hash = X509_issuer_name_hash(ds_cert);
+    csca_cert = ctx->ca_ctx->lookup_csca_cert(issuer_name_hash);
+    if (!csca_cert)
+        goto err;
+
+    /* Initialize the trust store and the corresponding CTX structure */
+    store = X509_STORE_new();
+    if (!store)
+        goto err;
+    X509_STORE_add_cert(store, csca_cert);
 
     /* Verify the signature and the certificate chain */
     ret = PKCS7_verify(ef_cardsecurity, ds_certs, store, NULL, NULL, 0);
