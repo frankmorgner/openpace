@@ -3206,7 +3206,7 @@ static_eac_test(struct eac_worked_example tc)
     /* We need to chose one of the supported CA keys specified in the EF.CardAccess
      * BEFORE Terminal Authentication. Therefore, we need to initialize the CA
      * context before TA. */
-    parsed_ca_picc_pub_key = CA_get_pubkey(tc.ef_cardsecurity.data,
+    parsed_ca_picc_pub_key = CA_get_pubkey(picc_ctx, tc.ef_cardsecurity.data,
             tc.ef_cardsecurity.length);
     CHECK(1, buf_eq_buf(parsed_ca_picc_pub_key, &tc.ca_picc_pub_key)
             && EAC_CTX_init_ca(pcd_ctx, tc.ca_info_oid, tc.ca_curve,
@@ -3407,7 +3407,7 @@ test_ef_cardsecurity_parsing(const struct ef_cardaccess tc)
     int failed = 1;
     BUF_MEM *pubkey = NULL;
 
-    pubkey = CA_get_pubkey(tc.ef_cardaccess, tc.ef_cardaccess_len);
+    pubkey = CA_get_pubkey(NULL, tc.ef_cardaccess, tc.ef_cardaccess_len);
     CHECK(1, pubkey, "Parsed EF.CardSecurity");
 
     failed = 0;

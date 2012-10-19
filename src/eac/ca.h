@@ -42,16 +42,19 @@
 extern "C" {
 #endif
 
+#define CA_FLAG_DISABLE_PASSIVE_AUTH 1
+
 /**
  * @brief Extract the public key from a EF.CardSecurity file
  *
+ * @param[in] ctx EAC context
  * @param[in] ef_cardsecurity buffer containing the ASN.1 encoded EF.CardSecurity
  * @param[in] ef_cardsecurity_len length of \a ef_cardsecurity
  *
  * @return The public key or NULL in case of an error
  */
 BUF_MEM *
-CA_get_pubkey(const unsigned char *ef_cardsecurity,
+CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
         size_t ef_cardsecurity_len);
 
 /**

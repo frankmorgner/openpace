@@ -196,17 +196,17 @@ err:
 #endif
 
 BUF_MEM*
-CA_get_pubkey(const unsigned char *in, size_t in_len);
+CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
 %rename(CA_get_pubkey) ca_get_pubkey;
 %inline %{
-    static void ca_get_pubkey (char **out, int *out_len, char *in, int
+    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, int *out_len, char *in, int
             in_len) /* typemap applied */ {
         BUF_MEM *pubkey = NULL;
 
         if (in_len <= 0)
             goto err;
 
-        pubkey = CA_get_pubkey((unsigned char*) in, (size_t) in_len);
+        pubkey = CA_get_pubkey(ctx, (unsigned char*) in, (size_t) in_len);
         if (!pubkey)
             goto err;
 

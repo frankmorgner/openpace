@@ -148,16 +148,23 @@ err:
 
 /* TODO check and initialize a given EAC_CTX */
 BUF_MEM *
-CA_get_pubkey(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)
+CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
+            size_t ef_cardsecurity_len)
 {
 	PKCS7 *p7 = NULL, *signed_data;
     ASN1_OCTET_STRING *os;
     BUF_MEM *pubkey = NULL;
     EAC_CTX *signed_ctx = NULL;
 
+    check((ctx && ef_cardsecurity), "Invalid arguments");
+
     if (!d2i_PKCS7(&p7, &ef_cardsecurity, ef_cardsecurity_len)
             || !PKCS7_type_is_signed(p7))
         goto err;
+
+    if (!(ctx->ca_ctx->flags & CA_FLAG_DISABLE_PASSIVE_AUTH))
+        check((CA_passive_authentication(ctx, p7) == 1),
+                "Failed to perform passive authentication");
 
     signed_data = p7->d.sign->contents;
     if (OBJ_obj2nid(signed_data->type) != NID_id_SecurityObject

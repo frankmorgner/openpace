@@ -265,6 +265,12 @@ typedef struct ca_ctx {
      * - \c NID_id_CA_ECDH_AES_CBC_CMAC_256
      */
     int protocol;
+    /** @brief Flags to control some of the behaviour of the CA
+     *
+     * Accepts the following values:
+     * - \c CA_FLAG_DISABLE_PASSIVE_AUTH
+     */
+    int flags;
     /** @brief Key agreement object used with the PICC's private key */
     KA_CTX *ka_ctx;
 

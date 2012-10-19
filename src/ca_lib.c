@@ -43,6 +43,7 @@ CA_CTX_new(void)
     }
     ctx->version = 0;
     ctx->protocol = NID_undef;
+    ctx->flags = 1;
 
     return ctx;
 }
