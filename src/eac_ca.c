@@ -112,7 +112,7 @@ CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity) {
     unsigned long issuer_name_hash = 0;
     int ret = 0;
 
-    check((ef_cardsecurity && ctx && ctx->ca_ctx), "Invalid arguments");
+    check(ef_cardsecurity && ctx && ctx->ca_ctx && ctx->ca_ctx->lookup_csca_cert, "Invalid arguments");
 
     /* Extract the DS certificates from the EF.CardSecurity */
     ds_certs = PKCS7_get0_signers(ef_cardsecurity, NULL, 0);
