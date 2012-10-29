@@ -131,7 +131,7 @@ CVC_get_expiration_date(const CVC_CERT *cert);
             int *out_len) {
         char *date = NULL;
 
-        date = CVC_get_expiration_date(date);
+        date = CVC_get_expiration_date(cert);
         if (date)
             return;
 
