@@ -110,7 +110,7 @@ CVC_get_effective_date(const CVC_CERT *cert);
             int *out_len) {
         char *date = NULL;
 
-        date = CVC_get_effective_date(date);
+        date = CVC_get_effective_date(cert);
         if (date)
             return;
 
