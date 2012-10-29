@@ -77,7 +77,7 @@ OBJ_txt2nid(char *in);
 
 %inline %{
     /* Print the OpenSSL error stack to stdout */
-    static void print_ossl_err() {
+    static void print_ossl_err(void) {
         /* Might be better to load the strings once on program startup */
         ERR_load_crypto_strings();
         ERR_print_errors_fp(stdout);

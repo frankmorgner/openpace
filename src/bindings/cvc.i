@@ -64,7 +64,7 @@ char *
 CVC_get_car(const CVC_CERT *cert);
 %rename (CVC_get_car) cvc_get_car;
 %inline %{
-    static void cvc_get_car(const CVC_CERT *cert, const char **out,
+    static void cvc_get_car(const CVC_CERT *cert, char **out,
             int *out_len) {
         char *car = NULL;
 
@@ -85,7 +85,7 @@ char *
 CVC_get_chr(const CVC_CERT *cert);
 %rename (CVC_get_chr) cvc_get_chr;
 %inline %{
-    static void cvc_get_chr(const CVC_CERT *cert, const char **out,
+    static void cvc_get_chr(const CVC_CERT *cert, char **out,
             int *out_len) {
         char *chr = NULL;
 
@@ -106,7 +106,7 @@ char *
 CVC_get_effective_date(const CVC_CERT *cert);
 %rename (CVC_get_effective_date) cvc_get_effective_date;
 %inline %{
-    static void cvc_get_effective_date(const CVC_CERT *cert, const char **out,
+    static void cvc_get_effective_date(const CVC_CERT *cert, char **out,
             int *out_len) {
         char *date = NULL;
 
@@ -127,7 +127,7 @@ char *
 CVC_get_expiration_date(const CVC_CERT *cert);
 %rename (CVC_get_expiration_date) cvc_get_expiration_date;
 %inline %{
-    static void cvc_get_expiration_date(const CVC_CERT *cert, const char **out,
+    static void cvc_get_expiration_date(const CVC_CERT *cert, char **out,
             int *out_len) {
         char *date = NULL;
 
@@ -271,19 +271,23 @@ int i2d_CVC_CHAT(CVC_CHAT *chat, unsigned char **out);
 %rename (i2d_CVC_CHAT) chat_to_str;
 %inline %{ /* typemap applied */
     void chat_to_str(CVC_CHAT *chat, char **out, int *out_len) {
-        char *tmp;
+        unsigned char *tmp;
         int new_len;
 
         if (!chat)
             return;
 
-        *out_len = i2d_CVC_CHAT(chat, NULL);
-        *out = (char *) malloc(*out_len);
+        new_len = i2d_CVC_CHAT(chat, NULL);
+        if (new_len < 0) {
+            *out_len = 0;
+            return;
+        }
+        *out = (char *) malloc(new_len);
         if (!*out)
             return;
 
-        tmp = *out;
-        new_len = i2d_CVC_CHAT(chat, &tmp);
+        tmp = (unsigned char *) *out;
+        *out_len = i2d_CVC_CHAT(chat, &tmp);
         return;
     }
 %}
