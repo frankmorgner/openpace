@@ -3469,20 +3469,18 @@ test_worked_examples(void)
 }
 
 /* Try to parse an EF.CardSecurity structure and extract the content */
-static const BUF_MEM *csca;
-X509 *lookup_csca_cert(unsigned long issuer_name_hash)
+static X509_STORE *store = NULL;
+X509_STORE *lookup_csca_cert(unsigned long issuer_name_hash)
 {
-    X509 *csca_cert = NULL;
-
-    d2i_X509(&csca_cert, (const unsigned char **) &csca->data, csca->length);
-
-    return csca_cert;
+    return store;
 }
 static int
 test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
 {
-    int failed = 1;
     BUF_MEM *pubkey = NULL;
+    static X509 *csca_cert = NULL;
+    const unsigned char *p;
+    int failed = 1;
 
     EAC_CTX *ctx = NULL;
 
@@ -3491,8 +3489,18 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
                 tc.ef_cardaccess.length, ctx) && ctx->ca_ctx,
             "Parsed EF.CardAccess");
 
+
+    p = tc.csca.data;
+    d2i_X509(&csca_cert, &p, tc.csca.length);
+
+    /* Initialize the trust store */
+    if (!store)
+       store = X509_STORE_new();
+    CHECK(1, store, "Failed to create truststore");
+    X509_STORE_add_cert(store, csca_cert);
+
+
     ctx->ca_ctx->flags = 0;
-    csca = &tc.csca;
     ctx->ca_ctx->lookup_csca_cert = lookup_csca_cert;
 
     pubkey = CA_get_pubkey(ctx, tc.ef_cardsecurity.data, tc.ef_cardsecurity.length);

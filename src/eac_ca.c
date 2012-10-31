@@ -105,11 +105,12 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey)
 }
 
 int
-CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity) {
-    X509 *csca_cert = NULL, *ds_cert = NULL;
-    X509_STORE *store = NULL;
+CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity)
+{
+    X509 *ds_cert;
+    X509_STORE *store;
     STACK_OF(X509) *ds_certs = NULL;
-    unsigned long issuer_name_hash = 0;
+    unsigned long issuer_name_hash;
     int ret = 0;
 
     check(ef_cardsecurity && ctx && ctx->ca_ctx && ctx->ca_ctx->lookup_csca_cert, "Invalid arguments");
@@ -123,23 +124,15 @@ CA_passive_authentication(const EAC_CTX *ctx, PKCS7 *ef_cardsecurity) {
     ds_cert = sk_X509_pop(ds_certs);
     check(ds_cert, "Failed to retrieve DS certificate from EF.CardSecurity");
 
+    /* Get the trust store with at least the csca certificate */
     issuer_name_hash = X509_issuer_name_hash(ds_cert);
-    csca_cert = ctx->ca_ctx->lookup_csca_cert(issuer_name_hash);
-    check (csca_cert, "Failed to retrieve CSCA certificate");
-
-    /* Initialize the trust store and the corresponding CTX structure */
-    store = X509_STORE_new();
-    check(store, "Failed to create truststore");
-    X509_STORE_add_cert(store, csca_cert);
+    store = ctx->ca_ctx->lookup_csca_cert(issuer_name_hash);
+    check (store, "Failed to retrieve CSCA truststore");
 
     /* Verify the signature and the certificate chain */
     ret = PKCS7_verify(ef_cardsecurity, ds_certs, store, NULL, NULL, 0);
 
 err:
-    if (csca_cert)
-        X509_free(csca_cert);
-    if (store)
-        X509_STORE_free(store);
     if (ds_certs)
         sk_X509_free(ds_certs);
 
