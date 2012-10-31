@@ -3491,11 +3491,9 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
                 tc.ef_cardaccess.length, ctx) && ctx->ca_ctx,
             "Parsed EF.CardAccess");
 
-#if 0
     ctx->ca_ctx->flags = 0;
     csca = &tc.csca;
     ctx->ca_ctx->lookup_csca_cert = lookup_csca_cert;
-#endif
 
     pubkey = CA_get_pubkey(ctx, tc.ef_cardsecurity.data, tc.ef_cardsecurity.length);
     CHECK(1, pubkey, "Parsed EF.CardSecurity");
@@ -3683,10 +3681,12 @@ main(int argc, char *argv[])
     }
 
     /*printf("%s:%d\n", __FILE__, __LINE__);*/
+    OpenSSL_add_all_algorithms();
     failed += test_parsing();
     failed += test_worked_examples();
     failed += do_dynamic_eac_tests();
     failed += test_consttime_memcmp();
+    EVP_cleanup();
 
     if (failed)
         printf("%d errors collected.\n", failed);
