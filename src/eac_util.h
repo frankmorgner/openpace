@@ -151,6 +151,18 @@ is_char_str(const unsigned char *str, const size_t length);
  */
 int
 is_bcd(const unsigned char *data, size_t length);
+/**
+ * @brief Checks if \c is a valid Certificate Holder Reference
+ *
+ * @param[in] data buffer to check
+ * @param[in] length of \a data
+ *
+ * @return 1 if data is a CHR or 0 if it is not
+ *
+ * @see BSI TR-03110 2.05 Table A.11
+ */
+int
+is_chr(const unsigned char *data, size_t length);
 /** @} ***********************************************************************/
 
 /**

@@ -539,6 +539,30 @@ is_bcd(const unsigned char *data, size_t length)
     return 1;
 }
 
+int
+is_chr(const unsigned char *data, size_t length)
+{
+    size_t i;
+
+    /* check for length of country code, holder mnemonic and sequence number */
+    if (!data || length < 2+5 || 2+9+5 < length)
+        return 0;
+
+    /* country code must be an upper ASCII character */
+    if (!(('A' <= data[0] && data[0] <= 'Z') && ('A' <= data[1] && data[1] <= 'Z')))
+        return 0;
+
+    /* holder mnemonic and sequence number must be alphanumeric */
+    for (i = 2; i < length; i++) {
+        if (!(('A' <= data[i] && data[i] <= 'Z')
+                    || ('a' <= data[i] && data[i] <= 'z')
+                    || ('0' <= data[i] && data[i] <= '9')))
+            return 0;
+    }
+
+    return 1;
+}
+
 BUF_MEM *
 authenticate(const KA_CTX *ctx, const BUF_MEM *data)
 {
