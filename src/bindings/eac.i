@@ -253,17 +253,14 @@ EAC_CTX_init_ef_cardaccess(unsigned char *in, unsigned int in_len, EAC_CTX *ctx)
 int
 EAC_CTX_init_ta(const EAC_CTX *ctx,
     const unsigned char *privkey, size_t privkey_len,
-    const unsigned char *cert, size_t cert_len,
-    const unsigned char *car, size_t car_len);
+    const unsigned char *cert, size_t cert_len);
 %rename(EAC_CTX_init_ta) init_ta;
 %inline %{
     static int init_ta(const EAC_CTX *ctx,
-            char *privkey, int privkey_len, char *cert, int cert_len,
-            char *car, int car_len) {
+            char *privkey, int privkey_len, char *cert, int cert_len) {
         return EAC_CTX_init_ta(ctx,
             (unsigned char*) privkey, (size_t) privkey_len,
-            (unsigned char*) cert, (size_t) cert_len,
-            (unsigned char*) car, (size_t) car_len);
+            (unsigned char*) cert, (size_t) cert_len);
 
     }
 %}

@@ -3291,9 +3291,9 @@ static_eac_test(struct eac_worked_example tc)
      * (CVCA) and the PCD gets initialized with the terminal certificate */
     CHECK(1, EAC_CTX_init_ta(pcd_ctx, (unsigned char *) tc.ta_pcd_key.data,
                 tc.ta_pcd_key.length, (unsigned char *) tc.ta_cert.data,
-                tc.ta_cert.length, NULL, 0)
+                tc.ta_cert.length)
             && EAC_CTX_init_ta(picc_ctx, NULL, 0, (unsigned char *)
-                tc.ta_cvca.data, tc.ta_cvca.length, NULL, 0),
+                tc.ta_cvca.data, tc.ta_cvca.length),
             "Initializing Terminal Authentication");
     OK;
     print_desc(pcd_ctx->ta_ctx->protocol, tc.ta_curve);

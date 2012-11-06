@@ -346,18 +346,15 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
  * @param[in,out] ctx EAC context
  * @param[in] privkey (optional) Private key to the given CV certificate
  * @param[in] privkey_len Length of \a privkey
- * @param[in] cert (optional) CV certificate to use as trust anchor for verification
- * @param[in] cert_len (optional) Length of \a cert
- * @param[in] car (optional) Certificate Authorisation Reference
- * @param[in] car_len (optional) Length of \a car
+ * @param[in] cvca (optional) CV certificate to use as trust anchor for verification of other CV certificates
+ * @param[in] cvca_len (optional) Length of \a cvca
  *
  * @return 1 on success or 0 in case of an error
  */
 int
 EAC_CTX_init_ta(const EAC_CTX *ctx,
            const unsigned char *privkey, size_t privkey_len,
-           const unsigned char *cert, size_t cert_len,
-           const unsigned char *car, size_t car_len);
+           const unsigned char *cvca, size_t cvca_len);
 
 /**
   * @brief Initialize an EAC context for Chip Authentication
