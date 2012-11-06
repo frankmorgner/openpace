@@ -258,7 +258,7 @@ IMPLEMENT_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 /** @} ***********************************************************************/
 
-/** Convert the CAR or CHR to a human readable string */
+/** Check and convert the CAR or CHR to a human readable string */
 static char *
 cvc_get_reference_string(ASN1_OCTET_STRING *ref);
 /**
@@ -771,34 +771,20 @@ CVC_get_profile_identifier(const CVC_CERT *cert)
 char *
 cvc_get_reference_string(ASN1_OCTET_STRING *ref)
 {
-    /* Used to check CAR and CHR */
-    /* Max length is 16 byte: 2 Byte country code (ASCII), max. 9 Byte Holder
-     *      Mnemonic, 5 Byte Sequence Number (ASCII A-Z, 0-9) */
-
     char *ret = NULL;
 
-    if (!ref || !ref->data || ref->length > 16)
-        return NULL;
+    check(ref, "Invalid input");
+    check(is_chr(ref->data, ref->length), "Invalid certificate reference");
 
-    ret = (char *) OPENSSL_malloc(ref->length + 1);
-    if (!ret)
-        return NULL;
+    ret = OPENSSL_malloc(ref->length + 1);
+    check(ret, "Not enough memory");
 
     memcpy(ret, ref->data, ref->length);
-
-    if (!is_char_str((unsigned char*) ret, (size_t) ref->length)) {
-        goto err;
-    }
-
     /* Null-terminate string */
-    ret[ref->length] = 0;
-
-    return ret;
+    ret[ref->length] = '\0';
 
 err:
-    if (ret)
-        OPENSSL_free(ret);
-    return NULL;
+    return ret;
 }
 
 char *
