@@ -316,8 +316,6 @@ int main(int argc, char *argv[])
     else
         fail = parse_cv_cert(CVCert, CVCert_len, certDesc, certDesc_len);
 
-    fail = 0;
-
     if (bio_file)
         BIO_free_all(bio_file);
 

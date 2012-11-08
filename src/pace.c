@@ -110,7 +110,7 @@ PACE_STEP3A_generate_mapping_data(const EAC_CTX * ctx)
 int
 PACE_STEP3A_map_generator(const EAC_CTX * ctx, const BUF_MEM * in)
 {
-    if(!ctx || !ctx->pace_ctx && !ctx->pace_ctx->map_compute_key) {
+    if(!ctx || !ctx->pace_ctx || !ctx->pace_ctx->map_compute_key) {
         log_err("Invalid arguments");
         return 0;
     }

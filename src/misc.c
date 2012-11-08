@@ -65,7 +65,7 @@ int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
    EC_KEY *ecdh,
    void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen))
    {
-   BN_CTX *ctx;
+   BN_CTX *ctx = NULL;
    EC_POINT *tmp=NULL;
    const BIGNUM *priv_key;
    const EC_GROUP* group;
