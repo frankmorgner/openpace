@@ -32,16 +32,30 @@
 #include <openssl/bn.h>
 
 /**
- * @brief Import the parameters and public key from a card verifiable certificate
- * into a TA_CTX structure. This function is used to verify certificate chains by
- * subsequently importing all the certificates, starting with the CVCA.
+ * @brief Import the parameters and public key from a card verifiable
+ * certificate into a TA_CTX structure. This function is used to verify
+ * certificate chains by subsequently importing all the certificates, starting
+ * with the DVCA or link certificate.
  * @param ctx The TA_CTX structure to initialize
- * @param cvc The card verifiable certificate to be imported
+ * @param next_cert The card verifiable certificate to be imported
  * @param bn_ctx (optional)
  * @return 1 on success or 0 in case of an error
  */
 int
 TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
+           BN_CTX *bn_ctx);
+
+/**
+ * @brief Import the parameters and public key from a card verifiable
+ * certificate into a TA_CTX structure. This function is used to set the trust
+ * anchor (the CVCA certificate).
+ * @param ctx The TA_CTX structure to initialize
+ * @param trust_anchor The card verifiable certificate to be imported
+ * @param bn_ctx (optional)
+ * @return 1 on success or 0 in case of an error
+ */
+int
+TA_CTX_set_trust_anchor(TA_CTX *ctx, const CVC_CERT *trust_anchor,
            BN_CTX *bn_ctx);
 
 /**

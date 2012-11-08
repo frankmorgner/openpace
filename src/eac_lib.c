@@ -115,7 +115,7 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
     if (cvca && cvca_len) {
         ta_cvca = CVC_d2i_CVC_CERT(&ta_cvca, &cvca, cvca_len);
     }
-    r = TA_CTX_import_certificate(ctx->ta_ctx, ta_cvca, ctx->bn_ctx);
+    r = TA_CTX_set_trust_anchor(ctx->ta_ctx, ta_cvca, ctx->bn_ctx);
 
 err:
     if (ta_cvca)

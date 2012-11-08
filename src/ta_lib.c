@@ -141,12 +141,48 @@ cvc_check_time(const CVC_CERT *cert)
     return 1;
 }
 
+static int
+TA_CTX_set_parameters(TA_CTX *ctx, const CVC_CERT *cert,
+        BN_CTX *bn_ctx)
+{
+    EVP_PKEY *pub = NULL;
+    int ok = 0, oid;
+
+    check(ctx && cert && cert->body && cert->body->public_key,
+            "Invalid arguments");
+
+    /* Extract the public key of the terminal and overwrite the current key. */
+    if (ctx->priv_key) {
+        pub = CVC_get_pubkey(ctx->priv_key, cert, bn_ctx);
+    } else { /* ctx->pub might be NULL (in case of a CVCA certificate). */
+        pub = CVC_get_pubkey(ctx->pub_key, cert, bn_ctx);
+    }
+    if (!pub)
+        goto err;
+
+    EVP_PKEY_free(ctx->pub_key);
+    ctx->pub_key = pub;
+
+    /* Extract OID from the terminal certificate */
+    oid = OBJ_obj2nid(cert->body->public_key->oid);
+    if (oid == NID_undef)
+        goto err;
+
+    /* Use the oid as the protocol identifier in the TA context */
+    ctx->protocol = oid;
+
+    ok = 1;
+
+err:
+    return ok;
+}
+
 int
 TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
            BN_CTX *bn_ctx)
 {
-    int oid, ok = 0, i;
-    EVP_PKEY *pub = NULL;
+    int ok = 0, i;
+    CVC_CERT *trust_anchor;
 
     check(ctx && next_cert && next_cert->body && next_cert->body->chat &&
             next_cert->body->certificate_authority_reference,
@@ -159,62 +195,72 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
             && cvc_check_time(next_cert) != 1)
         goto err;
 
-    /* If current cert if not set, this is the beginning of the certificate chain
-     * and therefore next_cert MUST be a trust anchor. */
+    /* get the current trust anchor */
     if (ctx->current_cert) {
-        /* Check chain integrity: The CAR of a certificate must be equal to the
-         * the CHR of the next certificate in the chain */
-        check((next_cert->body->certificate_authority_reference
-                && ctx->current_cert->body->certificate_holder_reference
+        trust_anchor = ctx->current_cert;
+    } else if (ctx->trust_anchor) {
+        trust_anchor = ctx->trust_anchor;
+    }
+    check(trust_anchor && trust_anchor->body
+            && trust_anchor->body->certificate_holder_reference,
+            "No trust anchor, can't verify certificate");
+
+    /* Check chain integrity: The CAR of a certificate must be equal to the
+     * the CHR of the next certificate in the chain */
+    check((next_cert->body->certificate_authority_reference
+                && trust_anchor->body->certificate_holder_reference
                 && next_cert->body->certificate_authority_reference->length ==
-                    ctx->current_cert->body->certificate_holder_reference->length
-                && memcmp(ctx->current_cert->body->certificate_holder_reference->data,
+                trust_anchor->body->certificate_holder_reference->length
+                && memcmp(trust_anchor->body->certificate_holder_reference->data,
                     next_cert->body->certificate_authority_reference->data,
-                    ctx->current_cert->body->certificate_holder_reference->length) == 0),
+                    trust_anchor->body->certificate_holder_reference->length) == 0),
             "Current CHR does not match next CAR");
 
-        i = CVC_verify_signature(next_cert, ctx->pub_key);
-        check((i > 0), "Could not verify current signature");
+    i = CVC_verify_signature(next_cert, ctx->pub_key);
+    check((i > 0), "Could not verify current signature");
 
+    /* Certificate has been verified as next part of the chain */
+    if (ctx->current_cert)
         CVC_CERT_free(ctx->current_cert);
-    }
-
     ctx->current_cert = CVC_CERT_dup(next_cert);
     if (!ctx->current_cert)
         goto err;
 
     /* Set a (new) trust anchor */
     if (CVC_get_role(next_cert->body->chat) == CVC_CVCA) {
-        if (!ctx->trust_anchor)
-            ctx->trust_anchor = CVC_CERT_dup(next_cert);
-        else {
-            if (ctx->new_trust_anchor)
-                CVC_CERT_free(ctx->new_trust_anchor);
-            ctx->new_trust_anchor = CVC_CERT_dup(next_cert);
-            if (!ctx->new_trust_anchor)
-                goto err;
-        }
+        if (ctx->new_trust_anchor)
+            CVC_CERT_free(ctx->new_trust_anchor);
+        ctx->new_trust_anchor = CVC_CERT_dup(next_cert);
+        if (!ctx->new_trust_anchor)
+            goto err;
     }
 
-    /* Extract the public key of the terminal and overwrite the current key. */
-    if (ctx->priv_key) {
-        pub = CVC_get_pubkey(ctx->priv_key, next_cert, bn_ctx);
-    } else { /* ctx->pub might be NULL (in case of a CVCA certificate). */
-        pub = CVC_get_pubkey(ctx->pub_key, next_cert, bn_ctx);
-    }
-    if (!pub)
+    ok = TA_CTX_set_parameters(ctx, next_cert, bn_ctx);
+
+err:
+    return ok;
+}
+
+int
+TA_CTX_set_trust_anchor(TA_CTX *ctx, const CVC_CERT *trust_anchor,
+           BN_CTX *bn_ctx)
+{
+    int ok = 0;
+
+    check(ctx, "Invalid Parameters");
+
+    if (ctx->trust_anchor)
+        CVC_CERT_free(ctx->trust_anchor);
+    ctx->trust_anchor = CVC_CERT_dup(trust_anchor);
+    if (!ctx->trust_anchor)
         goto err;
 
-    EVP_PKEY_free(ctx->pub_key);
-    ctx->pub_key = pub;
+    if (ctx->current_cert) {
+        CVC_CERT_free(ctx->current_cert);
+        ctx->current_cert = NULL;
+    }
 
-    /* Extract OID from the terminal certificate */
-    oid = OBJ_obj2nid(next_cert->body->public_key->oid);
-
-    /* Use the oid as the protocol identifier in the TA context */
-    ctx->protocol = oid;
-
-    ok = 1;
+    ok = TA_CTX_set_parameters(ctx, trust_anchor, bn_ctx);
 
 err:
     return ok;
