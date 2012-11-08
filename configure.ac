@@ -231,9 +231,9 @@ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
 AC_CONFIG_FILES([
                  Makefile
                  src/Makefile
-                 src/bindings/Makefile
-                 src/bindings/java/Makefile
-                 src/bindings/python/Makefile
+                 bindings/Makefile
+                 bindings/java/Makefile
+                 bindings/python/Makefile
                  win32/Makefile
                  ])
 AC_OUTPUT

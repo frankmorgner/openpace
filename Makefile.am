@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src win32
+SUBDIRS = src win32 bindings
 
 EXTRA_DIST = libeac.pc.in bootstrap oids.patch
 DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-java
