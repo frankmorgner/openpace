@@ -274,6 +274,8 @@ CVC_CERT *CVC_CERT_new(void);
  * */
 void CVC_CERT_free(CVC_CERT *a);
 
+CVC_CERT *d2i_CVC_CERT_bio(BIO *bp, CVC_CERT **cvc);
+
 
 
 /** @} ***********************************************************************/

@@ -287,6 +287,11 @@ CVC_get_rsa_pubkey(const CVC_CERT *cert);
 static EC_KEY *
 CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx);
 
+CVC_CERT *d2i_CVC_CERT_bio(BIO *bp, CVC_CERT **cvc)
+{
+    return ASN1_item_d2i_bio(ASN1_ITEM_rptr(CVC_CERT), bp, cvc);
+}
+
 CVC_CERT *
 CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
 {

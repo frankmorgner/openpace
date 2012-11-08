@@ -52,6 +52,7 @@ TA_CTX_new(void) {
     ctx->new_trust_anchor = NULL;
     ctx->current_cert = NULL;
     ctx->flags = 0;
+    ctx->lookup_cvca_cert = EAC_get_default_cvca_lookup();
 
     return ctx;
 }
@@ -182,7 +183,7 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
            BN_CTX *bn_ctx)
 {
     int ok = 0, i;
-    CVC_CERT *trust_anchor;
+    const CVC_CERT *trust_anchor = NULL;
 
     check(ctx && next_cert && next_cert->body && next_cert->body->chat &&
             next_cert->body->certificate_authority_reference,
@@ -200,6 +201,13 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
         trust_anchor = ctx->current_cert;
     } else if (ctx->trust_anchor) {
         trust_anchor = ctx->trust_anchor;
+    } else if (ctx->lookup_cvca_cert) {
+        trust_anchor = ctx->lookup_cvca_cert(
+                next_cert->body->certificate_authority_reference->data,
+                next_cert->body->certificate_authority_reference->length);
+        check(trust_anchor && TA_CTX_set_trust_anchor(ctx, trust_anchor,
+                    bn_ctx),
+                "Could not look up trust anchor");
     }
     check(trust_anchor && trust_anchor->body
             && trust_anchor->body->certificate_holder_reference,

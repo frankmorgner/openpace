@@ -208,6 +208,8 @@ typedef struct ri_ctx {
     EVP_PKEY *static_key;
 } RI_CTX;
 
+typedef const CVC_CERT * (*CVC_lookup_cvca_cert) (const unsigned char *chr, size_t car_len);
+
 /** @brief Context for the Terminal Authentication protocol */
 typedef struct ta_ctx {
     /** @brief (currently unused) Version of the TA protocol, MUST be 1 or 2 */
@@ -246,7 +248,11 @@ typedef struct ta_ctx {
     /** @brief When a complete CV certificate chain has been verified, this will be the new trust anchor */
     CVC_CERT *new_trust_anchor;
     int flags;
+
+    CVC_lookup_cvca_cert lookup_cvca_cert;
 } TA_CTX;
+
+typedef X509_STORE * (*X509_lookup_csca_cert) (unsigned long issuer_name_hash);
 
 /** @brief Context for the Chip Authentication protocol */
 typedef struct ca_ctx {
@@ -274,7 +280,7 @@ typedef struct ca_ctx {
     /** @brief Key agreement object used with the PICC's private key */
     KA_CTX *ka_ctx;
 
-    X509_STORE * (*lookup_csca_cert) (unsigned long issuer_name_hash);
+    X509_lookup_csca_cert lookup_csca_cert;
 } CA_CTX;
 
 /** @brief Context for the Extended Access Control protocol */
@@ -401,6 +407,10 @@ EAC_CTX_init_ri(EAC_CTX *ctx, int protocol, int stnd_dp);
  */
 int EAC_CTX_init_ef_cardaccess(unsigned const char * in, unsigned int in_len,
         EAC_CTX *ctx);
+
+int EAC_CTX_get_cvca_lookup_cert(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert);
+int EAC_CTX_set_cvca_lookup_cert(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert);
+CVC_lookup_cvca_cert EAC_get_default_cvca_lookup(void);
 
 /** @} ***********************************************************************/
 
