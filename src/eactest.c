@@ -3511,6 +3511,8 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
 err:
     if (pubkey)
         BUF_MEM_free(pubkey);
+    if (ctx)
+        EAC_CTX_clear_free(ctx);
 
     return failed;
 }
