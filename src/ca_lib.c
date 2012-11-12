@@ -44,7 +44,7 @@ CA_CTX_new(void)
     ctx->version = 0;
     ctx->protocol = NID_undef;
     ctx->flags = 1;
-    ctx->lookup_csca_cert = NULL;
+    ctx->lookup_csca_cert = EAC_get_default_csca_lookup();
 
     return ctx;
 }

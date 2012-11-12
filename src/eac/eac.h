@@ -412,6 +412,10 @@ int EAC_CTX_get_cvca_lookup_cert(const EAC_CTX *ctx, CVC_lookup_cvca_cert *looku
 int EAC_CTX_set_cvca_lookup_cert(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert);
 CVC_lookup_cvca_cert EAC_get_default_cvca_lookup(void);
 
+int EAC_CTX_get_csca_lookup_cert(const EAC_CTX *ctx, X509_lookup_csca_cert *lookup_cvca_cert);
+int EAC_CTX_set_csca_lookup_cert(EAC_CTX *ctx, X509_lookup_csca_cert lookup_cvca_cert);
+X509_lookup_csca_cert EAC_get_default_csca_lookup(void);
+
 /** @} ***********************************************************************/
 
 /**
