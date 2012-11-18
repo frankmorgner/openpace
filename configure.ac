@@ -141,13 +141,14 @@ then
         else
             OPENSSL_CONFIG_EXTRA=-fPIC
         fi
+        OPENSSL_CONFIG_EXTRA="${OPENSSL_CONFIG_EXTRA} `win32/gentoo.config-1.0.0 ${host}`"
     fi
 
     builddir=`pwd`
     CRYPTO_CFLAGS="-I${builddir}/src/openssl/include"
     if test "${INSTALL_OPENSSL}" = "yes"
     then
-        CRYPTO_LIBS="${builddir}/src/openssl/libcrypto.so"
+        CRYPTO_LIBS="-L${builddir}/src/openssl -lcrypto"
     else
         CRYPTO_LIBS="${builddir}/src/openssl/libcrypto.a \`grep Libs.private ${builddir}/src/openssl/libcrypto.pc | ${SED} "-e" 's,Libs.private:\s*,,'\`"
     fi

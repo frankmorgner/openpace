@@ -46,7 +46,7 @@ cv_cert_test_CFLAGS  = $(EAC_CFLAGS)
 
 if BUILD_OPENSSL
 OPENSSL_DIR           = $(abs_builddir)/openssl
-OPENSSL_CONFIG        = $(OPENSSL_DIR)/config
+OPENSSL_CONFIG        = $(OPENSSL_DIR)/Configure
 OPENSSL_INCLUDES      = $(OPENSSL_DIR)/include
 OPENSSL_LIBCRYPTO_A   = $(OPENSSL_DIR)/libcrypto.a
 OPENSSL_LIBCRYPTO_SO  = $(OPENSSL_DIR)/libcrypto.so
@@ -72,6 +72,7 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 
 # Build OpenSSL
 $(OPENSSL_LIBCRYPTO_A): patch_openssl
+	$(MAKE) -C $(OPENSSL_DIR) update
 	$(MAKE) -C $(OPENSSL_DIR)
 
 # Install OpenSSL
