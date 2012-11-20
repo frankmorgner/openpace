@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include "cv_cert.h"
+#include <eac/cv_cert.h>
 #include <openssl/asn1.h>
 #include <openssl/buffer.h>
 #include <openssl/cmac.h>
