@@ -68,11 +68,11 @@ $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
 .PHONY: patch_openssl
 patch_openssl: $(OPENSSL_MAKEFILE)
 	grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 $(OPENSSL_OBJ_MAC) > /dev/null \
-		|| $(PATCH) --directory=$(OPENSSL_DIR) -p1 < $(abs_top_srcdir)/oids.patch
+		|| ($(PATCH) --directory=$(OPENSSL_DIR) -p1 < $(abs_top_srcdir)/oids.patch \
+			&& $(MAKE) -C $(OPENSSL_DIR) update)
 
 # Build OpenSSL
 $(OPENSSL_LIBCRYPTO_A): patch_openssl
-	$(MAKE) -C $(OPENSSL_DIR) update
 	$(MAKE) -C $(OPENSSL_DIR)
 
 # Install OpenSSL
