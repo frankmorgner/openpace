@@ -72,7 +72,8 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 			&& $(MAKE) -C $(OPENSSL_DIR) update)
 
 # Build OpenSSL
-$(OPENSSL_LIBCRYPTO_A): patch_openssl
+$(OPENSSL_LIBCRYPTO_A):
+	$(MAKE) patch_openssl
 	$(MAKE) -C $(OPENSSL_DIR)
 
 # Install OpenSSL
