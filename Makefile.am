@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src win32 bindings
+SUBDIRS = src win32 bindings doc
 
 EXTRA_DIST = libeac.pc.in bootstrap oids.patch
 DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-java
@@ -26,6 +26,10 @@ libeac.pc: libeac.pc.in
 
 win:
 	$(MAKE) -C win32 $@
+
+doc:
+	cd doc && doxygen
+	$(MAKE) -C doc
 
 clean-local:
 	rm -f libeac.pc

@@ -39,6 +39,18 @@ extern "C" {
 #include <openssl/ec.h>
 #include <openssl/evp.h>
 
+/** @defgroup management Data Management and Initialization
+ *  @defgroup printing Data Printing
+ *  @defgroup eacproto Protocol Steps for EAC
+ *  @{
+ *      @defgroup paceproto  Protocol Steps for PACE
+ *      @defgroup taproto Protocol Steps for TA
+ *      @defgroup caproto Protocol Steps for CA
+ *      @defgroup riproto Protocol Steps for RI
+ *  @}
+ */
+
+
 /** Identification of the specifications to use.
  * @note TR-03110 v2.01 differs from all later versions of the Technical
  * Guideline in how the authentication token is calculated. Therefore old test

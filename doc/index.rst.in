@@ -1,7 +1,7 @@
 .. highlight:: sh
 
 ************************************
-Welcome to OpenPACE's documentation!
+Welcome to @PACKAGE_NAME@'s documentation!
 ************************************
 
 .. include:: ../README
@@ -12,10 +12,10 @@ Welcome to OpenPACE's documentation!
     protocols
     bindings/README.rst
 
-Where to download OpenPACE
+Where to download @PACKAGE_NAME@
 ==========================
 
-You can find the latest release of OpenPACE `here
+You can find the latest release of @PACKAGE_NAME@ `here
 <http://sourceforge.net/projects/openpace/>`_
 
 Alternatively, you can clone our git repository::
@@ -24,10 +24,10 @@ Alternatively, you can clone our git repository::
 
 .. include install
 
-How to install OpenPACE
+How to install @PACKAGE_NAME@
 =======================
 
-OpenPACE can uses GNU autotools and therefore can be easily build using the
+@PACKAGE_NAME@ can uses GNU autotools and therefore can be easily build using the
 following commands::
 
     autoreconf -si
@@ -35,20 +35,20 @@ following commands::
     make
     make install
 
-OpenPACE depends on the `OpenSSL <http://openssl.org>`_ library. Since PACE
+@PACKAGE_NAME@ depends on the `OpenSSL <http://openssl.org>`_ library. Since PACE
 uses CMAC, the currently unreleased version 1.0.2 of OpenSSL is required.
-Furthermore, OpenPACE requires additional Object Identifiers (OIDs) and
+Furthermore, @PACKAGE_NAME@ requires additional Object Identifiers (OIDs) and
 therefore needs a patched version of OpenSSL. Due to these special
 requirements, the make command downloads a recent snapshot of OpenSSL, applies
-the necessary patches and builds OpenSSL. The OpenPACE library is then
+the necessary patches and builds OpenSSL. The @PACKAGE_NAME@ library is then
 statically linked against this local version of OpenSSL. This process can be
 customized by a number of parameters for the `configure` command. See
 `./configure -h` for details.
 
-How to use OpenPACE
+How to use @PACKAGE_NAME@
 ===================
 
-If you want to know how to use OpenPACE, have a look at our `API documentation
+If you want to know how to use @PACKAGE_NAME@, have a look at our `API documentation
 <_static/doxygen/html/modules.html>`_.
 
 If you want to lear more about the EAC protocols, you can find a nice
@@ -61,6 +61,5 @@ Where to get help
 =================
 
 
-If you find a bug or want to add a feature to OpenPACE, please use our `trackers
-<http://sourceforge.net/tracker/?group_id=283121>`_ for contacting us.
-
+If you find a bug or want to add a feature to @PACKAGE_NAME@, please use our `trackers
+<PACKAGE_BUGREPORT>`_ for contacting us.
