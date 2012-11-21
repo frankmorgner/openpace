@@ -99,8 +99,11 @@ typedef struct cvc_pubkey_st {
 typedef struct cvc_discretionary_data_template_st {
     /** OID which specifies the type of the extension **/
     ASN1_OBJECT *type;
+    /** holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data1;
+    /** holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data2;
+    /** holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data3;
 } CVC_DISCRETIONARY_DATA_TEMPLATE;
 DECLARE_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATE)
@@ -155,6 +158,7 @@ typedef struct cvc_cert_body_seq_st {
      * @see TR-03110 C.1.7. */
     CVC_DISCRETIONARY_DATA_TEMPLATES *certificate_extensions;
 } CVC_CERT_BODY_SEQ;
+/** @brief Short name for CVC_CERT_BODY_SEQ */
 typedef CVC_CERT_BODY_SEQ CVC_CERT_BODY;
 
 /** @brief The actual certifcate, consisting of the body and a signature
@@ -195,7 +199,9 @@ typedef CVC_CERT_SEQ CVC_CERT;
     /** @brief Optional URL that points to informations about the holder of this
      *  certificate */
     ASN1_PRINTABLESTRING *subjectURL;
-    union {
+     /** @brief Terms of Usage of the Service holding the certificate. May be
+     *  formatted as either plain text, HTML or PDF
+     */union {
         /** @brief Plain text Terms of Usage */
         ASN1_UTF8STRING *plainTerms;
         /** @brief HTML formatted Terms of Usage */
@@ -204,10 +210,7 @@ typedef CVC_CERT_SEQ CVC_CERT;
         ASN1_OCTET_STRING *pdfTerms;
         /** @brief Otherwise formatted Terms of Usage (not specified) */
         ASN1_TYPE *other;
-    } termsOfUsage; /**
-     *  @brief termsOfUsage Terms of Usage of the Service holding the certificate. May be
-     *  formatted as either plain text, HTML or PDF
-     */
+    } termsOfUsage;
 
     /** Not used */
     ASN1_PRINTABLESTRING *redirectURL;
@@ -274,6 +277,17 @@ CVC_CERT *CVC_CERT_new(void);
  * */
 void CVC_CERT_free(CVC_CERT *a);
 
+/**
+ * @brief Load a CV certificate from a BIO object
+ *
+ * This function seeks the BIO so that subsequent reads of multiple
+ * certificates are possible.
+ *
+ * @param[in,out] bp bio object where to read from
+ * @param[in,out] cvc (optional) CV certificate to use
+ *
+ * @return CV certificate read or NULL in case of an error
+ */
 CVC_CERT *d2i_CVC_CERT_bio(BIO *bp, CVC_CERT **cvc);
 
 
@@ -404,7 +418,7 @@ CVC_get_chr(const CVC_CERT *cert);
  *  @brief Convert the effective date and expiration date,
  *         of a certificate to a string
  *
- *  @param[in] date Octet string that holds the date
+ *  @param[in] cert The certificate
  *
  *  @return Null terminated string representation of the date
  */

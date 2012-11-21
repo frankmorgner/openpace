@@ -220,6 +220,7 @@ typedef struct ri_ctx {
     EVP_PKEY *static_key;
 } RI_CTX;
 
+/** @brief callback for finding the CVCA trust anchor */
 typedef const CVC_CERT * (*CVC_lookup_cvca_cert) (const unsigned char *chr, size_t car_len);
 
 /** @brief Context for the Terminal Authentication protocol */
@@ -259,11 +260,24 @@ typedef struct ta_ctx {
     CVC_CERT *current_cert;
     /** @brief When a complete CV certificate chain has been verified, this will be the new trust anchor */
     CVC_CERT *new_trust_anchor;
+    /** @brief Flags to control some of the behaviour of the CA
+     *
+     * Accepts the following values:
+     * - \c TA_FLAG_SKIP_TIMECHECK
+     */
     int flags;
 
+    /** @brief Lookup the CVCA trust anchor
+     *
+     * This function is called when a CV certificate is imported although the
+     * terminal authentication was not initialized with a trust anchor.
+     *
+     * @see TA_STEP2_import_certificate()
+     * */
     CVC_lookup_cvca_cert lookup_cvca_cert;
 } TA_CTX;
 
+/** @brief callback for finding the X.509 trust anchor */
 typedef X509_STORE * (*X509_lookup_csca_cert) (unsigned long issuer_name_hash);
 
 /** @brief Context for the Chip Authentication protocol */
@@ -292,6 +306,13 @@ typedef struct ca_ctx {
     /** @brief Key agreement object used with the PICC's private key */
     KA_CTX *ka_ctx;
 
+    /** @brief callback for finding the X.509 trust anchor
+     *
+     * This function is called when passive authentication with the signed
+     * public key of the card.
+     *
+     * @see CA_get_pubkey()
+     * */
     X509_lookup_csca_cert lookup_csca_cert;
 } CA_CTX;
 
@@ -420,12 +441,63 @@ EAC_CTX_init_ri(EAC_CTX *ctx, int protocol, int stnd_dp);
 int EAC_CTX_init_ef_cardaccess(unsigned const char * in, unsigned int in_len,
         EAC_CTX *ctx);
 
+/**
+ * @brief Return the EAC context's CVCA lookup callback
+ *
+ * @param[in] ctx EAC context
+ * @param[in,out] lookup_cvca_cert lookup callback
+ *
+ * @return 1 on success or 0 in case of an error
+ */
 int EAC_CTX_get_cvca_lookup_cert(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert);
+/**
+ * @brief Set the CVCA lookup callback
+ *
+ * @param[in] ctx EAC context
+ * @param[in] lookup_cvca_cert lookup callback
+ *
+ * @return 1 on success or 0 in case of an error
+ */
 int EAC_CTX_set_cvca_lookup_cert(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert);
+/**
+ * @brief Return the default lookup of the country verifying CA
+ *
+ * The default callback looks at /etc/eac/$issuer_name_hash.cer for the CSCA
+ * certificate, where $issuer_name_hash is an eight character lower hex value
+ * of the CSCA subject name.
+ *
+ * @return default lookup of the country verifying CA
+ *
+ * @see `openssl x509 -in CERTIFICATE.cer -inform DER -hash -noout` to obtain the hash value.
+ */
 CVC_lookup_cvca_cert EAC_get_default_cvca_lookup(void);
 
+/**
+ * @brief Get the CSCA lookup callback
+ *
+ * @param[in] ctx EAC context
+ * @param[in,out] lookup_cvca_cert lookup callback
+ *
+ * @return 1 on success or 0 in case of an error
+ */
 int EAC_CTX_get_csca_lookup_cert(const EAC_CTX *ctx, X509_lookup_csca_cert *lookup_cvca_cert);
+/**
+ * @brief Set the CSCA lookup callback
+ *
+ * @param[in] ctx EAC context
+ * @param[in] lookup_cvca_cert lookup callback
+ *
+ * @return 1 on success or 0 in case of an error
+ */
 int EAC_CTX_set_csca_lookup_cert(EAC_CTX *ctx, X509_lookup_csca_cert lookup_cvca_cert);
+/**
+ * @brief Return the default lookup of the country signing CA
+ *
+ * The default callback looks at /etc/eac/$car.cer for the CVCA
+ * certificate, where $car is the card holder reference of the CVCA.
+ *
+ * @return default lookup of the country verifying CA
+ */
 X509_lookup_csca_cert EAC_get_default_csca_lookup(void);
 
 /** @} ***********************************************************************/
@@ -441,12 +513,12 @@ X509_lookup_csca_cert EAC_get_default_csca_lookup(void);
  * The block size is calculated from the currently selected SM context.
  *
  * @param[in] ctx EAC context
- * @param[in] m Buffer to pad
+ * @param[in] unpadded Buffer to pad
  *
  * @return Padded input or NULL in case of an error
  */
 BUF_MEM *
-EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m);
+EAC_add_iso_pad(const EAC_CTX *ctx, const BUF_MEM * unpadded);
 /**
  * @brief Remove ISO/IEC 9797-1 padding method 2 from a message
  *
@@ -455,14 +527,14 @@ EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m);
  * @return Unpadded message or NULL in case of an error
  */
 BUF_MEM *
-EAC_remove_iso_pad(const BUF_MEM * m);
+EAC_remove_iso_pad(const BUF_MEM * padded);
 
 /**
  * @brief Increment the Send Sequence Counter
  *
  * @param ctx
  *
- * @return 1 or 0 in case of an error
+ * @return 1 on success or 0 in case of an error
  */
 int EAC_increment_ssc(const EAC_CTX *ctx);
 
@@ -471,7 +543,7 @@ int EAC_increment_ssc(const EAC_CTX *ctx);
  *
  * @param ctx
  *
- * @return 1 or 0 in case of an error
+ * @return 1 on success or 0 in case of an error
  */
 int EAC_reset_ssc(const EAC_CTX *ctx);
 /**
@@ -480,7 +552,7 @@ int EAC_reset_ssc(const EAC_CTX *ctx);
  * @param ctx
  * @param ssc
  *
- * @return 1 or 0 in case of an error
+ * @return 1 on success or 0 in case of an error
  */
 int EAC_set_ssc(const EAC_CTX *ctx, unsigned long ssc);
 

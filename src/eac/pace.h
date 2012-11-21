@@ -114,8 +114,6 @@ PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type);
  * @param[out] enc_nonce Where to save the new object containing the encrypted nonce
  *
  * @return          1 on success or 0 in case of an error
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 int PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
                    BUF_MEM ** enc_nonce);
@@ -127,8 +125,6 @@ int PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
  * @param[in] enc_nonce Encrypted nonce from the other party
  *
  * @return 1 on success or 0 in case of an error
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 int PACE_STEP2_dec_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
         const BUF_MEM * enc_nonce);
@@ -140,9 +136,6 @@ int PACE_STEP2_dec_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
  *
  * @return Mapping data to be transmitted to the other party or NULL in case of
  * an error
- *
- * @see PACE's @ref paceps describes this protocol step
- * @see @ref pacemapecdh and @ref pacemapdh describe the mappings
  */
 BUF_MEM *
 PACE_STEP3A_generate_mapping_data(const EAC_CTX * ctx);
@@ -153,9 +146,6 @@ PACE_STEP3A_generate_mapping_data(const EAC_CTX * ctx);
  * @param[in] in Mapping data from the other party
  *
  * @return 1 on success or 0 in case of an error
- *
- * @see PACE's @ref paceps describes this protocol step
- * @see @ref pacemapecdh and @ref pacemapdh describe the mappings
  */
 int
 PACE_STEP3A_map_generator(const EAC_CTX * ctx, const BUF_MEM * in);
@@ -165,8 +155,6 @@ PACE_STEP3A_map_generator(const EAC_CTX * ctx, const BUF_MEM * in);
  * @param[in,out] ctx EAC context
  *
  * @return Public key or NULL in case of an error
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 BUF_MEM * PACE_STEP3B_generate_ephemeral_key(EAC_CTX * ctx);
 /**
@@ -176,8 +164,6 @@ BUF_MEM * PACE_STEP3B_generate_ephemeral_key(EAC_CTX * ctx);
  * @param[in] in Public key from the other party
  *
  * @return 1 on success 0 in case of an error
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 int
 PACE_STEP3B_compute_shared_secret(const EAC_CTX * ctx, const BUF_MEM * in);
@@ -187,8 +173,6 @@ PACE_STEP3B_compute_shared_secret(const EAC_CTX * ctx, const BUF_MEM * in);
  * @param[in,out] ctx EAC context. The keys are saved in \a ctx.
  *
  * @return          1 on success or 0 in case of an error
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 int PACE_STEP3C_derive_keys(const EAC_CTX *ctx);
 /**
@@ -199,8 +183,6 @@ int PACE_STEP3C_derive_keys(const EAC_CTX *ctx);
  * @param[in] pub Public key from the other party (generated in PACE step 3b)
  *
  * @return Authentication token or NULL in case of error
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 BUF_MEM * PACE_STEP3D_compute_authentication_token(const EAC_CTX *ctx,
         const BUF_MEM *pub);
@@ -212,8 +194,6 @@ BUF_MEM * PACE_STEP3D_compute_authentication_token(const EAC_CTX *ctx,
  *
  * @return 1 if the token has been verified as correct, 0 if not or -1 in case of an error
  * occurred.
- *
- * @see PACE's @ref paceps describes this protocol step
  */
 int PACE_STEP3D_verify_authentication_token(const EAC_CTX * ctx,
         const BUF_MEM * token);

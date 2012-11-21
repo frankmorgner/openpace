@@ -77,8 +77,6 @@ TA_disable_checks(EAC_CTX *ctx);
  * @param[in] cert_len Length of \a cert
  *
  * @return 1 on success or 0 in case of an error
- *
- * @see TA's @ref taps describes this protocol step
  */
 int
 TA_STEP2_import_certificate(const EAC_CTX *ctx,
@@ -89,8 +87,6 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx,
  * @param[in,out] ctx EAC context. The CA context of \a ctx is initialized for key agreement
  *
  * @return Ephemeral public key or NULL in case of an error
- *
- * @see TA's @ref taps describes this protocol step
  */
 BUF_MEM *
 TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx);
@@ -100,8 +96,6 @@ TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx);
  * @param[in,out] ctx EAC context. The nonce is saved in \a ctx
  *
  * @return Nonce or NULL in case of an error
- *
- * @see TA's @ref taps describes this protocol step
  *
  * @note EAC_CTX_init_ca must have been called before the nonce can be generated
  */
@@ -126,8 +120,6 @@ TA_STEP4_set_nonce(const EAC_CTX *ctx, const BUF_MEM *nonce);
  * @param[in] auxdata (optional) Auxiliary data from PCD
  *
  * @return Signature or NULL in case of an error
- *
- * @see TA's @ref taps describes this protocol step
  */
 BUF_MEM *
 TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey,
@@ -138,13 +130,10 @@ TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey,
  * @param[in] ctx EAC context
  * @param[in] opp_ta_comp_eph_pubkey PCD's compressed ephemeral public key generated in Step 3
  * @param[in] my_pace_comp_eph_pubkey PICC's compressed ephemeral public key generated in PACE Step 3b
- * @param[in] nonce Nonce generated in TA step 4
  * @param[in] auxdata (optional) Auxiliary data from PCD
  * @param[in] signature Data to verify
  *
  * @return 1 if the signature has been verified, 0 if not or -1 in case of an error
- *
- * @see TA's @ref taps describes this protocol step
  */
 int
 TA_STEP6_verify(const EAC_CTX *ctx, const BUF_MEM *opp_ta_comp_eph_pubkey,

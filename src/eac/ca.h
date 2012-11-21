@@ -42,6 +42,7 @@
 extern "C" {
 #endif
 
+/** Skip the passive authentication */
 #define CA_FLAG_DISABLE_PASSIVE_AUTH 1
 
 /**
@@ -75,8 +76,6 @@ CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
  * @param[in] ctx EAC context
  *
  * @return Encoded public key or NULL in case of an error
- *
- * @see CA's @ref caps describes this protocol step
  */
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx);
@@ -86,8 +85,6 @@ CA_STEP1_get_pubkey(const EAC_CTX *ctx);
  * @param[in] ctx EAC context
  *
  * @return Public key or NULL in case of an error
- *
- * @see CA's @ref caps describes this protocol step
  */
 BUF_MEM *
 CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
@@ -100,8 +97,6 @@ CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
  * @param[in] pubkey Uncompressed public key (received in CA step 2)
  *
  * @return 1 if the keys match, 0 if they don't or -1 in case of an error
- *
- * @see CA's @ref caps describes this protocol step
  */
 int
 CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
@@ -114,8 +109,6 @@ CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
  * @param[in] pubkey Public key from the other party
  *
  * @return 1 on success or 0 in case of an error
- *
- * @see CA's @ref caps describes this protocol step
  */
 int
 CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
@@ -129,8 +122,6 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
  * @param[out] token Authentication token
  *
  * @return 1 on success or 0 in case of an error
- *
- * @see CA's @ref caps describes this protocol step
  */
 int
 CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
@@ -144,8 +135,6 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
  * @param[in] token PICC's authentication token to verify
  *
  * @return 1 on success or 0 in case of an error
- *
- * @see CA's @ref caps describes this protocol step
  */
 int
 CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);

@@ -87,8 +87,6 @@ int RI_CTX_set_protocol(RI_CTX * ctx, int protocol);
  * @param[in] sector_pubkey the sector public key
  *
  * @return The sector identifier or NULL in case of an error
- *
- * @see RI's @ref rips describes this protocol step
  */
 BUF_MEM * RI_STEP2_compute_identifier(EAC_CTX *ctx, BUF_MEM *sector_pubkey);
 
