@@ -44,8 +44,8 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1:
         dirlist = sys.argv[1:]
-    elif os.environ.has_key('SSL_CERT_DIR'):
-        dirlist = os.environ['SSL_CERT_DIR'].split(':')
+    elif os.environ.has_key('CVC_CERT_DIR'):
+        dirlist = os.environ['CVC_CERT_DIR'].split(':')
     else:
         dirlist = [os.path.join(dir, '')]
 
