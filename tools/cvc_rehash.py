@@ -20,7 +20,12 @@ OpenPACE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 
-from chat import CVC
+try:
+    from chat import CVC
+except ImportError:
+    print("Failed to load OpenPACE python bindings.")
+    print("Make sure you have the bindings installed and have PYTHONPATH and LD_LIBRARY_PATH setup correctly.")
+    sys.exit(1)
 
 def hash_dir(dir):
     os.chdir(dir)
