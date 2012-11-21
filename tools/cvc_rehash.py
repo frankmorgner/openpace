@@ -34,7 +34,7 @@ def hash_dir(dir):
     for file in files:
         try:
             cvc = CVC(open(dir + file).read())
-            print "Linking " + cvc.get_chr() + " to " + file
+            print "Linking " + dir + cvc.get_chr() + " to " + file
             os.symlink(dir + file, cvc.get_chr())
         except Exception:
             pass
