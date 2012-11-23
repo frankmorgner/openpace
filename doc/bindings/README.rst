@@ -55,6 +55,9 @@ environment variable to point to the OpenPACE library. One way to do this is:
 
 ``export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/openpace/libs``
 
+You also might need to setup the PYTHONPATH environment variable if you did not
+install the bindings in a location already included in the PYTHONPATH.
+
 In order to test your installation you can use the `test.py` script included in
 pyPACE. Simply run the following command:
 
