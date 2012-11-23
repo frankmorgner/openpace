@@ -158,16 +158,14 @@ TA_CTX_set_parameters(TA_CTX *ctx, const CVC_CERT *cert,
     } else { /* ctx->pub might be NULL (in case of a CVCA certificate). */
         pub = CVC_get_pubkey(ctx->pub_key, cert, bn_ctx);
     }
-    if (!pub)
-        goto err;
+    check(pub, "Failed to extract public key");
 
     EVP_PKEY_free(ctx->pub_key);
     ctx->pub_key = pub;
 
     /* Extract OID from the terminal certificate */
     oid = OBJ_obj2nid(cert->body->public_key->oid);
-    if (oid == NID_undef)
-        goto err;
+    check(oid != NID_undef, "Unknown public key format");
 
     /* Use the oid as the protocol identifier in the TA context */
     ctx->protocol = oid;

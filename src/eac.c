@@ -132,14 +132,11 @@ EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data)
     check((ctx && data), "invalid arguments");
 
     l = encode_ssc(ctx->ssc, ctx->key_ctx, &ssc_buf);
-    if (l < 0) {
-        goto err;
-    }
+    check(l >= 0, "Failed to encode SSC");
 
     to_authenticate = BUF_MEM_create(l + data->length);
-    if (!to_authenticate) {
-        goto err;
-    }
+    check(to_authenticate, "Failed to allocate memory");
+
     /* Flawfinder: ignore */
     memcpy(to_authenticate->data, ssc_buf, l);
     /* Flawfinder: ignore */

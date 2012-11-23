@@ -159,8 +159,7 @@ BUF_MEM_dup(const BUF_MEM * in)
         return NULL;
 
     out = BUF_MEM_create(in->length);
-    if (!out)
-        goto err;
+    check(out, "Failed to allocate memory");
 
     memcpy(out->data, in->data, in->length);
     out->max = in->max;

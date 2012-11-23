@@ -203,8 +203,7 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
     authentication_token = get_authentication_token(ctx->ca_ctx->protocol,
             ctx->ca_ctx->ka_ctx, ctx->bn_ctx, ctx->tr_version,
             pub);
-    if (!authentication_token)
-        goto err;
+    check(authentication_token, "Failed to compute authentication token");
 
     *nonce = r;
     *token = authentication_token;
@@ -233,8 +232,7 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)
     rv = verify_authentication_token(ctx->ca_ctx->protocol,
             ctx->ca_ctx->ka_ctx,
             ctx->bn_ctx, ctx->tr_version, token);
-    if (rv < 0)
-        goto err;
+    check(rv >= 0, "Failed to verify authentication token");
 
     /* PACE, TA and CA were successful. Update the trust anchor! */
     if (rv) {

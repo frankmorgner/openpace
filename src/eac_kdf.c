@@ -51,15 +51,13 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
             "Message digest not suitable for cipher");
 
     in = BUF_MEM_new();
-    if (!in)
-        goto err;
+    check(in, "Failed to allocate memory");
 
     /* Concatenate secret || nonce || counter
      * nonce is optional */
     if (nonce) {
         inlen = key->length + nonce->length + sizeof counter;
-        if (!BUF_MEM_grow(in, inlen))
-            goto err;
+        check(BUF_MEM_grow(in, inlen), "Failed to allocate memory");
         /* Flawfinder: ignore */
         memcpy(in->data, key->data, key->length);
         /* Flawfinder: ignore */
@@ -68,8 +66,7 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
         memcpy(in->data + key->length + nonce->length, &counter, sizeof counter);
     } else {
         inlen = key->length + sizeof counter;
-        if (!BUF_MEM_grow(in, inlen))
-            goto err;
+        check(BUF_MEM_grow(in, inlen), "Failed to allocate memory");
         /* Flawfinder: ignore */
         memcpy(in->data, key->data, key->length);
         /* Flawfinder: ignore */
@@ -77,8 +74,7 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
     }
 
     digest = hash(ka_ctx->md, md_ctx, ka_ctx->md_engine, in);
-    if (!digest)
-        goto err;
+    check(digest, "Failed to compute hash");
 
     /* Truncate the hash to the length of the key */
     out = BUF_MEM_create_init(digest->data, ka_ctx->cipher->key_len);

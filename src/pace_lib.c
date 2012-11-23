@@ -89,8 +89,7 @@ PACE_SEC *
 PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type)
 {
     PACE_SEC *out = OPENSSL_malloc(sizeof(PACE_SEC));
-    if (!out)
-        goto err;
+    check(out, "Out of memory");
 
     switch (type) {
         case PACE_PUK:
@@ -209,8 +208,7 @@ PACE_CTX *
 PACE_CTX_new(void)
 {
     PACE_CTX *out = OPENSSL_malloc(sizeof(PACE_CTX));
-    if (!out)
-        goto err;
+    check(out, "Out of memory");
 
     out->ka_ctx = KA_CTX_new();
     out->static_key = EVP_PKEY_new();

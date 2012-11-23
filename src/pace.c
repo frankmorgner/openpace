@@ -52,17 +52,14 @@ PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
             "Invalid arguments");
 
     key = kdf_pi(pi, NULL, ctx->pace_ctx->ka_ctx, ctx->md_ctx);
-    if (!key)
-        goto err;
+    check(key, "Key derivation function failed");
 
     BUF_MEM_clear_free(ctx->pace_ctx->nonce);
     ctx->pace_ctx->nonce = randb(EVP_CIPHER_block_size(ctx->pace_ctx->ka_ctx->cipher));
-    if (!ctx->pace_ctx->nonce)
-        goto err;
+    check(ctx->pace_ctx->nonce, "Failed to create nonce");
 
     *enc_nonce = cipher_no_pad(ctx->pace_ctx->ka_ctx, ctx->cipher_ctx, key, ctx->pace_ctx->nonce, 1);
-    if (!*enc_nonce)
-        goto err;
+    check(*enc_nonce, "Failed to encrypt nonce");
 
     r = 1;
 
@@ -83,13 +80,11 @@ PACE_STEP2_dec_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
         "Invalid arguments");
 
     key = kdf_pi(pi, NULL, ctx->pace_ctx->ka_ctx, ctx->md_ctx);
-    if (!key)
-        goto err;
+    check(key, "Key derivation function failed");
 
     BUF_MEM_clear_free(ctx->pace_ctx->nonce);
     ctx->pace_ctx->nonce = cipher_no_pad(ctx->pace_ctx->ka_ctx, ctx->cipher_ctx, key, enc_nonce, 0);
-    if (!ctx->pace_ctx->nonce)
-        goto err;
+    check(ctx->pace_ctx->nonce, "Failed to decrypt nonce");
 
     r = 1;
 
@@ -153,8 +148,8 @@ PACE_STEP3B_compute_shared_secret(const EAC_CTX * ctx, const BUF_MEM * in)
     }
 
 
-    if (!KA_CTX_compute_key(ctx->pace_ctx->ka_ctx, in, ctx->bn_ctx))
-        goto err;
+    check(KA_CTX_compute_key(ctx->pace_ctx->ka_ctx, in, ctx->bn_ctx),
+            "Failed to compute shared secret");
 
     r = 1;
 

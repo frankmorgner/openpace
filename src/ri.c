@@ -51,8 +51,7 @@ RI_STEP2_compute_identifier(EAC_CTX *ctx, BUF_MEM *sector_pubkey)
     /* Perform the key agreement */
     shared_secret = ctx->ri_ctx->compute_key(ctx->ri_ctx->static_key,
             sector_pubkey, ctx->bn_ctx);
-    if (!shared_secret)
-        goto err;
+    check(shared_secret, "Failed to compute shared secret");
 
     /* Compute the hash of the shared secret (which is the sector identifier) */
     sector_identifier = hash(ctx->ri_ctx->md, ctx->md_ctx, NULL, shared_secret);
