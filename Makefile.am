@@ -27,9 +27,9 @@ libeac.pc: libeac.pc.in
 win:
 	$(MAKE) -C win32 $@
 
+.PHONY: doc
 doc:
-	cd doc && doxygen
-	$(MAKE) -C doc
+	$(MAKE) -C doc $@
 
 clean-local:
 	rm -f libeac.pc
