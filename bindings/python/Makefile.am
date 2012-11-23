@@ -9,6 +9,7 @@ BUILT_SOURCES = pace_wrap.c pace.py
 
 EXTRA_DIST = setup.py.in
 CLEANFILES = $(BUILT_SOURCES) installed_files.txt setup.py
+bin_SCRIPTS = cvc_rehash
 
 do_subst=$(SED)\
 	-e's,[@]CFLAGS[@],$(CFLAGS),g'\
@@ -24,6 +25,7 @@ do_subst=$(SED)\
 	-e's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g'\
 	-e's,[@]PYTHON[@],$(PYTHON),g'\
 	-e's,[@]builddir[@],$(builddir),g'\
+	-e's,[@]sysconfdir[@],$(sysconfdir),g'\
 	-e's,[@]srcdir[@],$(srcdir),g'
 
 
@@ -34,6 +36,9 @@ $(top_builddir)/src/libeac.la:
 
 setup.py: setup.py.in $(top_builddir)/src/libeac.la
 	$(do_subst) < $(srcdir)/setup.py.in > setup.py
+
+cvc_rehash: cvc_rehash.in
+	$(do_subst) < $(srcdir)/cvc_rehash.in > cvc_rehash
 
 $(BUILT_SOURCES): $(INTERFACES) setup.py
 	python setup.py build_ext
