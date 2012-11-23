@@ -20,6 +20,8 @@ OpenPACE.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
+import platform
+import shutil
 
 try:
     from chat import CVC
@@ -35,8 +37,12 @@ def hash_dir(dir):
     for file in files:
         try:
             cvc = CVC(open(dir + file).read())
-            print "Linking " + dir + cvc.get_chr() + " to " + file
-            os.symlink(dir + file, cvc.get_chr())
+            if platform.system() == 'Windows':
+                print "Copying " + dir + cvc.get_chr() + " to " + file
+                shutil.copyfile(dir + file, cvc.get_chr())
+            else:
+                print "Linking " + dir + cvc.get_chr() + " to " + file
+                os.symlink(dir + file, cvc.get_chr())
         except Exception:
             pass
 
