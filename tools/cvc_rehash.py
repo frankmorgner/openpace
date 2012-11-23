@@ -40,7 +40,7 @@ def hash_dir(dir):
             pass
 
 if __name__ == "__main__":
-    dir = "/home/do/workspace/vsmartcard/npa-example-data/ecdh/"
+    dir = "/etc/eac/"
 
     if len(sys.argv) > 1:
         dirlist = sys.argv[1:]
