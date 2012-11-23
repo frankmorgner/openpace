@@ -30,59 +30,6 @@
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 
-static int X509_find_issuer_in_file(unsigned long issuer_name_hash,
-        const char *file, X509 **x509_certificate)
-{
-    BIO *in = NULL;
-    X509 *x509;
-    int ok = 0;
-
-    in = BIO_new(BIO_s_file_internal());
-    if (!in || !BIO_read_filename(in, file))
-        goto err;
-
-    while (1) {
-        if (!d2i_X509_bio(in, x509_certificate)) {
-            ERR_clear_error();
-            break;
-        }
-        x509 = *x509_certificate;
-        if (issuer_name_hash = X509_issuer_name_hash(x509)) {
-            ok = 1;
-            break;
-        }
-    }
-
-err:
-    if(in)
-        BIO_free(in);
-
-    return ok;
-}
-
-static int X509_find_issuer_in_directory(unsigned long issuer_name_hash,
-        const char *dir, X509 **x509_certificate)
-{
-    int ok = 0, r;
-    char path[1024];
-
-    if(strlen(dir)+1+8+5 > sizeof path)
-        goto err;
-
-    r = BIO_snprintf(path, sizeof path, "%s/%08x.cer", dir, issuer_name_hash);
-    if (r <= 0)
-        goto err;
-
-    if(!X509_find_issuer_in_file(issuer_name_hash, path, x509_certificate))
-        goto err;
-
-    ok = 1;
-
-err:
-    return ok;
-}
-
-/* FIXME X509_default_lookup is not thread safe */
 static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
 {
     static X509_STORE *store = NULL;
@@ -92,10 +39,11 @@ static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
        store = X509_STORE_new();
     check(store, "Failed to create trust store");
 
-    check(X509_find_issuer_in_directory(issuer_name_hash, ETC_EAC, &csca_cert),
-            "Could not find issuer's certificate");
-    check(X509_STORE_add_cert(store, csca_cert),
-            "Could not initialize trust store");
+    if (!X509_STORE_load_locations(store, NULL, ETC_EAC)) {
+            log_err("Failed to load trusted certificates");
+            X509_STORE_free(store);
+            store = NULL;
+    }
 
 err:
     return store;
