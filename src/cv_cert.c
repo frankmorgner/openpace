@@ -517,7 +517,7 @@ err:
 EC_KEY *
 CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
 {
-    EC_KEY *key = NULL;
+    EC_KEY *key = NULL, *tmp_key = NULL;
     const EC_GROUP *group;
     EC_POINT *point = NULL;
 
@@ -565,7 +565,11 @@ CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_c
         check((domainParameters && (EVP_PKEY_type(domainParameters->type) == EVP_PKEY_EC)),
                "Incorrect domain parameters");
 
-        key = EVP_PKEY_get1_EC_KEY(domainParameters);
+        tmp_key = EVP_PKEY_get1_EC_KEY(domainParameters);
+        if (!tmp_key)
+            goto err;
+        key = EC_KEY_dup(tmp_key);
+        EC_KEY_free(tmp_key);
         if (!key)
             goto err;
         group = EC_KEY_get0_group(key);
