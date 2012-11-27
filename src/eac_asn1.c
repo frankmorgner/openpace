@@ -428,16 +428,24 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
     EC_GROUP *group = NULL;
     EC_POINT *generator = NULL, *pub_point = NULL;
     EC_KEY *tmp = NULL;
+    BN_CTX *lcl_bn_ctx = NULL;
 
     check((key && p && a && b  && base  && base_order  && cofactor),
             "Invalid arguments");
 
-    BN_CTX_start(bn_ctx);
-    p_bn = BN_CTX_get(bn_ctx);
-    a_bn = BN_CTX_get(bn_ctx);
-    b_bn = BN_CTX_get(bn_ctx);
-    order_bn = BN_CTX_get(bn_ctx);
-    cofactor_bn = BN_CTX_get(bn_ctx);
+    if (bn_ctx)
+        lcl_bn_ctx = bn_ctx;
+    else {
+        lcl_bn_ctx = BN_CTX_new();
+        check(lcl_bn_ctx, "Failed to create BN context");
+    }
+
+    BN_CTX_start(lcl_bn_ctx);
+    p_bn = BN_CTX_get(lcl_bn_ctx);
+    a_bn = BN_CTX_get(lcl_bn_ctx);
+    b_bn = BN_CTX_get(lcl_bn_ctx);
+    order_bn = BN_CTX_get(lcl_bn_ctx);
+    cofactor_bn = BN_CTX_get(lcl_bn_ctx);
 
     if (!cofactor_bn)
         goto err;
@@ -448,7 +456,7 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
         !BN_bin2bn(ASN1_STRING_data(b), ASN1_STRING_length(b), b_bn))
             goto err;
     else
-        group = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, bn_ctx);
+        group = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, lcl_bn_ctx);
 
     if (!group)
         goto err;
@@ -463,7 +471,7 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
         goto err;
 
     if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(base),
-            ASN1_STRING_length(base), bn_ctx))
+            ASN1_STRING_length(base), lcl_bn_ctx))
         goto err;
 
     if (!EC_GROUP_set_generator(group, generator, order_bn, cofactor_bn))
@@ -487,7 +495,7 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
             goto err;
 
         if (!EC_POINT_oct2point(group, pub_point, ASN1_STRING_data(pub),
-                ASN1_STRING_length(pub), bn_ctx))
+                ASN1_STRING_length(pub), lcl_bn_ctx))
             goto err;
 
         if (!EC_KEY_set_public_key(tmp, pub_point))
@@ -508,7 +516,11 @@ err:
         EC_POINT_clear_free(generator);
     if (pub_point)
         EC_POINT_clear_free(pub_point);
-    BN_CTX_end(bn_ctx);
+    if (lcl_bn_ctx)
+        BN_CTX_end(lcl_bn_ctx);
+    if (!bn_ctx && lcl_bn_ctx) {
+        BN_CTX_free(lcl_bn_ctx);
+    }
 
     return ret;
 }
