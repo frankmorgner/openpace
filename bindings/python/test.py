@@ -386,7 +386,7 @@ def tatest():
     # our certificates aren't up to date
     pace.TA_disable_checks(ta.ctx)
 
-    if pace.EAC_CTX_init_ta(ta.ctx, None, CVCA, None) == 0:
+    if pace.EAC_CTX_init_ta(ta.ctx, None, CVCA) == 0:
         raise PACEException("Failed to initialize context", "Terminal Authentication", "PICC")
 
     if not pace.TA_STEP2_import_certificate(ta.ctx, DVCA):
