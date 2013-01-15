@@ -238,7 +238,6 @@ AC_CONFIG_FILES([
                  win32/Makefile
                  doc/Makefile
                  doc/_static/Makefile
-                 doc/bindings/Makefile
                  ])
 AC_OUTPUT
 

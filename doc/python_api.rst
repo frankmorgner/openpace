@@ -1,0 +1,16 @@
+.. _python_api:
+
+Python API to OpenPACE
+======================
+
+.. automodule:: pace
+    :members:
+    :undoc-members:
+
+.. automodule:: pace_entity
+    :members:
+    :undoc-members:
+
+.. automodule:: chat
+    :members:
+    :undoc-members:
