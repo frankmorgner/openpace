@@ -131,26 +131,26 @@ then
         fi
     fi
 
-    AC_ARG_VAR([OPENSSL_CONFIG_EXTRA],
+    AC_ARG_VAR([OPENSSL_CONFIGURE_FLAGS],
                [options for configuring OpenSSL])
-    if test -z "$OPENSSL_CONFIG_EXTRA"
+    if test -z "$OPENSSL_CONFIGURE_FLAGS"
     then
         if test "${INSTALL_OPENSSL}" = "yes"
         then
-            OPENSSL_CONFIG_EXTRA=shared
+            OPENSSL_CONFIGURE_FLAGS=shared
         else
-            OPENSSL_CONFIG_EXTRA=-fPIC
+            OPENSSL_CONFIGURE_FLAGS=-fPIC
         fi
-        OPENSSL_CONFIG_EXTRA="${OPENSSL_CONFIG_EXTRA} `win32/gentoo.config-1.0.0 ${host}`"
+        my_prefix=`test "$prefix" = NONE && echo \"$ac_default_prefix\" || echo \"${prefix}\"`
+        OPENSSL_CONFIGURE_FLAGS="${OPENSSL_CONFIGURE_FLAGS} --prefix=${my_prefix} `${srcdir}/win32/gentoo.config-1.0.0 ${host}`"
     fi
 
     builddir=`pwd`
     CRYPTO_CFLAGS="-I${builddir}/src/openssl/include"
-    if test "${INSTALL_OPENSSL}" = "yes"
+    CRYPTO_LIBS="-L${builddir}/src/openssl -lcrypto"
+    if test "${INSTALL_OPENSSL}" != "yes"
     then
-        CRYPTO_LIBS="-L${builddir}/src/openssl -lcrypto"
-    else
-        CRYPTO_LIBS="${builddir}/src/openssl/libcrypto.a \`grep Libs.private ${builddir}/src/openssl/libcrypto.pc | ${SED} "-e" 's,Libs.private:\s*,,'\`"
+        CRYPTO_LIBS="${CRYPTO_LIBS} \`grep Libs.private ${builddir}/src/openssl/libcrypto.pc | ${SED} "-e" 's,Libs.private:\s*,,'\`"
     fi
 else
     AC_SUBST([PKG_REQUIRES], [libcrypto])
@@ -266,7 +266,7 @@ CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
 PATCH:                   ${PATCH}
 CVS:                     ${CVS}
-OPENSSL_CONFIG_EXTRA:    ${OPENSSL_CONFIG_EXTRA}
+OPENSSL_CONFIGURE_FLAGS: ${OPENSSL_CONFIGURE_FLAGS}
 
 SWIG:                    ${SWIG}
 JAVA_CFLAGS:             ${JAVA_CFLAGS}

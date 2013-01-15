@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src win32 bindings doc
 
 EXTRA_DIST = libeac.pc.in bootstrap oids.patch
-DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-java
+DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-java --enable-openssl-install
 
 if WIN32
 WS2_32 = -lws2_32
@@ -43,7 +43,9 @@ check-local: test-eactest
 endif
 
 test-eactest:
-	$(builddir)/src/eactest
+	env LD_LIBRARY_PATH=$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH}\
+		$(builddir)/src/eactest
 
 test-test.py:
 	cp $(builddir)/bindings/python/build/*/_pace.*so $(builddir)/bindings/python

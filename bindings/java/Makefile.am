@@ -42,4 +42,4 @@ $(BUILT_SOURCES): $(INTERFACES)
 all-local: JPace.class
 
 JPace.class: JPace.java $(BUILT_SOURCES)
-	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(srcdir) $(srcdir)/JPace.java
+	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/JPace.java
