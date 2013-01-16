@@ -36,9 +36,9 @@ extern BUF_MEM *BUF_MEM_create_init(const void *buf, size_t len);
 
 int OBJ_txt2nid(char *in);
 
-void OpenSSL_add_all_algorithms(void);
+void EAC_init(void);
 
-void EVP_cleanup(void);
+void EAC_cleanup(void);
 
 %inline %{
     /*Dumps a BUF_MEM structure to stdout for debugging purposes */

@@ -406,10 +406,10 @@ def oidtest():
     assert(pace.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128") == pace.id_CA_ECDH_AES_CBC_CMAC_128)
 
 if __name__ == "__main__":
-    pace.OpenSSL_add_all_algorithms()
+    pace.EAC_init()
     pacetest()
     cvctest()
     catest()
     oidtest()
     tatest()
-    pace.EVP_cleanup()
+    pace.EAC_cleanup()

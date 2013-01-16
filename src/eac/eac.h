@@ -349,6 +349,16 @@ typedef struct eac_ctx {
  * @{ ************************************************************************/
 
 /**
+ * @brief Wrapper to \c OpenSSL_add_all_algorithms()
+ */
+void EAC_init(void);
+
+/**
+ * @brief Wrapper to \c EVP_cleanup()
+ */
+void EAC_cleanup(void);
+
+/**
  * @brief Create a new EAC context
  * @return New EAC context or NULL in case of an error
  */

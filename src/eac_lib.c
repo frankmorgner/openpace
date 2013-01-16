@@ -45,6 +45,16 @@
 #include <openssl/err.h>
 #include <string.h>
 
+void EAC_init(void)
+{
+    OpenSSL_add_all_algorithms();
+}
+
+void EAC_cleanup(void)
+{
+    EVP_cleanup();
+}
+
 EAC_CTX *
 EAC_CTX_new(void)
 {

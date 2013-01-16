@@ -3690,12 +3690,12 @@ main(int argc, char *argv[])
     }
 
     /*printf("%s:%d\n", __FILE__, __LINE__);*/
-    OpenSSL_add_all_algorithms();
+    EAC_init();
     failed += test_parsing();
     failed += test_worked_examples();
     failed += do_dynamic_eac_tests();
     failed += test_consttime_memcmp();
-    EVP_cleanup();
+    EAC_cleanup();
 
     if (failed)
         printf("%d errors collected.\n", failed);

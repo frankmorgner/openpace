@@ -607,6 +607,7 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
         tmp_key = *key;
 
     /* Extract actual parameters */
+    char obj_txt[32];
     switch (OBJ_obj2nid(aid->algorithm)) {
         case NID_dhpublicnumber:
             EVP_PKEY_set1_DH(tmp_key, aid->parameters.dh);
@@ -627,7 +628,10 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
                 goto err;
             break;
         default:
-            log_err("Unknown parameter: %s", OBJ_nid2sn(OBJ_obj2nid(aid->algorithm)));
+            OBJ_obj2txt(obj_txt, sizeof obj_txt, aid->algorithm, 0);
+            log_err("Unknown Identifier (%s) for %s",
+                    OBJ_nid2sn(OBJ_obj2nid(aid->algorithm)),
+                    obj_txt);
     }
 
     if (tmp_ec)
@@ -697,6 +701,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
         if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
             goto err;
 
+        char obj_txt[32];
         nid = OBJ_obj2nid(a);
         switch (nid) {
             /* PACEInfo */
@@ -859,7 +864,9 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                  * EAC_CTX_init_ri called by the user */
                 break;
             default:
-                log_err("Unknown parameter: %s", OBJ_nid2sn(nid));
+                OBJ_obj2txt(obj_txt, sizeof obj_txt, a, 0);
+                log_err("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid),
+                    obj_txt);
                 break;
         }
     }
