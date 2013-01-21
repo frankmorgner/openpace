@@ -1,16 +1,15 @@
 .. _protocols:
 
+
 #####################################
 Extended Access Control Specification
 #####################################
 
 OpenPACE implements Extended Access Control version 2 (EAC) defined by the `Federal
-Office for Information Security (BSI) <https://www.bsi.bund.de>`_ in the
-`Technical Guideline TR-03110
-<https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html>`_.
+Office for Information Security (BSI)`_ in the
+`Technical Guideline TR-03110`_.
 It is designed to be compatible and submitted to be standardized with `ICAO
-Machine Readable Travel Documents Doc 9303
-<http://www2.icao.int/en/MRTD/Pages/Doc9393.aspx>`_.  EAC consists of three
+Machine Readable Travel Documents Doc 9303`_.  EAC consists of three
 subsequent steps:
 
 1. `Password Authenticated Connection Establishment`_ (PACE)
@@ -27,6 +26,7 @@ used in BSI TR-03110. The following description of PACE, TA and CA is also
 cited from this specification (Version 2.05).
 
 
+***********************************************
 Password Authenticated Connection Establishment
 ***********************************************
 
@@ -34,7 +34,6 @@ The PACE Protocol is a password authenticated Diffie-Hellman key agreement
 protocol that provides secure communication and explicit password-based
 authentication of the MRTD chip and the terminal (i.e. MRTD chip and terminal
 share the same password :math:`\pi`).
-
 
 Protocol Specification
 ======================
@@ -56,6 +55,7 @@ The following steps are performed by the terminal and the MRTD chip:
       ephemeral domain parameters and generate the shared secret.
           
         .. math::
+
            K =\operatorname{KA} ( \widetilde{SK_{\text{PICC}}} ,
            \widetilde{PK_{\text{PCD}}} , \widetilde{D}) =\operatorname{KA} (
            \widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PICC}}} ,
@@ -68,12 +68,14 @@ The following steps are performed by the terminal and the MRTD chip:
    c. They derive session keys.
    
         .. math::
+
             K_{\text{MAC}} =\operatorname{KDF}_{\text{MAC}} ( K )\text{ and }
             K_{\text{Enc}}=\operatorname{KDF}_{\text{Enc}} ( K )
 
    d. They exchange and verify the authentication token.
    
         .. math::
+
             T_{\text{PCD}} =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
             \widetilde{PK_{\text{PICC}}} )\text{ and }T_{\text{PICC}}
             =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
@@ -124,6 +126,7 @@ Integrated Mapping
 The Integrated DH Mapping is specified by ICAO.
 
 
+***********************
 Terminal Authentication
 ***********************
 
@@ -165,6 +168,7 @@ The following steps are performed by the terminal and the MRTD chip.
 5. The terminal responds with the signature.
   
     .. math::
+
         s_{\text{PCD}} =\operatorname{Sign}( SK_{\text{PCD}} , ID_{\text{PICC}}
         \parallel r_{\text{PICC}} \parallel
         \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
@@ -173,12 +177,14 @@ The following steps are performed by the terminal and the MRTD chip.
 6. The MRTD chip checks that
    
     .. math::
+
         \operatorname{Verify} ( PK_{\text{PCD}} , s_{\text{PCD}} ,
         ID_{\text{PICC}}\parallel r_PICC\parallel
         \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
         A_{\text{PCD}} ) = \operatorname{true}
 
 
+*******************
 Chip Authentication
 *******************
 
@@ -210,6 +216,7 @@ Authentication, as the terminal's ephemeral key pair
    secret.
    
     .. math::
+
         K=\operatorname{KA}(SK_{\text{PICC}}, \widetilde{PK_{\text{PCD}}},
         D_{\text{PICC}})=\operatorname{KA}(\widetilde{SK_{\text{PCD}}},
         PK_{\text{PICC}}, D_{\text{PICC}})
@@ -230,3 +237,14 @@ Authentication, as the terminal's ephemeral key pair
 
 To verify the authenticity of the :math:`PK_{\text{PICC}}` the terminal SHALL
 perform Passive Authentication.
+
+
+**********
+References
+**********
+
+.. target-notes::
+
+.. _`Federal Office for Information Security (BSI)`: https://www.bsi.bund.de
+.. _`Technical Guideline TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
+.. _`ICAO Machine Readable Travel Documents Doc 9303`: http://www2.icao.int/en/MRTD/Pages/Doc9393.aspx

@@ -1,8 +1,9 @@
 .. highlight:: sh
 
-************************************
+
+###############################################################################
 Welcome to @PACKAGE_NAME@'s documentation!
-************************************
+###############################################################################
 
 .. include:: ../README
 
@@ -13,13 +14,15 @@ If you want to lear more about the EAC protocols, you can find a nice
     :hidden:
 
     protocols
-    bindings.rst
+    bindings.txt
 
+
+*******************************************************************************
 Download @PACKAGE_NAME@
-==========================
+*******************************************************************************
 
 You can find the latest release of @PACKAGE_NAME@ `here
-<http://sourceforge.net/projects/openpace/>`_
+<http://sourceforge.net/projects/openpace/>`_.
 
 Alternatively, you can clone our git repository::
 
@@ -27,10 +30,12 @@ Alternatively, you can clone our git repository::
 
 .. include install
 
-Install @PACKAGE_NAME@
-======================
 
-@PACKAGE_NAME@ can uses GNU autotools and therefore can be easily build using the
+*******************************************************************************
+Install @PACKAGE_NAME@
+*******************************************************************************
+
+@PACKAGE_NAME@ uses GNU autotools and therefore can be easily built using the
 following commands::
 
     autoreconf -si
@@ -38,7 +43,7 @@ following commands::
     make
     make install
 
-@PACKAGE_NAME@ depends on the `OpenSSL <http://openssl.org>`_ library. Since PACE
+@PACKAGE_NAME@ depends on the `OpenSSL`_ library. Since PACE
 uses CMAC and the Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is required.
 Furthermore, @PACKAGE_NAME@ requires additional Object Identifiers (OIDs) and
 therefore needs a patched version of OpenSSL. Due to these special
@@ -48,8 +53,10 @@ statically linked against this local version of OpenSSL. This process can be
 customized by a number of parameters for the ``configure`` command. See
 ``./configure -h`` for details.
 
+
+*******************************************************************************
 How to use @PACKAGE_NAME@
-=========================
+*******************************************************************************
 
 If you want to know how to use @PACKAGE_NAME@, have a look at our `API documentation
 <_static/doxygen/html/modules.html>`_.
@@ -57,8 +64,19 @@ If you want to know how to use @PACKAGE_NAME@, have a look at our `API documenta
 If you want to use other programming languages rather than C/C++ for example
 Python or Java, you can use our :ref:`SWIG bindings <bindings>`.
 
+
+*******************************************************************************
 Where to get help
-=================
+*******************************************************************************
 
 If you find a bug or want to add a feature to @PACKAGE_NAME@, please use our `trackers
 <@PACKAGE_BUGREPORT@>`_ for contacting us.
+
+
+*******************************************************************************
+References
+*******************************************************************************
+
+.. target-notes::
+
+.. _`OpenSSL`: http://openssl.org
