@@ -41,13 +41,14 @@ extern "C" {
 
 /** @defgroup management Data Management and Initialization
  *  @defgroup printing Data Printing
- *  @defgroup eacproto Protocol Steps for EAC
+ *  @defgroup eacproto Protocol Steps for Extended Access Control
  *  @{
- *      @defgroup paceproto  Protocol Steps for PACE
- *      @defgroup taproto Protocol Steps for TA
- *      @defgroup caproto Protocol Steps for CA
- *      @defgroup riproto Protocol Steps for RI
+ *      @defgroup paceproto  Protocol Steps for Password Authenticated Connection Establishment
+ *      @defgroup taproto Protocol Steps for Terminal Authentication
+ *      @defgroup caproto Protocol Steps for Chip Authentication
+ *      @defgroup riproto Protocol Steps for Restricted Authentication
  *  @}
+ *  @defgroup sm Cryptographic Wrappers for Secure Messaging
  */
 
 

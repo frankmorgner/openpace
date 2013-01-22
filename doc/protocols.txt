@@ -196,8 +196,8 @@ The protocol provides explicit authentication of the MRTD chip by verifying
 the authentication token and implicit authentication of the stored data by
 performing Secure Messaging using the new session keys.
 
-Protocol Steps
-==============
+Protocol Specification
+======================
 
 In this version Terminal Authentication MUST be performed before Chip
 Authentication, as the terminal's ephemeral key pair

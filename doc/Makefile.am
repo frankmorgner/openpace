@@ -7,7 +7,7 @@ do_subst = $(SED) \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g' \
 	   -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g'
 
-DOXYGEN_HTML = _build/html/_static/doxygen/html/index.html
+DOXYGEN_HTML = doxygen/html/index.html
 
 
 doc: $(DOXYGEN_HTML) *.in *.txt *.txt.in

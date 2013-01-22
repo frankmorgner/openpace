@@ -77,6 +77,8 @@ TA_disable_checks(EAC_CTX *ctx);
  * @param[in] cert_len Length of \a cert
  *
  * @return 1 on success or 0 in case of an error
+ *
+ * @see <a href="http://openpace.sourceforge.net/protocols.html#id3">TA's Protocol Specification</a>
  */
 int
 TA_STEP2_import_certificate(const EAC_CTX *ctx,
@@ -87,6 +89,8 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx,
  * @param[in,out] ctx EAC context. The CA context of \a ctx is initialized for key agreement
  *
  * @return Ephemeral public key or NULL in case of an error
+ *
+ * @see <a href="http://openpace.sourceforge.net/protocols.html#id3">TA's Protocol Specification</a>
  */
 BUF_MEM *
 TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx);
@@ -98,6 +102,8 @@ TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx);
  * @return Nonce or NULL in case of an error
  *
  * @note EAC_CTX_init_ca must have been called before the nonce can be generated
+ *
+ * @see <a href="http://openpace.sourceforge.net/protocols.html#id3">TA's Protocol Specification</a>
  */
 BUF_MEM *
 TA_STEP4_get_nonce(const EAC_CTX *ctx);
@@ -108,6 +114,8 @@ TA_STEP4_get_nonce(const EAC_CTX *ctx);
  * @param nonce The nonce to be copied
  *
  * @return 1 on success or 0 in case of an error
+ *
+ * @see <a href="http://openpace.sourceforge.net/protocols.html#id3">TA's Protocol Specification</a>
  */
 int
 TA_STEP4_set_nonce(const EAC_CTX *ctx, const BUF_MEM *nonce);
@@ -120,6 +128,8 @@ TA_STEP4_set_nonce(const EAC_CTX *ctx, const BUF_MEM *nonce);
  * @param[in] auxdata (optional) Auxiliary data from PCD
  *
  * @return Signature or NULL in case of an error
+ *
+ * @see <a href="http://openpace.sourceforge.net/protocols.html#id3">TA's Protocol Specification</a>
  */
 BUF_MEM *
 TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey,
@@ -134,6 +144,8 @@ TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey,
  * @param[in] signature Data to verify
  *
  * @return 1 if the signature has been verified, 0 if not or -1 in case of an error
+ *
+ * @see <a href="http://openpace.sourceforge.net/protocols.html#id3">TA's Protocol Specification</a>
  */
 int
 TA_STEP6_verify(const EAC_CTX *ctx, const BUF_MEM *opp_ta_comp_eph_pubkey,

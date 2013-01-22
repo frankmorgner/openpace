@@ -10,12 +10,6 @@ Welcome to @PACKAGE_NAME@'s documentation!
 If you want to lear more about the EAC protocols, you can find a nice
 :ref:`summary <protocols>`.
 
-.. toctree::
-    :hidden:
-
-    protocols
-    bindings.txt
-
 
 *******************************************************************************
 Download @PACKAGE_NAME@
@@ -51,17 +45,16 @@ requirements, the make command downloads a recent snapshot of OpenSSL, applies
 the necessary patches and builds OpenSSL. The @PACKAGE_NAME@ library is then
 statically linked against this local version of OpenSSL. This process can be
 customized by a number of parameters for the ``configure`` command. See
-``./configure -h`` for details.
+``./configure --help`` for details.
 
 
 *******************************************************************************
 How to use @PACKAGE_NAME@
 *******************************************************************************
 
-If you want to know how to use @PACKAGE_NAME@, have a look at our `API documentation
-<_static/doxygen/html/modules.html>`_.
-
-If you want to use other programming languages rather than C/C++ for example
+If you want to know how to use @PACKAGE_NAME@ from C/C++, have a look at our
+`API documentation <../../_static/doxygen/modules.html>`_.
+If you want to use other programming languages, for example
 Python or Java, you can use our :ref:`SWIG bindings <bindings>`.
 
 
@@ -71,6 +64,17 @@ Where to get help
 
 If you find a bug or want to add a feature to @PACKAGE_NAME@, please use our `trackers
 <@PACKAGE_BUGREPORT@>`_ for contacting us.
+
+
+*******************************************************************************
+Further Reading
+*******************************************************************************
+
+.. toctree::
+    :maxdepth: 3
+
+    protocols
+    bindings.txt
 
 
 *******************************************************************************
