@@ -110,7 +110,7 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
     CVC_CERT *ta_cvca = NULL;
     int r = 0;
 
-    check(ctx, "Invalid arguments");
+    check(ctx && ctx->ta_ctx, "Invalid arguments");
 
     if (privkey && privkey_len) {
         if (ctx->ta_ctx->priv_key)
