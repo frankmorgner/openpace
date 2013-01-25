@@ -133,6 +133,7 @@ static const char *cert_desc_field_strings[] = {
     "subjectURL",
     "redirectURL",
     "termsOfUsage",
+    "commCertificates",
 };
 
 /**
@@ -856,6 +857,12 @@ certificate_description_print(BIO *bio,
                     desc->redirectURL->data))
             return 0;
     }
+    if (desc->commCertificates) {
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "%s\n", cert_desc_field_strings[6])
+                || !BIO_dump_indent(bio, desc->commCertificates->data, desc->commCertificates->length, indent+2))
+            return 0;
+    } else printf("%s:%d bla\n", __FILE__, __LINE__);
 
     nid = OBJ_obj2nid(desc->descriptionType);
     switch (nid) {
