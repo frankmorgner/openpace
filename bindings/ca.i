@@ -33,6 +33,9 @@
 extern void BUF_MEM_clear_free(BUF_MEM *b);
 %}
 
+void
+CA_disable_passive_authentication(EAC_CTX *ctx);
+
 /* FIXME: Manual NIDs are bad because they will probably change in the next
  * version of OpenSSL */
 #define id_CA_DH_3DES_CBC_CBC 953
