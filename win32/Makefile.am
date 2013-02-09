@@ -11,7 +11,7 @@ clean-local:
 
 
 
-MINGW     = x86_64-w64-mingw32
+MINGW     = i686-w64-mingw32
 WIN32_DIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_win32
 
 LIBEAC    = $(WIN32_DIR)/bin/libeac.dll
@@ -26,7 +26,7 @@ $(LIBEAC):
 		--prefix=/ \
 		--host=$(MINGW) --target=$(MINGW) \
 		--enable-openssl-install \
-		OPENSSL_CONFIG_EXTRA="shared no-asm --cross-compile-prefix=$(MINGW)- --prefix=/ `$(abs_srcdir)/gentoo.config-1.0.0 $(MINGW)`"
+		OPENSSL_CONFIGURE_FLAGS="shared no-asm --cross-compile-prefix=$(MINGW)- --prefix=/ `$(abs_srcdir)/gentoo.config-1.0.0 $(MINGW)`"
 		CFLAGS=-I$(MINGW_DIR)/include \
 		LDFLAGS=-L$(MINGW_DIR)/lib
 	$(MAKE) -C $(top_builddir) install DESTDIR=$(WIN32_DIR)
