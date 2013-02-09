@@ -52,24 +52,26 @@ extern "C" {
  */
 
 
-/** Identification of the specifications to use.
+/**
+ * @brief Identification of the specifications to use.
+ *
  * @note TR-03110 v2.01 differs from all later versions of the Technical
  * Guideline in how the authentication token is calculated. Therefore old test
  * cards are incompatible with the newer specification.
  */
 enum eac_tr_version {
-    /** Undefined type, if nothing else matches */
+    /** @brief Undefined type, if nothing else matches */
     EAC_TR_VERSION = 0,
-    /** Perform EAC according to TR-03110 v2.01 */
+    /** @brief Perform EAC according to TR-03110 v2.01 */
     EAC_TR_VERSION_2_01,
-    /** Perform EAC according to TR-03110 v2.02 and later */
+    /** @brief Perform EAC according to TR-03110 v2.02 and later */
     EAC_TR_VERSION_2_02,
 };
 
 /**
  * @brief Context for a key agreement and subsequent derivation of session
  * keys.
- * @note The key agreement itself is usually done via an underlying DH or ECDH.
+ * @note The key agreement itself is done via an underlying DH or ECDH.
  */
 typedef struct ka_ctx {
         /** @brief Digest to use for key derivation */
@@ -121,9 +123,6 @@ typedef struct ka_ctx {
 } KA_CTX;
 
 /** @brief Context for the Password Authenticated Connection Establishment protocol
- *
- * Encompasses information about cipher, message digest, key agreement scheme,
- * mapping method.
  */
 typedef struct pace_ctx {
     /** @brief Identifier of the protocol's OID specifying the exact PACE parameters
@@ -175,9 +174,6 @@ typedef struct pace_ctx {
 } PACE_CTX;
 
 /** @brief Context for the Restricted Identification protocol
- *
- * Encompasses information about hash function, message digest, key agreement scheme,
- * mapping method.
  */
 typedef struct ri_ctx {
     /** @brief Identifier of the hash function
@@ -337,7 +333,7 @@ typedef struct eac_ctx {
     CA_CTX *ca_ctx;
     /** @brief Context for secure messaging established with PACE or CA */
     KA_CTX *key_ctx;
-    /** Send sequence counter */
+    /** @brief Send sequence counter */
     BIGNUM *ssc;
 } EAC_CTX;
 

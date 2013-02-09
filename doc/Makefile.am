@@ -18,6 +18,6 @@ doc: $(DOXYGEN_HTML) *.in *.txt *.txt.in
 		$(MAKE) -f Makefile.sphinx html
 	touch doc
 
-$(DOXYGEN_HTML): $(top_srcdir)/src/eac/*.h
+$(DOXYGEN_HTML): $(top_srcdir)/src/eac/*.h Doxyfile.in
 	$(do_subst) < Doxyfile.in > Doxyfile
 	doxygen Doxyfile

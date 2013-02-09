@@ -38,7 +38,7 @@
 #ifndef RI_H_
 #define RI_H_
 
-#include "eac.h"
+#include <eac/eac.h>
 #include <openssl/bn.h>
 #include <openssl/buffer.h>
 

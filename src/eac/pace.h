@@ -45,23 +45,23 @@
 extern "C" {
 #endif
 
-/** Enum for the type of the secret used. */
+/** @brief Type of the secret */
 enum s_type {
-    /** MRZ is the Machine Readable Zone, printed on the card, encoding
+    /** @brief MRZ is the Machine Readable Zone, printed on the card, encoding
      * the personal information of the user */
     PACE_MRZ = 1,
-    /** CAN is the Card access number printed on the card */
+    /** @brief CAN is the Card access number printed on the card */
     PACE_CAN,
-    /** PIN is the Personal Identification Number, a secret known only
+    /** @brief PIN is the Personal Identification Number, a secret known only
      * to the user and not printed on the card */
     PACE_PIN,
-    /** PUK is the Personal Unblocking key. This type of secret is used
+    /** @brief PUK is the Personal Unblocking key. This type of secret is used
      * when the card is suspended due to too many incorrect PACE runs */
     PACE_PUK,
-    /** This type of secret is not defined in BSI TR-03110. We use it as
+    /** @brief This type of secret is not defined in BSI TR-03110. We use it as
      * a generic type, so we can use PACE independent from a ID card */
     PACE_RAW,
-    /** Undefined type, if nothing else matches */
+    /** @brief Undefined type, if nothing else matches */
     PACE_SEC_UNDEF
 };
 

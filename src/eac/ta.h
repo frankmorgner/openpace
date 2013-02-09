@@ -40,13 +40,13 @@
 #ifndef TA_H_
 #define TA_H_
 
-#include "eac.h"
+#include <eac/eac.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** Skip checking effective and expiration date of cv certificates against the system's current time */
+/** @brief Skip checking effective and expiration date of cv certificates against the system's current time */
 #define TA_FLAG_SKIP_TIMECHECK 1
 
 /**

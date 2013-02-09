@@ -36,16 +36,15 @@ extern "C" {
 #include <openssl/asn1t.h>
 #include <openssl/bio.h>
 
-/** There are three types of certificates specified by their terminal type:
- * CVCA certificates, DV certificates and terminal certificates */
+/** @brief Effective role of the certificate holder */
 enum cvc_terminal_role {
-    /** @brief Regular terminal */
+    /** @brief Terminal (inspection system/authentication terminal/signature terminal) */
     CVC_Terminal = 0,
-    /** @brief Document verifier */
+    /** @brief Document Verifier (official domestic) */
     CVC_DV,
-    /** @brief Undefined */
-    CVC_DocVer, //FIXME: Ugly
-    /** @brief Country Validating Certificate Authority */
+    /** @brief Document Verifier (non-official/foreign) */
+    CVC_DocVer, /* XXX Ugly */
+    /** @brief Country Verifying Certificate Authority */
     CVC_CVCA
 };
 
@@ -97,18 +96,18 @@ typedef struct cvc_pubkey_st {
  * for both possible certificate extensions.
  */
 typedef struct cvc_discretionary_data_template_st {
-    /** OID which specifies the type of the extension **/
+    /** @brief OID which specifies the type of the extension **/
     ASN1_OBJECT *type;
-    /** holds descretionary data */
+    /** @brief holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data1;
-    /** holds descretionary data */
+    /** @brief holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data2;
-    /** holds descretionary data */
+    /** @brief holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data3;
 } CVC_DISCRETIONARY_DATA_TEMPLATE;
 DECLARE_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATE)
 
-/* XXX: This should actually not be a SEQUENCE */
+/* FIXME This should actually not be a SEQUENCE */
 /** @brief Certificate Extensions
  * @see TR-03110 C.3. */
 typedef struct cvc_discretionary_data_template_seq_st {
@@ -123,7 +122,8 @@ typedef struct cvc_discretionary_data_template_seq_st {
 } CVC_DISCRETIONARY_DATA_TEMPLATES;
 DECLARE_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATES)
 
-/** @brief The body of the CV certificate (without signature)
+/**
+ * @brief The body of the CV certificate (without signature)
  *
  * @see TR-03110 C.1. */
 typedef struct cvc_cert_body_seq_st {
@@ -161,7 +161,8 @@ typedef struct cvc_cert_body_seq_st {
 /** @brief Short name for CVC_CERT_BODY_SEQ */
 typedef CVC_CERT_BODY_SEQ CVC_CERT_BODY;
 
-/** @brief The actual certifcate, consisting of the body and a signature
+/**
+ * @brief The actual certifcate, consisting of the body and a signature
  *
  *  @see TR-03110 C.1. */
 typedef struct cvc_cert_seq_st {
@@ -173,8 +174,10 @@ typedef struct cvc_cert_seq_st {
 /** @brief Short name for CVC_CERT_SEQ */
 typedef CVC_CERT_SEQ CVC_CERT;
 /*void CVC_CERT_print_ctx(BIO *bio, CVC_CERT *cert, int indent, const ASN1_PCTX *pctx);*/
-//DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT)
-//DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
+/* FIXME the default printing functions currently crash
+DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT)
+DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
+*/
 
 /**
  * @brief This structure holds further information about a card verifiable
@@ -212,9 +215,9 @@ typedef CVC_CERT_SEQ CVC_CERT;
         ASN1_TYPE *other;
     } termsOfUsage;
 
-    /** Not used */
+    /** @brief Not used */
     ASN1_PRINTABLESTRING *redirectURL;
-    /** Contains hash values of admissible X.509 certificates of the remote
+    /** @brief Contains hash values of admissible X.509 certificates of the remote
      *  terminal (optional)
      *  Note that this is an ugly hack to not bother with STACK_OF structures */
     ASN1_OCTET_STRING *commCertificates;
@@ -268,7 +271,9 @@ int i2d_CVC_CERT(CVC_CERT *a, unsigned char **out);
 
 /**
  * @brief Allocate memory for a CV certificate
- * */
+ *
+ * @return CHAT or NULL in case of an error
+ */
 CVC_CERT *CVC_CERT_new(void);
 /**
  * @brief Free a CV certificate.
@@ -364,11 +369,13 @@ cvc_get_chat(const CVC_CERT *cvc);
  * are only included in CVCA certificates, they must be passed as parameters
  * for DV and terminal certificates
  *
- * @param domainParameters domain parameters for DV and terminal certificates (optional)
- * @param cert the certificate containing the public key
- * @param bn_ctx
+ * @param[in] domainParameters domain parameters for DV and terminal certificates (optional)
+ * @param[in] cert the certificate containing the public key
+ * @param[in] bn_ctx
  *
  * @return An EVP_PKEY container with the public key or NULL in case of an error
+ *
+ * @note Result should be freed with \c EVP_PKEY_free()
  */
 EVP_PKEY *
 CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx);
@@ -376,7 +383,7 @@ CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
 /**
  * @brief Extract the terminal-type (terminal, DV, CVCA) from the CHAT
  *
- * @param chat CHAT
+ * @param[in] chat CHAT
  *
  * @return -1 in case of an error or one of the following values:
  * - \c CVC_CVCA (CVCA certificate)
@@ -388,49 +395,57 @@ enum cvc_terminal_role
 CVC_get_role(const CVC_CHAT *chat);
 
 /**
-  * @brief Return the profile identifier of a CV certificate as an integer
-  *
-  * @param[in] cert The certificate from which we want to return the profile identifier
-  *
-  * @return The profile identifier or -1 in case of an error
-  *  */
+ * @brief Return the profile identifier of a CV certificate as an integer
+ *
+ * @param[in] cert The certificate from which we want to return the profile identifier
+ *
+ * @return The profile identifier or -1 in case of an error
+ */
 short
 CVC_get_profile_identifier(const CVC_CERT *cert);
 /**
-  * @brief Return the CAR of a CV certificate as a string
-  *
-  * @param[in] cert The certificate from which we want to return the CAR
-  *
-  * @return CAR string or NULL in case of an error
-  *  */
+ * @brief Return the CAR of a CV certificate as a string
+ *
+ * @param[in] cert The certificate from which we want to return the CAR
+ *
+ * @return CAR string or NULL in case of an error
+ *
+ * @note Result should be freed with \c OpenSSL_free()
+ */
 char *
 CVC_get_car(const CVC_CERT *cert);
 /**
-  * @brief Return the CAR of a CV certificate as a string
-  *
-  * @param[in] cert The certificate from which we want to return the CHR
-  *
-  * @return CHR string or NULL in case of an error
-  *  */
+ * @brief Return the CAR of a CV certificate as a string
+ *
+ * @param[in] cert The certificate from which we want to return the CHR
+ *
+ * @return CHR string or NULL in case of an error
+ *
+ * @note Result should be freed with \c OpenSSL_free()
+ */
 char *
 CVC_get_chr(const CVC_CERT *cert);
 /**
- *  @brief Convert the effective date and expiration date,
- *         of a certificate to a string
+ * @brief Convert the effective date and expiration date,
+ *        of a certificate to a string
  *
- *  @param[in] cert The certificate
+ * @param[in] cert The certificate
  *
- *  @return Null terminated string representation of the date
+ * @return Null terminated string representation of the date
+ *
+ * @note Result should be freed with \c OpenSSL_free()
  */
 char *
 CVC_get_effective_date(const CVC_CERT *cert);
 /**
- *  @brief Convert the expiration date of a certificate to a string
+ * @brief Convert the expiration date of a certificate to a string
  *
- *  @param[in] cert The certificate
+ * @param[in] cert The certificate
  *
- *  @return Null terminated string representation of the date or NULL in case
+ * @return Null terminated string representation of the date or NULL in case
  * of an error
+ *
+ * @note Result should be freed with \c OpenSSL_free()
  */
 char *
 CVC_get_expiration_date(const CVC_CERT *cert);

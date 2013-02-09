@@ -42,7 +42,7 @@
 extern "C" {
 #endif
 
-/** Skip the passive authentication */
+/** @brief Skip the passive authentication */
 #define CA_FLAG_DISABLE_PASSIVE_AUTH 1
 
 /**
