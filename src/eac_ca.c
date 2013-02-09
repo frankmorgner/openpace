@@ -34,7 +34,6 @@
 #include <openssl/crypto.h>
 #include <openssl/dh.h>
 #include <openssl/ec.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/obj_mac.h>
 #include <openssl/pkcs7.h>

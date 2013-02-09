@@ -26,10 +26,10 @@
 
 #include "eac_err.h"
 #include "eac_util.h"
+#include "ta_lib.h"
 #include <eac/cv_cert.h>
 #include <eac/ta.h>
 #include <openssl/crypto.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/rsa.h>

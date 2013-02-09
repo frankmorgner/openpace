@@ -35,7 +35,6 @@
 #include <arpa/inet.h>
 #endif
 #include <openssl/crypto.h>
-#include <openssl/err.h>
 #include <string.h>
 
 BUF_MEM *

@@ -32,7 +32,6 @@
 #include <eac/eac.h>
 #include <openssl/crypto.h>
 #include <openssl/ecdh.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <string.h>

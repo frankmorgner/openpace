@@ -36,7 +36,6 @@
 #include <openssl/dh.h>
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/rsa.h>

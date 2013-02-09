@@ -34,8 +34,6 @@
 #include <openssl/asn1t.h>
 #include <openssl/buffer.h>
 #include <openssl/ec.h>
-#include <openssl/err.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/rsa.h>
@@ -860,7 +858,8 @@ certificate_description_print(BIO *bio,
     if (desc->commCertificates) {
         if (!BIO_indent(bio, indent, 80)
                 || !BIO_printf(bio, "%s\n", cert_desc_field_strings[6])
-                || !BIO_dump_indent(bio, desc->commCertificates->data, desc->commCertificates->length, indent+2))
+                || !BIO_dump_indent(bio, (char *) desc->commCertificates->data,
+                    desc->commCertificates->length, indent+2))
             return 0;
     } else printf("%s:%d bla\n", __FILE__, __LINE__);
 

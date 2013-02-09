@@ -35,7 +35,6 @@
 #include <openssl/crypto.h>
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
-#include <openssl/err.h>
 
 BUF_MEM *
 dh_gm_generate_key(const PACE_CTX * ctx, BN_CTX *bn_ctx)

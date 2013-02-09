@@ -38,7 +38,6 @@
 #include <openssl/asn1.h>
 #include <openssl/dh.h>
 #include <openssl/ec.h>
-#include <openssl/err.h>
 #include <openssl/objects.h>
 
 /** PACEInfo structure */

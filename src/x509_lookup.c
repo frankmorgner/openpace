@@ -33,7 +33,6 @@
 static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
 {
     static X509_STORE *store = NULL;
-    static X509 *csca_cert = NULL;
 
     if (!store)
        store = X509_STORE_new();

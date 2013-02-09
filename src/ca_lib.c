@@ -27,7 +27,6 @@
 #include "eac_err.h"
 #include "eac_lib.h"
 #include <openssl/crypto.h>
-#include <openssl/err.h>
 
 CA_CTX *
 CA_CTX_new(void)

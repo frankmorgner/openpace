@@ -27,8 +27,9 @@
 #ifndef EAC_ERR_H
 #define EAC_ERR_H
 
-#include <stdio.h>
 #include <errno.h>
+#include <openssl/err.h>
+#include <stdio.h>
 #include <string.h>
 
 #ifdef DEBUG

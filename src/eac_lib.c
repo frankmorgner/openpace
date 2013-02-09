@@ -42,7 +42,6 @@
 #include <eac/ta.h>
 #include <openssl/buffer.h>
 #include <openssl/crypto.h>
-#include <openssl/err.h>
 #include <string.h>
 
 void EAC_init(void)

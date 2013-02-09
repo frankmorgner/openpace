@@ -30,7 +30,6 @@
 #include "misc.h"
 #include <eac/eac.h>
 #include <openssl/bn.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 
 static const unsigned char rfc_5114_modp_1_p[] = {

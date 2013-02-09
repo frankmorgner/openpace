@@ -36,7 +36,6 @@
 #include <eac/ta.h>
 #include <openssl/bio.h>
 #include <openssl/ecdsa.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
 #include <string.h>

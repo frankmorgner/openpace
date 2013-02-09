@@ -32,7 +32,6 @@
 #include "misc.h"
 #include <eac/eac.h>
 #include <eac/pace.h>
-#include <openssl/err.h>
 
 BUF_MEM *
 EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m)

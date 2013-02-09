@@ -35,7 +35,6 @@
 #include <eac/pace.h>
 #include <openssl/buffer.h>
 #include <openssl/crypto.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <string.h>

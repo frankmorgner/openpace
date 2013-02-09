@@ -1297,7 +1297,7 @@ static struct eac_worked_example eac_examples[] = {
     },
 };
 
-static const unsigned char ef_cardaccess_old_testcard[] = {
+static char ef_cardaccess_old_testcard[] = {
     0x31, 0x82, 0x02, 0x64, 0x30, 0x0d, 0x06, 0x08, 0x04, 0x00, 0x7f,
     0x00, 0x07, 0x02, 0x02, 0x02, 0x02, 0x01, 0x02, 0x30, 0x0f, 0x06,
     0x0a, 0x04, 0x00, 0x7f, 0x00, 0x07, 0x02, 0x02, 0x03, 0x02, 0x02,
@@ -1355,7 +1355,7 @@ static const unsigned char ef_cardaccess_old_testcard[] = {
     0x83, 0x8d, 0x71, 0x8c, 0x39, 0x7a, 0xa3, 0xb5, 0x61, 0xa6, 0xf7,
     0x90, 0x1e, 0x0e, 0x82, 0x97, 0x48, 0x56, 0xa7, 0x02, 0x01, 0x01
 };
-static const unsigned char ef_cardaccess_new_testcard[] = {
+static char ef_cardaccess_new_testcard[] = {
     0x31, 0x81, 0x82, 0x30, 0x0D, 0x06, 0x08, 0x04, 0x00, 0x7F, 0x00,
     0x07, 0x02, 0x02, 0x02, 0x02, 0x01, 0x02, 0x30, 0x12, 0x06, 0x0A,
     0x04, 0x00, 0x7F, 0x00, 0x07, 0x02, 0x02, 0x03, 0x02, 0x02, 0x02,
@@ -1375,7 +1375,7 @@ static const unsigned char ef_cardaccess_new_testcard[] = {
     /*Note: The new test cards contain garbage at the end of their EF.CardAccess
      * (the last 38 Bytes), which we ignore */
 };
-static unsigned char ef_cardaccess_dan[] = {
+static char ef_cardaccess_dan[] = {
     0x31, 0x81, 0xB3, 0x30, 0x0D, 0x06, 0x08, 0x04, 0x00, 0x7F, 0x00, 0x07, 0x02, 0x02, 0x02, 0x02, /*1..0............*/
     0x01, 0x02, 0x30, 0x12, 0x06, 0x0A, 0x04, 0x00, 0x7F, 0x00, 0x07, 0x02, 0x02, 0x03, 0x02, 0x02, /*..0.............*/
     0x02, 0x01, 0x02, 0x02, 0x01, 0x41, 0x30, 0x12, 0x06, 0x0A, 0x04, 0x00, 0x7F, 0x00, 0x07, 0x02, /*.....A0.........*/
@@ -1390,28 +1390,14 @@ static unsigned char ef_cardaccess_dan[] = {
     0x70, 0x61, 0x2E, 0x78, 0x6D, 0x6C,                                                             /*pa.xml*/
 };
 
-struct ef_cardaccess {
-    const unsigned char *ef_cardaccess;
-    const size_t ef_cardaccess_len;
-};
-
-static const struct ef_cardaccess ef_cardaccess_files[] = {
-    {
-        ef_cardaccess_new_testcard,
-        sizeof ef_cardaccess_new_testcard,
-    },
-    {
-        ef_cardaccess_old_testcard,
-        sizeof ef_cardaccess_old_testcard,
-    },
-    {
-        ef_cardaccess_dan,
-        sizeof ef_cardaccess_dan,
-    },
+static const BUF_MEM ef_cardaccess_files[] = {
+    { sizeof ef_cardaccess_new_testcard, ef_cardaccess_new_testcard, sizeof ef_cardaccess_new_testcard, },
+    { sizeof ef_cardaccess_old_testcard, ef_cardaccess_old_testcard, sizeof ef_cardaccess_old_testcard, },
+    { sizeof ef_cardaccess_dan, ef_cardaccess_dan, sizeof ef_cardaccess_dan, },
 };
 
 
-static unsigned char ef_cardsecurity_dan[] = {
+static char ef_cardsecurity_dan[] = {
     0x30, 0x82, 0x05, 0xA0, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x02, 0xA0, /*0.....*.H.......*/
     0x82, 0x05, 0x91, 0x30, 0x82, 0x05, 0x8D, 0x02, 0x01, 0x03, 0x31, 0x0F, 0x30, 0x0D, 0x06, 0x09, /*...0......1.0...*/
     0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x30, 0x82, 0x01, 0x48, 0x06, /*`.H.e......0..H.*/
@@ -1504,7 +1490,7 @@ static unsigned char ef_cardsecurity_dan[] = {
     0x4B, 0x22, 0xD7, 0xB5, 0x10, 0xD7, 0x81, 0x88, 0x07, 0xC8, 0x95, 0x96, 0xBD, 0x34, 0xD8, 0xF9, /*K"...........4..*/
     0xBB, 0x4C, 0x05, 0x27,                                                                         /*.L.'*/
 };
-static unsigned char csca_germany_013_self_signed_cer[] = {
+static char csca_germany_013_self_signed_cer[] = {
    0x30, 0x82, 0x03, 0x7f, 0x30, 0x82, 0x03, 0x24, 0xa0, 0x03, 0x02, 0x01, 0x02, 0x02, 0x02, 0x01,  /* 0...0..$........ */
    0x1d, 0x30, 0x0c, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x04, 0x03, 0x02, 0x05, 0x00, 0x30,  /* .0...*.H.=.....0 */
    0x4f, 0x31, 0x0b, 0x30, 0x09, 0x06, 0x03, 0x55, 0x04, 0x06, 0x13, 0x02, 0x44, 0x45, 0x31, 0x0d,  /* O1.0...U....DE1. */
@@ -3273,7 +3259,7 @@ static_eac_test(struct eac_worked_example tc)
     /* We need to chose one of the supported CA keys specified in the EF.CardAccess
      * BEFORE Terminal Authentication. Therefore, we need to initialize the CA
      * context before TA. */
-    parsed_ca_picc_pub_key = CA_get_pubkey(picc_ctx, tc.ef_cardsecurity.data,
+    parsed_ca_picc_pub_key = CA_get_pubkey(picc_ctx, (unsigned char *) tc.ef_cardsecurity.data,
             tc.ef_cardsecurity.length);
     CHECK(1, buf_eq_buf(parsed_ca_picc_pub_key, &tc.ca_picc_pub_key)
             && EAC_CTX_init_ca(pcd_ctx, tc.ca_info_oid, tc.ca_curve,
@@ -3484,12 +3470,12 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
     EAC_CTX *ctx = NULL;
 
     ctx = EAC_CTX_new();
-    CHECK(1, ctx && EAC_CTX_init_ef_cardaccess(tc.ef_cardaccess.data,
+    CHECK(1, ctx && EAC_CTX_init_ef_cardaccess((unsigned char *) tc.ef_cardaccess.data,
                 tc.ef_cardaccess.length, ctx) && ctx->ca_ctx,
             "Parsed EF.CardAccess");
 
 
-    p = tc.csca.data;
+    p = (unsigned char *) tc.csca.data;
     d2i_X509(&csca_cert, &p, tc.csca.length);
 
     /* Initialize the trust store */
@@ -3502,7 +3488,7 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
     ctx->ca_ctx->flags = 0;
     ctx->ca_ctx->lookup_csca_cert = lookup_csca_cert;
 
-    pubkey = CA_get_pubkey(ctx, tc.ef_cardsecurity.data, tc.ef_cardsecurity.length);
+    pubkey = CA_get_pubkey(ctx, (unsigned char *) tc.ef_cardsecurity.data, tc.ef_cardsecurity.length);
     CHECK(1, pubkey, "Parsed EF.CardSecurity");
 
     failed = 0;
@@ -3518,14 +3504,14 @@ err:
 
 /* Try to parse an EF.CardAccess structure and extract the content */
 static int
-test_ef_cardaccess_parsing(const struct ef_cardaccess tc)
+test_ef_cardaccess_parsing(const BUF_MEM tc_ef_cardaccess )
 {
     int failed = 1;
     EAC_CTX *ctx = NULL;
 
     ctx = EAC_CTX_new();
-    CHECK(1, ctx && EAC_CTX_init_ef_cardaccess(tc.ef_cardaccess,
-                tc.ef_cardaccess_len, ctx)
+    CHECK(1, ctx && EAC_CTX_init_ef_cardaccess((unsigned char *) tc_ef_cardaccess.data,
+                tc_ef_cardaccess.length, ctx)
             && ctx->pace_ctx && ctx->pace_ctx->static_key &&
             ctx->pace_ctx->ka_ctx && ctx->pace_ctx->ka_ctx->md
             && ctx->pace_ctx->ka_ctx->cipher &&

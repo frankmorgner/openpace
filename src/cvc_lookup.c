@@ -25,9 +25,11 @@
  */
 
 #include "eac_err.h"
+#include "eac_util.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
 #include <openssl/bio.h>
+#include <openssl/err.h>
 
 static int CVC_find_chr_in_file(const unsigned char *chr, size_t chr_len,
         const char *file, CVC_CERT **cv_certificate)
@@ -102,7 +104,6 @@ static const CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_l
         }
     }
 
-err:
     return cvc;
 }
 
