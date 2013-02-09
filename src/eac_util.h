@@ -237,8 +237,6 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data);
 
 EVP_PKEY *
 EVP_PKEY_dup(EVP_PKEY *key);
-void
-BUF_MEM_clear_free(BUF_MEM *b);
 int
 EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
            const unsigned char *pubkey, size_t pubkey_len,

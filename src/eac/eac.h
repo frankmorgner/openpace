@@ -695,6 +695,17 @@ int EAC_CTX_print_private(BIO *out, const EAC_CTX *ctx, int indent);
  */
 int BUF_MEM_print(BIO *out, const BUF_MEM *buf, int indent);
 
+/**
+ * @brief Frees and wipes a buffer
+ *
+ * Calls \c OPENSSL_cleanse() and \c BUF_MEM_free().
+ *
+ * @param[in] b Where to print the data
+ *
+ */
+void
+BUF_MEM_clear_free(BUF_MEM *b);
+
 /** @} ***********************************************************************/
 #ifdef __cplusplus
 }
