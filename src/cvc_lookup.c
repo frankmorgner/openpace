@@ -97,7 +97,7 @@ static const CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_l
 {
     static CVC_CERT *cvc = NULL;
 
-    if (!CVC_find_chr_in_directory(chr, chr_len, ETC_EAC, &cvc)) {
+    if (!CVC_find_chr_in_directory(chr, chr_len, CVCDIR, &cvc)) {
         if (cvc) {
             CVC_CERT_free(cvc);
             cvc = NULL;

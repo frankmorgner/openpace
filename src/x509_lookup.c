@@ -38,7 +38,7 @@ static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
        store = X509_STORE_new();
     check(store, "Failed to create trust store");
 
-    if (!X509_STORE_load_locations(store, NULL, ETC_EAC)) {
+    if (!X509_STORE_load_locations(store, NULL, X509DIR)) {
             log_err("Failed to load trusted certificates");
             X509_STORE_free(store);
             store = NULL;

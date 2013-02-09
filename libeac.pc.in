@@ -2,6 +2,8 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
+cvcdir=@CVCDIR@
+x509dir=@X509DIR@
 
 Name: @PACKAGE_NAME@
 Description: Cryptography library for the Extended Access Control version 2

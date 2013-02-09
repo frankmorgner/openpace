@@ -11,6 +11,8 @@ endif
 do_subst = $(SED) \
 	   -e 's,[@]PKG_REQUIRES[@],$(PKG_REQUIRES),g' \
 	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
+	   -e 's,[@]CVCDIR[@],$(CVCDIR),g' \
+	   -e 's,[@]X509DIR[@],$(X509DIR),g' \
 	   -e 's,[@]VERSION[@],$(VERSION),g' \
 	   -e 's,[@]WS2_32[@],$(WS2_32),g' \
 	   -e 's,[@]exec_prefix[@],$(exec_prefix),g' \
@@ -46,6 +48,10 @@ test-eactest:
 	env LD_LIBRARY_PATH=$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
 		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH}\
 		$(builddir)/src/eactest
+
+install-data-local:
+	$(INSTALL) -d $(CVCDIR)
+	$(INSTALL) -d $(X509DIR)
 
 test-test.py:
 	cp $(builddir)/bindings/python/build/*/_pace.*so $(builddir)/bindings/python

@@ -215,6 +215,24 @@ fi
 AM_CONDITIONAL(JAVA_ENABLED, [test x"$enable_java" = "xyes"])
 
 
+AC_ARG_ENABLE(cvcdir,
+AC_HELP_STRING([--enable-cvcdir=DIR],
+    [directory containing CV certificates (default /etc/eac/cvc)]),
+    [cvcdir="${enableval}"],
+    [cvcdir="${sysconfdir}/eac/cvc"])
+AS_AC_EXPAND(cvcdir,$cvcdir)
+CVCDIR="${cvcdir}"
+AC_SUBST(CVCDIR)
+AC_ARG_ENABLE(x509dir,
+AC_HELP_STRING([--enable-x509dir=DIR],
+    [directory containing X.509 certificates (default /etc/eac/x509)]),
+    [x509dir="${enableval}"],
+    [x509dir="${sysconfdir}/eac/x509"])
+AS_AC_EXPAND(x509dir,$x509dir)
+X509DIR="${x509dir}"
+AC_SUBST(X509DIR)
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h limits.h stdint.h string.h])
 
@@ -245,9 +263,9 @@ cat << EOF
 
 ${PACKAGE} ${PACKAGE_VERSION} has been configured with following options:
 
-User binaries:         $(eval eval eval echo "${bindir}")
-Libraries:             $(eval eval eval echo "${libdir}")
-Configuration files:   $(eval eval eval echo "${sysconfdir}")
+Libraries:               $(eval eval eval echo "${libdir}")
+CVC directory:           ${CVCDIR}
+X.509 directory:         ${X509DIR}
 
 Build patched OpenSSL:   ${BUILD_OPENSSL}
 Install patched OpenSSL: ${INSTALL_OPENSSL}
