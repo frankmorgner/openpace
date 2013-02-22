@@ -61,7 +61,7 @@ case ${CHOST} in
 	*-linux*)        system="linux";;
 	*-solaris*)      system="solaris";;
 	*-winnt*)        system="winnt";;
-	x86_64-*-mingw*) system="mingw64";;
+	*-w64-mingw*)    system="mingw64";;
 	*mingw*)         system="mingw";;
 	*)               exit 0;;
 esac
