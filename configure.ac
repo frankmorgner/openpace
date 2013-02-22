@@ -106,28 +106,19 @@ else
 fi
 if test "${BUILD_OPENSSL}" = "yes"
 then
-    AC_ARG_VAR([CVS],
-               [absolute path to cvs used for checking out OpenSSL])
-    AC_PATH_PROG([CVS],
-                 [cvs],
-                 [not found])
-    AC_ARG_VAR([PATCH],
-               [absolute path to patch used for patching OpenSSL])
-    AC_PATH_PROG([PATCH],
-                 [patch],
+    AC_ARG_VAR([GIT],
+               [absolute path to git used for checking out OpenSSL])
+    AC_PATH_PROG([GIT],
+                 [git],
                  [not found])
     if test "${enable_openssl_build}" = "no"
     then
         AC_MSG_ERROR([No suitable OpenSSL installation was found])
     else
         AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
-        if test "${PATCH}" = "not found"
+        if test "${GIT}" = "not found"
         then
-            AC_MSG_ERROR([Need patch to build OpenSSL])
-        fi
-        if test "${CVS}" = "not found"
-        then
-            AC_MSG_ERROR([Need cvs to build OpenSSL])
+            AC_MSG_ERROR([Need git to build OpenSSL])
         fi
     fi
 
@@ -282,8 +273,7 @@ Libraries:               ${LIBS}
 CRYPTO_CFLAGS:           ${CRYPTO_CFLAGS}
 CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
-PATCH:                   ${PATCH}
-CVS:                     ${CVS}
+GIT:                     ${GIT}
 OPENSSL_CONFIGURE_FLAGS: ${OPENSSL_CONFIGURE_FLAGS}
 
 SWIG:                    ${SWIG}

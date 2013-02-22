@@ -57,7 +57,7 @@ OPENSSL_LIBS_PRIVATE  = `grep Libs.private $(OPENSSL_DIR)/libcrypto.pc | $(SED) 
 
 # Fetch OpenSSL
 $(OPENSSL_CONFIG):
-	CVS_RSH=ssh $(CVS) -d anonymous@cvs.openssl.org:/openssl-cvs co -rOpenSSL_1_0_2-stable `basename $(OPENSSL_DIR)`
+	$(GIT) clone git://openssl.net/openssl -b OpenSSL_1_0_2-stable $(OPENSSL_DIR)
 
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
 $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
@@ -68,7 +68,8 @@ $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
 .PHONY: patch_openssl
 patch_openssl: $(OPENSSL_MAKEFILE)
 	grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 $(OPENSSL_OBJ_MAC) > /dev/null \
-		|| ($(PATCH) --directory=$(OPENSSL_DIR) -p1 < $(abs_top_srcdir)/oids.patch \
+		|| (cd $(OPENSSL_DIR) \
+			&& $(GIT) apply $(abs_top_srcdir)/oids.patch \
 			&& $(MAKE) -C $(OPENSSL_DIR) update)
 
 # Build OpenSSL
