@@ -70,7 +70,7 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 	grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 $(OPENSSL_OBJ_MAC) > /dev/null \
 		|| (cd $(OPENSSL_DIR) \
 			&& $(GIT) apply $(abs_top_srcdir)/oids.patch \
-			&& $(MAKE) -C $(OPENSSL_DIR) update)
+			&& $(MAKE) stacks util/libeay.num util/ssleay.num crypto/objects/obj_dat.h crypto/objects/obj_xref.h apps/openssl-vms.cnf crypto/bn/bn_prime.h TABLE depend -C $(OPENSSL_DIR))
 
 # Build OpenSSL
 $(OPENSSL_LIBCRYPTO_A):
