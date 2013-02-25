@@ -31,9 +31,8 @@ except ImportError:
     sys.exit(1)
 
 def hash_dir(dir):
-    os.chdir(dir)
-    #TODO: Deal with existing symlinks
     files = os.listdir(dir)
+    os.chdir(dir)
     for file in files:
         try:
             cvc = CVC(open(file).read())
