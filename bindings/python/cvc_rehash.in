@@ -36,13 +36,13 @@ def hash_dir(dir):
     files = os.listdir(dir)
     for file in files:
         try:
-            cvc = CVC(open(dir + file).read())
+            cvc = CVC(open(file).read())
             if platform.system() == 'Windows':
-                print "Copying " + dir + cvc.get_chr() + " to " + file
-                shutil.copyfile(dir + file, cvc.get_chr())
+                print "Copying " + file + " to " + cvc.get_chr()
+                shutil.copyfile(file, cvc.get_chr())
             else:
-                print "Linking " + dir + cvc.get_chr() + " to " + file
-                os.symlink(dir + file, cvc.get_chr())
+                print "Linking " + cvc.get_chr() + " to " + file
+                os.symlink(file, cvc.get_chr())
         except Exception:
             pass
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     elif os.environ.has_key('CVC_CERT_DIR'):
         dirlist = os.environ['CVC_CERT_DIR'].split(':')
     else:
-        dirlist = [os.path.join(dir, '')]
+        dirlist = [dir]
 
     for d in dirlist:
         if os.path.isdir(d) and os.access(d, os.W_OK):
