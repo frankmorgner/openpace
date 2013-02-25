@@ -288,3 +288,6 @@ EAC_reset_ssc(const EAC_CTX *ctx);
 
 int
 EAC_set_ssc(const EAC_CTX *ctx, unsigned long ssc);
+
+extern char *cvc_default_dir;
+extern char *x509_default_dir;

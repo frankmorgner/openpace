@@ -92,12 +92,13 @@ err:
     return ok;
 }
 
+char *cvc_default_dir = CVCDIR;
 /* FIXME CVC_default_lookup is not thread safe */
 static const CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_len)
 {
     static CVC_CERT *cvc = NULL;
 
-    if (!CVC_find_chr_in_directory(chr, chr_len, CVCDIR, &cvc)) {
+    if (!CVC_find_chr_in_directory(chr, chr_len, cvc_default_dir, &cvc)) {
         if (cvc) {
             CVC_CERT_free(cvc);
             cvc = NULL;

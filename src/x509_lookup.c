@@ -30,6 +30,7 @@
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 
+char *x509_default_dir = X509DIR;
 static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
 {
     static X509_STORE *store = NULL;
@@ -38,7 +39,7 @@ static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
        store = X509_STORE_new();
     check(store, "Failed to create trust store");
 
-    if (!X509_STORE_load_locations(store, NULL, X509DIR)) {
+    if (!X509_STORE_load_locations(store, NULL, x509_default_dir)) {
             log_err("Failed to load trusted certificates");
             X509_STORE_free(store);
             store = NULL;
