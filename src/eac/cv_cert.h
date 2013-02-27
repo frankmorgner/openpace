@@ -119,6 +119,10 @@ typedef struct cvc_discretionary_data_template_seq_st {
      *
      * @see TR-03110 C.3. */
     CVC_DISCRETIONARY_DATA_TEMPLATE *template2;
+    /** @brief Contains a certificate extension
+     *
+     * @see TR-03110 C.3. */
+    CVC_DISCRETIONARY_DATA_TEMPLATE *template3;
 } CVC_DISCRETIONARY_DATA_TEMPLATES;
 DECLARE_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATES)
 

@@ -191,6 +191,7 @@ IMPLEMENT_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATE)
 ASN1_SEQUENCE(CVC_DISCRETIONARY_DATA_TEMPLATES) = {
     ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATES, template1, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x13),
     ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATES, template2, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x13),
+    ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATES, template3, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x13),
 } ASN1_SEQUENCE_END(CVC_DISCRETIONARY_DATA_TEMPLATES)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATES)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_DISCRETIONARY_DATA_TEMPLATES)
@@ -948,6 +949,10 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
                 && OBJ_obj2nid(cv->body->certificate_extensions->template2->type) ==
                         NID_id_description)
             hash_check = cv->body->certificate_extensions->template2->discretionary_data1;
+        else if (cv->body->certificate_extensions->template3
+                && OBJ_obj2nid(cv->body->certificate_extensions->template3->type) ==
+                        NID_id_description)
+            hash_check = cv->body->certificate_extensions->template3->discretionary_data1;
     }
 
     if (hash_check) {
