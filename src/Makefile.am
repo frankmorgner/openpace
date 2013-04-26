@@ -30,7 +30,7 @@ libeac_la_LIBADD  += -lws2_32
 endif
 
 
-noinst_PROGRAMS      = eactest cv_cert_test
+noinst_PROGRAMS      = eactest cvcprint
 
 EAC_LIBS             = libeac.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
@@ -39,9 +39,9 @@ eactest_SOURCES      = eactest.c
 eactest_LDADD        = $(EAC_LIBS)
 eactest_CFLAGS       = $(EAC_CFLAGS)
 
-cv_cert_test_SOURCES = cv_cert_test.c
-cv_cert_test_LDADD   = $(EAC_LIBS)
-cv_cert_test_CFLAGS  = $(EAC_CFLAGS)
+cvcprint_SOURCES = cvcprint.c
+cvcprint_LDADD   = $(EAC_LIBS)
+cvcprint_CFLAGS  = $(EAC_CFLAGS)
 
 
 if BUILD_OPENSSL
