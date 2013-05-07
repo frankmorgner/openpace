@@ -21,9 +21,9 @@
 Object oriented wrapper for the CVC_CHAT structure and related methods from
 OpenPACE
 
-@author: Dominik Oepen
-@date: 04.12.2011
-@license: GPL
+:Author: Dominik Oepen
+:Date: 04.12.2011
+:License: GPL
 """
 
 import pace

@@ -502,8 +502,8 @@ int EAC_CTX_set_csca_lookup_cert(EAC_CTX *ctx, X509_lookup_csca_cert lookup_cvca
 /**
  * @brief Return the default lookup of the country signing CA
  *
- * The default callback looks at /etc/eac/$car.cer for the CVCA
- * certificate, where $car is the card holder reference of the CVCA.
+ * The default callback looks at /etc/eac/$chr for the CVCA
+ * certificate, where $chr is the card holder reference of the CVCA.
  *
  * @return default lookup of the country verifying CA
  */

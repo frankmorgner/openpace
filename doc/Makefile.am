@@ -3,8 +3,9 @@ SUBDIRS = _static
 EXTRA_DIST = Doxyfile.in conf.py.in index.txt.in index.txt protocols.txt protocols.txt Makefile.sphinx
 
 do_subst = $(SED) \
-	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g' \
+	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
+	   -e 's,[@]PACKAGE_TARNAME[@],$(PACKAGE_TARNAME),g' \
 	   -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g'
 
 DOXYGEN_HTML = doxygen/html/index.html

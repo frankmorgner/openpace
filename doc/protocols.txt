@@ -1,29 +1,27 @@
 .. _protocols:
 
+.. |PACE| replace:: :abbr:`PACE (Password Authenticated Connection Establishment)`
+.. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
+.. |CA| replace:: :abbr:`CA (Chip Authentication)`
+.. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
 
 #####################################
 Extended Access Control Specification
 #####################################
 
-OpenPACE implements Extended Access Control version 2 (EAC) defined by the `Federal
-Office for Information Security (BSI)`_ in the
-`Technical Guideline TR-03110`_.
-It is designed to be compatible and submitted to be standardized with `ICAO
-Machine Readable Travel Documents Doc 9303`_.  EAC consists of three
-subsequent steps:
+Extended Access Control version 2 (EAC) defined by the `Federal Office for
+Information Security (BSI)`_ in the `Technical Guideline TR-03110`_.  It is
+designed to be compatible and submitted to be standardized with `ICAO Machine
+Readable Travel Documents Doc 9303`_.  |EAC| consists of three subsequent
+steps:
 
 1. `Password Authenticated Connection Establishment`_ (PACE)
 2. `Terminal Authentication`_ (TA)
 3. `Chip Authentication`_ (CA)
 
-OpenPACE offers functionality for PACE, TA (version 2) and CA (version 2) as
-well as for CV certificates, which were standardized for usage with chip cards.
-
-The public API to OpenPACE is accessible through the files eac.h, pace.h, ta.h,
-ca.h and cv_cert.h. With Terminal or PCD and MRTD chip or PICC we denote the
-two parties involved in EAC. This implementation follows the nomenclature
-used in BSI TR-03110. The following description of PACE, TA and CA is also
-cited from this specification (Version 2.05).
+The following description of |PACE|, |TA| and |CA| is cited from BSI TR-03110
+(Version 2.05). With Terminal or PCD and MRTD chip or PICC we denote the two
+parties involved in |EAC|.
 
 
 ***********************************************

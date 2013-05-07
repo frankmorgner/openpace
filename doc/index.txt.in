@@ -1,51 +1,102 @@
 .. highlight:: sh
 
+.. |PACE| replace:: :abbr:`PACE (Password Authenticated Connection Establishment)`
+.. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
+.. |CA| replace:: :abbr:`CA (Chip Authentication)`
+.. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
+.. |CVCA| replace:: :abbr:`CSCA (Country Verifying Certificate Authority)`
+.. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
 
 ###############################################################################
 Welcome to @PACKAGE_NAME@'s documentation!
 ###############################################################################
 
-.. include:: ../README
+:Authors:
+    - `Frank Morgner <morgner@informatik.hu-berlin.de>`_
+    - `Dominik Oepen <oepen@informatik.hu-berlin.de>`_
+:Tested Platforms:
+    - Windows
+    - Linux (Debian, Ubuntu, SUSE, OpenMoko)
+    - Mac OS
+    - Solaris
+:Potential Platforms:
+    Everything supported by OpenSSL
 
-If you want to lear more about the EAC protocols, you can find a nice
-:ref:`summary <protocols>`.
+OpenPACE is a cryptographic library which provides support for the main
+protocols of the Extended Access Control (EAC) version 2 specified in `BSI
+TR-03110`_. OpenPACE comprises support for the following protocols:
+
+:Password Authenticated Connection Establishment (PACE):
+    Establish a secure channel with a strong key between two parties that only
+    share a weak secret.
+:Terminal Authentication (TA):
+    Verify/prove the terminal's certificate (or rather certificate chain) and
+    secret key.
+:Chip Authentication (CA):
+    Establish a secure channel based on the chip's static key pair proving its
+    authenticy.
+
+Furthermore, OpenPACE also supports Card Verifiable Certificates (CV
+Certificates) as well as easy to use wrappers for using the established secure
+channels.
+
+The handlers for looking up trust anchors during |TA| and |CA| (i.e. the |CVCA|
+and the |CSCA| certificates) can be customized. By default, the appropriate
+certificates will be looked up in the file system.
+
+OpenPACE supports all variants of |PACE| (DH/ECDH, GM/IM), |TA|
+(RSASSA-PKCS1-v1_5/RSASSA-PSS/ECDSA), |CA| (DH/ECDH) and all standardized
+domain parameters (GFP/ECP).
+
+.. note::
+    OpenPACE only implements the cryptographic protocols of the |EAC|. If you
+    actually want to exchange data with a smart card, you need to take care of
+    formatting and sending the data in the form of APDUs. If this is what
+    you're trying to do, you should have a look at the :command:`npa-tool` of
+    the `nPA Smart Card Library`_.
 
 
 *******************************************************************************
 Download @PACKAGE_NAME@
 *******************************************************************************
 
-You can find the latest release of @PACKAGE_NAME@ `here
+You can find the latest release of @PACKAGE_NAME@ on `Sourceforge
 <http://sourceforge.net/projects/openpace/>`_.
 
 Alternatively, you can clone our git repository::
 
     git clone git://openpace.git.sourceforge.net/gitroot/openpace/openpace
 
-.. include install
-
 
 *******************************************************************************
 Install @PACKAGE_NAME@
 *******************************************************************************
 
-@PACKAGE_NAME@ uses GNU autotools and therefore can be easily built using the
-following commands::
+@PACKAGE_NAME@ uses the GNU Build System to compile and install. If you are
+unfamiliar with it, please have a look at :file:`INSTALL`. If you can not find
+it, you are probably working bleeding edge in the repository.  Run the
+following command in :file:`@PACKAGE_TARNAME@` to get the missing standard
+auxiliary files::
+    
+    autoreconf --verbose --install
 
-    autoreconf -si
+To configure (:command:`configure --help` lists possible options), build and
+install @PACKAGE_NAME@ now do the following::
+
     ./configure
     make
     make install
 
-@PACKAGE_NAME@ depends on the `OpenSSL`_ library. Since PACE
-uses CMAC and the Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is required.
-Furthermore, @PACKAGE_NAME@ requires additional Object Identifiers (OIDs) and
-therefore needs a patched version of OpenSSL. Due to these special
+@PACKAGE_NAME@ depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
+Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is
+required.  Furthermore, @PACKAGE_NAME@ requires additional Object Identifiers
+and therefore needs a patched version of OpenSSL. Due to these special
 requirements, the make command downloads a recent snapshot of OpenSSL, applies
-the necessary patches and builds OpenSSL. The @PACKAGE_NAME@ library is then
-statically linked against this local version of OpenSSL. This process can be
-customized by a number of parameters for the ``configure`` command. See
-``./configure --help`` for details.
+the necessary patch and builds OpenSSL if needed. @PACKAGE_NAME@ is then
+statically linked against this local version of OpenSSL. Forcing the build and
+download process can be done with :option:`--enable-openssl-build`.  To install
+and link against a shared version of the patched openssl libraries use
+:option:`--enable-openssl-install`.
 
 
 *******************************************************************************
@@ -62,8 +113,8 @@ Python or Java, you can use our :ref:`SWIG bindings <bindings>`.
 Where to get help
 *******************************************************************************
 
-If you find a bug or want to add a feature to @PACKAGE_NAME@, please use our `trackers
-<@PACKAGE_BUGREPORT@>`_ for contacting us.
+Do you have questions, suggestions or contributions? Feedback of any kind is
+more than welcome! Please use our `project trackers <@PACKAGE_BUGREPORT@>`_.
 
 
 *******************************************************************************
@@ -83,4 +134,6 @@ References
 
 .. target-notes::
 
+.. _`BSI TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
+.. _`nPA Smart Card Library`: http://vsmartcard.sourceforge.net/npa/README.html
 .. _`OpenSSL`: http://openssl.org
