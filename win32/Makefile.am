@@ -26,7 +26,7 @@ $(LIBEAC):
 		--prefix=/ \
 		--host=$(MINGW) --target=$(MINGW) \
 		--enable-openssl-install \
-		OPENSSL_CONFIGURE_FLAGS="shared no-asm --cross-compile-prefix=$(MINGW)- --prefix=/ `$(abs_srcdir)/gentoo.config-1.0.0 $(MINGW)`"
+		OPENSSL_CONFIGURE_FLAGS="shared no-asm --cross-compile-prefix=$(MINGW)- --prefix=/ `$(abs_srcdir)/gentoo.config-1.0.0 $(MINGW)` -I$(MINGW_DIR)/include -L$(MINGW_DIR)/lib"
 		CFLAGS=-I$(MINGW_DIR)/include \
 		LDFLAGS=-L$(MINGW_DIR)/lib
 	$(MAKE) -C $(top_builddir) install DESTDIR=$(WIN32_DIR)
