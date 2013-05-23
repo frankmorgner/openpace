@@ -50,8 +50,8 @@ test-eactest:
 		$(builddir)/src/eactest
 
 install-data-local:
-	$(INSTALL) -d $(CVCDIR)
-	$(INSTALL) -d $(X509DIR)
+	$(INSTALL) -d $(DESTDIR)$(CVCDIR)
+	$(INSTALL) -d $(DESTDIR)$(X509DIR)
 
 test-test.py:
 	cp $(builddir)/bindings/python/build/*/_pace.*so $(builddir)/bindings/python
