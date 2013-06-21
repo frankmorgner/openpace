@@ -41,10 +41,10 @@ cvc_rehash: cvc_rehash.in
 	$(do_subst) < $(srcdir)/cvc_rehash.in > cvc_rehash
 
 $(BUILT_SOURCES): $(INTERFACES) setup.py
-	python setup.py build_ext
+	export CC="$(CC)"; python setup.py build_ext --swig=$(SWIG)
 
 install-exec-local:
-	python setup.py install --prefix=$(prefix) --exec-prefix=$(exec_prefix) --record installed_files.txt
+	export CC="$(CC)"; python setup.py install --prefix=$(prefix) --exec-prefix=$(exec_prefix) --record installed_files.txt
 
 uninstall-local:
 	cat installed_files.txt | xargs rm -rf
