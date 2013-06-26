@@ -8,7 +8,7 @@
 .. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
 
 ###############################################################################
-Welcome to @PACKAGE_NAME@'s documentation!
+Welcome to OpenPACE's documentation!
 ###############################################################################
 
 .. sidebar:: Summary
@@ -60,10 +60,10 @@ domain parameters (GFP/ECP).
 
 
 *******************************************************************************
-Download @PACKAGE_NAME@
+Download OpenPACE
 *******************************************************************************
 
-You can find the latest release of @PACKAGE_NAME@ on `Sourceforge
+You can find the latest release of OpenPACE on `Sourceforge
 <http://sourceforge.net/projects/openpace/>`_.
 
 Alternatively, you can clone our git repository::
@@ -72,30 +72,30 @@ Alternatively, you can clone our git repository::
 
 
 *******************************************************************************
-Install @PACKAGE_NAME@
+Install OpenPACE
 *******************************************************************************
 
-@PACKAGE_NAME@ uses the GNU Build System to compile and install. If you are
+OpenPACE uses the GNU Build System to compile and install. If you are
 unfamiliar with it, please have a look at :file:`INSTALL`. If you can not find
 it, you are probably working bleeding edge in the repository.  Run the
-following command in :file:`@PACKAGE_TARNAME@` to get the missing standard
+following command in :file:`openpace` to get the missing standard
 auxiliary files::
     
     autoreconf --verbose --install
 
 To configure (:command:`configure --help` lists possible options), build and
-install @PACKAGE_NAME@ now do the following::
+install OpenPACE now do the following::
 
     ./configure
     make
     make install
 
-@PACKAGE_NAME@ depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
+OpenPACE depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
 Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is
-required.  Furthermore, @PACKAGE_NAME@ requires additional Object Identifiers
+required.  Furthermore, OpenPACE requires additional Object Identifiers
 and therefore needs a patched version of OpenSSL. Due to these special
 requirements, the make command downloads a recent snapshot of OpenSSL, applies
-the necessary patch and builds OpenSSL if needed. @PACKAGE_NAME@ is then
+the necessary patch and builds OpenSSL if needed. OpenPACE is then
 statically linked against this local version of OpenSSL. Forcing the build and
 download process can be done with :option:`--enable-openssl-build`.  To install
 and link against a shared version of the patched openssl libraries use
@@ -103,10 +103,10 @@ and link against a shared version of the patched openssl libraries use
 
 
 *******************************************************************************
-How to use @PACKAGE_NAME@
+How to use OpenPACE
 *******************************************************************************
 
-If you want to know how to use @PACKAGE_NAME@ from C/C++, have a look at our
+If you want to know how to use OpenPACE from C/C++, have a look at our
 `API documentation <../../_static/doxygen/modules.html>`_.
 If you want to use other programming languages, for example
 Python or Java, you can use our :ref:`SWIG bindings <bindings>`.
@@ -117,7 +117,7 @@ Where to get help
 *******************************************************************************
 
 Do you have questions, suggestions or contributions? Feedback of any kind is
-more than welcome! Please use our `project trackers <@PACKAGE_BUGREPORT@>`_.
+more than welcome! Please use our `project trackers <http://sourceforge.net/projects/openpace/support>`_.
 
 
 *******************************************************************************
