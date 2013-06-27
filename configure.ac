@@ -224,6 +224,10 @@ X509DIR="${x509dir}"
 AC_SUBST(X509DIR)
 
 
+PACKAGE_SUMMARY="Cryptographic library for EAC version 2"
+AC_SUBST(PACKAGE_SUMMARY)
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h limits.h stdint.h string.h])
 

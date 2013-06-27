@@ -13,7 +13,7 @@ Welcome to @PACKAGE_NAME@'s documentation!
 
 .. sidebar:: Summary
 
-    Cryptographic library for EAC version 2
+    @PACKAGE_SUMMARY@
 
     :Authors:
         - `Frank Morgner <morgner@informatik.hu-berlin.de>`_

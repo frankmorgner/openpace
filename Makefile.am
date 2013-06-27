@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src win32 bindings doc
 
 EXTRA_DIST = libeac.pc.in bootstrap oids.patch
-DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-java --enable-openssl-install
+DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-openssl-install
 
 if WIN32
 WS2_32 = -lws2_32
@@ -11,6 +11,7 @@ endif
 do_subst = $(SED) \
 	   -e 's,[@]PKG_REQUIRES[@],$(PKG_REQUIRES),g' \
 	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
+	   -e 's,[@]PACKAGE_SUMMARY[@],$(PACKAGE_SUMMARY),g' \
 	   -e 's,[@]CVCDIR[@],$(CVCDIR),g' \
 	   -e 's,[@]X509DIR[@],$(X509DIR),g' \
 	   -e 's,[@]VERSION[@],$(VERSION),g' \

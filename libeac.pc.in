@@ -6,7 +6,7 @@ cvcdir=@CVCDIR@
 x509dir=@X509DIR@
 
 Name: @PACKAGE_NAME@
-Description: Cryptography library for the Extended Access Control version 2
+Description: @PACKAGE_SUMMARY@
 Version: @VERSION@
 Requires: @PKG_REQUIRES@
 Libs: -L${libdir} -leac @WS2_32@
