@@ -46,8 +46,11 @@ check-local: test-eactest
 endif
 
 test-eactest:
-	env LD_LIBRARY_PATH=$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
-		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH}\
+	env \
+		LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		SHLIB_PATH=$${SHLIB_PATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		LIBPATH=$${LIBPATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
 		$(builddir)/src/eactest
 
 install-data-local:
@@ -56,8 +59,11 @@ install-data-local:
 
 test-test.py:
 	cp $(builddir)/bindings/python/build/*/_pace.*so $(builddir)/bindings/python
-	env LD_LIBRARY_PATH=$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
-		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH}\
+	env \
+		LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		SHLIB_PATH=$${SHLIB_PATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
+		LIBPATH=$${LIBPATH}:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
 		PYTHONPATH=$(abs_builddir)/bindings/python \
 		$(PYTHON) $(srcdir)/bindings/python/test.py \
 		|| (rm $(builddir)/bindings/python/_pace.*so && false)
