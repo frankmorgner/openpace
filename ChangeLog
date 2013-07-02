@@ -1,0 +1,1477 @@
+2013-07-02  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: only generate ChangeLog when .git/.svn available
+
+2013-07-02  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: fixed reference to LD_LIBRARY_PATH et al
+
+2013-06-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac, doc/Makefile.am, doc/index.txt.in,
+	libeac.pc.in: use the same package summary in mulitple places
+
+2013-06-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in: include a summary
+
+2013-06-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/Makefile.am: use customized SWIG and CC
+
+2013-06-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: added rules for auto generated ChangeLog
+
+2013-05-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* oids.patch: only patch openssl with the minimum for oids
+
+2013-05-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* win32/Makefile.am: include mingw headers/libs for openssl build
+
+2013-05-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: fixed install directory of configuration
+
+2013-05-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README, bindings/python/chat.py, doc/Makefile.am,
+	doc/bindings.txt, doc/conf.py.in, doc/index.txt.in,
+	doc/protocols.txt, doc/python_api.txt, src/eac/eac.h: working on
+	documentation
+
+2013-04-26  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am, src/cv_cert_test.c, src/cvcprint.c: created
+	cvcprint from cv_cert_test
+
+2013-02-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h: additional data template for
+	auxiliary data
+
+2013-02-26  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/cvc_rehash.in: fixed relative directory names
+
+2013-02-26  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/eac.i, src/cvc_lookup.c, src/eac/eac.h,
+	src/x509_lookup.c: added cvc_default_dir and x509_default_dir allows modification of where to look up certificates by default
+
+2013-02-26  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/cvc_rehash.in: avoid concatenation of os paths
+
+2013-02-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: avoid `make update` in openssl ... since the depending `make errors` throws an error.
+
+2013-02-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac, src/Makefile.am: fetching from OpenSSL's git instead
+	of cvs
+
+2013-02-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* win32/gentoo.config-1.0.0: recognize i686-w64-mingw32
+
+2013-02-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/Doxyfile.in, doc/Makefile.am, src/eac/ca.h,
+	src/eac/cv_cert.h, src/eac/eac.h, src/eac/pace.h, src/eac/ri.h,
+	src/eac/ta.h: updated documentation
+
+2013-02-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* win32/Makefile.am: updated windows build
+
+2013-02-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i, src/ca_lib.c, src/eactest.c: activated passive
+	authentication by default
+
+2013-02-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac, libeac.pc.in, m4/as-ac-expand.m4,
+	src/Makefile.am, src/cvc_lookup.c, src/x509_lookup.c: let the user
+	decide about directories for certificates adds cvcdir and x509dir to libeac.pc
+
+2013-02-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/ca_lib.c, src/cv_cert.c, src/cvc_lookup.c, src/eac.c,
+	src/eac_asn1.c, src/eac_ca.c, src/eac_dh.c, src/eac_ecdh.c,
+	src/eac_err.h, src/eac_kdf.c, src/eac_lib.c, src/eac_util.c,
+	src/eactest.c, src/pace.c, src/pace_lib.c, src/pace_mappings.c,
+	src/ri.c, src/ri_lib.c, src/ta.c, src/ta_lib.c, src/x509_lookup.c: 
+	fixed compiler warnings
+
+2013-02-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac/eac.h, src/eac_util.h: exporting BUF_MEM_clear_free()
+
+2013-01-25  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_lib.c: check for null pointer
+
+2013-01-25  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c: printing commCertificates
+
+2013-01-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/Doxyfile.in, doc/Makefile.am, doc/_static/doxygen,
+	doc/bindings.txt, doc/conf.py.in, doc/index.txt.in,
+	doc/protocols.txt, src/eac/ca.h, src/eac/eac.h, src/eac/pace.h,
+	src/eac/ta.h: working on documentation
+
+2013-01-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/Makefile.am, doc/bindings.rst, doc/bindings.txt,
+	doc/conf.py.in, doc/index.rst.in, doc/index.txt.in,
+	doc/protocols.rst, doc/protocols.txt, doc/python_api.rst,
+	doc/python_api.txt: respect sphinx style guide to some extent see
+
+	http://documentation-style-guide-sphinx.readthedocs.org/en/latest/style-guide.html
+
+2013-01-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/test.py, bindings/util.i, src/eac/eac.h,
+	src/eac_asn1.c, src/eac_lib.c, src/eactest.c: added wrappers for
+	openssl initialization/cleanup
+
+2013-01-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bindings/java/Makefile.am,
+	bindings/python/Makefile.am, bindings/python/test.py,
+	bindings/util.i, configure.ac, src/Makefile.am: fix some parts of
+	distcheck - adds new files to distribution - renames OPENSSL_CONFIG_EXTRA to OPENSSL_CONFIGURE_FLAGS - fixes linking against static libcrypt.a - fixes running test.py in distcheck by using
+	--enable-openssl-install missing uninstallation of OpenSSL currently causes distcheck to fail
+
+2013-01-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README, configure.ac, doc/Makefile.am, doc/bindings.rst,
+	doc/bindings/Makefile.am, doc/bindings/README.rst,
+	doc/bindings/python_api.rst, doc/index.rst.in, doc/protocols.rst,
+	doc/python_api.rst: working on documentation
+
+2012-11-29  Dominik <oepen@informatik.hu-berlin.de>
+
+	* configure.ac: Decrease required version of autotools to 2.67
+
+2012-11-28  Dominik <oepen@informatik.hu-berlin.de>
+
+	* bindings/python/test.py: Fix broken test script
+
+2012-11-28  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/cv_cert.c: Get rid of a superfluous temporary variable
+
+2012-11-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c: always return a new EC_KEY object in
+	CVC_get_ec_pubkey
+
+2012-11-27  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: EAC_ec_key_from_asn1 segfaulted if called with
+	bn_ctx=NULL even though this should be a valid invocation.  Solution: Create a local bn_ctx if none is passed via parameters.
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac_ca.c, src/eac_kdf.c, src/misc.c, src/pace.c,
+	src/pace_lib.c, src/ri.c, src/ri_lib.c, src/ta_lib.c: Added some
+	error messages
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/x509_lookup.c: Use OpenSSL routines to load trusted
+	certificates
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* bindings/python/cvc_rehash.in: Add support for Windows (not
+	tested)
+
+2012-11-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/Makefile.am, bindings/python/cvc_rehash.in,
+	tools/cvc_rehash.py: integrated cvc_rehash into automake
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/cvc_lookup.c: Symlinks to CV certs do not have a file
+	extension
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/bindings/README.rst: Document the need to setup PYTHONPATH for
+	the bindings
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* tools/cvc_rehash.py: Set default path for certificates so that it
+	matches the default certificate lookup callback
+
+2012-11-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : commit 562589005d540f22cd25f50e78c55924ca10fe9a Author: Frank
+	Morgner <morgner@informatik.hu-berlin.de> Date:   Thu Nov 22
+	21:56:11 2012 +0100
+
+2012-11-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* tools/cvc_rehash.py: More acurate output
+
+2012-11-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* tools/cvc_rehash.py: Use environment variable CVC_CERT_DIR instead
+	of SSL_CERT_DIR
+
+2012-11-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* tools/cvc_rehash.py: Do some error checking for the import of the
+	python bindings
+
+2012-11-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* tools/cvc_rehash.py: Add license header to cvc_rehash.py
+
+2012-11-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac/ca.h, src/eac/cv_cert.h, src/eac/eac.h, src/eac/pace.h,
+	src/eac/ri.h, src/eac/ta.h: added more documentation - documented the new lookup functions - documented some functions missing parameters - fixed links to missing internal links
+
+2012-11-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bindings/README, bindings/doc/README.rst,
+	configure.ac, doc/Doxyfile, doc/Doxyfile.in, doc/Makefile,
+	doc/Makefile.am, doc/Makefile.sphinx, doc/_static/Makefile.am,
+	doc/bindings, doc/bindings/Makefile.am, doc/bindings/README.rst,
+	doc/bindings/python_api.rst, doc/conf.py, doc/conf.py.in,
+	doc/index.rst, doc/index.rst.in, src/bindings_old/doc/README.rst,
+	src/bindings_old/doc/python_api.rst, src/eac/eac.h, src/eac/ta.h: 
+	fixed generation of documentation - include documentation in distribution tarball - use autotools defines in documentation - fixed location of libraries when generating documentation
+
+2012-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: avoid multiple calls to `make patch_openssl`
+
+2012-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: avoid multiple calls to `make update` for OpenSSL
+
+2012-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: fixed include directories for test.py
+
+2012-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac/eac.h: fixed include of cv_cert.h
+
+2012-11-20  Dominik <oepen@informatik.hu-berlin.de>
+
+	* tools/cvc_rehash.py: Added cvc_rehash the equivalent of c_rehash
+	for CV certificates The script creates symbolic links to CV certificates which have the
+	correct form required by the default callback to load certificates
+	in OpenPACE. The script needs the OpenPACE python bindings to be
+	installed and it only works on Unix systems (because it uses the
+	os.symlink() function).
+
+2012-11-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac, src/Makefile.am, win32/Makefile.am: automatically
+	build OpenSSL when cross compiling
+
+2012-11-12  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am, src/ca_lib.c, src/eac/eac.h, src/x509_lookup.c: 
+	implemented CSCA lookup Default is to look at /etc/etc/"issuer name hash".cer when importing
+	a X.509 certificate
+
+2012-11-11  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_ca.c, src/eac_dh.c, src/eac_ecdh.c, src/eac_kdf.c,
+	src/eac_lib.c, src/eac_print.c, src/eac_util.c, src/eactest.c: use a
+	single license header
+
+2012-11-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert_test.c, src/misc.c, src/pace.c: fixed problems
+	reported by cppcheck, falwfinder, clang
+
+2012-11-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am, src/cv_cert.c, src/cvc_lookup.c,
+	src/eac/cv_cert.h, src/eac/eac.h, src/ta_lib.c: implemented CVCA
+	lookup Default is to look at /etc/etc/"CAR".cvc when importing a cv
+	certificate.
+
+2012-11-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bindings/Makefile.am, bindings/README,
+	bindings/ca.i, bindings/cvc.i, bindings/doc/README.rst,
+	bindings/eac.i, bindings/java/JPace.java,
+	bindings/java/Makefile.am, bindings/pace.i,
+	bindings/python/Makefile.am, bindings/python/chat.py,
+	bindings/python/pace_entity.py, bindings/python/setup.py.in,
+	bindings/python/test.py, bindings/ta.i, bindings/util.i,
+	configure.ac, src/Makefile.am, src/bindings/Makefile.am,
+	src/bindings/README, src/bindings/ca.i, src/bindings/cvc.i,
+	src/bindings/doc/README.rst, src/bindings/eac.i,
+	src/bindings/java/JPace.java, src/bindings/java/Makefile.am,
+	src/bindings/pace.i, src/bindings/python/Makefile.am,
+	src/bindings/python/chat.py, src/bindings/python/pace_entity.py,
+	src/bindings/python/setup.py.in, src/bindings/python/test.py,
+	src/bindings/ta.i, src/bindings/util.i: separated bindings from
+	libeac source files
+
+2012-11-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_lib.c, src/ta_lib.c, src/ta_lib.h: separated trust anchor
+	import from import of certificate chain
+
+2012-11-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c: use is_chr to check CHR/CAR
+
+2012-11-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_util.c, src/eac_util.h: implemented is_chr
+
+2012-11-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/eac.i, src/eac/eac.h, src/eac_lib.c, src/eactest.c: 
+	don't ship CVCA certificates in the source code TODO implement a callback function to lookup the CVCA certificate
+	when importing a certificate
+
+2012-11-09  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eactest.c: Fixed a memory leak
+
+2012-11-01  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i: Remove dead code
+
+2012-10-31  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac/eac.h, src/eac_ca.c, src/eactest.c: return a X509_Store in
+	lookup_csca_cert lookup_csca_cert now allows both On-Demand-Lookup and
+	One-Time-Initialisation of the CSCA-X509_Store.
+
+2012-10-31  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: activated signature check of EF.CardSecurity previous failure of the signature check was caused by a missing
+	initialisation OpenSSL's NIDs
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: checking signature in test for EF.CardSecurity currently not working and disabled
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/ca_lib.c: initialize lookup_csca_cert in CA_CTX_new
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_ca.c: check lookup_csca_cert in CA_passive_authentication
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: always delete temporary _pace.so for test-test.py
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i, src/bindings/util.i: fixed some compiler
+	warnings
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i: fixed using input cert for
+	cvc_get_expiration_date
+
+2012-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i: fixed using input cert for
+	cvc_get_effective_date
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/python/test.py: Adjusted test script to API change
+	for CA_get_pubkey
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/python/test.py: Be a little more compatible to
+	python3
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* Makefile.am: Handle .so files that conform to the PEP 3149
+	correctly
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac/ca.h, src/eac_ca.c: Add function to disable passive
+	authentication
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac_ca.c: Dont perform passive authentication if no EAC_CTX is
+	given
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/ca.i, src/ca_lib.c, src/eac/ca.h, src/eac/eac.h,
+	src/eac_ca.c, src/eactest.c: Integrate passive authentication into
+	CA_get_pubkey CA_get_pubkey now calls CA_passive_authentication. Passive
+	authentication can be disabled via a flag in the CA_CTX. It's
+	currently disabled by default.
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac/ta.h: Add a little bit of documentation for
+	TA_disable_checks
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac_ca.c: Better logging
+
+2012-10-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac/eac.h, src/eac_ca.c: Add a callback function to lookup the
+	CSCA certificate Added the callback lookup_csca_cert to CA_CTX. This callback is used
+	during passive authentication to retrieve the correct CSCA cert to a
+	given DS cert. The CSCA certificate is identified via the hash of
+	its subjectName.
+
+2012-10-14  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac_ca.c: Added CA_passive_authentication First version of a passive authentication function. Can only be used
+	with one CSCA certificate. Does not support link certificates. Does
+	not check the validity period of the certificates.
+
+2012-10-11  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: added note about fixed copy/paste errors in eac
+	worked examples
+
+2012-10-09  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i, src/bindings/python/chat.py,
+	src/bindings/python/test.py: Added getter method for CV certificates
+	to the bindings
+
+2012-10-09  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i, src/cv_cert.c, src/cv_cert_test.c,
+	src/eac/cv_cert.h, src/eac_util.c, src/eac_util.h, src/eactest.c,
+	src/pace_lib.c: Add getters for most of the members of the CVC_CERT
+	structure.  These getters are mainly implemented in order to be able to provide
+	nicer bindings for higher level languages. They try to hide the
+	underlying C structure and the data types contained in it.  I also started renameing functions in order to provide a more
+	consistent interface. All public functions should be converted to
+	begin with the prefix "CVC_".
+
+2012-10-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/python/test.py: fixed import of old certificates
+
+2012-10-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i, src/bindings/python/chat.py,
+	src/eac/cv_cert.h: fixd CHAT.__del__ in using CV_CHAT_dup
+
+2012-10-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: deleting openssl only on maintainerclean
+
+2012-10-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i, src/bindings/python/chat.py: added proper
+	__str__ to CVC object
+
+2012-10-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/python/chat.py: fixed CVC.__str__
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/python/chat.py, src/bindings/python/test.py: Started
+	to work on a better python abstraction for CV certificates. Realized
+	that the CHAT abstraction was really buggy and tried to fix these
+	bugs to.
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/cvc.i: Add wrapper for i2d_CVC_CHAT in order to be
+	able to convert a CHAT to its ASN.1 representation
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/python/test.py: Fixed formating of test data.
+	Unfortunately, the certificate chain still cannot be validated.
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/python/test.py: Testdata: Fixed formatting and addedd
+	at.cvcert from vsmartcard tests
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/doc/README.rst: Fix bindings documentation
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/README, src/bindings_old/README: Move bindings'
+	README file to the new folder
+
+2012-10-08  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings_old/README: Added ref in order to be able to link to
+	the bindings README
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/java/Makefile.am, src/bindings/python/Makefile.am: 
+	let bindings depend on the swig interface files
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: added variants of LD_LIBRARY_PATH to load libs
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/python/setup.py.in: fixed mixing libs and cflags
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac, src/Makefile.am, src/bindings/python/Makefile.am: 
+	set OpenSSL C flags/libs only at configure time ... even when patching/building/installing a customized version
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: use DISTCHECK with --enable-{python,java}
+
+2012-10-07  Michael Gehring <mg@ebfe.org>
+
+	* src/eac_asn1.c: fix implicit function declaration warning in
+	eac_asn1.c
+
+2012-10-07  Michael Gehring <mg@ebfe.org>
+
+	* src/ta_lib.c: fix timeflag test
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* AUTHORS, src/bindings_old/AUTHORS, src/bindings_old/COPYING,
+	src/bindings_old/ChangeLog, src/bindings_old/Makefile.am,
+	src/bindings_old/NEWS, src/bindings_old/autogen.sh,
+	src/bindings_old/configure.ac: deleted unused files from
+	bindings_old porting the bindings README to OpenPACE is still missing
+
+2012-10-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: added --enable-{python,java} to CHECKFLAGS
+
+2012-10-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac, m4/ac_jni_include_dir.m4,
+	m4/ac_prog_java.m4, m4/ac_prog_java_works.m4, m4/ac_prog_javac.m4,
+	m4/ac_prog_javac_works.m4, m4/ax_pkg_swig.m4, src/Makefile.am,
+	src/bindings/AUTHORS, src/bindings/COPYING, src/bindings/ChangeLog,
+	src/bindings/Makefile.am, src/bindings/NEWS, src/bindings/README,
+	src/bindings/autogen.sh, src/bindings/ca.i,
+	src/bindings/configure.ac, src/bindings/cvc.i,
+	src/bindings/doc/README.rst, src/bindings/doc/python_api.rst,
+	src/bindings/eac.i, src/bindings/java/JPace.java,
+	src/bindings/java/Makefile.am,
+	src/bindings/m4/ac_jni_include_dir.m4,
+	src/bindings/m4/ac_prog_java.m4,
+	src/bindings/m4/ac_prog_java_works.m4,
+	src/bindings/m4/ac_prog_javac.m4,
+	src/bindings/m4/ac_prog_javac_works.m4,
+	src/bindings/m4/ax_pkg_swig.m4, src/bindings/pace.i,
+	src/bindings/python/Makefile.am, src/bindings/python/chat.py,
+	src/bindings/python/pace_entity.py,
+	src/bindings/python/setup.py.in, src/bindings/python/test.py,
+	src/bindings/src/Makefile.am, src/bindings/src/ca.i,
+	src/bindings/src/cvc.i, src/bindings/src/eac.i,
+	src/bindings/src/java/JPace.java,
+	src/bindings/src/java/Makefile.am, src/bindings/src/pace.i,
+	src/bindings/src/python/Makefile.am,
+	src/bindings/src/python/chat.py,
+	src/bindings/src/python/pace_entity.py,
+	src/bindings/src/python/setup.py.in,
+	src/bindings/src/python/test.py, src/bindings/src/ta.i,
+	src/bindings/src/util.i, src/bindings/ta.i, src/bindings/util.i,
+	src/bindings_old/AUTHORS, src/bindings_old/COPYING,
+	src/bindings_old/ChangeLog, src/bindings_old/Makefile.am,
+	src/bindings_old/NEWS, src/bindings_old/README,
+	src/bindings_old/autogen.sh, src/bindings_old/configure.ac,
+	src/bindings_old/doc/README.rst,
+	src/bindings_old/doc/python_api.rst: building bindings directly in
+	OpenPACE's root use --enable-python or --enable-java to build the bindings (default
+	is "no").  test-test.py is included in `make check`, if python was enabled.
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/python/test.py: fixed EF.CardSecurity in test.py import of certificates still bogus
+
+2012-10-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/python/pace_entity.py: fixed setting ssc
+
+2012-10-06  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac_util.c, src/misc.h: Use consttime_memcmp where
+	suitable (for verifying authentication tokens and MACs) and add
+	documentation.
+
+2012-10-06  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/misc.c: Completed the consttime_memcmp function: - Don't generate random data for inputs of wrong length. The length
+	of the first input leaks anyway and we don't defend against power
+	analysis.  - Modify the return instrution in order to remove the final branch.
+	This trick has been copied from DJBs NaCl.
+
+2012-10-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/eac.i: dont use SSC in
+	EAC_{encrypt,decrypt,authenticate}
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/index.rst: Hide the toctree and add a link to the
+	documentation of the bindings.
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/index.rst, doc/install.rst, doc/protocols.rst: Merge install
+	instructions into the main page. Add a link to the protocols
+	section.
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/README: Adjust pyPACE documentation to better fit the
+	OpenPACE documentation
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/eac.i: Adjust wrapper to commit
+	8bd9596aab1d7a9db56d7ae275afdb147a21244c
+
+2012-10-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: fixed output format of consttime_memcmp tests
+
+2012-10-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac/eac.h, src/eac_lib.c, src/eactest.c: hiding the
+	SSC inside EAC_CTX
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : commit 94266d469dce4e15840803dd8a3db06aadc5c398 Author: Dominik
+	<oepen@informatik.hu-berlin.de> Date:   Fri Oct 5 14:49:41 2012
+	+0200
+
+2012-10-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c, src/eac_util.c: fixed memory leaks
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/Doxyfile: Added Doxyfile
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* README, doc/index.rst: Further documentation improvements -Use restructured text for the main README -Link to our releases and
+	git -Link to our tracker
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/INSTALL.rst, doc/index.rst, doc/install.rst: Updated
+	installation instructions
+
+2012-10-05  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/INSTALL.rst, doc/Makefile, doc/bindings, doc/conf.py,
+	doc/index.rst, doc/protocols.rst, src/bindings/doc/Makefile,
+	src/bindings/doc/README.rst, src/bindings/doc/conf.py,
+	src/bindings/doc/index.rst: Started to work on documentation
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/python/test.py: Fixed test data for
+	EF_CARDACCESS. CA testcase still fails.
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/ca.i: Perform error checking for the actual call
+	to CA_get_pubkey()
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : commit 2f73c558b376c4b15f87be3a84cacead9dd1e9e8 Author: Dominik
+	<oepen@informatik.hu-berlin.de> Date:   Tue Oct 2 11:54:46 2012
+	+0200
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/python/test.py: Fixed formating of EF_CARDACCESS
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/python/test.py: Add testcase for CA functions
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac_util.h: Fixed typo
+
+2012-10-02  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/pace.i: Fix botched %rename directive
+
+2012-10-02  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_lib.c: EAC_CTX_init_ca: let protocol/std dp be optional
+
+2012-10-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/ca.i: fixed python mapping of CA_get_pubkey
+
+2012-09-30  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/ca.i, src/bindings/src/cvc.i,
+	src/bindings/src/eac.i, src/bindings/src/java/JPace.java,
+	src/bindings/src/pace.i, src/bindings/src/python/chat.py,
+	src/bindings/src/python/pace_entity.py,
+	src/bindings/src/python/test.py, src/bindings/src/ta.i,
+	src/bindings/src/util.i, src/ca_lib.c, src/ca_lib.h, src/cv_cert.c,
+	src/cv_cert_test.c, src/eac.c, src/eac/ca.h, src/eac/cv_cert.h,
+	src/eac/eac.h, src/eac/pace.h, src/eac/ri.h, src/eac/ta.h,
+	src/eac_asn1.c, src/eac_asn1.h, src/eac_ca.c, src/eac_dh.c,
+	src/eac_dh.h, src/eac_ecdh.c, src/eac_ecdh.h, src/eac_err.h,
+	src/eac_kdf.c, src/eac_kdf.h, src/eac_lib.c, src/eac_lib.h,
+	src/eac_print.c, src/eac_util.c, src/eac_util.h, src/eactest.c,
+	src/misc.c, src/misc.h, src/pace.c, src/pace_lib.c, src/pace_lib.h,
+	src/pace_mappings.c, src/pace_mappings.h, src/ri.c, src/ri_lib.c,
+	src/ta.c, src/ta_lib.c, src/ta_lib.h: added gpl version 3 license
+	notice to source files
+
+2012-10-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: fixed location of libeac.pc during build
+
+2012-10-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bootstrap: `make check`: testing eactest instead of
+	bootstrap
+
+2012-10-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac, src/Makefile.am: set OPENSSL_CONFIG_EXTRA at compile
+	only default values are '-fPIC' when using OpenSSL for static linkage and
+	'shared' when installing OpenSSL as shared library.
+
+2012-10-01  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : commit bd53db93f8336c69efe1d5d22e0b3de6869388bf Author: Dominik
+	<oepen@informatik.hu-berlin.de> Date:   Mon Oct 1 16:44:05 2012
+	+0200
+
+2012-10-01  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/src/ca.i: Added wrapper for CA_get_pubkey
+
+2012-10-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/ta_lib.c: fixed check for TA_FLAG_SKIP_TIMECHECK
+
+2012-10-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/ta.i, src/eac/ta.h, src/eactest.c, src/ta.c: 
+	TA_disable_checks: ignore validity period of certificate
+
+2012-09-28  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/ca.i: updated NIDs for EAC
+
+2012-09-28  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/misc.c: consttime_memcmp was broken. Thanks to Michael Gehring
+	for pointing this out.
+
+2012-09-28  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eactest.c, src/misc.c, src/misc.h: Added new function
+	consttime_memcmp This function is an implementation of memcmp which is designed to be
+	resiliant against timing attacks. The functions leaks the length of
+	the first parameter but no other information. This function should
+	be thoroughly reviewed before we actually start using it in our
+	code.
+
+2012-09-27  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac/eac.h, src/eactest.c: Added new function
+	EAC_verify_authentication This function verifies a given MAC for given data. It is resistant
+	to side-channel attacks.
+
+2012-09-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: Initialize CA's ka_ctx when parsing EF.CardAccess
+
+2012-09-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: reusing memory of OpenSSL's ASN.1 structures
+
+2012-09-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: importing CA dp when parsing EF.CardAccess
+
+2012-09-26  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac/eac.h, src/eac_util.c, src/eac_util.h,
+	src/eactest.c: use data and an EAC_CTX for EAC_add_iso_pad
+
+2012-09-26  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eactest.c: Fixed memory leak
+
+2012-09-26  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac/eac.h, src/eactest.c: New function
+	EAC_remove_iso_pad This functions is the counterpart to the EAC_add_iso_pad function.
+
+2012-09-25  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/cv_cert_test.c, src/eactest.c: Fixed several signed/unsigned
+	comparisons
+
+2012-09-25  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: Added missing includes
+
+2012-09-25  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : commit 9e36651cca8ac2d73bcff139ad882348d7121b68 Author: Frank
+	Morgner <morgner@informatik.hu-berlin.de> Date:   Tue Sep 25
+	09:58:06 2012 +0200
+
+2012-09-25  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/bindings/src/ca.i, src/bindings/src/cvc.i,
+	src/bindings/src/eac.i, src/bindings/src/pace.i,
+	src/bindings/src/ta.i, src/bindings/src/util.i: Declare inline
+	C-functions as static
+
+2012-09-24  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/ta.c, src/ta_lib.c: fixed checks for invalid arguments
+
+2012-09-19  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c, src/eac_ca.c, src/eac_util.c, src/eac_util.h,
+	src/eactest.c: Added parsing capabilities for EF.CardSecurity
+
+2012-09-17  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h: CVC: use const pointers to input
+	where possible
+
+2012-09-17  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h: fixed return type of
+	cvc_get_role
+
+2012-09-17  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h: return the certificate's chat as
+	const
+
+2012-09-18  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/bindings/AUTHORS, src/bindings/COPYING,
+	src/bindings/ChangeLog, src/bindings/Makefile.am,
+	src/bindings/NEWS, src/bindings/README, src/bindings/autogen.sh,
+	src/bindings/configure.ac, src/bindings/doc/Makefile,
+	src/bindings/doc/conf.py, src/bindings/doc/index.rst,
+	src/bindings/doc/python_api.rst,
+	src/bindings/m4/ac_jni_include_dir.m4,
+	src/bindings/m4/ac_prog_java.m4,
+	src/bindings/m4/ac_prog_java_works.m4,
+	src/bindings/m4/ac_prog_javac.m4,
+	src/bindings/m4/ac_prog_javac_works.m4,
+	src/bindings/m4/ax_pkg_swig.m4, src/bindings/src/Makefile.am,
+	src/bindings/src/ca.i, src/bindings/src/cvc.i,
+	src/bindings/src/eac.i, src/bindings/src/java/JPace.java,
+	src/bindings/src/java/Makefile.am, src/bindings/src/pace.i,
+	src/bindings/src/python/Makefile.am,
+	src/bindings/src/python/chat.py,
+	src/bindings/src/python/pace_entity.py,
+	src/bindings/src/python/setup.py.in,
+	src/bindings/src/python/test.py, src/bindings/src/ta.i,
+	src/bindings/src/util.i: Added the pypace files to openpace This is only a raw import ofthe pypace files. No work on integration
+	has been done as of now. Most importantely, the auto* files are
+	completely separated from the openpace auto* files.
+
+2012-09-13  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac, libeac.pc.in, src/Makefile.am: fixed
+	libeac linked against self-built OpenSSL When OpenSSL must not be installed, libraries for static linking
+	must be included from libcrypto.pc (Libs.private) for creating
+	libeac with libcrypto.a.  When OpenSSL will be installed, libeac is linked against
+	libcrypto.so instead of libcrypto.a.
+
+2012-09-12  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac, src/Makefile.am: install patched
+	version of OpenSSL if requested
+
+2012-09-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac: libeac.pc: fixed conditional dependency
+	to libcrypto
+
+2012-09-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: declare some variables as precious PATH, CVS, OPENSSL_CONFIG_EXTRA will appear in ./configure -h and
+	they will be substituted with AC_SUBST.
+
+2012-09-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_ca.c: fixed compilation error (typo)
+
+2012-09-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_ca.c: fixed size of nonce for CA
+
+2012-09-04  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bootstrap, configure.ac, libeac.pc.in,
+	src/Makefile.am, win32/Makefile.am: build/patch/statically link
+	OpenSSL if needed do some magic to either dynamically link against a locally available
+	patched version of OpenSSL or otherwise retrieve OpenSSL via the cvs
+	repository, patch and build it and use libcrypto.a to statically
+	link it into libeac. libeac.pc is adjusted correspondingly.
+
+2012-09-03  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac/cv_cert.h: Add __cplusplus guard to eac/cv_cert.h
+
+2012-09-03  Michael Gehring <gehring@informatik.hu-berlin.de>
+
+	* src/eac/eac.h: Fix __cplusplus guard in eac/eac.h
+
+2012-08-31  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c: CVC: fixed parsing of terminal's role
+
+2012-08-30  Michael Gehring <gehring@informatik.hu-berlin.de>
+
+	* bootstrap: Set CVS_RSH to ssh
+
+2012-08-28  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bootstrap, src/Makefile.am: added bootstrap process
+	to `make check`
+
+2012-08-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* m4/.gitignore: Added empty directory m4 for autoreconf
+
+2012-08-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile, Makefile.am, configure.ac, libeac.pc.in,
+	src/Makefile.am, src/eac_kdf.c, win32/Makefile.am,
+	win32/gentoo.config-1.0.0: scripts and fixes for Windows cross
+	compiling
+
+2012-08-14  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* BP.patch, ChangeLog, Makefile, Makefile.am, NEWS, OpenPACE.patch,
+	bootstrap, configure.ac, libeac.pc.in, oids.patch, src/Makefile.am,
+	src/ca_lib.c, src/ca_lib.h, src/cv_cert.c, src/cv_cert_test.c,
+	src/eac.c, src/eac/ca.h, src/eac/cv_cert.h, src/eac/eac.h,
+	src/eac/pace.h, src/eac/ri.h, src/eac/ta.h, src/eac_asn1.c,
+	src/eac_asn1.h, src/eac_ca.c, src/eac_dh.c, src/eac_dh.h,
+	src/eac_ecdh.c, src/eac_ecdh.h, src/eac_err.h, src/eac_kdf.c,
+	src/eac_kdf.h, src/eac_lib.c, src/eac_lib.h, src/eac_print.c,
+	src/eac_util.c, src/eac_util.h, src/eactest.c, src/misc.c,
+	src/misc.h, src/pace.c, src/pace_lib.c, src/pace_lib.h,
+	src/pace_mappings.c, src/pace_mappings.h, src/ri.c, src/ri_lib.c,
+	src/ta.c, src/ta_lib.c, src/ta_lib.h: libeac: Separated OpenPACE
+	from OpenSSL.  Building is now done using the GNU Build System. `bootstrap` can be
+	used to build and compile OpenPACE including prequisites.  OpenPACE still requires a patched version of OpenSSL. Luckily the
+	patch is minimal since it only includes some object identifiers.
+
+2012-05-25  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: Update Makefile in order to use OpenSSL 1.0.1c
+
+2012-05-25  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: Update OpenPACE in order to be applicable to
+	OpenSSL 1.0.1c
+
+2012-04-05  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: fixed patch issues on solaris
+
+2012-04-04  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* README: released 0.7
+
+2012-04-04  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* INSTALL, README: updated information
+
+2012-04-04  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: not checking the beginning of mrz anymore. only
+	check what is needed for pace
+
+2012-04-04  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, Makefile, OpenPACE.patch, ibm4.patch: - Switched to OpenSSL 1.0.1, the CMAC patch is not required any
+	longer - Added new test data for eactest (e.g., data for EAC_authenticate,
+	EF.CardSecurity) - Added TA_STEP4_set_nonce - fixed size of nonce for TA - fixed PACE-encoding for MRZ - Minor fixes and improvements
+
+2011-12-14  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* bitbake/openssl/ocf-linux.inc,
+	bitbake/openssl/ocf-linux_20100325.bb,
+	bitbake/openssl/openssl-1.0.0e/BP.patch,
+	bitbake/openssl/openssl-1.0.0e/OpenPACE.patch,
+	bitbake/openssl/openssl-1.0.0e/configure-targets.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/c_rehash-compat.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/ca.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/debian-targets.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/make-targets.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/man-dir.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/man-section.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/no-rpath.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/no-symbolic.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/pic.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/pkg-config.patch,
+	bitbake/openssl/openssl-1.0.0e/debian/version-script.patch,
+	bitbake/openssl/openssl-1.0.0e/engines-install-in-libdir-ssl.patch,
+	bitbake/openssl/openssl-1.0.0e/ibm4.patch,
+	bitbake/openssl/openssl-1.0.0e/oe-ldflags.patch,
+	bitbake/openssl/openssl-1.0.0e/openssl-fix-link.patch,
+	bitbake/openssl/openssl-1.0.0e/openssl_fix_for_x32.patch,
+	bitbake/openssl/openssl-1.0.0e/shared-libs.patch,
+	bitbake/openssl/openssl.inc, bitbake/openssl/openssl_1.0.0e.bb: 
+	added recipes for openpace/openssl
+
+2011-12-07  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch, ibm4.patch: - Update to OpenSSL 1.0.0eUpdate to OpenSSL 1.0.0e - cleaning memory of unencrypted data as it might reveal information
+	about the key - Use whitespaces only, no mix of tabs and whitespaces - added test data for cv certificate (description) - renamed CVC_get_terminal_type to CVC_get_role and made it public - added support for checking effective and expiration date of cv
+	certificate aga inst current time (untested). introduced
+	ta_ctx.flags where TA_FLAG_SKIP_TIMECHE CK disables this check.  - added support for initialization of ta by car - exporting BUF_MEM_print - added asn1 functions for CVC_DISCRETIONARY_DATA_TEMPLATES and
+	CVC_DISCRETIONARY_ DATA_TEMPLATE - added support for Restricted Identification. Kudos to Paul Wilhelm - minor fixes and checks
+
+2011-11-05  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, ibm4.patch, ibm4_2.patch: renamed ibm patch
+
+2011-11-03  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* INSTALL: added info for missing stdint.h
+
+2011-05-23  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - added missing references/headers/functions for some build systems
+	(for example VC) - renamed ca.c to eac_ca.c because of conflicting makefile targets
+	when compiling with vc. (apps/ca.c produces the same target.)
+
+2011-05-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* README: released 0.6
+
+2011-05-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: added new test cases for cv certificate parsing
+
+2011-05-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* README: update readme
+
+2011-05-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch, ibm4_2.patch: providing a patched libeay.num for
+	ibm-patch instead of doing this via openpace.patch
+
+2011-05-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: pacetest is now named eactest
+
+2011-05-17  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, Makefile, OpenPACE.patch, README, ibm4_2.patch: Release
+	of OpenPACE v0.6: -Rewrite of key agreement and context structures to make the code
+	more extensible -Did a lot of refactoring to make code cleaner and
+	more concise -Now consistently using EVP_PKEY objects and API
+	-Introduced high level EAC structures and context for a full EAC
+	protocol run -Introduced support for CA and TA -Introduced
+	preliminary certificate validation code -Improved documentation
+	-Moved cv_cert code to the eac directory -Added EAC worked example
+	test code -Added lots of test cases -Added missing OIDs from
+	TR-03110 v 2.05 -Now using the OpenSSL error code capabilites
+	throughout the EAC functions -Now using OpenSSL 1.0.0d -Numerous
+	minor bug fixes
+
+2011-02-08  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, OpenPACE.patch, ibm4_2.patch: PACE: - made construction of asn.1 encoded public key faster - included key lenghts in pace_ctx - Renamed pace directory to eac for more upcoming changes - removed reference to undefined function PACE_CTX_free CV Certificates: - Redesigned cv_cert_test to only parse and output the certificate
+	  pointed to by the file option, if this option is used - Added new test cases - Fixed some minor bugs, typos - Added commCertficates to the CertficateDescription structure - Add obj_dat.h and libeay.num to our patches
+
+2010-12-20  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* INSTALL: added instructions for VC build
+
+2010-12-20  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - fixed some minor problems related to build with Visual Studio - increased test coverage for cv_cert
+
+2010-12-16  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch: - renamed Makefile targets - fixed includes and default targets of pace/Makefile
+	cv_cert/Makefile - declarations first! - fixed warning in cv_cert - configured missing files for pace fixes 3137868, thanks Vladimir
+
+2010-12-14  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: - fixed location of cv_cert.h
+
+2010-12-11  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch: - using openssl wrapper to load libraries - added option for cvc file - added card verifiable certificate from eID
+
+2010-12-11  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* INSTALL, README: updated information
+
+2010-12-11  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, Makefile, OpenPACE.patch, ibm4_2.patch: - OpenPACE now tested with new German ID card (nPA) - Switched to OpenSSL 1.0.0c - Added support for standardized DH parameters - Added support for EF.CardAccess found in nPA and newer test cards - Added lots of OIDs in order to distinguish the SecurityInfo
+	SEQUENCES in EF.CardAcces - Added support for standardized DH parameters - minor fixes and improvements - new type enum tr_version to differ version of TR-03110 - API change of PACE_init - PACE_init now must be called even when data is initialized with an
+	EF.CardAccess
+
+2010-10-26  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: fixed includes to work on windows
+
+2010-10-26  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: updated openssl version
+
+2010-10-20  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - Added RSA key support to CV Certificates - Fixed incorrect OID in object.txt - CVC_check_cert now deduces the hash function to be used from the
+	public keys OID - cv_cert: avoiding snprintf - Added missing doxygen documentation - Refactoring and renaming of function check_cert - reviewed code with flawfinder - added argument checking to encode_ssc
+
+2010-10-01  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - Added basic support for CV certificates and Certificate
+	Descriptions in new subdirectory crypto/cv_cert/ - added support for public key compression according to TR-03110 - bugfix: fixed incorrect pointer dereference in pace_asn1.c - pace_asn1.c: Added sanity checks for version number - pace_asn1.c: Fixed some spelling errors in the comments - pace_mappings.c: ECDH Integrated mapping was implemented
+	incorrect, this patch fixes it - Upgrade to OpenSSL 1.0.0a - Added OIDs for TA algorithms, terminal types, id-Description, and
+	id-extension
+
+2010-06-02  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* README: extended information about vsmartcard
+
+2010-05-18  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - automatically update the IV for PACE_encrypt and PACE_decrypt - automatically prepending SSC to the authentication buffer Thanks
+	to the Virtual Smart Card Architecture project for contributing this
+	code.
+
+2010-05-18  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* INSTALL, README: Restructered Documentation
+
+2010-05-17  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* README: Added project description, compile instructions and
+	contact information to the README file
+
+2010-05-17  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, OpenPACE.patch: Added obj_mac.num and obj_mac.h to our
+	patches to avoid problems during first compilation
+
+2010-05-08  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* README: added reference to vsmartcard
+
+2010-05-05  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* ibm4_1.patch: removed obsolete patch
+
+2010-04-21  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* ibm4_2.patch: Added missing ibm4_2.patch
+
+2010-04-21  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, Makefile, OpenPACE.patch: Update to OpenSSL 1.0.0
+
+2010-03-21  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - removed declaration of obsolete asn1_ephemeral_key - added meta information to asn1_pubkey - Fixed generation of authentication token: the domain parameter
+	from the opposite site are used now (including the other party's
+	public key). For PACE_STEP3D_verify_authentication_token this means,
+	that the other party's public key is not needed anymore.  - fixed wrong usage of memcpy in
+	PACE_STEP3D_verify_authentication_token - pacetest was accepting errors as verified tokens, fixed.  - Added missing OIDs to pace_util.c and pace.c - Added function simple_parse_ef_card_access for better
+	interoperability with SWIG - Bugfix: The wrong OID was used in asn1_pubkey - Fixed tag of public key (now: 7f49) - Removed debug output from pace_util.c - Bugfix in PACE_STEP3D: only the x-coordinate of the key needs to
+	be output - removed unused variables and includes in pacetest - Bugfix: The Send Sequence Counter is not needed for computing or
+	verifying the authentication token - Added Parameter keylen for Key derivation. The hash value is now
+	being truncated to the necessary size OpenPACE successfully tested with test cards.
+
+2010-03-10  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - TR-03110 version 2.01 and 2.02 are both supported. Use   PACE_CTX.tr_version = PACE_TR_VERSION_2_01, if you want to use the
+	  old version.  - Disabled padding of the Nonce in PACE_STEP1 and 2 - Added support for OIDs of test cards - New function PACE_CTX_init initializes a PACE_CTX structure from a   pre-initialised PACEInfo. This can be used instead of PACE_init
+	  when you already have existing PACEInfo and
+	  PACEDomainParameterInfo and only need a suiting PACE_CTX - Now Cleaning memory with passwords when finished.  - Added some debug functions to verify that parse_ef_card_access
+	  actually works - Added OIDs from TR-03111 - Added parse_ef_card_access to parse EF.CardAccess from the nPA - fixed several other bugs and memory leaks
+
+2009-12-17  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* AUTHORS: Added contributors to AUTHORS file
+
+2009-12-17  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch: - Added managment functions for PACEInfo - Changed info in pacetest.c to dynamically allocated - Updated encoded_secret to comply with TR-03110 2.02 - Added td-1 MRZ to pacetest.c - New defgroup for doxygen in pace_util.h
+
+2009-12-14  wolf-mueller <wolf-mueller@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: pace_util.c: sanity check in add_iso_pad,
+	retail_mac fixed.  pace.c: sanity check in
+	PACE_STEP3D_verify_authentication_token.
+
+2009-12-11  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: - Added target test - Removed variable CONFIG use something like `make "SYSTEM=cygwin"`   instead.  - renamed veryclean to dist-clean
+
+2009-12-09  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* ibm4_1.patch: Fixed a warning caused by cmac_test.c and cleaned up
+	some unnecessary whitespaces
+
+2009-12-09  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: PACE_init now initializes PACE_CTX,
+	PACEDomainParameterInfo and PACEInfo objects
+
+2009-12-08  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - cleanup in pacetest.c - fixed several memory leaks and some bugs - PACEInfo Parameters are now handed over as pointers
+
+2009-12-08  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - Unified PACE_SEC_new and PACE_SEC_init - Resurrected PACEDomainParameterInfo_free - PACEDomainParameterInfo_new does not create domainParameter   anymore (is now initialized with NULL) - PACEDomainParameterInfo_dup does not accept NULL as argument
+	anymore - made tests in pacetest.c modular, fixed some memleaks.
+
+2009-12-07  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch, ibm4.patch: - allow a customized config via e.g. make CONFIG="./Configure
+	Cygwin" - fixed some minor bugs. changed some formatting.  - cleanup
+
+2009-12-06  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - several bugs fixed, some other minor changes - changed PACE_init to allow a pre initialized PACE_CTX
+
+2009-12-06  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch: Makefile: 	- Now using ibm4_1.patch 	- Less verbose tar OpenPACE.patch: 	- Bugfix: BUF_MEM_create_init did not copy any data to the new
+		buffer - Bugfix: encoded_ssc accessed uninitialised memory 	- Unified coding style 	- Code cleanup and refactoring 	- Removed *_free functions. Use *_clear_free() instead 	- Using htonl instead of __constant_cpu_to_be32 	- Using uint32_t instead of __be32.  	- Bugfix: Removed double free in pacetest.c 	- Several minor bugfixes
+
+2009-12-05  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* ibm4_1.patch: Cleaned up ibm4_1.patch
+
+2009-12-04  wolf-mueller <wolf-mueller@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: Inserted target veryclean (removes also tar.gz) clean
+	does only remove the extracted directory.
+
+2009-12-03  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: be more verbose
+
+2009-12-03  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: be more verbose
+
+2009-12-03  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: solaris workaround
+
+2009-12-03  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: solaris bugfix
+
+2009-12-03  wolf-mueller <wolf-mueller@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: Generalized to allow usage by Solaris systems.
+
+2009-12-02  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* ibm4_1.patch: Added updated IBM patch, which applies cleanly to
+	the beta4 of OpenSSL. Patch is not used in the Makefile yet.
+
+2009-12-01  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: Restructured PACE functions for better
+	readability.
+
+2009-11-30  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch: - Migration to beta4 - Splitted pace.c/pace.h into multiple files - renamed AID to AlgorithmIdentifier - added oids for application identifier: NID_X9_62_id_ecPublicKey
+	NID_dhpublicnumb - makefile compiles only pacetest - PACEInfo and PACEDomainParameterInfo are now used throughout the
+	code.  - Added tests with different curves.  - Removed unnecessary BN_init calls
+
+2009-11-30  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: Updated Makefile to use Beta4 of openssl
+
+2009-11-22  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: bugfix
+
+2009-11-22  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: Renamed DH_get_sg_prime to DH_get_q. Reverted
+	changes in test/Makefile.
+
+2009-11-21  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: bugfix
+
+2009-11-19  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - changed cmac-function to be independant from pace and similar to
+	  the hash-function - replaced buf_mem_create with BUF_MEM_create and
+	BUF_MEM_create_init - renamed dh_q to DH_get_sg_prime - added DH_get_order - added CMAC_CTX member to PACE_CTX - replaced // with /* */ - changed the values of PACE_{MRZ,PUK,PIN,CAN} to match the   corresponding Manage Security Environment APDU - several minor improvements
+
+2009-11-19  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: Naming clearifications: Renamed STEP4/STEP5 to
+	STEP3D as in TR-03110
+
+2009-11-18  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: some simplifications
+
+2009-11-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: - Replaced PACE_DP completely with the
+	    ApplicationIdentifier-structure.  This is more conform to TR-03110
+	and thus more readable (hopefully).  Note that protocol is named
+	algorithm and ecdh/dh are now members of a union stored in
+	parameters.
+
+2009-11-17  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, Makefile, OpenPACE.patch: - removed not needed OIDs - fixed BP.patch - added DH_check_pub_key_rfc, but the second check seems to always
+	  yield an error - added dh_q for simplification - some minor code improvements
+
+2009-11-15  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, OpenPACE.patch: Bugfix. OIDs are place in BP.patch for
+	now
+
+2009-11-14  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile: removed unnecessary checks
+
+2009-11-13  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, Makefile, OpenPACE.patch: - Improved Makefile - Moved BSI OIDs from BP.patch to OpenPACE.patch
+
+2009-11-13  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, OpenPACE.patch: Revised error codes. Fixed semantic
+	error in PACE_STEP5_verify_authentication_token.
+
+2009-11-12  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Makefile, make.sh: Revised build system.
+
+2009-11-12  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, OpenPACE.patch: assigned changes from objects.txt to
+	bp.patch, since this is a bugfix
+
+2009-11-12  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch, make.sh: Added missing files in crypto/err Build
+	finally works
+
+2009-11-12  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch: Added crypto/err/openssl.ec to patch, so make
+	errors doesn't fail anymore
+
+2009-11-12  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* OpenPACE.patch, make.sh: - Changed Build System. PACE now has to be included via './config
+	experimental-pace' - Updated test/Makefile to OpenSSL-1.0.0-beta3 - Fixed segfault in pace.c - Updated PACE-OIDs.  - All OIDs are now placed in objects.txt and used as NIDs - New error code
+
+2009-11-08  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* make.sh: Corrected Typos
+
+2009-11-08  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* BP.patch, OpenPACE.patch, ibm4.patch, make.sh, openpace.patch: 
+	cleaned up patchset
+
+2009-11-06  wolf-mueller <wolf-mueller@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* openpace.patch: Placed #include <stdlib.h> before local includes
+	in prevention of compilation errors.
+
+2009-11-06  wolf-mueller <wolf-mueller@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* make.sh: hard links replaced by symbolic ones.
+
+2009-11-06  oepen <oepen@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* make.sh, openpace.patch: - Updated make.sh to use latest versions of openssl and the IBM CMAC
+	patch - Building should now work without errors
+
+2009-11-06  wolf-mueller <wolf-mueller@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* AUTHORS: Wolf Müller added.
+
+2009-10-23  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* openpace.patch: check for ~pk_picc != ~pk_pcd (see tr-03110v2.02
+	draft)
+
+2009-10-20  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* make.sh, openpace.patch: - pacetest cleanup - bugfix: added support for send sequence counter - bugfix: replaced id_PACE_[EC|]DH with id_PACE_[EC|]DH_[IM|GM] (see
+	changes from TR-03110v2 to new draft)
+
+2009-10-15  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* make.sh: bugfix
+
+2009-10-14  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* make.sh: bugfix
+
+2009-10-14  frankmorgner <frankmorgner@bc35da7a-fd73-48a3-9038-9f319fca9165>
+
+	* Initial commit. Note that this code is not tested with a real
+	implementation of a German elektronischer Personalausweis. And yes,
+	it still contains errors.
+
