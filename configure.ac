@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([OpenPACE], [0.8], [http://sourceforge.net/projects/openpace/support], [openpace], [http://openpace.sourceforge.net])
+AC_INIT([OpenPACE], [0.9], [http://sourceforge.net/projects/openpace/support], [openpace], [http://openpace.sourceforge.net])
 AC_CONFIG_SRCDIR([src/eactest.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
