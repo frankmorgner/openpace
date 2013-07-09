@@ -132,7 +132,8 @@ int
 update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc);
 
 /**
- * @brief Checks if str is a character string according to TR-3110 D.2.1.4
+ * @brief Checks if str is a character string according to TR-3110 D.2.1.4 or
+ * the ISO/IEC 8859­1 character set respectively
  *
  * @param[in] str The string to check
  * @param[in] length Length of the string

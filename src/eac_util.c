@@ -504,7 +504,7 @@ is_char_str(const unsigned char *str, const size_t length)
     const unsigned char *s = NULL;
     size_t i = 0;
 
-    if (!str)
+    if (!str && length)
         return 0;
 
     s = str;
@@ -527,7 +527,7 @@ is_bcd(const unsigned char *data, size_t length)
 {
     size_t i;
 
-    if (!data)
+    if (!data && length)
         return 0;
 
     for(i = 0; i < length; i++) {
@@ -550,8 +550,12 @@ is_chr(const unsigned char *data, size_t length)
     if (!(('A' <= data[0] && data[0] <= 'Z') && ('A' <= data[1] && data[1] <= 'Z')))
         return 0;
 
-    /* holder mnemonic and sequence number must be alphanumeric */
-    for (i = 2; i < length; i++) {
+    /* holder mnemonic must in ISO/IEC 8859­1 Character Set */
+    if (!is_char_str(data+2, length-2-5))
+        return 0;
+
+    /* sequence number must be alphanumeric */
+    for (i = length-5-2; i < length; i++) {
         if (!(('A' <= data[i] && data[i] <= 'Z')
                     || ('a' <= data[i] && data[i] <= 'z')
                     || ('0' <= data[i] && data[i] <= '9')))
