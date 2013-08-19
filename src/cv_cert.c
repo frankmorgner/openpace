@@ -37,6 +37,7 @@
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/rsa.h>
+#include <openssl/stack.h>
 #include <string.h>
 
 /** Check whether or not  a specific bit is set */
@@ -50,13 +51,6 @@
 #define EAC_IS_CHAT_BITS 6
 #define EAC_ST_CHAT_BYTES 1
 #define EAC_ST_CHAT_BITS 6
-
-/** Application specific, IMPLICIT tagged ASN1 type */
-#define ASN1_APP_IMP(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, tag, stname, field, type)
-/** Application specific, IMPLICIT tagged, optional ASN1 type */
-#define ASN1_APP_IMP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
-/** Application specific, EXPLICIT tagged, optional ASN1 type */
-#define ASN1_APP_EXP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_EXPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
 
 /** Human readable names of the individual bits of the CHAT of an
     authentication terminal*/
@@ -176,25 +170,20 @@ ASN1_SEQUENCE(CVC_PUBKEY) = {
 IMPLEMENT_ASN1_FUNCTIONS(CVC_PUBKEY)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_PUBKEY)
 
-ASN1_SEQUENCE(CVC_DISCRETIONARY_DATA_TEMPLATE) = {
-    ASN1_SIMPLE(CVC_DISCRETIONARY_DATA_TEMPLATE, type, ASN1_OBJECT),
+ASN1_SEQUENCE(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ) = {
+    ASN1_SIMPLE(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ, type, ASN1_OBJECT),
     /* tag: 0x80 */
-    ASN1_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATE, discretionary_data1, ASN1_OCTET_STRING, 0),
+    ASN1_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ, discretionary_data1, ASN1_OCTET_STRING, 0),
     /* tag: 0x81 */
-    ASN1_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATE, discretionary_data2, ASN1_OCTET_STRING, 1),
+    ASN1_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ, discretionary_data2, ASN1_OCTET_STRING, 1),
     /* tag: 0x53*/
-    ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATE, discretionary_data3, ASN1_OCTET_STRING, 19),
-} ASN1_SEQUENCE_END(CVC_DISCRETIONARY_DATA_TEMPLATE)
+    ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ, discretionary_data3, ASN1_OCTET_STRING, 19),
+} ASN1_SEQUENCE_END(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ)
+/* Change the tag of the CVC_DISCRETIONARY_DATA_TEMPLATE to 0x73 */
+ASN1_ITEM_TEMPLATE(CVC_DISCRETIONARY_DATA_TEMPLATE) =
+        ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x13, CVC_DISCRETIONARY_DATA_TEMPLATE, CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ)
+ASN1_ITEM_TEMPLATE_END(CVC_DISCRETIONARY_DATA_TEMPLATE)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATE)
-
-/* XXX: Probably rather ANS1_ADB (see TR-03110 C.3)? */
-ASN1_SEQUENCE(CVC_DISCRETIONARY_DATA_TEMPLATES) = {
-    ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATES, template1, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x13),
-    ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATES, template2, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x13),
-    ASN1_APP_IMP_OPT(CVC_DISCRETIONARY_DATA_TEMPLATES, template3, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x13),
-} ASN1_SEQUENCE_END(CVC_DISCRETIONARY_DATA_TEMPLATES)
-IMPLEMENT_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATES)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_DISCRETIONARY_DATA_TEMPLATES)
 
 ASN1_SEQUENCE(CVC_CERT_BODY_SEQ) = {
         /* tag: 0x5f29 */
@@ -212,7 +201,7 @@ ASN1_SEQUENCE(CVC_CERT_BODY_SEQ) = {
         /* tag: 0x5f24 */
         ASN1_APP_IMP(CVC_CERT_BODY_SEQ, certificate_expiration_date, ASN1_OCTET_STRING, 0x24),
         /* tag: 0x65 */
-        ASN1_APP_IMP_OPT(CVC_CERT_BODY_SEQ, certificate_extensions, CVC_DISCRETIONARY_DATA_TEMPLATES, 0x5)
+        ASN1_APP_IMP_SEQUENCE_OF_OPT(CVC_CERT_BODY_SEQ, certificate_extensions, CVC_DISCRETIONARY_DATA_TEMPLATE, 0x05),
 } ASN1_SEQUENCE_END(CVC_CERT_BODY_SEQ)
 /* Change the tag of the Certificate Body to 0x7f4e */
 ASN1_ITEM_TEMPLATE(CVC_CERT_BODY) =
@@ -233,7 +222,7 @@ ASN1_ITEM_TEMPLATE(CVC_CERT) =
         ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x21, CVC_CERT, CVC_CERT_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CERT)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT)
-/*IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT)*/
+IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT)
 /*IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CHAT)*/
 
 ASN1_ADB_TEMPLATE(cert_def) = ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.other, ASN1_ANY, 0x05);
@@ -594,9 +583,10 @@ err:
 int
 CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
 {
-    int r = 0;
+    int r = 0, i, count;
     char *effective_date = NULL, *expiration_date = NULL;
     char *car = NULL, *chr = NULL;
+    CVC_DISCRETIONARY_DATA_TEMPLATE *p;
 
     if (!bio || !cv || !cv->body || !cv->body->public_key)
         goto err;
@@ -622,9 +612,26 @@ CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "Effective Date: %s\n", effective_date)
             || !BIO_indent(bio, indent, 80)
-            || !BIO_printf(bio, "Expiration Date: %s\n", expiration_date)
-            || !CVC_DISCRETIONARY_DATA_TEMPLATES_print_ctx(bio, cv->body->certificate_extensions, indent, NULL))
+            || !BIO_printf(bio, "Expiration Date: %s\n", expiration_date))
         goto err;
+
+    count = sk_num((_STACK*) cv->body->certificate_extensions);
+    if (count > 0) {
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "Certificate Extensions:\n"))
+            goto err;
+    }
+    for (i = 0; i < count; i++) {
+        p = sk_value((_STACK*) cv->body->certificate_extensions, i);
+#if 0
+        if (!CVC_DISCRETIONARY_DATA_TEMPLATE_print_ctx(bio, p, indent+2, NULL))
+            goto err;
+#else
+        if (!BIO_indent(bio, indent+2, 80)
+                || !BIO_printf(bio, "%s\n", OBJ_nid2sn(OBJ_obj2nid(p->type))))
+                goto err;
+#endif
+    }
 
     r = 1;
 
@@ -907,6 +914,8 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
     const EVP_MD *md;
     ASN1_OCTET_STRING *hash_check = NULL;
     BUF_MEM *cert_desc = BUF_MEM_create_init(cert_desc_in, cert_desc_in_len);
+    int i, count;
+    CVC_DISCRETIONARY_DATA_TEMPLATE *p;
 
     unsigned int ret = -1;
 
@@ -940,23 +949,16 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
             goto err;
     }
 
-    if (cv->body->certificate_extensions) {
-        if (cv->body->certificate_extensions->template1
-                && OBJ_obj2nid(cv->body->certificate_extensions->template1->type) ==
-                        NID_id_description)
-            hash_check = cv->body->certificate_extensions->template1->discretionary_data1;
-        else if (cv->body->certificate_extensions->template2
-                && OBJ_obj2nid(cv->body->certificate_extensions->template2->type) ==
-                        NID_id_description)
-            hash_check = cv->body->certificate_extensions->template2->discretionary_data1;
-        else if (cv->body->certificate_extensions->template3
-                && OBJ_obj2nid(cv->body->certificate_extensions->template3->type) ==
-                        NID_id_description)
-            hash_check = cv->body->certificate_extensions->template3->discretionary_data1;
+    count = sk_num((_STACK*) cv->body->certificate_extensions);
+    for (i = 0; i < count; i++) {
+        p = sk_value((_STACK*) cv->body->certificate_extensions, i);
+        if (OBJ_obj2nid(p->type) == NID_id_description) {
+            hash_check = p->discretionary_data1;
+            break;
+        }
     }
 
     if (hash_check) {
-
         /* Check whether or not the hash in the certificate has the correct size */
         if (hash_check->length != EVP_MD_size(md)) {
             ret = 0;

@@ -36,6 +36,23 @@ extern "C" {
 #include <openssl/asn1t.h>
 #include <openssl/bio.h>
 
+#ifndef ASN1_APP_IMP
+/** Application specific, IMPLICIT tagged ASN1 type */
+#define ASN1_APP_IMP(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, tag, stname, field, type)
+#endif
+#ifndef ASN1_APP_IMP_OPT
+/** Application specific, IMPLICIT tagged, optional ASN1 type */
+#define ASN1_APP_IMP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
+#endif
+#ifndef ASN1_APP_EXP_OPT
+/** Application specific, EXPLICIT tagged, optional ASN1 type */
+#define ASN1_APP_EXP_OPT(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_EXPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
+#endif
+#ifndef ASN1_APP_IMP_SEQUENCE_OF_OPT
+#define ASN1_APP_IMP_SEQUENCE_OF_OPT(stname, field, type, tag) \
+    ASN1_EX_TYPE(ASN1_TFLG_SEQUENCE_OF|ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION|ASN1_TFLG_OPTIONAL, tag, stname, field, type)
+#endif
+
 /** @brief Effective role of the certificate holder */
 enum cvc_terminal_role {
     /** @brief Terminal (inspection system/authentication terminal/signature terminal) */
@@ -95,7 +112,7 @@ typedef struct cvc_pubkey_st {
  * Consists of an OID and up to two hash values. This data structure is used
  * for both possible certificate extensions.
  */
-typedef struct cvc_discretionary_data_template_st {
+typedef struct cvc_discretionary_data_template_seq_st {
     /** @brief OID which specifies the type of the extension **/
     ASN1_OBJECT *type;
     /** @brief holds descretionary data */
@@ -104,27 +121,12 @@ typedef struct cvc_discretionary_data_template_st {
     ASN1_OCTET_STRING *discretionary_data2;
     /** @brief holds descretionary data */
     ASN1_OCTET_STRING *discretionary_data3;
-} CVC_DISCRETIONARY_DATA_TEMPLATE;
+} CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ;
+/** @brief Short name for CVC_CERT_BODY_SEQ */
+typedef CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ CVC_DISCRETIONARY_DATA_TEMPLATE;
 DECLARE_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATE)
+DECLARE_ASN1_ITEM(CVC_DISCRETIONARY_DATA_TEMPLATE)
 
-/* FIXME This should actually not be a SEQUENCE */
-/** @brief Certificate Extensions
- * @see TR-03110 C.3. */
-typedef struct cvc_discretionary_data_template_seq_st {
-    /** @brief Contains a certificate extension
-     *
-     *  @see TR-03110 C.3. */
-    CVC_DISCRETIONARY_DATA_TEMPLATE *template1;
-    /** @brief Contains a certificate extension
-     *
-     * @see TR-03110 C.3. */
-    CVC_DISCRETIONARY_DATA_TEMPLATE *template2;
-    /** @brief Contains a certificate extension
-     *
-     * @see TR-03110 C.3. */
-    CVC_DISCRETIONARY_DATA_TEMPLATE *template3;
-} CVC_DISCRETIONARY_DATA_TEMPLATES;
-DECLARE_ASN1_FUNCTIONS(CVC_DISCRETIONARY_DATA_TEMPLATES)
 
 /**
  * @brief The body of the CV certificate (without signature)
@@ -160,7 +162,7 @@ typedef struct cvc_cert_body_seq_st {
     /** @brief Optional extensions
      *
      * @see TR-03110 C.1.7. */
-    CVC_DISCRETIONARY_DATA_TEMPLATES *certificate_extensions;
+	STACK_OF(CVC_DISCRETIONARY_DATA_TEMPLATE) *certificate_extensions;
 } CVC_CERT_BODY_SEQ;
 /** @brief Short name for CVC_CERT_BODY_SEQ */
 typedef CVC_CERT_BODY_SEQ CVC_CERT_BODY;
