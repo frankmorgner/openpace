@@ -554,10 +554,9 @@ is_chr(const unsigned char *data, size_t length)
     if (!is_char_str(data+2, length-2-5))
         return 0;
 
-    /* sequence number must be alphanumeric */
-    for (i = length-5-2; i < length; i++) {
+    /* sequence number must contain 0..9 and A..Z */
+    for (i = length-5; i < length; i++) {
         if (!(('A' <= data[i] && data[i] <= 'Z')
-                    || ('a' <= data[i] && data[i] <= 'z')
                     || ('0' <= data[i] && data[i] <= '9')))
             return 0;
     }
