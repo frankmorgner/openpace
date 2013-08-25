@@ -204,8 +204,6 @@ typedef struct ecdh_pubkey_st {
 } ECDH_PUBKEY_BODY;
 typedef ECDH_PUBKEY_BODY ECDH_PUBKEY;
 
-static unsigned int
-getlen (unsigned const char * in, unsigned int * len_len, const unsigned int max_len);
 static int
 dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg);
 
@@ -548,49 +546,6 @@ err:
     return NULL;
 }
 
-/**
- * @brief Decode the length field of an ASN.1 DER encoded buffer
- * @param[in] in pointer to the beginning of the length field of the buffer
- * @param[out] len_len the length of the length field will be stored here
- * @return the decoded length or 0 in case of an error
- */
-
-static unsigned int
-getlen (const unsigned char *in, unsigned int *len_len, const unsigned int max_len)
-{
-    unsigned int len = 0;
-    unsigned int i = 0;
-
-    if (!in || !len_len || !max_len)
-        return 0;
-
-    if ((in[0] & 0x80) == 0x80 ) { /* MSB set => long form */
-        *len_len = (in[0] & 0x7F) + 1;
-        if (*len_len > max_len)
-            goto err;
-
-            for (i = 0; i < *len_len - 1; i++) {
-            len <<= i*8;
-            len += in[i+1];
-            /* Check if the ASN.1 length encoded length is bigger than our buffer */
-            if (len > max_len)
-                goto err;
-        }
-    }
-    else {/* MSB not set => short form */
-        len = (unsigned int) in[0];
-        *len_len = 1;
-        /* Check if the ASN.1 length encoded length is bigger than our buffer */
-        if (len > max_len)
-            goto err;
-    }
-    return len;
-
-err:
-    *len_len = 0;
-    return 0;
-}
-
 static EVP_PKEY *
 aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
 {
@@ -652,11 +607,9 @@ int
 EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
         EAC_CTX *ctx)
 {
-    unsigned int len = 0, len_len = 0, oid_len = 0;
     unsigned int todo = 0;
-    ASN1_OBJECT *a = NULL;
-    unsigned const char *oid_pos = NULL, *seq_pos = NULL;
-    int nid, ret = 0;
+    ASN1_OBJECT *oid = NULL;
+    int tag, class, nid, r = 0;
     PACE_INFO *tmp_info = NULL;
     PACE_DP_INFO *tmp_dp_info = NULL;
     TA_INFO *tmp_ta_info = NULL;
@@ -666,42 +619,45 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
     CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
     BUF_MEM *pubkey = NULL;
     ASN1_INTEGER *i = NULL;
+    long data_len, info_len;
+    const unsigned char *info_start;
 
     check((in && ctx  && ctx->pace_ctx && ctx->ca_ctx && ctx->ta_ctx),
         "Invalid arguments");
 
-    check(in[0] == 0x31, "Invalid data"); /* SET */
+    /* We need to manually extract all members of the SET OF SecurityInfos,
+     * because some files contain junk and look something like this:
+     *
+     *      SET { SecurityInfo, ..., SecurityInfo } , junk
+     *
+     * As far as we know, there is no way of telling OpenSSL to simply ignore
+     * the junk in d2i_* functions. That's why we iterate manually through
+     * the set */
 
-    len = getlen(++in, &len_len, in_len - 1); /* Length of SET */
-    /* Check length of input against ASN.1 encoded length */
-    if (in_len < len + len_len + 1) { /* 1 Byte tag + length of the length field + length of data */
-        log_err("Invalid data");
-        goto err;
-    }
+    check(!(0x80 & ASN1_get_object(&in, &data_len, &tag, &class, in_len))
+            && tag == V_ASN1_SET,
+            "Invalid data");
 
-    in += len_len;
-    todo = len;
-    while(todo > 0) { /* Manually extract all members of the SET OF SecurityInfos */
-        check(in[0] == 0x30, "Invalid data");/* SEQUENCE */
+    todo = data_len;
 
-        seq_pos = in;
-        len = getlen(++in, &len_len, todo - 1); /* Length of SEQUENCE */
-        oid_pos = in + len_len;
-        in += len + len_len;
-        todo -= len_len + 1;
+    while (todo > 0) {
+        info_start = in;
 
-        /* Read OID */
-        check(oid_pos[0] == 0x06, "Invalid data"); /* OBJECT IDENTIFIER */
-        oid_len = getlen(oid_pos+1, &len_len, todo); /* Length of OBJECT IDENTIFIER */
-        todo -= len; /* Point todo past the SEQUENCE */
+        if (!(ASN1_get_object(&in, &data_len, &tag, &class, todo))
+            || tag != V_ASN1_SEQUENCE) {
+            /* we've reached the junk */
+            break;
+        }
 
-        /* XXX: I don't understand, why we have to increment the last parameter
-         *      by two. This was found to work by trial and error. */
-        if (d2i_ASN1_OBJECT(&a, &oid_pos, oid_len+2) == NULL)
-            goto err;
+        info_len = (in-info_start) + data_len;
+
+        check(d2i_ASN1_OBJECT(&oid, &in, data_len),
+                "Invalid oid");
+
+        in = info_start;
 
         char obj_txt[32];
-        nid = OBJ_obj2nid(a);
+        nid = OBJ_obj2nid(oid);
         switch (nid) {
             /* PACEInfo */
             case NID_id_PACE_DH_GM_3DES_CBC_CBC:
@@ -720,7 +676,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
             case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
             case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-                check(d2i_PACE_INFO(&tmp_info, &seq_pos, len+2),
+                check(d2i_PACE_INFO(&tmp_info, &in, info_len),
                         "Could not decode PACE info");
 
                 ctx->pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
@@ -749,7 +705,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_PACE_ECDH_IM:
             case NID_id_PACE_DH_GM:
             case NID_id_PACE_DH_IM:
-                check(d2i_PACE_DP_INFO(&tmp_dp_info, &seq_pos, len+3),
+                check(d2i_PACE_DP_INFO(&tmp_dp_info, &in, info_len),
                         "Could not decode PACE domain parameter information");
 
                 if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
@@ -757,7 +713,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                 break;
             /* TAInfo */
             case NID_id_TA:
-                check(d2i_TA_INFO(&tmp_ta_info, &seq_pos, len+2),
+                check(d2i_TA_INFO(&tmp_ta_info, &in, info_len),
                         "Could not decode TA info");
 
                 ctx->ta_ctx->version = ASN1_INTEGER_get(tmp_ta_info->version);
@@ -777,7 +733,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             case NID_id_CA_ECDH_AES_CBC_CMAC_128 :
             case NID_id_CA_ECDH_AES_CBC_CMAC_192 :
             case NID_id_CA_ECDH_AES_CBC_CMAC_256 :
-                check(d2i_CA_INFO(&tmp_ca_info, &seq_pos, len+2),
+                check(d2i_CA_INFO(&tmp_ca_info, &in, info_len),
                         "Could not decode CA info");
 
                 ctx->ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
@@ -788,9 +744,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             /* ChipAuthenticationDomainParameterInfo */
             case NID_id_CA_DH:
             case NID_id_CA_ECDH:
-                /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
-                 * CADomainParameterInfo */
-                check(d2i_CA_DP_INFO(&tmp_ca_dp_info, &seq_pos, len+3),
+                check(d2i_CA_DP_INFO(&tmp_ca_dp_info, &in, info_len),
                         "Could not decode CA domain parameter info");
 
                 if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
@@ -799,9 +753,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             /* ChipAuthenticationPublicKeyInfo */
             case NID_id_PK_DH:
             case NID_id_PK_ECDH:
-                /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
-                 * RestrictedIdentificationDomainParameterInfo */
-                check(d2i_CA_PUBLIC_KEY_INFO(&ca_public_key_info, &seq_pos, len+3),
+                check(d2i_CA_PUBLIC_KEY_INFO(&ca_public_key_info, &in, info_len),
                         "Could not decode CA PK domain parameter info");
 
                 if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key,
@@ -852,9 +804,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             /* RestrictedIdentificationDomainParameterInfo */
             case NID_id_RI_DH:
             case NID_id_RI_ECDH:
-                /* HACK: the obscure offset (see line 621) must be 3 and not 2 for
-                 * RestrictedIdentificationDomainParameterInfo */
-                check(d2i_RI_DP_INFO(&tmp_ri_dp_info, &seq_pos, len+3),
+                check(d2i_RI_DP_INFO(&tmp_ri_dp_info, &in, info_len),
                         "Could not decode RI domain parameter info");
 
                 /* TODO: Copy all the public keys into the EAC context.  As of
@@ -863,18 +813,21 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                  * EAC_CTX_init_ri called by the user */
                 break;
             default:
-                OBJ_obj2txt(obj_txt, sizeof obj_txt, a, 0);
+                OBJ_obj2txt(obj_txt, sizeof obj_txt, oid, 0);
                 log_err("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid),
                     obj_txt);
                 break;
         }
+
+        todo -= info_len;
+        in = info_start+info_len;
     }
 
-    ret = 1;
+    r = 1;
 
 err:
-    if (a)
-        ASN1_OBJECT_free(a);
+    if (oid)
+        ASN1_OBJECT_free(oid);
     if (tmp_info)
         PACE_INFO_free(tmp_info);
     if (tmp_dp_info)
@@ -894,7 +847,7 @@ err:
     if (ca_public_key_info)
         CA_PUBLIC_KEY_INFO_free(ca_public_key_info);
 
-    return ret;
+    return r;
 }
 
 static ASN1_OCTET_STRING *
