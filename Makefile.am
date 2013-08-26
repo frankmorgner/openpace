@@ -9,7 +9,6 @@ WS2_32 = -lws2_32
 endif
 
 do_subst = $(SED) \
-	   -e 's,[@]PKG_REQUIRES[@],$(PKG_REQUIRES),g' \
 	   -e 's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g' \
 	   -e 's,[@]PACKAGE_SUMMARY[@],$(PACKAGE_SUMMARY),g' \
 	   -e 's,[@]CVCDIR[@],$(CVCDIR),g' \

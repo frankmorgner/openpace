@@ -33,6 +33,7 @@ extern "C" {
 #endif
 
 #include <eac/cv_cert.h>
+#include <eac/objects.h>
 #include <openssl/asn1.h>
 #include <openssl/buffer.h>
 #include <openssl/cmac.h>
@@ -346,7 +347,9 @@ typedef struct eac_ctx {
  * @{ ************************************************************************/
 
 /**
- * @brief Wrapper to \c OpenSSL_add_all_algorithms()
+ * @brief Initializes OpenSSL and the EAC identifier
+ *
+ * @see \c OpenSSL_add_all_algorithms()
  */
 void EAC_init(void);
 

@@ -135,9 +135,11 @@ encoded_secret(const PACE_SEC * pi)
 
             out = BUF_MEM_create_init(pi->mem->data, pi->mem->length);
             break;
+
         case PACE_MRZ:
             out = encoded_mrz(pi->mem->data, pi->mem->length);
             break;
+
         default:
             log_err("Invalid arguments");
             return NULL;
@@ -244,50 +246,45 @@ PACE_CTX_set_protocol(PACE_CTX * ctx, int protocol, enum eac_tr_version tr_versi
     if (!KA_CTX_set_protocol(ctx->ka_ctx, protocol))
         return 0;
 
-    switch (protocol) {
-        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-            ctx->map_generate_key = ecdh_gm_generate_key;
-            ctx->map_compute_key = ecdh_gm_compute_key;
-            break;
+    if (protocol == NID_id_PACE_ECDH_GM_3DES_CBC_CBC
+            || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256) {
+        ctx->map_generate_key = ecdh_gm_generate_key;
+        ctx->map_compute_key = ecdh_gm_compute_key;
 
-        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-            ctx->map_generate_key = dh_gm_generate_key;
-            ctx->map_compute_key = dh_gm_compute_key;
-            break;
+    } else if (protocol == NID_id_PACE_DH_GM_3DES_CBC_CBC
+            || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_256) {
+        ctx->map_generate_key = dh_gm_generate_key;
+        ctx->map_compute_key = dh_gm_compute_key;
 
-        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-            if (tr_version > EAC_TR_VERSION_2_01) {
-                log_err("Invalid arguments");
-                return 0;
-            }
-            ctx->map_generate_key = dh_im_generate_key;
-            ctx->map_compute_key = dh_im_compute_key;
-            break;
-
-        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-            if (tr_version > EAC_TR_VERSION_2_01) {
-                log_err("Invalid arguments");
-                return 0;
-            }
-            ctx->map_generate_key = ecdh_im_generate_key;
-            ctx->map_compute_key = ecdh_im_compute_key;
-            break;
-
-        default:
+    } else if (protocol == NID_id_PACE_DH_IM_3DES_CBC_CBC
+            || protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_256) {
+        if (tr_version > EAC_TR_VERSION_2_01) {
             log_err("Invalid arguments");
             return 0;
+        }
+        ctx->map_generate_key = dh_im_generate_key;
+        ctx->map_compute_key = dh_im_compute_key;
+
+    } else if (protocol == NID_id_PACE_ECDH_IM_3DES_CBC_CBC
+            || protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256) {
+        if (tr_version > EAC_TR_VERSION_2_01) {
+            log_err("Invalid arguments");
+            return 0;
+        }
+        ctx->map_generate_key = ecdh_im_generate_key;
+        ctx->map_compute_key = ecdh_im_compute_key;
+
+    } else {
+        log_err("Invalid arguments");
+        return 0;
     }
     ctx->protocol = protocol;
 

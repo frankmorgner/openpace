@@ -32,6 +32,7 @@
 extern "C" {
 #endif
 
+#include <eac/objects.h>
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
 #include <openssl/bio.h>
@@ -211,12 +212,14 @@ DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
      /** @brief Terms of Usage of the Service holding the certificate. May be
      *  formatted as either plain text, HTML or PDF
      */union {
+#ifdef HAVE_PATCHED_OPENSSL
         /** @brief Plain text Terms of Usage */
         ASN1_UTF8STRING *plainTerms;
         /** @brief HTML formatted Terms of Usage */
         ASN1_IA5STRING *htmlTerms;
         /** @brief PDF formatted Terms of Usage */
         ASN1_OCTET_STRING *pdfTerms;
+#endif
         /** @brief Otherwise formatted Terms of Usage (not specified) */
         ASN1_TYPE *other;
     } termsOfUsage;

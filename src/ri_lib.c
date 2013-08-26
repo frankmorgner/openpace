@@ -84,71 +84,59 @@ RI_CTX_set_protocol(RI_CTX * ctx, int protocol)
         return 0;
     }
 
-    switch (protocol) {
-        case NID_id_RI_ECDH_SHA_1:
-            ctx->md = EVP_sha1();
-            ctx->compute_key = ecdh_compute_key;
-            ctx->generate_key = ecdh_generate_key;
-            break;
+    if (protocol == NID_id_RI_ECDH_SHA_1) {
+        ctx->md = EVP_sha1();
+        ctx->compute_key = ecdh_compute_key;
+        ctx->generate_key = ecdh_generate_key;
 
-        case NID_id_RI_ECDH_SHA_224:
-            ctx->md = EVP_sha224();
-            ctx->compute_key = ecdh_compute_key;
-            ctx->generate_key = ecdh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_ECDH_SHA_224) {
+        ctx->md = EVP_sha224();
+        ctx->compute_key = ecdh_compute_key;
+        ctx->generate_key = ecdh_generate_key;
 
-        case NID_id_RI_ECDH_SHA_256:
-            ctx->md = EVP_sha256();
-            ctx->compute_key = ecdh_compute_key;
-            ctx->generate_key = ecdh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_ECDH_SHA_256) {
+        ctx->md = EVP_sha256();
+        ctx->compute_key = ecdh_compute_key;
+        ctx->generate_key = ecdh_generate_key;
 
-        case NID_id_RI_ECDH_SHA_384:
-            ctx->md = EVP_sha384();
-            ctx->compute_key = ecdh_compute_key;
-            ctx->generate_key = ecdh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_ECDH_SHA_384) {
+        ctx->md = EVP_sha384();
+        ctx->compute_key = ecdh_compute_key;
+        ctx->generate_key = ecdh_generate_key;
 
-        case NID_id_RI_ECDH_SHA_512:
-            ctx->md = EVP_sha512();
-            ctx->compute_key = ecdh_compute_key;
-            ctx->generate_key = ecdh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_ECDH_SHA_512) {
+        ctx->md = EVP_sha512();
+        ctx->compute_key = ecdh_compute_key;
+        ctx->generate_key = ecdh_generate_key;
 
-        case NID_id_RI_DH_SHA_1:
-            ctx->md = EVP_sha1();
-            ctx->compute_key = dh_compute_key;
-            ctx->generate_key = dh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_DH_SHA_1) {
+        ctx->md = EVP_sha1();
+        ctx->compute_key = dh_compute_key;
+        ctx->generate_key = dh_generate_key;
 
-        case NID_id_RI_DH_SHA_224:
-            ctx->md = EVP_sha224();
-            ctx->compute_key = dh_compute_key;
-            ctx->generate_key = dh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_DH_SHA_224) {
+        ctx->md = EVP_sha224();
+        ctx->compute_key = dh_compute_key;
+        ctx->generate_key = dh_generate_key;
 
+    } else if (protocol == NID_id_RI_DH_SHA_256) {
+        ctx->md = EVP_sha256();
+        ctx->compute_key = dh_compute_key;
+        ctx->generate_key = dh_generate_key;
 
-        case NID_id_RI_DH_SHA_256:
-            ctx->md = EVP_sha256();
-            ctx->compute_key = dh_compute_key;
-            ctx->generate_key = dh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_DH_SHA_384) {
+        ctx->md = EVP_sha384();
+        ctx->compute_key = dh_compute_key;
+        ctx->generate_key = dh_generate_key;
 
-        case NID_id_RI_DH_SHA_384:
-            ctx->md = EVP_sha384();
-            ctx->compute_key = dh_compute_key;
-            ctx->generate_key = dh_generate_key;
-            break;
+    } else if (protocol == NID_id_RI_DH_SHA_512) {
+        ctx->md = EVP_sha512();
+        ctx->compute_key = dh_compute_key;
+        ctx->generate_key = dh_generate_key;
 
-        case NID_id_RI_DH_SHA_512:
-            ctx->md = EVP_sha512();
-            ctx->compute_key = dh_compute_key;
-            ctx->generate_key = dh_generate_key;
-            break;
-
-        default:
-            log_err("Unknown object identifier");
-            return 0;
+    } else {
+        log_err("Unknown object identifier");
+        return 0;
     }
     ctx->protocol = protocol;
 

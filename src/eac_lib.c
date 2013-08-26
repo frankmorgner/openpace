@@ -47,6 +47,7 @@
 void EAC_init(void)
 {
     OpenSSL_add_all_algorithms();
+    EAC_add_all_objects();
 }
 
 void EAC_cleanup(void)
@@ -329,104 +330,95 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         return 0;
     }
 
-    switch (protocol) {
-        case NID_id_CA_DH_3DES_CBC_CBC:
-        case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-        case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-            ctx->generate_key = dh_generate_key;
-            ctx->compute_key = dh_compute_key;
-            ctx->mac_keylen = 16;
-            ctx->md = EVP_sha1();
-            ctx->cipher = EVP_des_ede_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    if (       protocol == NID_id_CA_DH_3DES_CBC_CBC
+            || protocol == NID_id_PACE_DH_GM_3DES_CBC_CBC
+            || protocol == NID_id_PACE_DH_IM_3DES_CBC_CBC) {
+        ctx->generate_key = dh_generate_key;
+        ctx->compute_key = dh_compute_key;
+        ctx->mac_keylen = 16;
+        ctx->md = EVP_sha1();
+        ctx->cipher = EVP_des_ede_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_DH_AES_CBC_CMAC_128:
-        case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-        case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-            ctx->generate_key = dh_generate_key;
-            ctx->compute_key = dh_compute_key;
-            ctx->mac_keylen = 16;
-            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-            ctx->md = EVP_sha1();
-            ctx->cipher = EVP_aes_128_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_DH_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_128) {
+        ctx->generate_key = dh_generate_key;
+        ctx->compute_key = dh_compute_key;
+        ctx->mac_keylen = 16;
+        ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
+        ctx->md = EVP_sha1();
+        ctx->cipher = EVP_aes_128_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_DH_AES_CBC_CMAC_192:
-        case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-        case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-            ctx->generate_key = dh_generate_key;
-            ctx->compute_key = dh_compute_key;
-            ctx->mac_keylen = 24;
-            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-            ctx->md = EVP_sha256();
-            ctx->cipher = EVP_aes_192_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_DH_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_192) {
+        ctx->generate_key = dh_generate_key;
+        ctx->compute_key = dh_compute_key;
+        ctx->mac_keylen = 24;
+        ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
+        ctx->md = EVP_sha256();
+        ctx->cipher = EVP_aes_192_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_DH_AES_CBC_CMAC_256:
-        case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-        case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-            ctx->generate_key = dh_generate_key;
-            ctx->compute_key = dh_compute_key;
-            ctx->mac_keylen = 32;
-            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-            ctx->md = EVP_sha256();
-            ctx->cipher = EVP_aes_256_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_DH_AES_CBC_CMAC_256
+            || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_256
+            || protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_256) {
+        ctx->generate_key = dh_generate_key;
+        ctx->compute_key = dh_compute_key;
+        ctx->mac_keylen = 32;
+        ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
+        ctx->md = EVP_sha256();
+        ctx->cipher = EVP_aes_256_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_ECDH_3DES_CBC_CBC:
-        case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-        case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-            ctx->generate_key = ecdh_generate_key;
-            ctx->compute_key = ecdh_compute_key;
-            ctx->mac_keylen = 16;
-            ctx->md = EVP_sha1();
-            ctx->cipher = EVP_des_ede_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_ECDH_3DES_CBC_CBC
+            || protocol == NID_id_PACE_ECDH_GM_3DES_CBC_CBC
+            || protocol == NID_id_PACE_ECDH_IM_3DES_CBC_CBC) {
+        ctx->generate_key = ecdh_generate_key;
+        ctx->compute_key = ecdh_compute_key;
+        ctx->mac_keylen = 16;
+        ctx->md = EVP_sha1();
+        ctx->cipher = EVP_des_ede_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_ECDH_AES_CBC_CMAC_128:
-        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-            ctx->generate_key = ecdh_generate_key;
-            ctx->compute_key = ecdh_compute_key;
-            ctx->mac_keylen = 16;
-            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-            ctx->md = EVP_sha1();
-            ctx->cipher = EVP_aes_128_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_ECDH_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128
+            || protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128) {
+        ctx->generate_key = ecdh_generate_key;
+        ctx->compute_key = ecdh_compute_key;
+        ctx->mac_keylen = 16;
+        ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
+        ctx->md = EVP_sha1();
+        ctx->cipher = EVP_aes_128_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_ECDH_AES_CBC_CMAC_192:
-        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-            ctx->generate_key = ecdh_generate_key;
-            ctx->compute_key = ecdh_compute_key;
-            ctx->mac_keylen = 24;
-            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-            ctx->md = EVP_sha256();
-            ctx->cipher = EVP_aes_192_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_ECDH_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192
+            || protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192) {
+        ctx->generate_key = ecdh_generate_key;
+        ctx->compute_key = ecdh_compute_key;
+        ctx->mac_keylen = 24;
+        ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
+        ctx->md = EVP_sha256();
+        ctx->cipher = EVP_aes_192_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        case NID_id_CA_ECDH_AES_CBC_CMAC_256:
-        case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-        case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-            ctx->generate_key = ecdh_generate_key;
-            ctx->compute_key = ecdh_compute_key;
-            ctx->mac_keylen = 32;
-            ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
-            ctx->md = EVP_sha256();
-            ctx->cipher = EVP_aes_256_cbc();
-            ctx->enc_keylen = ctx->cipher->key_len;
-            break;
+    } else if (protocol == NID_id_CA_ECDH_AES_CBC_CMAC_256
+            || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256
+            || protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256) {
+        ctx->generate_key = ecdh_generate_key;
+        ctx->compute_key = ecdh_compute_key;
+        ctx->mac_keylen = 32;
+        ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
+        ctx->md = EVP_sha256();
+        ctx->cipher = EVP_aes_256_cbc();
+        ctx->enc_keylen = ctx->cipher->key_len;
 
-        default:
-            log_err("Unknown protocol");
-            return 0;
+    } else {
+        log_err("Unknown protocol");
+        return 0;
     }
 
     return 1;

@@ -91,15 +91,21 @@ install OpenPACE now do the following::
     make install
 
 OpenPACE depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
-Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is
-required.  Furthermore, OpenPACE requires additional Object Identifiers
-and therefore needs a patched version of OpenSSL. Due to these special
-requirements, the make command downloads a recent snapshot of OpenSSL, applies
-the necessary patch and builds OpenSSL if needed. OpenPACE is then
-statically linked against this local version of OpenSSL. Forcing the build and
-download process can be done with :option:`--enable-openssl-build`.  To install
-and link against a shared version of the patched openssl libraries use
-:option:`--enable-openssl-install`.
+Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is required.
+
+Furthermore, additional object identifiers from `BSI TR-03110`_ are required.
+You have two options to get them to work:
+
+1. Let OpenPACE load the object identifiers at runtime
+2. Patch OpenSSL to include the identifiers
+
+The first option allows you to install an unchanged version of OpenSSL to your
+system. However, performance will be slightly worse and there are some
+limitations. For example, you won't be able to use the new NIDs as labels in a
+switch statement and you need to make sure to call ``EAC_init()`` first.  For
+patching OpenSSL we provide :file:`oids.patch`. You can configure
+OpenPACE with :option:`--enable-openssl-install`, which will
+automatically download, patch, build and install OpenSSL if needed.
 
 
 *******************************************************************************

@@ -97,5 +97,7 @@ const ECDH_METHOD *ECDH_OpenSSL_Point(void);
  */
 int
 consttime_memcmp(const BUF_MEM *a, const BUF_MEM *b);
-#endif
 
+void
+EAC_add_all_objects(void);
+#endif

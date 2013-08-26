@@ -474,12 +474,14 @@ int update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc)
             /* Flawfinder: ignore */
             memcpy(ctx->iv, ivbuf->data, ivbuf->length);
             break;
+
         case NID_des_ede_cbc:
             /* For 3DES encryption or decryption the IV is always NULL */
             if (ctx->iv)
                 free(ctx->iv);
             ctx->iv = NULL;
             break;
+
         default:
             log_err("Unknown cipher");
             goto err;
@@ -686,6 +688,7 @@ EVP_PKEY_set_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
             EVP_PKEY_set1_DH(key, dh);
             DH_free(dh);
             break;
+
         case EVP_PKEY_EC:
             ec = EVP_PKEY_get1_EC_KEY(key);
             if (!ec)
@@ -700,6 +703,7 @@ EVP_PKEY_set_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
             EC_POINT_free(ecp);
             EC_KEY_free(ec);
             break;
+
         default:
             log_err("Unknown protocol");
             goto err;
@@ -831,6 +835,7 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx)
         case EVP_PKEY_DH:
             out = hash(EVP_sha1(), md_ctx, NULL, pub);
             break;
+
         case EVP_PKEY_EC:
             ec = EVP_PKEY_get1_EC_KEY(key);
             if (!ec)
@@ -851,6 +856,7 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx)
             if(!out || !BN_bn2bin(x, (unsigned char *) out->data))
                 goto err;
             break;
+
         default:
             log_err("Unknown protocol");
             goto err;
@@ -892,6 +898,7 @@ int EVP_PKEY_set_std_dp(EVP_PKEY *key, int stnd_dp) {
             /* Decrement reference count */
             DH_free(dh);
             break;
+
         case 8:
         case 9:
         case 10:
@@ -909,6 +916,7 @@ int EVP_PKEY_set_std_dp(EVP_PKEY *key, int stnd_dp) {
             /* Decrement reference count */
             EC_KEY_free(ec);
             break;
+
         default:
             log_err("Invalid arguments");
             return 0;
@@ -955,6 +963,7 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
                     || !EVP_PKEY_set1_EC_KEY(evp_pkey, ec_key))
                 goto err;
             break;
+
         case EVP_PKEY_DH:
             dh = EVP_PKEY_get1_DH(evp_pkey);
             dh->priv_key = BN_bin2bn(privkey, privkey_len, dh->priv_key);
@@ -963,6 +972,7 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
                     || !EVP_PKEY_set1_DH(evp_pkey, dh))
                 goto err;
             break;
+
         default:
             log_err("Unknown protocol");
             goto err;
@@ -1128,26 +1138,25 @@ err:
 const EVP_MD *
 eac_oid2md(int protocol)
 {
-    switch(protocol) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_RSA_v1_5_SHA_1:
-        case NID_id_TA_RSA_PSS_SHA_1:
-            return EVP_sha1();
-        case NID_id_TA_ECDSA_SHA_224:
-            return EVP_sha224();
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_RSA_v1_5_SHA_256:
-        case NID_id_TA_RSA_PSS_SHA_256:
-            return EVP_sha256();
-        case NID_id_TA_ECDSA_SHA_384:
-            return EVP_sha384();
-        case NID_id_TA_ECDSA_SHA_512:
-        case NID_id_TA_RSA_v1_5_SHA_512:
-        case NID_id_TA_RSA_PSS_SHA_512:
-            return EVP_sha512();
-        default:
-            log_err("Unknown protocol");
-            return NULL;
+    if (       protocol == NID_id_TA_ECDSA_SHA_1
+            || protocol == NID_id_TA_RSA_v1_5_SHA_1
+            || protocol == NID_id_TA_RSA_PSS_SHA_1) {
+        return EVP_sha1();
+    } else if (protocol == NID_id_TA_ECDSA_SHA_224) {
+        return EVP_sha224();
+    } else if (protocol == NID_id_TA_ECDSA_SHA_256
+            || protocol == NID_id_TA_RSA_v1_5_SHA_256
+            || protocol == NID_id_TA_RSA_PSS_SHA_256) {
+        return EVP_sha256();
+    } else if (protocol == NID_id_TA_ECDSA_SHA_384) {
+        return EVP_sha384();
+    } else if (protocol == NID_id_TA_ECDSA_SHA_512
+            || protocol == NID_id_TA_RSA_v1_5_SHA_512
+            || protocol == NID_id_TA_RSA_PSS_SHA_512) {
+        return EVP_sha512();
+    } else {
+        log_err("Unknown protocol");
+        return NULL;
     }
 }
 
@@ -1169,50 +1178,46 @@ EAC_verify(int protocol, EVP_PKEY *key,    const BUF_MEM *signature,
         goto err;
 
 
-    switch (protocol) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_ECDSA_SHA_224:
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_ECDSA_SHA_384:
-        case NID_id_TA_ECDSA_SHA_512:
-            if (!(EVP_PKEY_type(key->type) == EVP_PKEY_EC))
-                goto err;
-
-            /* EAC signatures are always in plain signature format for EC curves but
-             * OpenSSL only creates X.509 format. Therefore we need to convert between
-             * these formats. */
-            signature_to_verify = convert_from_plain_sig(signature);
-            if (!signature_to_verify)
-                goto err;
-            break;
-
-        case NID_id_TA_RSA_v1_5_SHA_1:
-        case NID_id_TA_RSA_v1_5_SHA_256:
-        case NID_id_TA_RSA_v1_5_SHA_512:
-            if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
-                goto err;
-
-            signature_to_verify = BUF_MEM_create_init(signature->data,
-                    signature->length);
-            if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PADDING)
-                    || !signature_to_verify)
-                goto err;
-            break;
-
-        case NID_id_TA_RSA_PSS_SHA_1:
-        case NID_id_TA_RSA_PSS_SHA_256:
-        case NID_id_TA_RSA_PSS_SHA_512:
-            if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
-                goto err;
-
-            signature_to_verify = BUF_MEM_create_init(signature->data, signature->length);
-            if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PSS_PADDING)
-                    || !signature_to_verify)
-                goto err;
-            break;
-
-        default:
+    if (       protocol == NID_id_TA_ECDSA_SHA_1
+            || protocol == NID_id_TA_ECDSA_SHA_224
+            || protocol == NID_id_TA_ECDSA_SHA_256
+            || protocol == NID_id_TA_ECDSA_SHA_384
+            || protocol == NID_id_TA_ECDSA_SHA_512) {
+        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_EC))
             goto err;
+
+        /* EAC signatures are always in plain signature format for EC curves but
+         * OpenSSL only creates X.509 format. Therefore we need to convert between
+         * these formats. */
+        signature_to_verify = convert_from_plain_sig(signature);
+        if (!signature_to_verify)
+            goto err;
+
+    } else if (protocol == NID_id_TA_RSA_v1_5_SHA_1
+            || protocol == NID_id_TA_RSA_v1_5_SHA_256
+            || protocol == NID_id_TA_RSA_v1_5_SHA_512) {
+        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+            goto err;
+
+        signature_to_verify = BUF_MEM_create_init(signature->data,
+                signature->length);
+        if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PADDING)
+                || !signature_to_verify)
+            goto err;
+
+    } else if (protocol == NID_id_TA_RSA_PSS_SHA_1
+            || protocol == NID_id_TA_RSA_PSS_SHA_256
+            || protocol == NID_id_TA_RSA_PSS_SHA_512) {
+        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+            goto err;
+
+        signature_to_verify = BUF_MEM_create_init(signature->data, signature->length);
+        if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PSS_PADDING)
+                || !signature_to_verify)
+            goto err;
+
+    } else {
+        goto err;
     }
 
     /* EVP_PKEY_sign doesn't perform hashing (despite EVP_PKEY_CTX_set_signature_md).
@@ -1254,39 +1259,34 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data)
         goto err;
 
 
-    switch (protocol) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_ECDSA_SHA_224:
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_ECDSA_SHA_384:
-        case NID_id_TA_ECDSA_SHA_512:
-            if (!(EVP_PKEY_type(key->type) == EVP_PKEY_EC))
-                goto err;
-
-            break;
-
-        case NID_id_TA_RSA_v1_5_SHA_1:
-        case NID_id_TA_RSA_v1_5_SHA_256:
-        case NID_id_TA_RSA_v1_5_SHA_512:
-            if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
-                goto err;
-
-            if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PADDING))
-                goto err;
-            break;
-
-        case NID_id_TA_RSA_PSS_SHA_1:
-        case NID_id_TA_RSA_PSS_SHA_256:
-        case NID_id_TA_RSA_PSS_SHA_512:
-            if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
-                goto err;
-
-            if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PSS_PADDING))
-                goto err;
-            break;
-
-        default:
+    if (       protocol == NID_id_TA_ECDSA_SHA_1
+            || protocol == NID_id_TA_ECDSA_SHA_224
+            || protocol == NID_id_TA_ECDSA_SHA_256
+            || protocol == NID_id_TA_ECDSA_SHA_384
+            || protocol == NID_id_TA_ECDSA_SHA_512) {
+        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_EC))
             goto err;
+
+    } else if (protocol == NID_id_TA_RSA_v1_5_SHA_1
+            || protocol == NID_id_TA_RSA_v1_5_SHA_256
+            || protocol == NID_id_TA_RSA_v1_5_SHA_512) {
+        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+            goto err;
+
+        if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PADDING))
+            goto err;
+
+    } else if (protocol == NID_id_TA_RSA_PSS_SHA_1
+            || protocol == NID_id_TA_RSA_PSS_SHA_256
+            || protocol == NID_id_TA_RSA_PSS_SHA_512) {
+        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+            goto err;
+
+        if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PSS_PADDING))
+            goto err;
+
+    } else {
+        goto err;
     }
 
     /* EVP_PKEY_sign doesn't perform hashing (despite EVP_PKEY_CTX_set_signature_md).
@@ -1315,16 +1315,14 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data)
     /* EAC signatures are always in plain signature format for EC curves but
      * OpenSSL only creates X.509 format. Therefore we need to convert between
      * these formats. */
-    switch (protocol) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_ECDSA_SHA_224:
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_ECDSA_SHA_384:
-        case NID_id_TA_ECDSA_SHA_512:
-            plain_sig = convert_to_plain_sig(signature);
-            BUF_MEM_free(signature);
-            signature = plain_sig;
-            break;
+    if (       protocol == NID_id_TA_ECDSA_SHA_1
+            || protocol == NID_id_TA_ECDSA_SHA_224
+            || protocol == NID_id_TA_ECDSA_SHA_256
+            || protocol == NID_id_TA_ECDSA_SHA_384
+            || protocol == NID_id_TA_ECDSA_SHA_512) {
+        plain_sig = convert_to_plain_sig(signature);
+        BUF_MEM_free(signature);
+        signature = plain_sig;
     }
 
 err:

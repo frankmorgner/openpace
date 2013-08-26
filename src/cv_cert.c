@@ -225,12 +225,14 @@ IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT)
 /*IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CHAT)*/
 
-ASN1_ADB_TEMPLATE(cert_def) = ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.other, ASN1_ANY, 0x05);
+ASN1_ADB_TEMPLATE(cert_def) = ASN1_SIMPLE(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.other, ASN1_ANY);
 
 ASN1_ADB(CVC_CERTIFICATE_DESCRIPTION) = {
+#ifdef HAVE_PATCHED_OPENSSL
         ADB_ENTRY(NID_id_plainFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.plainTerms, ASN1_UTF8STRING, 0x05)),
         ADB_ENTRY(NID_id_htmlFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.htmlTerms, ASN1_IA5STRING, 0x05)),
         ADB_ENTRY(NID_id_pdfFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.pdfTerms, ASN1_OCTET_STRING, 0x05))
+#endif
 } ASN1_ADB_END(CVC_CERTIFICATE_DESCRIPTION, 0, descriptionType, 0, &cert_def_tt, NULL);
 
 ASN1_SEQUENCE(CVC_CERTIFICATE_DESCRIPTION) = {
@@ -285,6 +287,7 @@ CVC_CERT *
 CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
 {
     CVC_CERT *ret = NULL;
+    int nid;
 
     ret = d2i_CVC_CERT(cert, in, len);
     if (!ret)
@@ -294,26 +297,24 @@ CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
      * public key are provided. This is necessary because of the ugly hack used
      * to support both ECDSA and RSA keys (see comment at the definition of
      * CVC_PUBKEY for details) */
-    switch(OBJ_obj2nid(ret->body->public_key->oid)) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_ECDSA_SHA_224:
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_ECDSA_SHA_384:
-        case NID_id_TA_ECDSA_SHA_512:
-            if (!ret->body->public_key->public_point)
-                goto err;
-            break;
-        case NID_id_TA_RSA_v1_5_SHA_1:
-        case NID_id_TA_RSA_v1_5_SHA_256:
-        case NID_id_TA_RSA_v1_5_SHA_512:
-        case NID_id_TA_RSA_PSS_SHA_1:
-        case NID_id_TA_RSA_PSS_SHA_256:
-        case NID_id_TA_RSA_PSS_SHA_512:
-            if (!ret->body->public_key->modulus || !ret->body->public_key->a)
-                goto err;
-            break;
-        default:
+    nid = OBJ_obj2nid(ret->body->public_key->oid);
+    if (       nid == NID_id_TA_ECDSA_SHA_1
+            || nid == NID_id_TA_ECDSA_SHA_224
+            || nid == NID_id_TA_ECDSA_SHA_256
+            || nid == NID_id_TA_ECDSA_SHA_384
+            || nid == NID_id_TA_ECDSA_SHA_512) {
+        if (!ret->body->public_key->public_point)
             goto err;
+    } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
+            || nid == NID_id_TA_RSA_v1_5_SHA_256
+            || nid == NID_id_TA_RSA_v1_5_SHA_512
+            || nid == NID_id_TA_RSA_PSS_SHA_1
+            || nid == NID_id_TA_RSA_PSS_SHA_256
+            || nid == NID_id_TA_RSA_PSS_SHA_512) {
+        if (!ret->body->public_key->modulus || !ret->body->public_key->a)
+            goto err;
+    } else {
+        goto err;
     }
 
     return ret;
@@ -417,7 +418,7 @@ CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
     EVP_PKEY *key = NULL;
     EC_KEY *ec = NULL;
     RSA *rsa = NULL;
-    int oid;
+    int nid;
 
     if (!cert || !cert->body || !cert->body->public_key)
         goto err;
@@ -426,32 +427,29 @@ CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
     if (!key)
         goto err;
 
-    oid = OBJ_obj2nid(cert->body->public_key->oid);
-    switch(oid) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_ECDSA_SHA_224:
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_ECDSA_SHA_384:
-        case NID_id_TA_ECDSA_SHA_512:
-            ec = CVC_get_ec_pubkey(domainParameters, cert, bn_ctx);
-            if (!ec)
-                goto err;
-            EVP_PKEY_set1_EC_KEY(key, ec);
-            break;
-        case NID_id_TA_RSA_v1_5_SHA_1:
-        case NID_id_TA_RSA_v1_5_SHA_256:
-        case NID_id_TA_RSA_v1_5_SHA_512:
-        case NID_id_TA_RSA_PSS_SHA_1:
-        case NID_id_TA_RSA_PSS_SHA_256:
-        case NID_id_TA_RSA_PSS_SHA_512:
-            rsa = CVC_get_rsa_pubkey(cert);
-            if (!rsa)
-                goto err;
-            EVP_PKEY_set1_RSA(key, rsa);
-            break;
-        default:
-            log_err("Unknown protocol");
+    nid = OBJ_obj2nid(cert->body->public_key->oid);
+    if (nid == NID_id_TA_ECDSA_SHA_1
+            || nid == NID_id_TA_ECDSA_SHA_224
+            || nid == NID_id_TA_ECDSA_SHA_256
+            || nid == NID_id_TA_ECDSA_SHA_384
+            || nid == NID_id_TA_ECDSA_SHA_512) {
+        ec = CVC_get_ec_pubkey(domainParameters, cert, bn_ctx);
+        if (!ec)
             goto err;
+        EVP_PKEY_set1_EC_KEY(key, ec);
+    } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
+            || nid == NID_id_TA_RSA_v1_5_SHA_256
+            || nid == NID_id_TA_RSA_v1_5_SHA_512
+            || nid == NID_id_TA_RSA_PSS_SHA_1
+            || nid == NID_id_TA_RSA_PSS_SHA_256
+            || nid == NID_id_TA_RSA_PSS_SHA_512) {
+        rsa = CVC_get_rsa_pubkey(cert);
+        if (!rsa)
+            goto err;
+        EVP_PKEY_set1_RSA(key, rsa);
+    } else {
+        log_err("Unknown protocol");
+        goto err;
     }
 
     if (ec)
@@ -660,25 +658,21 @@ cvc_chat_print_authorizations(BIO *bio, const CVC_CHAT *chat, int indent)
 
 	/* Figure out what kind of CHAT we have */
 	nid = OBJ_obj2nid(chat->terminal_type);
-	switch(nid) {
-		case NID_id_AT:
-			strings = at_chat_strings;
-			rel_auth_len = EAC_AT_CHAT_BITS;
-			rel_auth_num_bytes = EAC_AT_CHAT_BYTES;
-			break;
-		case NID_id_IS:
-			strings = is_chat_strings;
-			rel_auth_len = EAC_IS_CHAT_BITS;
-			rel_auth_num_bytes = EAC_IS_CHAT_BYTES;
-			break;
-		case NID_id_ST:
-			strings = st_chat_strings;
-			rel_auth_len = EAC_ST_CHAT_BITS;
-			rel_auth_num_bytes = EAC_ST_CHAT_BYTES;
-			break;
-		default:
-			goto err;
-	}
+    if (nid == NID_id_AT) {
+        strings = at_chat_strings;
+        rel_auth_len = EAC_AT_CHAT_BITS;
+        rel_auth_num_bytes = EAC_AT_CHAT_BYTES;
+    } else if (nid == NID_id_IS) {
+        strings = is_chat_strings;
+        rel_auth_len = EAC_IS_CHAT_BITS;
+        rel_auth_num_bytes = EAC_IS_CHAT_BYTES;
+    } else if (nid == NID_id_ST) {
+        strings = st_chat_strings;
+        rel_auth_len = EAC_ST_CHAT_BITS;
+        rel_auth_num_bytes = EAC_ST_CHAT_BYTES;
+    } else {
+        goto err;
+    }
 
     /* Sanity check: Does the received CHAT have the correct length? */
     if(chat->relative_authorization->length != rel_auth_num_bytes)
@@ -715,26 +709,22 @@ cvc_chat_print(BIO *bio, const CVC_CHAT *chat, int indent)
 
     /* Figure out what kind of CHAT we have */
     nid = OBJ_obj2nid(chat->terminal_type);
-    switch(nid) {
-        case NID_id_AT:
-            if (!BIO_indent(bio, indent, 80)
-                    || !BIO_printf(bio, "Authentication terminal\n"))
-                goto err;
-            break;
-        case NID_id_IS:
-            if (!BIO_indent(bio, indent, 80)
-                    || !BIO_printf(bio, "Inspection system\n"))
-                goto err;
-            break;
-        case NID_id_ST:
-            if (!BIO_indent(bio, indent, 80)
-                    || !BIO_printf(bio, "Signature terminal\n"))
-                goto err;
-            break;
-        default:
-            BIO_indent(bio, indent, 80);
-            BIO_printf(bio, "Invalid terminal type\n");
+    if (       nid == NID_id_AT) {
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "Authentication terminal\n"))
             goto err;
+    } else if (nid == NID_id_IS) {
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "Inspection system\n"))
+            goto err;
+    } else if (nid == NID_id_ST) {
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "Signature terminal\n"))
+            goto err;
+    } else {
+        BIO_indent(bio, indent, 80);
+        BIO_printf(bio, "Invalid terminal type\n");
+        goto err;
     }
 
     cvc_chat_print_authorizations(bio, chat, indent+2);
@@ -872,24 +862,35 @@ certificate_description_print(BIO *bio,
     } else printf("%s:%d bla\n", __FILE__, __LINE__);
 
     nid = OBJ_obj2nid(desc->descriptionType);
-    switch (nid) {
-        case NID_id_plainFormat:
+    const unsigned char *p;
+    if (nid == NID_id_plainFormat) {
+#ifndef HAVE_PATCHED_OPENSSL
+            if (desc->termsOfUsage.other->type != V_ASN1_SEQUENCE)
+                return 0;
+            ASN1_UTF8STRING *s = NULL;
+            p = desc->termsOfUsage.other->value.sequence->data;
+            if (!d2i_ASN1_UTF8STRING(&s, &p,
+                        desc->termsOfUsage.other->value.sequence->length))
+                return 0;
+            p = s->data;
+#else
+            p = desc->termsOfUsage.plainTerms->data;
+#endif
             if (!BIO_indent(bio, indent, 80)
                     || !BIO_printf(bio, "%s\n%s\n", cert_desc_field_strings[5],
-                        desc->termsOfUsage.plainTerms->data))
+                        p))
                 return 0;
+#ifndef HAVE_PATCHED_OPENSSL
+            ASN1_UTF8STRING_free(s);
+#endif
             ret = 1;
-            break;
-        case NID_id_htmlFormat:
-            ret = 2;
-            break;
-        case NID_id_pdfFormat:
-            ret = 3;
-            break;
-        default:
-            /* Unknown format for terms of usage */
-            ret = 4;
-            break;
+    } else if (nid == NID_id_htmlFormat) {
+        ret = 2;
+    } else if (nid == NID_id_pdfFormat) {
+        ret = 3;
+    } else {
+        /* Unknown format for terms of usage */
+        ret = 4;
     }
 
     return ret;
@@ -922,31 +923,26 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
     if (!cv || !cv->body || !cv->body->public_key)
         goto err;
 
+    int nid = OBJ_obj2nid(cv->body->public_key->oid);
     /* Choose the correct hash function */
-    switch(OBJ_obj2nid(cv->body->public_key->oid)) {
-        case NID_id_TA_ECDSA_SHA_1:
-        case NID_id_TA_RSA_v1_5_SHA_1:
-        case NID_id_TA_RSA_PSS_SHA_1:
-            md = EVP_sha1();
-            break;
-        case NID_id_TA_ECDSA_SHA_256:
-        case NID_id_TA_RSA_v1_5_SHA_256:
-        case NID_id_TA_RSA_PSS_SHA_256:
-            md = EVP_sha256();
-            break;
-        case NID_id_TA_ECDSA_SHA_512:
-        case NID_id_TA_RSA_v1_5_SHA_512:
-        case NID_id_TA_RSA_PSS_SHA_512:
-            md = EVP_sha512();
-            break;
-        case NID_id_TA_ECDSA_SHA_224:
-            md = EVP_sha224();
-            break;
-        case NID_id_TA_ECDSA_SHA_384:
-            md = EVP_sha384();
-            break;
-        default:
-            goto err;
+    if (       nid == NID_id_TA_ECDSA_SHA_1
+            || nid == NID_id_TA_RSA_v1_5_SHA_1
+            || nid == NID_id_TA_RSA_PSS_SHA_1) {
+        md = EVP_sha1();
+    } else if (nid == NID_id_TA_ECDSA_SHA_256
+            || nid == NID_id_TA_RSA_v1_5_SHA_256
+            || nid == NID_id_TA_RSA_PSS_SHA_256) {
+        md = EVP_sha256();
+    } else if (     nid == NID_id_TA_ECDSA_SHA_512
+            || nid == NID_id_TA_RSA_v1_5_SHA_512
+            || nid == NID_id_TA_RSA_PSS_SHA_512) {
+        md = EVP_sha512();
+    } else if (     nid == NID_id_TA_ECDSA_SHA_224) {
+        md = EVP_sha224();
+    } else if (     nid == NID_id_TA_ECDSA_SHA_384) {
+        md = EVP_sha384();
+    } else {
+        goto err;
     }
 
     count = sk_num((_STACK*) cv->body->certificate_extensions);

@@ -39,6 +39,7 @@
 #include <openssl/dh.h>
 #include <openssl/ec.h>
 #include <openssl/objects.h>
+#include <openssl/obj_mac.h>
 
 /** PACEInfo structure */
 typedef struct pace_info_st {
@@ -56,9 +57,11 @@ typedef struct algorithm_identifier_st {
     /** OID of the algorithm */
     ASN1_OBJECT *algorithm;
     union {
-        PACE_ECPARAMETERS *ec;
         DH *dh;
+#ifdef HAVE_PATCHED_OPENSSL
+        PACE_ECPARAMETERS *ec;
         ASN1_INTEGER *standardizedDomainParameters;
+#endif
         ASN1_TYPE *other;
     } parameters;
 } ALGORITHM_IDENTIFIER;
@@ -254,6 +257,7 @@ ASN1_SEQUENCE(PACE_ECPARAMETERS) = {
     ASN1_SIMPLE(PACE_ECPARAMETERS, order, ASN1_INTEGER),
     ASN1_OPT(PACE_ECPARAMETERS, cofactor, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(PACE_ECPARAMETERS)
+IMPLEMENT_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
 
 /* I stole this from dh_asn1.c */
 ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
@@ -273,9 +277,11 @@ IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
 ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other, ASN1_ANY);
 
 ASN1_ADB(ALGORITHM_IDENTIFIER) = {
-    ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
     ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams)),
+#ifdef HAVE_PATCHED_OPENSSL
+    ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
     ADB_ENTRY(NID_standardizedDomainParameters, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.standardizedDomainParameters, ASN1_INTEGER))
+#endif
 } ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
 
 ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
@@ -549,8 +555,12 @@ err:
 static EVP_PKEY *
 aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
 {
+    ASN1_INTEGER *i;
     EC_KEY *tmp_ec = NULL;
-    EVP_PKEY *tmp_key;
+    EVP_PKEY *tmp_key = NULL, *ret = NULL;
+    char obj_txt[32];
+    int nid;
+    PACE_ECPARAMETERS *ec = NULL;
 
     /* If there is no key, allocate memory */
     if (!key || !*key) {
@@ -561,66 +571,91 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
         tmp_key = *key;
 
     /* Extract actual parameters */
-    char obj_txt[32];
-    switch (OBJ_obj2nid(aid->algorithm)) {
-        case NID_dhpublicnumber:
-            EVP_PKEY_set1_DH(tmp_key, aid->parameters.dh);
-            break;
-        case NID_X9_62_id_ecPublicKey:
-        case NID_ecka_dh_SessionKDF_DES3:
-        case NID_ecka_dh_SessionKDF_AES128:
-        case NID_ecka_dh_SessionKDF_AES192:
-        case NID_ecka_dh_SessionKDF_AES256:
-            tmp_ec = ec_key_from_PACE_ECPARAMETERS(aid->parameters.ec, bn_ctx);
-            check(tmp_ec, "Could not decode EC key");
+    nid = OBJ_obj2nid(aid->algorithm);
+    if (       nid == NID_dhpublicnumber) {
+        EVP_PKEY_set1_DH(tmp_key, aid->parameters.dh);
 
-            EVP_PKEY_set1_EC_KEY(tmp_key, tmp_ec);
-            break;
-        case NID_standardizedDomainParameters:
-            if (!EVP_PKEY_set_std_dp(tmp_key,
-                        ASN1_INTEGER_get(aid->parameters.standardizedDomainParameters)))
-                goto err;
-            break;
-        default:
-            OBJ_obj2txt(obj_txt, sizeof obj_txt, aid->algorithm, 0);
-            log_err("Unknown Identifier (%s) for %s",
-                    OBJ_nid2sn(OBJ_obj2nid(aid->algorithm)),
-                    obj_txt);
+    } else if (nid == NID_X9_62_id_ecPublicKey
+            || nid == NID_ecka_dh_SessionKDF_DES3
+            || nid == NID_ecka_dh_SessionKDF_AES128
+            || nid == NID_ecka_dh_SessionKDF_AES192
+            || nid == NID_ecka_dh_SessionKDF_AES256) {
+#ifndef HAVE_PATCHED_OPENSSL
+        const unsigned char *p;
+        p = aid->parameters.other->value.sequence->data;
+        check(aid->parameters.other->type == V_ASN1_SEQUENCE
+                && d2i_PACE_ECPARAMETERS(&ec, &p,
+                    aid->parameters.other->value.sequence->length),
+                "Invalid data");
+        i = aid->parameters.other->value.integer;
+#else
+        ec = aid->parameters.ec;
+#endif
+        tmp_ec = ec_key_from_PACE_ECPARAMETERS(ec, bn_ctx);
+        check(tmp_ec, "Could not decode EC key");
+
+        EVP_PKEY_set1_EC_KEY(tmp_key, tmp_ec);
+
+    } else if (nid == NID_standardizedDomainParameters) {
+#ifndef HAVE_PATCHED_OPENSSL
+        check(aid->parameters.other->type == V_ASN1_INTEGER,
+                "Invalid data");
+        i = aid->parameters.other->value.integer;
+#else
+        i = aid->parameters.standardizedDomainParameters;
+#endif
+        if (!EVP_PKEY_set_std_dp(tmp_key, ASN1_INTEGER_get(i)))
+            goto err;
+
+    } else {
+        OBJ_obj2txt(obj_txt, sizeof obj_txt, aid->algorithm, 0);
+        log_err("Unknown Identifier (%s) for %s",
+                OBJ_nid2sn(nid),
+                obj_txt);
     }
 
-    if (tmp_ec)
-        EC_KEY_free(tmp_ec);
-
-    if (key)
-        *key = tmp_key;
-    return tmp_key;
+    ret = tmp_key;
 
 err:
     if (tmp_ec)
         EC_KEY_free(tmp_ec);
+#ifndef HAVE_PATCHED_OPENSSL
+    if (ec)
+        PACE_ECPARAMETERS_free(ec);
+#endif
 
-    if (!key || !*key)
-        EVP_PKEY_free(tmp_key);
-    return NULL;
+    if (ret) {
+        /* success */
+        if (key)
+            *key = tmp_key;
+    } else {
+        /* error */
+        if (tmp_key && !key && !*key)
+            EVP_PKEY_free(tmp_key);
+    }
+
+    return ret;
 }
+
 int
 EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
         EAC_CTX *ctx)
 {
-    unsigned int todo = 0;
-    ASN1_OBJECT *oid = NULL;
-    int tag, class, nid, r = 0;
-    PACE_INFO *tmp_info = NULL;
-    PACE_DP_INFO *tmp_dp_info = NULL;
-    TA_INFO *tmp_ta_info = NULL;
-    CA_INFO *tmp_ca_info = NULL;
-    CA_DP_INFO *tmp_ca_dp_info = NULL;
-    RI_DP_INFO *tmp_ri_dp_info = NULL;
-    CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
-    BUF_MEM *pubkey = NULL;
     ASN1_INTEGER *i = NULL;
-    long data_len, info_len;
+    ASN1_OBJECT *oid = NULL;
+    BUF_MEM *pubkey = NULL;
+    CA_DP_INFO *tmp_ca_dp_info = NULL;
+    CA_INFO *tmp_ca_info = NULL;
+    CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
+    PACE_DP_INFO *tmp_dp_info = NULL;
+    PACE_INFO *tmp_info = NULL;
+    RI_DP_INFO *tmp_ri_dp_info = NULL;
+    TA_INFO *tmp_ta_info = NULL;
+    char obj_txt[32];
     const unsigned char *info_start;
+    int tag, class, nid, r = 0;
+    long data_len, info_len;
+    unsigned int todo = 0;
 
     check((in && ctx  && ctx->pace_ctx && ctx->ca_ctx && ctx->ta_ctx),
         "Invalid arguments");
@@ -644,7 +679,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
         info_start = in;
 
         if (!(ASN1_get_object(&in, &data_len, &tag, &class, todo))
-            || tag != V_ASN1_SEQUENCE) {
+                || tag != V_ASN1_SEQUENCE) {
             /* we've reached the junk */
             break;
         }
@@ -656,167 +691,156 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
 
         in = info_start;
 
-        char obj_txt[32];
         nid = OBJ_obj2nid(oid);
-        switch (nid) {
+        if (       nid == NID_id_PACE_DH_GM_3DES_CBC_CBC
+                || nid == NID_id_PACE_DH_IM_3DES_CBC_CBC
+                || nid == NID_id_PACE_ECDH_GM_3DES_CBC_CBC
+                || nid == NID_id_PACE_ECDH_IM_3DES_CBC_CBC
+                || nid == NID_id_PACE_DH_GM_AES_CBC_CMAC_128
+                || nid == NID_id_PACE_DH_GM_AES_CBC_CMAC_192
+                || nid == NID_id_PACE_DH_GM_AES_CBC_CMAC_256
+                || nid == NID_id_PACE_DH_IM_AES_CBC_CMAC_128
+                || nid == NID_id_PACE_DH_IM_AES_CBC_CMAC_192
+                || nid == NID_id_PACE_DH_IM_AES_CBC_CMAC_256
+                || nid == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128
+                || nid == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192
+                || nid == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256
+                || nid == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128
+                || nid == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192
+                || nid == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256) {
             /* PACEInfo */
-            case NID_id_PACE_DH_GM_3DES_CBC_CBC:
-            case NID_id_PACE_DH_IM_3DES_CBC_CBC:
-            case NID_id_PACE_ECDH_GM_3DES_CBC_CBC:
-            case NID_id_PACE_ECDH_IM_3DES_CBC_CBC:
-            case NID_id_PACE_DH_GM_AES_CBC_CMAC_128:
-            case NID_id_PACE_DH_GM_AES_CBC_CMAC_192:
-            case NID_id_PACE_DH_GM_AES_CBC_CMAC_256:
-            case NID_id_PACE_DH_IM_AES_CBC_CMAC_128:
-            case NID_id_PACE_DH_IM_AES_CBC_CMAC_192:
-            case NID_id_PACE_DH_IM_AES_CBC_CMAC_256:
-            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128:
-            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192:
-            case NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256:
-            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-            case NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-                check(d2i_PACE_INFO(&tmp_info, &in, info_len),
-                        "Could not decode PACE info");
+            check(d2i_PACE_INFO(&tmp_info, &in, info_len),
+                    "Could not decode PACE info");
 
-                ctx->pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
-                if (ctx->pace_ctx->version <= 0 || ctx->pace_ctx->version > 2)
+            ctx->pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
+            if (ctx->pace_ctx->version <= 0 || ctx->pace_ctx->version > 2)
+                goto err;
+
+            ctx->pace_ctx->protocol = OBJ_obj2nid(tmp_info->protocol);
+
+            if(tmp_info->parameterId) {
+                /* If we have standardized domain parameters we use them
+                 * to generate a static key */
+                if (!EAC_CTX_init_pace(ctx,
+                            ctx->pace_ctx->protocol,
+                            (int) ASN1_INTEGER_get(tmp_info->parameterId)))
                     goto err;
-
-                ctx->pace_ctx->protocol = OBJ_obj2nid(tmp_info->protocol);
-
-                if(tmp_info->parameterId) {
-                    /* If we have standardized domain parameters we use them
-                     * to generate a static key */
-                    if (!EAC_CTX_init_pace(ctx,
-                                ctx->pace_ctx->protocol,
-                                (int) ASN1_INTEGER_get(tmp_info->parameterId)))
-                        goto err;
-                } else {
-                    /* Otherwise we only use the protocol OID to setup our
-                     * PACE context and hope to find a key in the proprietary
-                     * PACEDomainParameterInfo */
-                    if (!PACE_CTX_set_protocol(ctx->pace_ctx, ctx->pace_ctx->protocol, ctx->tr_version))
-                        goto err;
-                }
-                break;
+            } else {
+                /* Otherwise we only use the protocol OID to setup our
+                 * PACE context and hope to find a key in the proprietary
+                 * PACEDomainParameterInfo */
+                if (!PACE_CTX_set_protocol(ctx->pace_ctx, ctx->pace_ctx->protocol, ctx->tr_version))
+                    goto err;
+            }
+        } else if (nid == NID_id_PACE_ECDH_GM
+                || nid == NID_id_PACE_ECDH_IM
+                || nid == NID_id_PACE_DH_GM
+                || nid == NID_id_PACE_DH_IM) {
             /* PACEDomainParameterInfo */
-            case NID_id_PACE_ECDH_GM:
-            case NID_id_PACE_ECDH_IM:
-            case NID_id_PACE_DH_GM:
-            case NID_id_PACE_DH_IM:
-                check(d2i_PACE_DP_INFO(&tmp_dp_info, &in, info_len),
-                        "Could not decode PACE domain parameter information");
+            check(d2i_PACE_DP_INFO(&tmp_dp_info, &in, info_len),
+                    "Could not decode PACE domain parameter information");
 
-                if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
-                    goto err;
-                break;
+            if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
+                goto err;
+        } else if (nid == NID_id_TA) {
             /* TAInfo */
-            case NID_id_TA:
-                check(d2i_TA_INFO(&tmp_ta_info, &in, info_len),
-                        "Could not decode TA info");
+            check(d2i_TA_INFO(&tmp_ta_info, &in, info_len),
+                    "Could not decode TA info");
 
-                ctx->ta_ctx->version = ASN1_INTEGER_get(tmp_ta_info->version);
-                if (ctx->ta_ctx->version <= 0 || ctx->ta_ctx->version > 2)
-                    goto err;
-                /* OID in TAInfo is less specific than the one in the certificate
-                 * Therefore this OID will be overwritten when we import a certificate
-                 * later on.*/
-                ctx->ta_ctx->protocol = OBJ_obj2nid(tmp_ta_info->protocol);
-                break;
-            /* CAINfo */
-            case NID_id_CA_DH_3DES_CBC_CBC:
-            case NID_id_CA_DH_AES_CBC_CMAC_128 :
-            case NID_id_CA_DH_AES_CBC_CMAC_192 :
-            case NID_id_CA_DH_AES_CBC_CMAC_256 :
-            case NID_id_CA_ECDH_3DES_CBC_CBC :
-            case NID_id_CA_ECDH_AES_CBC_CMAC_128 :
-            case NID_id_CA_ECDH_AES_CBC_CMAC_192 :
-            case NID_id_CA_ECDH_AES_CBC_CMAC_256 :
-                check(d2i_CA_INFO(&tmp_ca_info, &in, info_len),
-                        "Could not decode CA info");
+            ctx->ta_ctx->version = ASN1_INTEGER_get(tmp_ta_info->version);
+            if (ctx->ta_ctx->version <= 0 || ctx->ta_ctx->version > 2)
+                goto err;
+            /* OID in TAInfo is less specific than the one in the certificate
+             * Therefore this OID will be overwritten when we import a certificate
+             * later on.*/
+            ctx->ta_ctx->protocol = OBJ_obj2nid(tmp_ta_info->protocol);
+        } else if (nid == NID_id_CA_DH_3DES_CBC_CBC
+                || nid == NID_id_CA_DH_AES_CBC_CMAC_128
+                || nid == NID_id_CA_DH_AES_CBC_CMAC_192
+                || nid == NID_id_CA_DH_AES_CBC_CMAC_256
+                || nid == NID_id_CA_ECDH_3DES_CBC_CBC
+                || nid == NID_id_CA_ECDH_AES_CBC_CMAC_128
+                || nid == NID_id_CA_ECDH_AES_CBC_CMAC_192
+                || nid == NID_id_CA_ECDH_AES_CBC_CMAC_256) {
+            /* CAInfo */
+            check(d2i_CA_INFO(&tmp_ca_info, &in, info_len),
+                    "Could not decode CA info");
 
-                ctx->ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
-                if (ctx->ca_ctx->version <= 0 || ctx->ca_ctx->version > 2
-                        || !CA_CTX_set_protocol(ctx->ca_ctx, nid))
-                    goto err;
-                break;
+            ctx->ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
+            if (ctx->ca_ctx->version <= 0 || ctx->ca_ctx->version > 2
+                    || !CA_CTX_set_protocol(ctx->ca_ctx, nid))
+                goto err;
+        } else if (nid == NID_id_CA_DH
+                || nid == NID_id_CA_ECDH) {
             /* ChipAuthenticationDomainParameterInfo */
-            case NID_id_CA_DH:
-            case NID_id_CA_ECDH:
-                check(d2i_CA_DP_INFO(&tmp_ca_dp_info, &in, info_len),
-                        "Could not decode CA domain parameter info");
+            check(d2i_CA_DP_INFO(&tmp_ca_dp_info, &in, info_len),
+                    "Could not decode CA domain parameter info");
 
-                if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
-                    goto err;
-                break;
+            if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
+                goto err;
+        } else if (nid == NID_id_PK_DH
+                || nid == NID_id_PK_ECDH) {
             /* ChipAuthenticationPublicKeyInfo */
-            case NID_id_PK_DH:
-            case NID_id_PK_ECDH:
-                check(d2i_CA_PUBLIC_KEY_INFO(&ca_public_key_info, &in, info_len),
-                        "Could not decode CA PK domain parameter info");
+            check(d2i_CA_PUBLIC_KEY_INFO(&ca_public_key_info, &in, info_len),
+                    "Could not decode CA PK domain parameter info");
 
-                if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key,
-                            ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier,
-                            ctx->bn_ctx))
-                    goto err;
+            if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key,
+                        ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier,
+                        ctx->bn_ctx))
+                goto err;
 
-                if (nid == NID_id_PK_DH) {
-                    /* FIXME the public key for DH is actually an ASN.1
-                     * UNSIGNED INTEGER, which is an ASN.1 INTEGER that is
-                     * always positive. Parsing the unsigned integer should be
-                     * done in EVP_PKEY_set_pubkey. */
-                    const unsigned char *p = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
-                    check(d2i_ASN1_UINTEGER(&i, &p,
-                                ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length),
-                            "Could not decode CA PK");
-                    pubkey = BUF_MEM_create_init(i->data, i->length);
-                } else {
-                    pubkey = BUF_MEM_create_init(
-                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data,
-                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
-                }
+            if (nid == NID_id_PK_DH) {
+                /* FIXME the public key for DH is actually an ASN.1
+                 * UNSIGNED INTEGER, which is an ASN.1 INTEGER that is
+                 * always positive. Parsing the unsigned integer should be
+                 * done in EVP_PKEY_set_pubkey. */
+                const unsigned char *p = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
+                check(d2i_ASN1_UINTEGER(&i, &p,
+                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length),
+                        "Could not decode CA PK");
+                pubkey = BUF_MEM_create_init(i->data, i->length);
+            } else {
+                pubkey = BUF_MEM_create_init(
+                        ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data,
+                        ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
+            }
 
-                if (!EVP_PKEY_set_pubkey(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
-                    goto err;
+            if (!EVP_PKEY_set_pubkey(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
+                goto err;
 
-                BUF_MEM_free(pubkey);
-                pubkey = NULL;
-                break;
+            BUF_MEM_free(pubkey);
+            pubkey = NULL;
+        } else if (nid == NID_id_CI) {
             /* ChipIdentifer */
-            case NID_id_CI:
-                break;
-            case NID_id_PT:
-                break;
-            case NID_id_RI_DH_SHA_1:
-            case NID_id_RI_DH_SHA_224:
-            case NID_id_RI_DH_SHA_256:
-            case NID_id_RI_DH_SHA_384:
-            case NID_id_RI_DH_SHA_512:
-            case NID_id_RI_ECDH_SHA_1:
-            case NID_id_RI_ECDH_SHA_224:
-            case NID_id_RI_ECDH_SHA_256:
-            case NID_id_RI_ECDH_SHA_384:
-            case NID_id_RI_ECDH_SHA_512:
-                if (!RI_CTX_set_protocol(ctx->ri_ctx, nid))
-                    goto err;
-                break;
+        } else if (nid == NID_cardInfoLocator) {
+            /* cardInfoLocator */
+        } else if (nid == NID_id_PT) {
+        } else if (nid == NID_id_RI_DH_SHA_1
+                || nid == NID_id_RI_DH_SHA_224
+                || nid == NID_id_RI_DH_SHA_256
+                || nid == NID_id_RI_DH_SHA_384
+                || nid == NID_id_RI_DH_SHA_512
+                || nid == NID_id_RI_ECDH_SHA_1
+                || nid == NID_id_RI_ECDH_SHA_224
+                || nid == NID_id_RI_ECDH_SHA_256
+                || nid == NID_id_RI_ECDH_SHA_384
+                || nid == NID_id_RI_ECDH_SHA_512) {
+            if (!RI_CTX_set_protocol(ctx->ri_ctx, nid))
+                goto err;
+        } else if (nid == NID_id_RI_DH
+                || nid == NID_id_RI_ECDH) {
             /* RestrictedIdentificationDomainParameterInfo */
-            case NID_id_RI_DH:
-            case NID_id_RI_ECDH:
-                check(d2i_RI_DP_INFO(&tmp_ri_dp_info, &in, info_len),
-                        "Could not decode RI domain parameter info");
+            check(d2i_RI_DP_INFO(&tmp_ri_dp_info, &in, info_len),
+                    "Could not decode RI domain parameter info");
 
-                /* TODO: Copy all the public keys into the EAC context.  As of
-                 * now EAC_CTX can only hold one RI public key.  We could use
-                 * EVP_PKEY_set_std_dp here, but we leave this to
-                 * EAC_CTX_init_ri called by the user */
-                break;
-            default:
-                OBJ_obj2txt(obj_txt, sizeof obj_txt, oid, 0);
-                log_err("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid),
+            /* TODO: Copy all the public keys into the EAC context.  As of
+             * now EAC_CTX can only hold one RI public key.  We could use
+             * EVP_PKEY_set_std_dp here, but we leave this to
+             * EAC_CTX_init_ri called by the user */
+        } else {
+            OBJ_obj2txt(obj_txt, sizeof obj_txt, oid, 0);
+            log_err("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid),
                     obj_txt);
-                break;
         }
 
         todo -= info_len;

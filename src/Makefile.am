@@ -3,6 +3,7 @@ nobase_include_HEADERS = eac/ca.h \
 						 eac/eac.h \
 						 eac/pace.h \
 						 eac/ri.h \
+						 eac/objects.h \
 						 eac/ta.h
 noinst_HEADERS = ca_lib.h \
 				 eac_asn1.h \
@@ -20,7 +21,7 @@ noinst_HEADERS = ca_lib.h \
 
 lib_LTLIBRARIES = libeac.la
 
-libeac_la_SOURCES  = ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c
+libeac_la_SOURCES  = ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c objects.c
 libeac_la_CPPFLAGS = $(CRYPTO_CFLAGS) -DCVCDIR=\"@CVCDIR@\" -DX509DIR=\"@X509DIR@\"
 libeac_la_LDFLAGS  = -no-undefined
 libeac_la_LIBADD   = $(CRYPTO_LIBS)
@@ -44,7 +45,7 @@ cvcprint_LDADD   = $(EAC_LIBS)
 cvcprint_CFLAGS  = $(EAC_CFLAGS)
 
 
-if BUILD_OPENSSL
+if INSTALL_OPENSSL
 OPENSSL_DIR           = $(abs_builddir)/openssl
 OPENSSL_CONFIG        = $(OPENSSL_DIR)/Configure
 OPENSSL_INCLUDES      = $(OPENSSL_DIR)/include
@@ -97,14 +98,7 @@ distclean-local:
 maintainerclean-local:
 	rm -rf $(OPENSSL_DIR)
 
-if INSTALL_OPENSSL
 install-exec-local: install-openssl
-else
-all-local: $(OPENSSL_LIBCRYPTO_A)
-	$(MAKE) -C $(top_builddir) libeac.pc
-	grep "Libs.private: " ../libeac.pc > /dev/null || \
-		echo "Libs.private: $(OPENSSL_LIBS_PRIVATE)" >> ../libeac.pc
-endif
 
 else
 install-openssl:

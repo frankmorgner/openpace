@@ -39,10 +39,6 @@ case "${host}" in
 esac
 
 # Checks for libcrypto.
-AC_ARG_ENABLE([openssl-build],
-              [AS_HELP_STRING([--enable-openssl-build],[enable build of a patched version of OpenSSL @<:@default=detect@:>@])],
-              ,
-              [enable_openssl_build="detect"])
 AC_ARG_ENABLE([openssl-install],
               [AS_HELP_STRING([--enable-openssl-install],[enable installation of a patched version of OpenSSL @<:@default=no@:>@])],
               ,
@@ -51,21 +47,31 @@ AC_ARG_ENABLE([openssl-install],
 if test "${enable_openssl_install}" = "yes"
 then
     INSTALL_OPENSSL=yes
-    AC_SUBST([PKG_REQUIRES], [libcrypto])
-    if test ! "${enable_openssl_build}" = "yes"
+
+    AC_ARG_VAR([GIT],
+               [absolute path to git used for checking out OpenSSL])
+    AC_PATH_PROG([GIT],
+                 [git],
+                 [not found])
+    if test "${GIT}" = "not found"
     then
-        enable_openssl_build=yes
-        AC_MSG_NOTICE([A patched version of OpenSSL will be built in order to be installed])
+        AC_MSG_ERROR([Need git to build OpenSSL])
     fi
+
+    AC_ARG_VAR([OPENSSL_CONFIGURE_FLAGS],
+               [options for configuring OpenSSL])
+    if test -z "$OPENSSL_CONFIGURE_FLAGS"
+    then
+        my_prefix=`test "$prefix" = NONE && echo \"$ac_default_prefix\" || echo \"${prefix}\"`
+        OPENSSL_CONFIGURE_FLAGS="shared --prefix=${my_prefix} `${srcdir}/win32/gentoo.config-1.0.0 ${host}`"
+    fi
+
+    builddir=`pwd`
+    CRYPTO_CFLAGS="-I${builddir}/src/openssl/include"
+    CRYPTO_LIBS="-L${builddir}/src/openssl -lcrypto"
+
 else
     INSTALL_OPENSSL=no
-fi
-
-if test "${enable_openssl_build}" = "yes"
-then
-    BUILD_OPENSSL=yes
-else
-    BUILD_OPENSSL=no
 
     PKG_CHECK_EXISTS([libcrypto],
                      [PKG_CHECK_MODULES([CRYPTO], [libcrypto])],
@@ -81,12 +87,10 @@ else
     AC_CHECK_HEADERS([openssl/obj_mac.h openssl/buffer.h openssl/bio.h \
                       openssl/ecdh.h openssl/dh.h openssl/evp.h openssl/cmac.h \
                       openssl/sha.h openssl/aes.h openssl/des.h], [],
-                     [AC_MSG_WARN([Required OpenSSL headers not found])
-                      BUILD_OPENSSL=yes])
-    AC_CHECK_DECL(NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256,
+                     [AC_MSG_ERROR([Required OpenSSL headers not found])])
+    AC_CHECK_DECL(NID_brainpoolP512r1,
                   ,
-                  [AC_MSG_WARN([OpenSSL patched with OpenPACE object identifiers not found])
-                   BUILD_OPENSSL=yes],
+                  [AC_MSG_ERROR([OpenSSL 1.0.2 not found])],
                   [#include <openssl/obj_mac.h>])
     CPPFLAGS="$saved_CPPFLAGS"
 
@@ -95,58 +99,13 @@ else
     AC_MSG_CHECKING([for OPENSSL_cleanse])
     AC_TRY_LINK_FUNC(OPENSSL_cleanse,
                      [AC_MSG_RESULT([yes])],
-                     [AC_MSG_WARN([Cannot link against libcrypto])
-                      BUILD_OPENSSL=yes])
+                     [AC_MSG_ERROR([Cannot link against libcrypto])])
     AC_MSG_CHECKING([for EVP_sha256])
     AC_TRY_LINK_FUNC(EVP_sha256,
                      [AC_MSG_RESULT([yes])],
-                     [AC_MSG_WARN([Need OpenSSL with SHA-256 support])
-                      BUILD_OPENSSL=yes])
+                     [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
     LIBS="$saved_LIBS"
 fi
-if test "${BUILD_OPENSSL}" = "yes"
-then
-    AC_ARG_VAR([GIT],
-               [absolute path to git used for checking out OpenSSL])
-    AC_PATH_PROG([GIT],
-                 [git],
-                 [not found])
-    if test "${enable_openssl_build}" = "no"
-    then
-        AC_MSG_ERROR([No suitable OpenSSL installation was found])
-    else
-        AC_MSG_NOTICE([No suitable OpenSSL installation was found, will create one])
-        if test "${GIT}" = "not found"
-        then
-            AC_MSG_ERROR([Need git to build OpenSSL])
-        fi
-    fi
-
-    AC_ARG_VAR([OPENSSL_CONFIGURE_FLAGS],
-               [options for configuring OpenSSL])
-    if test -z "$OPENSSL_CONFIGURE_FLAGS"
-    then
-        if test "${INSTALL_OPENSSL}" = "yes"
-        then
-            OPENSSL_CONFIGURE_FLAGS=shared
-        else
-            OPENSSL_CONFIGURE_FLAGS=-fPIC
-        fi
-        my_prefix=`test "$prefix" = NONE && echo \"$ac_default_prefix\" || echo \"${prefix}\"`
-        OPENSSL_CONFIGURE_FLAGS="${OPENSSL_CONFIGURE_FLAGS} --prefix=${my_prefix} `${srcdir}/win32/gentoo.config-1.0.0 ${host}`"
-    fi
-
-    builddir=`pwd`
-    CRYPTO_CFLAGS="-I${builddir}/src/openssl/include"
-    CRYPTO_LIBS="-L${builddir}/src/openssl -lcrypto"
-    if test "${INSTALL_OPENSSL}" != "yes"
-    then
-        CRYPTO_LIBS="${CRYPTO_LIBS} \`grep Libs.private ${builddir}/src/openssl/libcrypto.pc | ${SED} "-e" 's,Libs.private:\s*,,'\`"
-    fi
-else
-    AC_SUBST([PKG_REQUIRES], [libcrypto])
-fi
-AM_CONDITIONAL([BUILD_OPENSSL], [test "${BUILD_OPENSSL}" = "yes"])
 AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
 
 
@@ -262,7 +221,6 @@ Libraries:               $(eval eval eval echo "${libdir}")
 CVC directory:           ${CVCDIR}
 X.509 directory:         ${X509DIR}
 
-Build patched OpenSSL:   ${BUILD_OPENSSL}
 Install patched OpenSSL: ${INSTALL_OPENSSL}
 Python Bindings:         ${enable_python}
 Java Bindings:           ${enable_java}
