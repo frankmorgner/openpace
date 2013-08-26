@@ -58,9 +58,9 @@ typedef struct algorithm_identifier_st {
     union {
         PACE_ECPARAMETERS *ec;
         DH *dh;
+        ASN1_INTEGER *standardizedDomainParameters;
         ASN1_TYPE *other;
     } parameters;
-    ASN1_INTEGER *standardizedDomainParameters;
 } ALGORITHM_IDENTIFIER;
 
 /** Subject Public Key Info structure */
@@ -275,7 +275,7 @@ ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other,
 ASN1_ADB(ALGORITHM_IDENTIFIER) = {
     ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
     ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams)),
-    ADB_ENTRY(NID_standardizedDomainParameters, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, standardizedDomainParameters, ASN1_INTEGER))
+    ADB_ENTRY(NID_standardizedDomainParameters, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.standardizedDomainParameters, ASN1_INTEGER))
 } ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
 
 ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
@@ -578,7 +578,7 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
             break;
         case NID_standardizedDomainParameters:
             if (!EVP_PKEY_set_std_dp(tmp_key,
-                        ASN1_INTEGER_get(aid->standardizedDomainParameters)))
+                        ASN1_INTEGER_get(aid->parameters.standardizedDomainParameters)))
                 goto err;
             break;
         default:
