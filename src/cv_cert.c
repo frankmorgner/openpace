@@ -235,6 +235,9 @@ ASN1_ADB(CVC_CERTIFICATE_DESCRIPTION) = {
 #endif
 } ASN1_ADB_END(CVC_CERTIFICATE_DESCRIPTION, 0, descriptionType, 0, &cert_def_tt, NULL);
 
+ASN1_SEQUENCE(CVC_COMMCERT_SEQ) = {
+        ASN1_SET_OF(CVC_COMMCERT_SEQ, values, ASN1_OCTET_STRING),
+} ASN1_SEQUENCE_END(CVC_COMMCERT_SEQ)
 ASN1_SEQUENCE(CVC_CERTIFICATE_DESCRIPTION) = {
         ASN1_SIMPLE(CVC_CERTIFICATE_DESCRIPTION, descriptionType, ASN1_OBJECT),
         ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, issuerName, ASN1_UTF8STRING, 0x01),
@@ -243,7 +246,7 @@ ASN1_SEQUENCE(CVC_CERTIFICATE_DESCRIPTION) = {
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, subjectURL, ASN1_PRINTABLESTRING, 0x04),
         ASN1_ADB_OBJECT(CVC_CERTIFICATE_DESCRIPTION),
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, redirectURL, ASN1_PRINTABLESTRING, 0x06),
-        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, commCertificates, ASN1_OCTET_STRING, 0x07),
+        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, commCertificates, CVC_COMMCERT_SEQ, 0x07),
 } ASN1_SEQUENCE_END(CVC_CERTIFICATE_DESCRIPTION)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
@@ -822,7 +825,9 @@ int
 certificate_description_print(BIO *bio,
         const CVC_CERTIFICATE_DESCRIPTION *desc, int indent)
 {
-    int ret, nid;
+    ASN1_OCTET_STRING *s;
+    const unsigned char *p;
+    int ret, nid, count, i;
 
     if (desc == NULL)
         return 0;
@@ -854,15 +859,21 @@ certificate_description_print(BIO *bio,
             return 0;
     }
     if (desc->commCertificates) {
-        if (!BIO_indent(bio, indent, 80)
-                || !BIO_printf(bio, "%s\n", cert_desc_field_strings[6])
-                || !BIO_dump_indent(bio, (char *) desc->commCertificates->data,
-                    desc->commCertificates->length, indent+2))
-            return 0;
-    } else printf("%s:%d bla\n", __FILE__, __LINE__);
+        count = sk_num((_STACK*) desc->commCertificates->values);
+        if (count > 0) {
+            if (!BIO_indent(bio, indent, 80)
+                    || !BIO_printf(bio, "%s\n", cert_desc_field_strings[6]))
+                return 0;
+            for (i = 0; i < count; i++) {
+                s = sk_value((_STACK*) desc->commCertificates->values, i);
+                if (!BIO_puts(bio, "\n")
+                        || !BIO_dump_indent(bio, (char *) s->data, s->length, indent+2))
+                    return 0;
+            }
+        }
+    }
 
     nid = OBJ_obj2nid(desc->descriptionType);
-    const unsigned char *p;
     if (nid == NID_id_plainFormat) {
 #ifndef HAVE_PATCHED_OPENSSL
             if (desc->termsOfUsage.other->type != V_ASN1_SEQUENCE)

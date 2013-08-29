@@ -3760,7 +3760,11 @@ err:
         if (bio) {
             BIO_printf(bio, "    Card Verifiable Certificate:\n");
             CVC_print(bio, cvc_cert, 6);
+#if 0
             CVC_CERTIFICATE_DESCRIPTION_print_ctx(bio, desc, 4, NULL);
+#else
+            certificate_description_print(bio, desc, 4);
+#endif
         }
     }
 

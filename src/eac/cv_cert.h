@@ -186,6 +186,11 @@ DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT)
 DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
 */
 
+typedef struct cvc_commcert_seq_st {
+    /** @brief Contains hash values of admissible X.509 certificates of the remote
+     *  terminal (optional) */
+    STACK_OF(ASN1_OCTET_STRING) *values;
+} CVC_COMMCERT_SEQ;
 /**
  * @brief This structure holds further information about a card verifiable
  * certificate in human readable form.
@@ -210,8 +215,8 @@ DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
      *  certificate */
     ASN1_PRINTABLESTRING *subjectURL;
      /** @brief Terms of Usage of the Service holding the certificate. May be
-     *  formatted as either plain text, HTML or PDF
-     */union {
+     *  formatted as either plain text, HTML or PDF */
+    union {
 #ifdef HAVE_PATCHED_OPENSSL
         /** @brief Plain text Terms of Usage */
         ASN1_UTF8STRING *plainTerms;
@@ -227,9 +232,8 @@ DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
     /** @brief Not used */
     ASN1_PRINTABLESTRING *redirectURL;
     /** @brief Contains hash values of admissible X.509 certificates of the remote
-     *  terminal (optional)
-     *  Note that this is an ugly hack to not bother with STACK_OF structures */
-    ASN1_OCTET_STRING *commCertificates;
+     *  terminal (optional) */
+    CVC_COMMCERT_SEQ *commCertificates;
 } CVC_CERTIFICATE_DESCRIPTION;
 DECLARE_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
 DECLARE_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
