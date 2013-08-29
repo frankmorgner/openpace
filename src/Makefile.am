@@ -31,7 +31,7 @@ libeac_la_LIBADD  += -lws2_32
 endif
 
 
-noinst_PROGRAMS      = eactest cvcprint
+bin_PROGRAMS      = eactest cvcprint
 
 EAC_LIBS             = libeac.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
