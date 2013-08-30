@@ -74,8 +74,8 @@ else
     INSTALL_OPENSSL=no
 
     PKG_CHECK_EXISTS([libcrypto],
-                     [PKG_CHECK_MODULES([CRYPTO], [libcrypto])],
-                     [AC_MSG_WARN([libcrypto not found by pkg-config])])
+                     [PKG_CHECK_MODULES([CRYPTO], [libcrypto >= 1.0.2])],
+                     [AC_MSG_WARN([libcrypto >= 1.0.2 not found by pkg-config])])
 
     if test -z "$CRYPTO_LIBS"
     then
