@@ -154,6 +154,8 @@ typedef struct pace_ctx {
     int protocol;
     /** @brief (currently unused) Version of the PACE protocol, MUST be 1 or 2 */
     unsigned char version;
+    /** @brief identifier of this PACE context */
+    int id;
     /** @brief Points to the implementation of a specific mapping
      *
      * @see PACE_STEP3A_generate_mapping_data() */
@@ -193,6 +195,8 @@ typedef struct ri_ctx {
      * - \c NID_id_RI_ECDH_SHA_512
      */
     int protocol;
+    /** @brief identifier of this RI context */
+    int id;
     /** @brief Digest to use for derivation of I^{sector}_{ID} */
     const EVP_MD * md;
     /**
@@ -295,6 +299,8 @@ typedef struct ca_ctx {
      * - \c NID_id_CA_ECDH_AES_CBC_CMAC_256
      */
     int protocol;
+    /** @brief identifier of this CA context */
+    int id;
     /** @brief Flags to control some of the behaviour of the CA
      *
      * Accepts the following values:
@@ -324,15 +330,27 @@ typedef struct eac_ctx {
     EVP_MD_CTX * md_ctx;
     /** @brief Context for various cipher operations */
     EVP_CIPHER_CTX * cipher_ctx;
-    /** @brief Context for the Password Authenticated Connection Establishment protocol */
+    /** @brief Context for the currently selected Password Authenticated Connection Establishment protocol
+     *
+     * Points to an element of \c pace_ctxs */
     PACE_CTX *pace_ctx;
-    /** @brief Context for the Restricted Identification protocol */
+    /** @brief stack of available Password Authenticated Connection Establishment configurations */
+    STACK_OF(PACE_CTX *) pace_ctxs;
+    /** @brief Context for the currently selected Restricted Identification protocol
+     *
+     * Points to an element of \c ri_ctxs */
     RI_CTX *ri_ctx;
-    /** @brief Context for the Terminal Authentication protocol */
+    /** @brief stack of available Restricted Identification configurations */
+    STACK_OF(RI_CTX *) ri_ctxs;
+    /** @brief Context for the currently selected Terminal Authentication protocol */
     TA_CTX *ta_ctx;
-    /** @brief Context for the Chip Authentication protocol */
+    /** @brief Context for the currently selected Chip Authentication protocol
+     *
+     * Points to an element of \c ca_ctxs */
     CA_CTX *ca_ctx;
-    /** @brief Context for secure messaging established with PACE or CA */
+    /** @brief stack of available Chip Authentication configurations */
+    STACK_OF(CA_CTX *) ca_ctxs;
+    /** @brief Context for currently selected secure messaging established with PACE or CA */
     KA_CTX *key_ctx;
     /** @brief Send sequence counter */
     BIGNUM *ssc;
@@ -420,7 +438,7 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
   *
   * @see CA_CTX.protocol lists possible values for \a protocol
   */
-int EAC_CTX_init_ca(const EAC_CTX *ctx, int protocol, int curve,
+int EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve,
                 const unsigned char *priv, size_t priv_len,
                 const unsigned char *pub, size_t pub_len);
 

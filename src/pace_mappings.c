@@ -216,15 +216,13 @@ ecdh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     check((ctx && ctx->static_key && s && ctx->ka_ctx), "Invalid arguments");
 
     static_key = EVP_PKEY_get1_EC_KEY(ctx->static_key);
-    if (!static_key)
-        goto err;
+    check(static_key, "could not get key object");
 
     /* Extract group parameters */
     group = EC_GROUP_dup(EC_KEY_get0_group(static_key));
     order = BN_CTX_get(bn_ctx);
     cofactor = BN_CTX_get(bn_ctx);
-    if (!group || !cofactor)
-        goto err;
+    check(group && cofactor, "internal error");
     EC_GROUP_get_order(group, order, bn_ctx);
     EC_GROUP_get_cofactor(group, cofactor, bn_ctx);
 

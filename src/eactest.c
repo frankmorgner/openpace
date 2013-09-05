@@ -3662,6 +3662,7 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
     static X509 *csca_cert = NULL;
     const unsigned char *p;
     int failed = 1;
+    BIO *bio = NULL;
 
     EAC_CTX *ctx = NULL;
 
@@ -3690,6 +3691,14 @@ test_ef_cardsecurity_parsing(const struct tc_ef_cardsecurity tc)
     failed = 0;
 
 err:
+    if (debug) {
+        bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
+        if (bio) {
+            BIO_printf(bio, "    EAC Context:\n");
+            EAC_CTX_print_private(bio, ctx, 6);
+            BIO_free_all(bio);
+        }
+    }
     if (pubkey)
         BUF_MEM_free(pubkey);
     if (ctx)
@@ -3704,6 +3713,7 @@ test_ef_cardaccess_parsing(const BUF_MEM tc_ef_cardaccess )
 {
     int failed = 1;
     EAC_CTX *ctx = NULL;
+    BIO *bio = NULL;
 
     ctx = EAC_CTX_new();
     CHECK(1, ctx && EAC_CTX_init_ef_cardaccess((unsigned char *) tc_ef_cardaccess.data,
@@ -3717,6 +3727,14 @@ test_ef_cardaccess_parsing(const BUF_MEM tc_ef_cardaccess )
     failed = 0;
 
 err:
+    if (debug) {
+        bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
+        if (bio) {
+            BIO_printf(bio, "    EAC Context:\n");
+            EAC_CTX_print_private(bio, ctx, 6);
+            BIO_free_all(bio);
+        }
+    }
     EAC_CTX_clear_free(ctx);
 
     return failed;

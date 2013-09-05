@@ -48,8 +48,8 @@ typedef struct pace_info_st {
     /** Protocol Version number. Version number 1 is deprecated, version 2 is
         recommended */
     ASN1_INTEGER *version;
-    /** Indicates the domain parameter identifier */
-    ASN1_INTEGER *parameterId;
+    /** Indicates the domain parameter identifier. named parameterID in BSI TR-03110 */
+    ASN1_INTEGER *keyID;
     } PACE_INFO;
 
 /** Algorithm Identifier structure */
@@ -79,8 +79,8 @@ typedef struct pace_dp_info_st {
     /** The actual domain parameters */
     ALGORITHM_IDENTIFIER *aid;
     /** Optional: specifies the local domain parameters if multiple sets of domain
-        parameters are provided */
-    ASN1_INTEGER *parameterId;
+        parameters are provided. named parameterID in BSI TR-03110 */
+    ASN1_INTEGER *keyID;
 } PACE_DP_INFO;
 
 /** ChipAuthenticationInfo structure */
@@ -90,7 +90,7 @@ typedef struct ca_info_st {
     /** Protocol Version number. Currently Version 1 and Version 2 are supported */
     ASN1_INTEGER *version;
     /** keyID MAY be used to indicate the local key identifier */
-    ASN1_INTEGER *keyId;
+    ASN1_INTEGER *keyID;
 } CA_INFO;
 
 /** CA Domain parameter structure */
@@ -101,7 +101,7 @@ typedef struct ca_dp_info_st {
     ALGORITHM_IDENTIFIER *aid;
     /** Optional: specifies the local domain parameters if multiple sets of domain
         parameters are provided */
-    ASN1_INTEGER *keyId;
+    ASN1_INTEGER *keyID;
 } CA_DP_INFO;
 
 /** CA public key info */
@@ -112,7 +112,7 @@ typedef struct ca_public_key_info_st {
     SUBJECT_PUBLIC_KEY_INFO *chipAuthenticationPublicKeyInfo;
     /** Optional: specifies the local domain parameters if multiple sets of domain
         parameters are provided */
-    ASN1_INTEGER *keyId;
+    ASN1_INTEGER *keyID;
 } CA_PUBLIC_KEY_INFO;
 
 /** File ID */
@@ -137,8 +137,8 @@ typedef struct ta_info_st {
 typedef struct protocol_params_st {
     /* Protocol version. Currently only version 1 is supported */
     ASN1_INTEGER *version;
-    /** keyId identifies the private key that shall be used */
-    ASN1_INTEGER *keyId;
+    /** keyID identifies the private key that shall be used */
+    ASN1_INTEGER *keyID;
     /** Indicates whether explicit authorization is required to use the
      * corresponding secret key */
     ASN1_BOOLEAN *authorizedOnly;
@@ -269,7 +269,7 @@ ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
 ASN1_SEQUENCE(PACE_INFO) = {
     ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
     ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
-    ASN1_OPT(PACE_INFO, parameterId, ASN1_INTEGER)
+    ASN1_OPT(PACE_INFO, keyID, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(PACE_INFO)
 
 IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
@@ -298,7 +298,7 @@ ASN1_SEQUENCE(SUBJECT_PUBLIC_KEY_INFO) = {
 ASN1_SEQUENCE(PACE_DP_INFO) = {
     ASN1_SIMPLE(PACE_DP_INFO, protocol, ASN1_OBJECT),
     ASN1_SIMPLE(PACE_DP_INFO, aid, ALGORITHM_IDENTIFIER),
-    ASN1_OPT(PACE_DP_INFO, parameterId, ASN1_INTEGER)
+    ASN1_OPT(PACE_DP_INFO, keyID, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(PACE_DP_INFO)
 
 IMPLEMENT_ASN1_FUNCTIONS(PACE_DP_INFO)
@@ -307,7 +307,7 @@ IMPLEMENT_ASN1_FUNCTIONS(PACE_DP_INFO)
 ASN1_SEQUENCE(CA_INFO) = {
     ASN1_SIMPLE(CA_INFO, protocol, ASN1_OBJECT),
     ASN1_SIMPLE(CA_INFO, version, ASN1_INTEGER),
-    ASN1_OPT(CA_INFO, keyId, ASN1_INTEGER)
+    ASN1_OPT(CA_INFO, keyID, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(CA_INFO)
 IMPLEMENT_ASN1_FUNCTIONS(CA_INFO)
 
@@ -315,7 +315,7 @@ IMPLEMENT_ASN1_FUNCTIONS(CA_INFO)
 ASN1_SEQUENCE(CA_DP_INFO) = {
     ASN1_SIMPLE(CA_DP_INFO, protocol, ASN1_OBJECT),
     ASN1_SIMPLE(CA_DP_INFO, aid, ALGORITHM_IDENTIFIER),
-    ASN1_OPT(CA_DP_INFO, keyId, ASN1_INTEGER)
+    ASN1_OPT(CA_DP_INFO, keyID, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(CA_DP_INFO)
 IMPLEMENT_ASN1_FUNCTIONS(CA_DP_INFO)
 
@@ -323,7 +323,7 @@ IMPLEMENT_ASN1_FUNCTIONS(CA_DP_INFO)
 ASN1_SEQUENCE(CA_PUBLIC_KEY_INFO) = {
         ASN1_SIMPLE(CA_PUBLIC_KEY_INFO, protocol, ASN1_OBJECT),
         ASN1_SIMPLE(CA_PUBLIC_KEY_INFO, chipAuthenticationPublicKeyInfo, SUBJECT_PUBLIC_KEY_INFO),
-        ASN1_OPT(CA_PUBLIC_KEY_INFO, keyId, ASN1_INTEGER)
+        ASN1_OPT(CA_PUBLIC_KEY_INFO, keyID, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(CA_PUBLIC_KEY_INFO)
 IMPLEMENT_ASN1_FUNCTIONS(CA_PUBLIC_KEY_INFO)
 
@@ -344,7 +344,7 @@ IMPLEMENT_ASN1_FUNCTIONS(TA_INFO)
 /* ProtocolParams */
 ASN1_SEQUENCE(PROTOCOL_PARAMS) = {
     ASN1_SIMPLE(PROTOCOL_PARAMS, version, ASN1_INTEGER),
-    ASN1_SIMPLE(PROTOCOL_PARAMS, keyId, ASN1_INTEGER),
+    ASN1_SIMPLE(PROTOCOL_PARAMS, keyID, ASN1_INTEGER),
     ASN1_SIMPLE(PROTOCOL_PARAMS, authorizedOnly, ASN1_BOOLEAN)
 } ASN1_SEQUENCE_END(PROTOCOL_PARAMS)
 
@@ -354,6 +354,7 @@ ASN1_SEQUENCE(RI_INFO) = {
     ASN1_SIMPLE(RI_INFO, params, PROTOCOL_PARAMS),
     ASN1_OPT(RI_INFO, maxKeyLen, ASN1_INTEGER)
 } ASN1_SEQUENCE_END(RI_INFO)
+IMPLEMENT_ASN1_FUNCTIONS(RI_INFO)
 
 /* RestrictedIdentificationDomainParameterInfo */
 ASN1_SEQUENCE(RI_DP_INFO) = {
@@ -637,6 +638,53 @@ err:
     return ret;
 }
 
+
+#define get_ctx_by_id(ctx, stack, _id) \
+{ \
+    int __i, __count; \
+    __count = sk_num((_STACK*) stack); \
+    for (__i = 0; __i < __count; __i++) { \
+        ctx = sk_value((_STACK*) stack, __i); \
+        if (ctx && ctx->id == _id) { \
+            break; \
+        } \
+    } \
+    if (__i >= __count) { \
+        ctx = NULL; \
+    } \
+}
+
+#define get_ctx_by_keyID(ctx, stack, keyID, structure) \
+{ \
+    int __id; \
+    if (keyID) { \
+        __id = (int) ASN1_INTEGER_get(keyID); \
+    }  \
+    else { \
+        __id = -1; \
+    } \
+    /* lookup the context in the stack identified by info's keyID */ \
+    get_ctx_by_id(ctx, stack, __id); \
+    \
+    /* if no context was found, create one and push it onto the stack */ \
+    if (!ctx) { \
+        ctx = structure##_new(); \
+        if (ctx) { \
+            if (!sk_push((_STACK *) stack, ctx)) { \
+                structure##_clear_free(ctx); \
+                ctx = NULL; \
+            } else { \
+                /* created and pushed successfully, now initialize id */ \
+                if(keyID) { \
+                    ctx->id = __id; \
+                } else { \
+                    ctx->id = -1; \
+                } \
+            } \
+        } \
+    } \
+}
+
 int
 EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
         EAC_CTX *ctx)
@@ -644,20 +692,24 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
     ASN1_INTEGER *i = NULL;
     ASN1_OBJECT *oid = NULL;
     BUF_MEM *pubkey = NULL;
+    CA_CTX *ca_ctx = NULL;
     CA_DP_INFO *tmp_ca_dp_info = NULL;
     CA_INFO *tmp_ca_info = NULL;
     CA_PUBLIC_KEY_INFO *ca_public_key_info = NULL;
+    PACE_CTX *pace_ctx = NULL;
     PACE_DP_INFO *tmp_dp_info = NULL;
     PACE_INFO *tmp_info = NULL;
+    RI_CTX *ri_ctx = NULL;
     RI_DP_INFO *tmp_ri_dp_info = NULL;
+    RI_INFO *tmp_ri_info = NULL;
     TA_INFO *tmp_ta_info = NULL;
     char obj_txt[32];
     const unsigned char *info_start;
-    int tag, class, nid, r = 0;
+    int tag, class, nid, _count, _i, r = 0, has_no_pace_dp_info = 1;
     long data_len, info_len;
     unsigned int todo = 0;
 
-    check((in && ctx  && ctx->pace_ctx && ctx->ca_ctx && ctx->ta_ctx),
+    check((in && ctx && ctx->pace_ctxs && ctx->ca_ctxs && ctx->ri_ctxs),
         "Invalid arguments");
 
     /* We need to manually extract all members of the SET OF SecurityInfos,
@@ -712,36 +764,38 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             check(d2i_PACE_INFO(&tmp_info, &in, info_len),
                     "Could not decode PACE info");
 
-            ctx->pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
-            if (ctx->pace_ctx->version <= 0 || ctx->pace_ctx->version > 2)
+            /* lookup or create a pace context */
+            get_ctx_by_keyID(pace_ctx, ctx->pace_ctxs, tmp_info->keyID, PACE_CTX);
+            if (!pace_ctx) {
+                goto err;
+            }
+
+            pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
+            if (pace_ctx->version <= 0 || pace_ctx->version > 2)
                 goto err;
 
-            ctx->pace_ctx->protocol = OBJ_obj2nid(tmp_info->protocol);
+            if (!PACE_CTX_set_protocol(pace_ctx,
+                        OBJ_obj2nid(tmp_info->protocol), ctx->tr_version))
+                goto err;
 
-            if(tmp_info->parameterId) {
-                /* If we have standardized domain parameters we use them
-                 * to generate a static key */
-                if (!EAC_CTX_init_pace(ctx,
-                            ctx->pace_ctx->protocol,
-                            (int) ASN1_INTEGER_get(tmp_info->parameterId)))
-                    goto err;
-            } else {
-                /* Otherwise we only use the protocol OID to setup our
-                 * PACE context and hope to find a key in the proprietary
-                 * PACEDomainParameterInfo */
-                if (!PACE_CTX_set_protocol(ctx->pace_ctx, ctx->pace_ctx->protocol, ctx->tr_version))
-                    goto err;
-            }
         } else if (nid == NID_id_PACE_ECDH_GM
                 || nid == NID_id_PACE_ECDH_IM
                 || nid == NID_id_PACE_DH_GM
                 || nid == NID_id_PACE_DH_IM) {
             /* PACEDomainParameterInfo */
+            has_no_pace_dp_info = 0;
             check(d2i_PACE_DP_INFO(&tmp_dp_info, &in, info_len),
                     "Could not decode PACE domain parameter information");
 
+            /* lookup or create a pace context */
+            get_ctx_by_keyID(pace_ctx, ctx->pace_ctxs, tmp_dp_info->keyID, PACE_CTX);
+            if (!pace_ctx) {
+                goto err;
+            }
+
             if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
                 goto err;
+
         } else if (nid == NID_id_TA) {
             /* TAInfo */
             check(d2i_TA_INFO(&tmp_ta_info, &in, info_len),
@@ -766,25 +820,45 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
             check(d2i_CA_INFO(&tmp_ca_info, &in, info_len),
                     "Could not decode CA info");
 
-            ctx->ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
-            if (ctx->ca_ctx->version <= 0 || ctx->ca_ctx->version > 2
-                    || !CA_CTX_set_protocol(ctx->ca_ctx, nid))
+            /* lookup or create a ca context */
+            get_ctx_by_keyID(ca_ctx, ctx->ca_ctxs, tmp_ca_info->keyID, CA_CTX);
+            if (!ca_ctx) {
                 goto err;
+            }
+
+            ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
+            if (ca_ctx->version <= 0 || ca_ctx->version > 2
+                    || !CA_CTX_set_protocol(ca_ctx, nid))
+                goto err;
+
         } else if (nid == NID_id_CA_DH
                 || nid == NID_id_CA_ECDH) {
             /* ChipAuthenticationDomainParameterInfo */
             check(d2i_CA_DP_INFO(&tmp_ca_dp_info, &in, info_len),
                     "Could not decode CA domain parameter info");
 
-            if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
+            /* lookup or create a ca context */
+            get_ctx_by_keyID(ca_ctx, ctx->ca_ctxs, tmp_ca_info->keyID, CA_CTX);
+            if (!ca_ctx) {
                 goto err;
+            }
+
+            if (!aid2evp_pkey(&ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
+                goto err;
+
         } else if (nid == NID_id_PK_DH
                 || nid == NID_id_PK_ECDH) {
             /* ChipAuthenticationPublicKeyInfo */
             check(d2i_CA_PUBLIC_KEY_INFO(&ca_public_key_info, &in, info_len),
                     "Could not decode CA PK domain parameter info");
 
-            if (!aid2evp_pkey(&ctx->ca_ctx->ka_ctx->key,
+            /* lookup or create a ca context */
+            get_ctx_by_keyID(ca_ctx, ctx->ca_ctxs, tmp_ca_info->keyID, CA_CTX);
+            if (!ca_ctx) {
+                goto err;
+            }
+
+            if (!aid2evp_pkey(&ca_ctx->ka_ctx->key,
                         ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier,
                         ctx->bn_ctx))
                 goto err;
@@ -805,11 +879,12 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                         ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
             }
 
-            if (!EVP_PKEY_set_pubkey(ctx->ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
+            if (!EVP_PKEY_set_pubkey(ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
                 goto err;
 
             BUF_MEM_free(pubkey);
             pubkey = NULL;
+
         } else if (nid == NID_id_CI) {
             /* ChipIdentifer */
         } else if (nid == NID_cardInfoLocator) {
@@ -825,26 +900,60 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                 || nid == NID_id_RI_ECDH_SHA_256
                 || nid == NID_id_RI_ECDH_SHA_384
                 || nid == NID_id_RI_ECDH_SHA_512) {
-            if (!RI_CTX_set_protocol(ctx->ri_ctx, nid))
+            /* RestrictedIdentificationInfo */
+            check(d2i_RI_INFO(&tmp_ri_info, &in, info_len),
+                    "Could not decode RI info");
+
+            /* lookup or create a ri context */
+            get_ctx_by_keyID(ri_ctx, ctx->ri_ctxs, tmp_ri_info->params->keyID, RI_CTX);
+            if (!ri_ctx) {
                 goto err;
+            }
+
+            if (!RI_CTX_set_protocol(ri_ctx, nid))
+                goto err;
+
         } else if (nid == NID_id_RI_DH
                 || nid == NID_id_RI_ECDH) {
             /* RestrictedIdentificationDomainParameterInfo */
             check(d2i_RI_DP_INFO(&tmp_ri_dp_info, &in, info_len),
                     "Could not decode RI domain parameter info");
 
-            /* TODO: Copy all the public keys into the EAC context.  As of
-             * now EAC_CTX can only hold one RI public key.  We could use
-             * EVP_PKEY_set_std_dp here, but we leave this to
-             * EAC_CTX_init_ri called by the user */
+            _count = sk_num((_STACK*) ctx->ri_ctxs);
+            for (_i = 0; _i < _count; _i++) {
+                ri_ctx = sk_value((_STACK*) ctx->ri_ctxs, _i);
+                if (!ri_ctx)
+                    goto err;
+                if (!aid2evp_pkey(&ri_ctx->static_key, tmp_ri_dp_info->aid, ctx->bn_ctx))
+                    goto err;
+            }
+
         } else {
             OBJ_obj2txt(obj_txt, sizeof obj_txt, oid, 0);
             log_err("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid),
                     obj_txt);
         }
 
+        /* if we have created the first PACE context, use it as default */
+        if (!ctx->pace_ctx)
+            ctx->pace_ctx = pace_ctx;
+        /* if we have created the first CA context, use it as default */
+        if (!ctx->ca_ctx)
+            ctx->ca_ctx = ca_ctx;
+        /* if we have created the first RI context, use it as default */
+        if (!ctx->ri_ctx)
+            ctx->ri_ctx = ri_ctx;
+
         todo -= info_len;
         in = info_start+info_len;
+    }
+
+    /* although a PACEDomainParameterInfo MUST be present in every version of
+     * BSI TR-03110, they are not included in the EAC worked Example. We
+     * recognize this error and use the keyID as standardizedDomainParameter */
+    if (ctx->pace_ctx && has_no_pace_dp_info) {
+        if (!EVP_PKEY_set_std_dp(ctx->pace_ctx->static_key, ctx->pace_ctx->id))
+            goto err;
     }
 
     r = 1;
@@ -860,6 +969,8 @@ err:
         TA_INFO_free(tmp_ta_info);
     if (tmp_ca_info)
         CA_INFO_free(tmp_ca_info);
+    if (tmp_ri_info)
+        RI_INFO_free(tmp_ri_info);
     if (tmp_ri_dp_info)
         RI_DP_INFO_free(tmp_ri_dp_info);
     if (pubkey)

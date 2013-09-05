@@ -222,6 +222,7 @@ PACE_CTX_new(void)
     out->my_eph_pubkey = NULL;
     out->protocol = NID_undef;
     out->version = 0;
+    out->id = -1;
 
     return out;
 

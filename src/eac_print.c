@@ -146,6 +146,8 @@ CA_CTX_print_private(BIO *out, const CA_CTX *ctx, int indent)
 {
     if (ctx) {
         if (!BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "keyID: 0x%02X\n", ctx->id)
+                || !BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "OID: %s\n", OBJ_nid2sn(ctx->protocol))
                 || !BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "Version: %d\n", ctx->version)
@@ -166,6 +168,8 @@ RI_CTX_print_private(BIO *out, const RI_CTX *ctx, int indent)
 {
     if (ctx) {
         if (!BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "keyID: 0x%02X\n", ctx->id)
+                || !BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "OID: %s\n", OBJ_nid2sn(ctx->protocol)))
             return 0;
 
@@ -201,6 +205,8 @@ PACE_CTX_print_private(BIO *out, const PACE_CTX *ctx, int indent)
 {
     if (ctx) {
         if (!BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "parameterID: 0x%02X\n", ctx->id)
+                || !BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "OID: %s\n", OBJ_nid2sn(ctx->protocol))
                 || !BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "Version: %d\n", ctx->version)
@@ -231,23 +237,48 @@ PACE_CTX_print_private(BIO *out, const PACE_CTX *ctx, int indent)
     return 1;
 }
 
+#define stack_print_private(structure, bio, stack, indent) \
+{ \
+    int __i, __count; \
+    structure *__ctx; \
+    __count = sk_num((_STACK*) stack); \
+    for (__i = 0; __i < __count; __i++) { \
+        BIO_indent(out, indent, 80); \
+        __ctx = sk_value((_STACK*) stack, __i); \
+        BIO_printf(out, "Context %d\n", __i+1); \
+        structure##_print_private(bio, __ctx, indent+4); \
+    } \
+}
+
 int
 EAC_CTX_print_private(BIO *out, const EAC_CTX *ctx, int indent)
 {
     if (ctx) {
         if (!BIO_indent(out, indent, 80)
-                || !BIO_printf(out, "Context for PACE\n")
-                || !PACE_CTX_print_private(out, ctx->pace_ctx, indent+4)
-                || !BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "%d Context%s for PACE (default has parameterID 0x%02X)\n",
+                    sk_num((_STACK*) ctx->pace_ctxs),
+                    sk_num((_STACK*) ctx->pace_ctxs) > 1 ? "s" : "",
+                    ctx->pace_ctx ? ctx->pace_ctx->id : -1))
+            return 0;
+        stack_print_private(PACE_CTX, out, ctx->pace_ctxs, indent+4);
+        if (!BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "Context for TA\n")
                 || !TA_CTX_print_private(out, ctx->ta_ctx, indent+4)
                 || !BIO_indent(out, indent, 80)
-                || !BIO_printf(out, "Context for CA\n")
-                || !CA_CTX_print_private(out, ctx->ca_ctx, indent+4)
-                || !BIO_indent(out, indent, 80)
-                || !BIO_printf(out, "Context for RI\n")
-                || !RI_CTX_print_private(out, ctx->ri_ctx, indent+4))
+                || !BIO_printf(out, "%d Context%s for CA (default has keyID 0x%02X)\n",
+                    sk_num((_STACK*) ctx->ca_ctxs),
+                    sk_num((_STACK*) ctx->ca_ctxs) > 1 ? "s" : "",
+                    ctx->ca_ctx ? ctx->ca_ctx->id : -1))
             return 0;
+        stack_print_private(CA_CTX, out, ctx->ca_ctxs, indent+4);
+        if (!BIO_indent(out, indent, 80)
+                /* FIXME segfaults for me */
+                || !BIO_printf(out, "%d Context%s for RI (default has keyID 0x%02X)\n",
+                    sk_num((_STACK*) ctx->ri_ctxs),
+                    sk_num((_STACK*) ctx->ri_ctxs) > 1 ? "s" : "",
+                    ctx->ri_ctx ? ctx->ri_ctx->id : -1))
+            return 0;
+        stack_print_private(RI_CTX, out, ctx->ri_ctxs, indent);
     } else {
         if (!BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "<ABSENT>\n"))
