@@ -63,7 +63,7 @@ then
     if test -z "$OPENSSL_CONFIGURE_FLAGS"
     then
         my_prefix=`test "$prefix" = NONE && echo \"$ac_default_prefix\" || echo \"${prefix}\"`
-        OPENSSL_CONFIGURE_FLAGS="shared --prefix=${my_prefix} `${srcdir}/win32/gentoo.config-1.0.0 ${host}`"
+        OPENSSL_CONFIGURE_FLAGS="enable-ssl-trace no-asm shared --prefix=${my_prefix} `${srcdir}/cross/gentoo.config-1.0.0 ${host}` ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
     fi
 
     builddir=`pwd`
@@ -207,7 +207,7 @@ AC_CONFIG_FILES([
                  bindings/Makefile
                  bindings/java/Makefile
                  bindings/python/Makefile
-                 win32/Makefile
+                 cross/Makefile
                  doc/Makefile
                  doc/_static/Makefile
                  ])

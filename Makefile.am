@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src win32 bindings doc
+SUBDIRS = src cross bindings doc
 
 EXTRA_DIST = libeac.pc.in bootstrap oids.patch
 DISTCHECK_CONFIGURE_FLAGS = --enable-python --enable-openssl-install
@@ -27,7 +27,10 @@ libeac.pc: libeac.pc.in
 	$(do_subst) < $(srcdir)/libeac.pc.in > libeac.pc
 
 win:
-	$(MAKE) -C win32 $@
+	$(MAKE) -C cross $@
+
+android:
+	$(MAKE) -C cross $@
 
 .PHONY: doc
 doc:
