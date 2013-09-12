@@ -208,7 +208,7 @@ EAC_CTX_init_ri(EAC_CTX *ctx, int protocol, int stnd_dp)
 {
     BUF_MEM *pubkey = NULL;
     RI_CTX *ri_ctx = NULL;
-    int r;
+    int r = 0;
 
     if (!ctx || !ctx->ri_ctxs) {
         log_err("Invalid arguments");
