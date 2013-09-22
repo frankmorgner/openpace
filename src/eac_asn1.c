@@ -588,7 +588,6 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
                 && d2i_PACE_ECPARAMETERS(&ec, &p,
                     aid->parameters.other->value.sequence->length),
                 "Invalid data");
-        i = aid->parameters.other->value.integer;
 #else
         ec = aid->parameters.ec;
 #endif
@@ -838,7 +837,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                     "Could not decode CA domain parameter info");
 
             /* lookup or create a ca context */
-            get_ctx_by_keyID(ca_ctx, ctx->ca_ctxs, tmp_ca_info->keyID, CA_CTX);
+            get_ctx_by_keyID(ca_ctx, ctx->ca_ctxs, tmp_ca_dp_info->keyID, CA_CTX);
             if (!ca_ctx) {
                 goto err;
             }
