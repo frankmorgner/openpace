@@ -266,12 +266,12 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
 %}
 
 int
-EAC_CTX_init_ca(const EAC_CTX *ctx, int protocol, int curve,
+EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve,
     const unsigned char *priv, size_t priv_len,
     const unsigned char *pub, size_t pub_len);
 %rename(EAC_CTX_init_ca) init_ca;
 %inline %{
-    static int init_ca(const EAC_CTX *ctx, int protocol, int curve,
+    static int init_ca(EAC_CTX *ctx, int protocol, int curve,
             char *privkey, int privkey_len, /* typemap applied (see ta.i) */
             char *pubkey, int pubkey_len) {
         return EAC_CTX_init_ca(ctx, protocol, curve,
