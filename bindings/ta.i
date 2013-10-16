@@ -114,6 +114,13 @@ TA_STEP4_get_nonce(const EAC_CTX *ctx);
 
 #endif
 
+BUF_MEM *
+TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey,
+           const BUF_MEM *opp_pace_eph_pubkey, const BUF_MEM *auxdata);
+
+int
+TA_STEP4_set_nonce(const EAC_CTX *ctx, const BUF_MEM *nonce);
+
 int
 TA_STEP6_verify(const EAC_CTX *ctx, const BUF_MEM *opp_ta_comp_pubkey,
         const BUF_MEM *my_pace_comp_eph_pubkey, const BUF_MEM *auxdata,
