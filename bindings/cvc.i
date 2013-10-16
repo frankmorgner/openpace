@@ -100,20 +100,58 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %inline %{
     static void get_termsOfUsage(CVC_CERTIFICATE_DESCRIPTION *desc, char **out,
             int *out_len) {
+    
+        const unsigned char *p;
+        int l;
 
-        /*XXX: We only deal with plain text TOUs. What should we do with pdf or
-               HTML? */
-        /*TODO: Check OID */
-        if (!desc || !desc->termsOfUsage.plainTerms) {
+        if (!desc) {
             /* Return a NULL pointer on error */
             *out = NULL;
             *out_len = 0;
             return;
         }
 
-        *out_len = desc->termsOfUsage.plainTerms->length;
+        /* TODO check for OID */
+
+#ifndef HAVE_PATCHED_OPENSSL
+        if (!desc->termsOfUsage.other || desc->termsOfUsage.other->type != V_ASN1_SEQUENCE) {
+            /* Return a NULL pointer on error */
+            *out = NULL;
+            *out_len = 0;
+            return;
+        }
+        ASN1_UTF8STRING *s = NULL;
+        p = desc->termsOfUsage.other->value.sequence->data;
+        if (!d2i_ASN1_UTF8STRING(&s, &p,
+                    desc->termsOfUsage.other->value.sequence->length)) {
+            /* Return a NULL pointer on error */
+            *out = NULL;
+            *out_len = 0;
+            return;
+        }
+        p = s->data;
+        l = s->length;
+#else
+        if (!desc->termsOfUsage.plainTerms) {
+            /* Return a NULL pointer on error */
+            *out = NULL;
+            *out_len = 0;
+            return;
+        }
+        p = desc->termsOfUsage.plainTerms->data;
+        l = desc->termsOfUsage.plainTerms->length;
+#endif
+
+        *out_len = l;
         *out = malloc(*out_len);
-        memcpy(*out, desc->termsOfUsage.plainTerms->data, *out_len);
+        memcpy(*out, p, *out_len);
+
+#ifndef HAVE_PATCHED_OPENSSL
+        ASN1_UTF8STRING_free(s);
+#else
+        /* need to have something behind a label */
+        ;
+#endif
         return;
     }
 %}
