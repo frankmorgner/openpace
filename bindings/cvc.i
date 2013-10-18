@@ -103,56 +103,50 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
     
         const unsigned char *p;
         int l;
+#ifndef HAVE_PATCHED_OPENSSL
+        ASN1_UTF8STRING *s = NULL;
+#endif
 
-        if (!desc) {
-            /* Return a NULL pointer on error */
-            *out = NULL;
-            *out_len = 0;
-            return;
-        }
+        *out = NULL;
+        *out_len = 0;
+
+        if (!desc)
+            goto err;
 
         /* TODO check for OID */
-
 #ifndef HAVE_PATCHED_OPENSSL
         if (!desc->termsOfUsage.other || desc->termsOfUsage.other->type != V_ASN1_SEQUENCE) {
-            /* Return a NULL pointer on error */
-            *out = NULL;
-            *out_len = 0;
             return;
         }
-        ASN1_UTF8STRING *s = NULL;
         p = desc->termsOfUsage.other->value.sequence->data;
         if (!d2i_ASN1_UTF8STRING(&s, &p,
                     desc->termsOfUsage.other->value.sequence->length)) {
-            /* Return a NULL pointer on error */
-            *out = NULL;
-            *out_len = 0;
             return;
         }
         p = s->data;
         l = s->length;
 #else
         if (!desc->termsOfUsage.plainTerms) {
-            /* Return a NULL pointer on error */
-            *out = NULL;
-            *out_len = 0;
-            return;
+            goto err;
         }
         p = desc->termsOfUsage.plainTerms->data;
         l = desc->termsOfUsage.plainTerms->length;
 #endif
 
-        *out_len = l;
         *out = malloc(*out_len);
+        if (!*out)
+            goto err;
+        *out_len = l;
         memcpy(*out, p, *out_len);
 
+err:
 #ifndef HAVE_PATCHED_OPENSSL
-        ASN1_UTF8STRING_free(s);
+        if (s)
+            ASN1_UTF8STRING_free(s);
 #else
         /* need to have something behind a label */
         ;
 #endif
-        return;
     }
 %}
 

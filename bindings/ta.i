@@ -50,50 +50,26 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
 %rename(TA_STEP3_generate_ephemeral_key) generate_ephemeral_ta_key;
 %inline %{
     static void generate_ephemeral_ta_key(char **out, int *out_len, const EAC_CTX *ctx) {
-
         BUF_MEM *out_buf = NULL;
 
         out_buf = TA_STEP3_generate_ephemeral_key(ctx);
-        if (out_buf) {
-            *out_len = out_buf->length;
-            *out = malloc((size_t) *out_len);
-            memcpy((void *) *out, out_buf->data, *out_len);
-            BUF_MEM_free(out_buf);
-            return;
-        }
+        buf2string(out_buf, out, out_len);
 
-    err:
         if (out_buf)
             BUF_MEM_free(out_buf);
-        if (*out)
-            free(*out);
-        *out_len = 0;
-        return;
     }
 %}
 
 %rename(TA_STEP4_get_nonce) get_nonce;
 %inline %{
     static void get_nonce(char **out, int *out_len, const EAC_CTX *ctx) {
-
         BUF_MEM *out_buf = NULL;
 
         out_buf = TA_STEP4_get_nonce(ctx);
-        if (out_buf) {
-            *out_len = out_buf->length;
-            *out = malloc((size_t) *out_len);
-            memcpy((void *) *out, out_buf->data, *out_len);
-            BUF_MEM_free(out_buf);
-            return;
-        }
+        buf2string(out_buf, out, out_len);
 
-    err:
         if (out_buf)
             BUF_MEM_free(out_buf);
-        if (*out)
-            free(*out);
-        *out_len = 0;
-        return;
     }
 %}
 #else

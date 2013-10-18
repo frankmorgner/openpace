@@ -115,23 +115,15 @@ PACE_SEC_clear_free(PACE_SEC *s);
 %rename(PACE_STEP1_enc_nonce) enc_nonce;
 %inline %{
     static void enc_nonce(char **out, int *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
-
         BUF_MEM *enc_nonce = NULL;
 
-        if (PACE_STEP1_enc_nonce(ctx, pi, &enc_nonce)) {
-            *out_len = enc_nonce->length;
-            *out = malloc((size_t) *out_len);
-            memcpy((void *) *out, enc_nonce->data, *out_len);
+        if (!PACE_STEP1_enc_nonce(ctx, pi, &enc_nonce)) {
+            *out_len = 0;
+            *out = NULL;
+        } else {
+            buf2string(enc_nonce, out, out_len);
             BUF_MEM_free(enc_nonce);
-            return;
         }
-
-    err:
-        if (enc_nonce)
-            BUF_MEM_free(enc_nonce);
-        if (*out)
-            free(*out);
-        *out_len = 0;
         return;
     }
 %}
@@ -158,22 +150,9 @@ PACE_SEC_clear_free(PACE_SEC *s);
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3A_generate_mapping_data(ctx);
-        if (!out_buf)
-            goto err;
+        buf2string(out_buf, out, out_len);
 
-        *out_len = out_buf->length;
-        *out = malloc((size_t) *out_len);
-        if (!*out) {
-            *out_len = 0;
-            goto err;
-        }
-
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
-        if(out_buf)
-            BUF_MEM_free(out_buf);
-        return;
+        BUF_MEM_free(out_buf);
     }
 %}
 
@@ -183,22 +162,10 @@ PACE_SEC_clear_free(PACE_SEC *s);
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3B_generate_ephemeral_key(ctx);
-        if (!out_buf)
-            goto err;
+        buf2string(out_buf, out, out_len);
 
-        *out_len = out_buf->length;
-        *out = malloc((size_t) *out_len);
-        if (!*out) {
-            *out_len = 0;
-            goto err;
-        }
-
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
         if(out_buf)
             BUF_MEM_free(out_buf);
-        return;
     }
 %}
 
@@ -209,27 +176,13 @@ PACE_SEC_clear_free(PACE_SEC *s);
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
         in_buf = get_buf(in, in_len);
-        if (!in_buf)
-            goto err;
-
         out_buf = PACE_STEP3D_compute_authentication_token(ctx, in_buf);
-        if (!out_buf)
-            goto err;
+        buf2string(out_buf, out, out_len);
 
-        *out_len = out_buf->length;
-        *out = malloc((size_t) *out_len);
-        if (!*out) {
-            *out_len = 0;
-            goto err;
-        }
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
         if (in_buf)
             BUF_MEM_free(in_buf);
         if (out_buf)
             BUF_MEM_free(out_buf);
-        return;
     }
 %}
 

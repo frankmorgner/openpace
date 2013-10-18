@@ -56,30 +56,12 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
             char *in, int in_len) {
         BUF_MEM *out_buf = NULL, *data = NULL;
 
-        if (in_len < 0)
-            goto err;
-
         data = get_buf(in, in_len);
-        if (!data)
-            goto err;
-
         out_buf = EAC_encrypt(ctx, data);
-        if (!out_buf)
-            goto err;
+        buf2string(out_buf, out, out_len);
 
-        *out_len = out_buf->length;
-        *out = malloc(*out_len);
-        if (!out) {
-            *out_len = 0;
-            goto err;
-        }
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
-        if (data)
-            BUF_MEM_clear_free(data);
-        if (out_buf)
-            BUF_MEM_clear_free(out_buf);
+        BUF_MEM_clear_free(data);
+        BUF_MEM_clear_free(out_buf);
         return;
     }
 %}
@@ -90,31 +72,12 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
             char *in, int in_len) {
         BUF_MEM *out_buf = NULL, *data = NULL;
 
-        if (in_len < 0)
-            goto err;
-
         data = get_buf(in, in_len);
-        if (!data)
-            goto err;
-
         out_buf = EAC_decrypt(ctx, data);
-        if (!out_buf)
-            goto err;
+        buf2string(out_buf, out, out_len);
 
-        *out_len = out_buf->length;
-        *out = malloc(*out_len);
-        if (!out) {
-            *out_len = 0;
-            goto err;
-        }
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
-        if (data)
-            BUF_MEM_clear_free(data);
-        if (out_buf)
-            BUF_MEM_clear_free(out_buf);
-        return;
+        BUF_MEM_clear_free(data);
+        BUF_MEM_clear_free(out_buf);
     }
 %}
 
@@ -124,31 +87,11 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
             char *in, int in_len) {
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
-        if (in_len < 0)
-            goto err;
-
         in_buf = get_buf(in, in_len);
-        if (!in_buf)
-            goto err;
-
         out_buf = EAC_authenticate(ctx, in_buf);
-        if (!out_buf)
-            goto err;
-
-        *out_len = out_buf->length;
-        *out = malloc(*out_len);
-        if (!out) {
-            *out_len = 0;
-            goto err;
-        }
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
-        if (in_buf)
-            BUF_MEM_clear_free(in_buf);
-        if (out_buf)
-            BUF_MEM_clear_free(out_buf);
-        return;
+        buf2string(out_buf, out, out_len);
+        BUF_MEM_clear_free(in_buf);
+        BUF_MEM_clear_free(out_buf);
     }
 %}
 
@@ -159,32 +102,11 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
-        if (in_len < 0)
-            goto err;
-
         in_buf = get_buf(in, in_len);
-        if (!in_buf)
-            goto err;
-
         out_buf = EAC_Comp(ctx, id, in_buf);
-        if (!out_buf)
-            goto err;
-
-        *out_len = out_buf->length;
-        *out = malloc(*out_len);
-        if (!out) {
-            *out_len = 0;
-            goto err;
-        }
-        memcpy(*out, out_buf->data, *out_len);
-
-    err:
-        if (in_buf)
-            BUF_MEM_clear_free(in_buf);
-        if (out_buf)
-            BUF_MEM_clear_free(out_buf);
-        return;
-
+        buf2string(out_buf, out, out_len);
+        BUF_MEM_clear_free(in_buf);
+        BUF_MEM_clear_free(out_buf);
     }
 %}
 
@@ -213,7 +135,8 @@ err:
         *out_len = 0;
         if (*out)
             free(*out);
-        BIO_free_all(bio);
+        if (bio)
+            BIO_free_all(bio);
     }
 %}
 

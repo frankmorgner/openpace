@@ -56,17 +56,7 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 %inline %{
     static void ca_step1_get_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = CA_STEP1_get_pubkey(ctx);
-        if (!out_buf)
-            return;
-
-        *out = malloc(out_buf->length);
-        if (!*out)
-            goto err;
-
-        *out_len = out_buf->length;
-        memcpy(*out, out_buf->data, (size_t) *out_len);
-
-err:
+        buf2string(out_buf, out, out_len);
         BUF_MEM_clear_free(out_buf);
         return;
     }
@@ -76,17 +66,7 @@ err:
 %inline %{
     static void ca_step2_get_eph_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = CA_STEP2_get_eph_pubkey(ctx);
-        if (!out_buf)
-            return;
-
-        *out = malloc(out_buf->length);
-        if (!*out)
-            goto err;
-
-        *out_len = out_buf->length;
-        memcpy(*out, out_buf->data, (size_t) *out_len);
-
-err:
+        buf2string(out_buf, out, out_len);
         BUF_MEM_clear_free(out_buf);
         return;
     }
@@ -204,25 +184,16 @@ CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
 %inline %{
     static void ca_get_pubkey (const EAC_CTX *ctx, char **out, int *out_len, char *in, int
             in_len) /* typemap applied */ {
-        BUF_MEM *pubkey = NULL;
+        BUF_MEM *pubkey;
 
-        if (in_len <= 0)
-            goto err;
-
-        pubkey = CA_get_pubkey(ctx, (unsigned char*) in, (size_t) in_len);
-        if (!pubkey)
-            goto err;
-
-        *out = malloc(pubkey->length);
-        if (!*out)
-            goto err;
-
-        *out_len = pubkey->length;
-        memcpy(*out, pubkey->data, (size_t) *out_len);
-
-err:
-        if (pubkey)
+        if (in_len > 0) {
+            pubkey = CA_get_pubkey(ctx, (unsigned char*) in, (size_t) in_len);
+            buf2string(pubkey, out, out_len);
             BUF_MEM_clear_free(pubkey);
+        } else {
+            *out_len = 0;
+            *out = NULL;
+        }
         return;
     }
 %}
