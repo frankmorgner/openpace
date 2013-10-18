@@ -101,7 +101,7 @@ void EAC_cleanup(void);
             *out_len = buf->length;
             *out = malloc(*out_len);
 
-            if (!out) {
+            if (!*out) {
                 *out_len = 0;
                 return;
             }
