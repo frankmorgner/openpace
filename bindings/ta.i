@@ -53,10 +53,6 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
 
         BUF_MEM *out_buf = NULL;
 
-        out_buf = BUF_MEM_new();
-        if (!out_buf)
-            goto err;
-
         out_buf = TA_STEP3_generate_ephemeral_key(ctx);
         if (out_buf) {
             *out_len = out_buf->length;
@@ -81,10 +77,6 @@ TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
     static void get_nonce(char **out, int *out_len, const EAC_CTX *ctx) {
 
         BUF_MEM *out_buf = NULL;
-
-        out_buf = BUF_MEM_new();
-        if (!out_buf)
-            goto err;
 
         out_buf = TA_STEP4_get_nonce(ctx);
         if (out_buf) {

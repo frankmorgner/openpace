@@ -118,10 +118,6 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
         BUF_MEM *enc_nonce = NULL;
 
-        enc_nonce = BUF_MEM_new();
-        if (!enc_nonce)
-            goto err;
-
         if (PACE_STEP1_enc_nonce(ctx, pi, &enc_nonce)) {
             *out_len = enc_nonce->length;
             *out = malloc((size_t) *out_len);
@@ -245,14 +241,9 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
         BUF_MEM *enc_nonce = NULL;
 
-        enc_nonce = BUF_MEM_new();
-        if (!enc_nonce)
-            return NULL;
-
         if (PACE_STEP1_enc_nonce(ctx, pi, &enc_nonce))
             return enc_nonce;
         else {
-            BUF_MEM_free(enc_nonce);
             return NULL;
         }
     }
