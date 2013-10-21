@@ -306,29 +306,29 @@ CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
             || nid == NID_id_TA_ECDSA_SHA_256
             || nid == NID_id_TA_ECDSA_SHA_384
             || nid == NID_id_TA_ECDSA_SHA_512) {
-        if (!ret->body->public_key->public_point)
-            goto err;
+        check(ret->body->public_key->public_point,
+                "public key missing");
     } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
             || nid == NID_id_TA_RSA_v1_5_SHA_256
             || nid == NID_id_TA_RSA_v1_5_SHA_512
             || nid == NID_id_TA_RSA_PSS_SHA_1
             || nid == NID_id_TA_RSA_PSS_SHA_256
             || nid == NID_id_TA_RSA_PSS_SHA_512) {
-        if (!ret->body->public_key->modulus || !ret->body->public_key->a)
-            goto err;
+        check(ret->body->public_key->modulus && ret->body->public_key->a,
+                "public key missing");
     } else {
+        log_err("unknown credentials in certificate");
         goto err;
     }
 
     return ret;
 
 err:
-    if(ret) {
+    if(ret && !cert) {
         CVC_CERT_free(ret);
-        ret = NULL;
     }
 
-    return ret;
+    return NULL;
 }
 
 int
