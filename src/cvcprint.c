@@ -26,6 +26,7 @@
  */
 
 #include <eac/cv_cert.h>
+#include <eac/eac.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <stdio.h>
@@ -199,11 +200,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    EAC_init();
     fail = print_cvc(cvc_data, cvc_len, desc_data, desc_len);
 
 err:
     free(cvc_data);
     free(desc_data);
+    EAC_cleanup();
 
     return fail;
 }
