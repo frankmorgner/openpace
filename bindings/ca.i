@@ -26,6 +26,7 @@
 %{
 #include <eac/ca.h>
 #include <eac/cv_cert.h>
+#include <eac/objects.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,17 +36,6 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 
 void
 CA_disable_passive_authentication(EAC_CTX *ctx);
-
-/* FIXME: Manual NIDs are bad because they will probably change in the next
- * version of OpenSSL */
-#define id_CA_DH_3DES_CBC_CBC 953
-#define id_CA_DH_AES_CBC_CMAC_128 954
-#define id_CA_DH_AES_CBC_CMAC_192 955
-#define id_CA_DH_AES_CBC_CMAC_256 956
-#define id_CA_ECDH_3DES_CBC_CBC 958
-#define id_CA_ECDH_AES_CBC_CMAC_128 959
-#define id_CA_ECDH_AES_CBC_CMAC_192 960
-#define id_CA_ECDH_AES_CBC_CMAC_256 961
 
 int
 CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);

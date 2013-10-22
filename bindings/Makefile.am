@@ -1,4 +1,4 @@
-EXTRA_DIST = ca.i cvc.i eac.i pace.i ta.i util.i
+EXTRA_DIST = ca.i cvc.i eac.i pace.i ta.i util.i objects.i
 SUBDIRS =
 
 if PYTHON_ENABLED

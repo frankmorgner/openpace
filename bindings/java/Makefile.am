@@ -3,6 +3,7 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../eac.i \
 			 $(srcdir)/../pace.i \
 			 $(srcdir)/../ta.i \
+			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
 BUILT_SOURCES = SWIGTYPE_p_BIO.java \

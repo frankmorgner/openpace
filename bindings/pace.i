@@ -95,6 +95,7 @@ enum s_type {
 %include "ta.i"
 %include "ca.i"
 %include "cvc.i"
+%include "objects.i"
 
 /**
  * @defgroup manage              Data Managment
