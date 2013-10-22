@@ -72,6 +72,12 @@ enum s_type {
 %apply (char *BYTE, int LENGTH) {(char *car, int car_len)};
 %apply (char *BYTE, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
 %apply (char *BYTE, int LENGTH) {(char *pubkey, int pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *auxdata, int auxdata_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
 
 #endif
 
@@ -83,6 +89,12 @@ enum s_type {
 %apply (char *STRING, int LENGTH) {(char *car, int car_len)};
 %apply (char *STRING, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
 %apply (char *STRING, int LENGTH) {(char *pubkey, int pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *auxdata, int auxdata_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
 
 %cstring_output_allocate_size(char **out, int *out_len, free(*$1));
 
