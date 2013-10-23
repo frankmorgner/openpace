@@ -111,14 +111,12 @@ PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type);
  *
  * @param[in,out] ctx       EAC context. The nonce is saved in \a ctx.
  * @param[in] pi        Shared secret for PACE
- * @param[out] enc_nonce Where to save the new object containing the encrypted nonce
  *
- * @return          1 on success or 0 in case of an error
+ * @return          the encrypted nonce on success or NULL in case of an error
  *
  * @see <a href="http://openpace.sourceforge.net/protocols.html#protocol-specification">PACE's Protocol Specification</a>
  */
-int PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
-                   BUF_MEM ** enc_nonce);
+BUF_MEM * PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi);
 /**
  * @brief Decrypt the nonce from the other party.
  *

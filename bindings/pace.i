@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2010-2012 Dominik Oepen
+ * Copyright (c) 2013      Frank Morgner
  *
  * This file is part of OpenPACE.
  *
@@ -24,9 +25,7 @@
  */
 %module pace
 
-#ifdef SWIGPYTHON
 %include "cstring.i"
-#endif
 
 %{
 #include <eac/pace.h>
@@ -75,13 +74,13 @@ enum s_type {
 %apply (char *BYTE, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
 %apply (char *BYTE, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
 %apply (char *BYTE, int LENGTH) {(char *auxdata, int auxdata_len)};
-%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
+%apply (char *BYTE, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *signature, int signature_len)};
 
 #endif
 
-#ifdef SWIGPYTHON
+#ifndef SWIG_CSTRING_UNIMPL
 
 %apply (char *STRING, int LENGTH) {(char *in, int in_len)};
 %apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
@@ -124,26 +123,25 @@ PACE_SEC_clear_free(PACE_SEC *s);
  * @defgroup protocol              Protocol steps
  * @{ ************************************************************************/
 
-#ifdef SWIGPYTHON
-%rename(PACE_STEP1_enc_nonce) enc_nonce;
-%inline %{
-    static void enc_nonce(char **out, int *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
-        BUF_MEM *enc_nonce = NULL;
+#if !defined(SWIG_CSTRING_UNIMPL)
 
-        if (!PACE_STEP1_enc_nonce(ctx, pi, &enc_nonce)) {
+%rename(PACE_STEP1_enc_nonce) pace_step1_enc_nonce;
+%inline %{
+    static void pace_step1_enc_nonce(char **out, int *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
+        BUF_MEM *enc_nonce = PACE_STEP1_enc_nonce(ctx, pi);
+        if (!enc_nonce) {
             *out_len = 0;
             *out = NULL;
         } else {
             buf2string(enc_nonce, out, out_len);
             BUF_MEM_free(enc_nonce);
         }
-        return;
     }
 %}
 
-%rename(PACE_STEP2_dec_nonce) dec_nonce;
+%rename(PACE_STEP2_dec_nonce) pace_step2_dec_nonce;
 %inline %{
-    static int dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi, char *in, int in_len) {
+    static int pace_step2_dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -157,9 +155,9 @@ PACE_SEC_clear_free(PACE_SEC *s);
     }
 %}
 
-%rename(PACE_STEP3A_generate_mapping_data) generate_mapping_data;
+%rename(PACE_STEP3A_generate_mapping_data) pace_step3a_generate_mapping_data;
 %inline %{
-    static void generate_mapping_data(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void pace_step3a_generate_mapping_data(char **out, int *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3A_generate_mapping_data(ctx);
@@ -169,72 +167,25 @@ PACE_SEC_clear_free(PACE_SEC *s);
     }
 %}
 
-%rename(PACE_STEP3B_generate_ephemeral_key) generate_ephemeral_pace_key;
+%rename(PACE_STEP3B_compute_shared_secret) pace_step3b_compute_shared_secret;
 %inline %{
-    static void generate_ephemeral_pace_key(char **out, int *out_len, EAC_CTX *ctx) {
-        BUF_MEM *out_buf = NULL;
-
-        out_buf = PACE_STEP3B_generate_ephemeral_key(ctx);
-        buf2string(out_buf, out, out_len);
-
-        if(out_buf)
-            BUF_MEM_free(out_buf);
-    }
-%}
-
-%rename(PACE_STEP3D_compute_authentication_token) compute_authentication_token;
-%inline %{
-    static void compute_authentication_token(char **out, int *out_len,
-            const EAC_CTX *ctx, char *in, int in_len) {
-        BUF_MEM *in_buf = NULL, *out_buf = NULL;
+    static int pace_step3b_compute_shared_secret(const EAC_CTX *ctx, char *in, int in_len) {
+        BUF_MEM *in_buf = NULL;
+        int ret = 0;
 
         in_buf = get_buf(in, in_len);
-        out_buf = PACE_STEP3D_compute_authentication_token(ctx, in_buf);
-        buf2string(out_buf, out, out_len);
+        if (!in_buf)
+            return 0;
 
-        if (in_buf)
-            BUF_MEM_free(in_buf);
-        if (out_buf)
-            BUF_MEM_free(out_buf);
+        ret = PACE_STEP3B_compute_shared_secret(ctx, in_buf);
+        BUF_MEM_free(in_buf);
+        return ret;
     }
 %}
 
-#else
-
-%rename(PACE_STEP1_enc_nonce) enc_nonce;
+%rename(PACE_STEP3A_map_generator) pace_step3a_map_generator;
 %inline %{
-    static BUF_MEM *enc_nonce(const EAC_CTX *ctx, const PACE_SEC *pi) {
-
-        BUF_MEM *enc_nonce = NULL;
-
-        if (PACE_STEP1_enc_nonce(ctx, pi, &enc_nonce))
-            return enc_nonce;
-        else {
-            return NULL;
-        }
-    }
-%}
-
-int
-PACE_STEP2_dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi,
-        const BUF_MEM *enc_nonce);
-
-BUF_MEM *
-PACE_STEP3A_generate_mapping_data(const EAC_CTX *ctx);
-
-BUF_MEM *
-PACE_STEP3B_generate_ephemeral_key(EAC_CTX *ctx);
-
-BUF_MEM *
-PACE_STEP3D_compute_authentication_token(const EAC_CTX *ctx, BUF_MEM *pub);
-
-#endif
-
-int
-PACE_STEP3A_map_generator(const EAC_CTX *ctx, const BUF_MEM *in);
-%rename(PACE_STEP3A_map_generator) map_generator;
-%inline %{
-    static int map_generator(const EAC_CTX *ctx, char *in, int in_len) {
+    static int pace_step3a_map_generator(const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -251,32 +202,39 @@ PACE_STEP3A_map_generator(const EAC_CTX *ctx, const BUF_MEM *in);
     }
 %}
 
-int
-PACE_STEP3B_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *in);
-%rename(PACE_STEP3B_compute_shared_secret) compute_shared_secret;
+%rename(PACE_STEP3B_generate_ephemeral_key) pace_step3b_generate_ephemeral_pace_key;
 %inline %{
-    static int compute_shared_secret(const EAC_CTX *ctx, char *in, int in_len) {
-        BUF_MEM *in_buf = NULL;
-        int ret = 0;
+    static void pace_step3b_generate_ephemeral_pace_key(char **out, int *out_len, EAC_CTX *ctx) {
+        BUF_MEM *out_buf = NULL;
 
-        in_buf = get_buf(in, in_len);
-        if (!in_buf)
-            return 0;
+        out_buf = PACE_STEP3B_generate_ephemeral_key(ctx);
+        buf2string(out_buf, out, out_len);
 
-        ret = PACE_STEP3B_compute_shared_secret(ctx, in_buf);
-        BUF_MEM_free(in_buf);
-        return ret;
+        if(out_buf)
+            BUF_MEM_free(out_buf);
     }
 %}
 
-int
-PACE_STEP3C_derive_keys(const EAC_CTX *ctx);
-
-int
-PACE_STEP3D_verify_authentication_token(const EAC_CTX *ctx, const BUF_MEM *token);
-%rename(PACE_STEP3D_verify_authentication_token) verify_authentication_token;
+%rename(PACE_STEP3D_compute_authentication_token) pace_step3d_compute_authentication_token;
 %inline %{
-    static int verify_authentication_token(const EAC_CTX *ctx, char *in, int in_len) {
+    static void pace_step3d_compute_authentication_token(char **out, int *out_len,
+            const EAC_CTX *ctx, char *in, int in_len) {
+        BUF_MEM *in_buf = NULL, *out_buf = NULL;
+
+        in_buf = get_buf(in, in_len);
+        out_buf = PACE_STEP3D_compute_authentication_token(ctx, in_buf);
+        buf2string(out_buf, out, out_len);
+
+        if (in_buf)
+            BUF_MEM_free(in_buf);
+        if (out_buf)
+            BUF_MEM_free(out_buf);
+    }
+%}
+
+%rename(PACE_STEP3D_verify_authentication_token) pace_step3d_verify_authentication_token;
+%inline %{
+    static int pace_step3d_verify_authentication_token(const EAC_CTX *ctx, char *in, int in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -289,5 +247,37 @@ PACE_STEP3D_verify_authentication_token(const EAC_CTX *ctx, const BUF_MEM *token
         return ret;
     }
 %}
+
+#else
+
+BUF_MEM *
+PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi);
+
+int
+PACE_STEP2_dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi,
+        const BUF_MEM *enc_nonce);
+
+BUF_MEM *
+PACE_STEP3A_generate_mapping_data(const EAC_CTX *ctx);
+
+int
+PACE_STEP3A_map_generator(const EAC_CTX *ctx, const BUF_MEM *in);
+
+BUF_MEM *
+PACE_STEP3B_generate_ephemeral_key(EAC_CTX *ctx);
+
+int
+PACE_STEP3B_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *in);
+
+BUF_MEM *
+PACE_STEP3D_compute_authentication_token(const EAC_CTX *ctx, BUF_MEM *pub);
+
+int
+PACE_STEP3D_verify_authentication_token(const EAC_CTX *ctx, const BUF_MEM *token);
+
+#endif
+
+int
+PACE_STEP3C_derive_keys(const EAC_CTX *ctx);
 
 /** @} ***********************************************************************/

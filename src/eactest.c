@@ -2959,7 +2959,8 @@ dynamic_eac_test(const struct pace_secret pace_secret,
 
 
     /* PACE */
-    CHECK(1, PACE_STEP1_enc_nonce(picc_ctx, s, &enc_nonce),
+    enc_nonce = PACE_STEP1_enc_nonce(picc_ctx, s);
+    CHECK(1, enc_nonce,
             "PACE step 1: MRTD generated and encrypted nonce.");
 
     CHECK(1, PACE_STEP2_dec_nonce(pcd_ctx, s, enc_nonce),

@@ -39,15 +39,14 @@
 #include <openssl/objects.h>
 #include <string.h>
 
-int
-PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
-                   BUF_MEM ** enc_nonce)
+BUF_MEM *
+PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi)
 {
+    BUF_MEM * enc_nonce = NULL;
     BUF_MEM * key = NULL;
-    int r = 0;
 
     check((ctx && ctx->pace_ctx && ctx->pace_ctx->ka_ctx &&
-                ctx->pace_ctx->ka_ctx->cipher && enc_nonce),
+                ctx->pace_ctx->ka_ctx->cipher),
             "Invalid arguments");
 
     key = kdf_pi(pi, NULL, ctx->pace_ctx->ka_ctx, ctx->md_ctx);
@@ -57,15 +56,12 @@ PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi,
     ctx->pace_ctx->nonce = randb(EVP_CIPHER_block_size(ctx->pace_ctx->ka_ctx->cipher));
     check(ctx->pace_ctx->nonce, "Failed to create nonce");
 
-    *enc_nonce = cipher_no_pad(ctx->pace_ctx->ka_ctx, ctx->cipher_ctx, key, ctx->pace_ctx->nonce, 1);
-    check(*enc_nonce, "Failed to encrypt nonce");
-
-    r = 1;
+    enc_nonce = cipher_no_pad(ctx->pace_ctx->ka_ctx, ctx->cipher_ctx, key, ctx->pace_ctx->nonce, 1);
 
 err:
     BUF_MEM_clear_free(key);
 
-    return r;
+    return enc_nonce;
 }
 
 int

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2010-2012 Dominik Oepen
+ * Copyright (c) 2013      Frank Morgner
  *
  * This file is part of OpenPACE.
  *
@@ -85,7 +86,7 @@ void EAC_cleanup(void);
     }
 %}
 
-#ifdef SWIGPYTHON
+#ifndef SWIG_CSTRING_UNIMPL
 
 %inline %{
     static void buf2string(BUF_MEM *buf, char **out, int *out_len) {

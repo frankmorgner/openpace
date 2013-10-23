@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2010-2012 Dominik Oepen
+ * Copyright (c) 2013      Frank Morgner
  *
  * This file is part of OpenPACE.
  *
@@ -37,10 +38,7 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 void
 CA_disable_passive_authentication(EAC_CTX *ctx);
 
-int
-CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
-
-#ifdef SWIGPYTHON
+#if !defined(SWIG_CSTRING_UNIMPL)
 
 %rename(CA_STEP1_get_pubkey) ca_step1_get_pubkey;
 %inline %{
@@ -62,20 +60,6 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
     }
 %}
 
-#else
-
-BUF_MEM *
-CA_STEP1_get_pubkey(const EAC_CTX *ctx);
-
-
-BUF_MEM *
-CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
-
-#endif
-
-int
-CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
-        const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey);
 %rename(CA_STEP3_check_pcd_pubkey) ca_step3_check_pcd_pubkey;
 %inline %{
     static int ca_step3_check_pcd_pubkey (const EAC_CTX *ctx,
@@ -100,8 +84,6 @@ err:
     }
 %}
 
-int
-CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
 %rename(CA_STEP4_compute_shared_secret) ca_step4_compute_shared_secret;
 %inline %{
     static int ca_step4_compute_shared_secret (const EAC_CTX *ctx,
@@ -122,9 +104,48 @@ err:
     }
 %}
 
+
+%rename(CA_get_pubkey) ca_get_pubkey;
+%inline %{
+    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, int *out_len, char *in, int
+            in_len) /* typemap applied */ {
+        BUF_MEM *pubkey;
+
+        if (in_len > 0) {
+            pubkey = CA_get_pubkey(ctx, (unsigned char*) in, (size_t) in_len);
+            buf2string(pubkey, out, out_len);
+            BUF_MEM_clear_free(pubkey);
+        } else {
+            *out_len = 0;
+            *out = NULL;
+        }
+        return;
+    }
+%}
+#else
+
+BUF_MEM*
+CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
+
+BUF_MEM *
+CA_STEP1_get_pubkey(const EAC_CTX *ctx);
+
+BUF_MEM *
+CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
+
 int
-CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
-                   BUF_MEM **nonce, BUF_MEM **token);
+CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
+        const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey);
+
+int
+CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
+
+int
+CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
+
+
+#endif
+
 #ifdef SWIGPYTHON
 %rename(CA_STEP5_derive_keys) ca_step5_derive_keys;
 %inline %{
@@ -166,24 +187,11 @@ err:
         return out;
     }
 %}
+
+#else
+
+int
+CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
+                   BUF_MEM **nonce, BUF_MEM **token);
+
 #endif
-
-BUF_MEM*
-CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
-%rename(CA_get_pubkey) ca_get_pubkey;
-%inline %{
-    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, int *out_len, char *in, int
-            in_len) /* typemap applied */ {
-        BUF_MEM *pubkey;
-
-        if (in_len > 0) {
-            pubkey = CA_get_pubkey(ctx, (unsigned char*) in, (size_t) in_len);
-            buf2string(pubkey, out, out_len);
-            BUF_MEM_clear_free(pubkey);
-        } else {
-            *out_len = 0;
-            *out = NULL;
-        }
-        return;
-    }
-%}
