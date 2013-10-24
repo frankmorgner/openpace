@@ -470,6 +470,22 @@ int EAC_CTX_init_ef_cardaccess(unsigned const char * in, unsigned int in_len,
         EAC_CTX *ctx);
 
 /**
+ * @brief Initialize an EAC context for PACE, TA and CA from the data
+ * given in an \c EF.CardSecurity
+ *
+ * Performs passive authentication if required.
+ *
+ * @param[in] ef_cardsecurity buffer containing the ASN.1 encoded EF.CardSecurity
+ * @param[in] ef_cardsecurity_len length of \a ef_cardsecurity
+ * @param[in,out] ctx EAC context to initialize
+ *
+ * @return 1 on success or 0 in case of an error
+ */
+int EAC_CTX_init_ef_cardsecurity(
+        const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len,
+        EAC_CTX *ctx);
+
+/**
  * @brief Return the EAC context's CVCA lookup callback
  *
  * @param[in] ctx EAC context

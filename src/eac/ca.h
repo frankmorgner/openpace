@@ -62,6 +62,8 @@ void CA_disable_passive_authentication(EAC_CTX *ctx);
 /**
  * @brief Extract the public key from a EF.CardSecurity file
  *
+ * Perform passive authentication if required.
+ *
  * @param[in] ctx EAC context
  * @param[in] ef_cardsecurity buffer containing the ASN.1 encoded EF.CardSecurity
  * @param[in] ef_cardsecurity_len length of \a ef_cardsecurity

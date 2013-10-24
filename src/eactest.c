@@ -3345,15 +3345,16 @@ static_eac_test(struct eac_worked_example tc)
             tc.password_type);
     picc_ctx = EAC_CTX_new();
     pcd_ctx = EAC_CTX_new();
-    CHECK(1, EAC_CTX_init_ef_cardaccess((unsigned char *) tc.ef_cardaccess.data, tc.ef_cardaccess.length,
-                picc_ctx)
+    CA_disable_passive_authentication(pcd_ctx);
+    CHECK(1, EAC_CTX_init_ef_cardsecurity((unsigned char *) tc.ef_cardsecurity.data,
+                tc.ef_cardsecurity.length, picc_ctx)
             && EAC_CTX_init_ef_cardaccess((unsigned char *) tc.ef_cardaccess.data,
                 tc.ef_cardaccess.length, pcd_ctx)
             && picc_ctx->pace_ctx->version == tc.pace_version
             && picc_ctx->pace_ctx->protocol == tc.pace_info_oid
             && pcd_ctx->pace_ctx->version == tc.pace_version
             && pcd_ctx->pace_ctx->protocol == tc.pace_info_oid,
-            "Parsing EF.CardAccess");
+            "Parsing EF.CardAccess or EF.CardSecurity");
 
 
     /* Generate, En-/Decrypt Nonce */

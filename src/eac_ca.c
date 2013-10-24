@@ -137,15 +137,13 @@ err:
     return ret;
 }
 
-/* TODO check and initialize a given EAC_CTX */
-BUF_MEM *
-CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
-            size_t ef_cardsecurity_len)
+int
+EAC_CTX_init_ef_cardsecurity(const unsigned char *ef_cardsecurity,
+            size_t ef_cardsecurity_len, EAC_CTX *ctx)
 {
 	PKCS7 *p7 = NULL, *signed_data;
     ASN1_OCTET_STRING *os;
-    BUF_MEM *pubkey = NULL;
-    EAC_CTX *signed_ctx = NULL;
+    int r = 0;
 
     check(ef_cardsecurity, "Invalid arguments");
 
@@ -164,9 +162,33 @@ CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
         goto err;
     os = signed_data->d.other->value.octet_string;
 
-    signed_ctx = EAC_CTX_new();
+    if (!EAC_CTX_init_ef_cardaccess(os->data, os->length, ctx)
+            || !ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx)
+        goto err;
 
-    if (!EAC_CTX_init_ef_cardaccess(os->data, os->length, signed_ctx)
+    r = 1;
+
+err:
+    if (p7)
+        PKCS7_free(p7);
+
+    return r;
+}
+
+BUF_MEM *
+CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
+            size_t ef_cardsecurity_len)
+{
+    BUF_MEM *pubkey = NULL;
+    EAC_CTX *signed_ctx = EAC_CTX_new();
+    if (!ctx || !ctx->ca_ctx)
+        goto err;
+
+    if (ctx->ca_ctx->flags & CA_FLAG_DISABLE_PASSIVE_AUTH)
+        CA_disable_passive_authentication(signed_ctx);
+
+    if (!EAC_CTX_init_ef_cardsecurity(ef_cardsecurity, ef_cardsecurity_len,
+                signed_ctx)
             || !signed_ctx || !signed_ctx->ca_ctx
             || !signed_ctx->ca_ctx->ka_ctx)
         goto err;
@@ -175,8 +197,6 @@ CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
 
 err:
     EAC_CTX_clear_free(signed_ctx);
-    if (p7)
-        PKCS7_free(p7);
 
     return pubkey;
 }

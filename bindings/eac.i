@@ -152,6 +152,17 @@ err:
     }
 %}
 
+%rename(EAC_CTX_init_ef_cardsecurity) eac_ctx_init_ef_cardsecurity;
+%inline %{
+    static int eac_ctx_init_ef_cardsecurity(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
+        if (in_len < 0)
+            return 0;
+        else
+            return EAC_CTX_init_ef_cardsecurity((unsigned char*) in,
+                    (unsigned int) in_len, ctx);
+    }
+%}
+
 %rename(EAC_CTX_init_ta) eac_ctx_init_ta;
 %inline %{
     static int eac_ctx_init_ta(const EAC_CTX *ctx,
@@ -199,9 +210,23 @@ EAC_Comp(const EAC_CTX *ctx, int id, const BUF_MEM *pub);
                     (unsigned int) in_len, ctx);
     }
 %}
+
+%rename(EAC_CTX_init_ef_cardsecurity) eac_ctx_init_ef_cardsecurity;
+%inline %{
+    static int eac_ctx_init_ef_cardsecurity(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
+        if (in_len < 0)
+            return 0;
+        else
+            return EAC_CTX_init_ef_cardsecurity((unsigned char*) in,
+                    (unsigned int) in_len, ctx);
+    }
+%}
 #else
 int
 EAC_CTX_init_ef_cardaccess(unsigned char *in, unsigned int in_len, EAC_CTX *ctx);
+
+int
+EAC_CTX_init_ef_cardsecurity(unsigned char *in, unsigned int in_len, EAC_CTX *ctx);
 #endif
 
 int
