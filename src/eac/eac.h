@@ -429,18 +429,12 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
   * @param[in, out] ctx EAC context
   * @param[in] protocol Identifier of the protocol's OID specifying the exact CA parameters to use
   * @param[in] curve Standardized domain parameter identifier
-  * @param[in] priv (optional) Private CA key
-  * @param[in] priv_len Length of \a priv
-  * @param[in] pub Public CA key
-  * @param[in] pub_len Length of \a pub
   *
   * @return 1 on success or 0 in case of an error
   *
   * @see CA_CTX.protocol lists possible values for \a protocol
   */
-int EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve,
-                const unsigned char *priv, size_t priv_len,
-                const unsigned char *pub, size_t pub_len);
+int EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve);
 
 /**
  * @brief Initialize an EAC context for Restricted Identification

@@ -176,22 +176,21 @@ err:
 }
 
 BUF_MEM *
-CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
-            size_t ef_cardsecurity_len)
+CA_get_pubkey(const EAC_CTX *ctx,
+        const unsigned char *ef_cardsecurity,
+        size_t ef_cardsecurity_len)
 {
     BUF_MEM *pubkey = NULL;
     EAC_CTX *signed_ctx = EAC_CTX_new();
-    if (!ctx || !ctx->ca_ctx)
-        goto err;
+    check(ctx && ctx->ca_ctx, "Invalid arguments");
 
     if (ctx->ca_ctx->flags & CA_FLAG_DISABLE_PASSIVE_AUTH)
         CA_disable_passive_authentication(signed_ctx);
 
-    if (!EAC_CTX_init_ef_cardsecurity(ef_cardsecurity, ef_cardsecurity_len,
+    check(EAC_CTX_init_ef_cardsecurity(ef_cardsecurity, ef_cardsecurity_len,
                 signed_ctx)
-            || !signed_ctx || !signed_ctx->ca_ctx
-            || !signed_ctx->ca_ctx->ka_ctx)
-        goto err;
+            && signed_ctx && signed_ctx->ca_ctx && signed_ctx->ca_ctx->ka_ctx,
+            "Could not parse EF.CardSecurity");
 
     pubkey = get_pubkey(signed_ctx->ca_ctx->ka_ctx->key, signed_ctx->bn_ctx);
 
@@ -199,6 +198,39 @@ err:
     EAC_CTX_clear_free(signed_ctx);
 
     return pubkey;
+}
+
+int
+CA_set_key(const EAC_CTX *ctx,
+        const unsigned char *priv, size_t priv_len,
+        const unsigned char *pub, size_t pub_len)
+{
+    int r = 0;
+    const unsigned char *p = priv;
+    EVP_PKEY *key = NULL;
+
+    check(ctx && ctx->ca_ctx && ctx->ca_ctx->ka_ctx,
+            "Invalid arguments");
+
+    /* always try d2i_AutoPrivateKey as priv may contain domain parameters */
+    if (priv && d2i_AutoPrivateKey(&key, &p, priv_len)) {
+        EVP_PKEY_free(ctx->ca_ctx->ka_ctx->key);
+        ctx->ca_ctx->ka_ctx->key = key;
+        if (pub) {
+            /* it's OK if import of public key fails */
+            EVP_PKEY_set_keys(key, NULL, 0, pub, pub_len, ctx->bn_ctx);
+        }
+    } else {
+        /* wipe errors from d2i_AutoPrivateKey() */
+        ERR_clear_error();
+        check(EVP_PKEY_set_keys(ctx->ca_ctx->ka_ctx->key, priv, priv_len, pub,
+                    pub_len, ctx->bn_ctx),
+                "no valid keys given");
+    }
+    r = 1;
+
+err:
+    return r;
 }
 
 /* Nonce for CA is always 8 bytes long */

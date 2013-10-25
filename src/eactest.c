@@ -26,6 +26,7 @@
  */
 
 #include "misc.h"
+#include "eac_util.c"
 #include <eac/ca.h>
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
@@ -2659,12 +2660,6 @@ static void hexdump(const char *title, const unsigned char *s, size_t l)
 printf("%s:%d\n", __FILE__, __LINE__);
 #endif
 
-extern int
-EVP_PKEY_set_std_dp(EVP_PKEY *key, int stnd_dp);
-extern EVP_PKEY *
-EVP_PKEY_dup(EVP_PKEY *key);
-extern BUF_MEM *
-get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx);
 static EVP_PKEY *
 generate_signature_key(int curve)
 {
@@ -2748,60 +2743,15 @@ err:
 /* Initialize an EVP_PKEY container from buffers containing the private and public
  * key */
 static int
-EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
+EVP_PKEY_set_keys_buf(EVP_PKEY *evp_pkey,
            const BUF_MEM *privkey, const BUF_MEM *pubkey, BN_CTX *bn_ctx)
 {
-    EC_KEY *ec_key = NULL;
-    DH *dh = NULL;
-    EC_POINT *ec_point = NULL;
-    BIGNUM *bn = NULL;
-    int ok = 0;
-    const EC_GROUP *group;
+   if (!privkey || !pubkey)
+      return 0;
 
-    if (!evp_pkey || !privkey || !pubkey)
-        goto err;
-
-    switch (EVP_PKEY_type(evp_pkey->type)) {
-        case EVP_PKEY_EC:
-            ec_key = EVP_PKEY_get1_EC_KEY(evp_pkey);
-            group = EC_KEY_get0_group(ec_key);
-            ec_point = EC_POINT_new(group);
-            bn = BN_bin2bn((unsigned char *) privkey->data, privkey->length, bn);
-            if (!ec_key || !ec_point || !bn
-                    || !EC_POINT_oct2point(group, ec_point,
-                           (unsigned char *) pubkey->data, pubkey->length,
-                        bn_ctx)
-                    || !EC_KEY_set_public_key(ec_key, ec_point)
-                    || !EC_KEY_set_private_key(ec_key, bn)
-                    || !EVP_PKEY_set1_EC_KEY(evp_pkey, ec_key))
-                goto err;
-            break;
-        case EVP_PKEY_DH:
-            dh = EVP_PKEY_get1_DH(evp_pkey);
-            dh->priv_key = BN_bin2bn((unsigned char *) privkey->data, privkey->length, dh->priv_key);
-            dh->pub_key = BN_bin2bn((unsigned char *) pubkey->data, pubkey->length, dh->pub_key);
-            if (!dh->priv_key || !dh->pub_key
-                    || !EVP_PKEY_set1_DH(evp_pkey, dh))
-                goto err;
-            break;
-        default:
-            goto err;
-            break;
-    }
-
-    ok = 1;
-
-err:
-    if (bn)
-        BN_clear_free(bn);
-    if (ec_key)
-        EC_KEY_free(ec_key);
-    if (dh)
-        DH_free(dh);
-    if (ec_point)
-        EC_POINT_clear_free(ec_point);
-
-    return ok;
+   return EVP_PKEY_set_keys(evp_pkey,
+         (const unsigned char *) privkey->data, privkey->length,
+         (const unsigned char *) pubkey->data, pubkey->length, bn_ctx);
 }
 
 /* Compare the generator given in a buffer to the generator contained in an
@@ -3035,10 +2985,8 @@ dynamic_eac_test(const struct pace_secret pace_secret,
             "Failed to import Terminal's TA public key to MRTD");
 
     /* Initialize the CA context for both parties */
-    CHECK(0, EAC_CTX_init_ca(picc_ctx, ca_params.protocol, ca_params.curve,
-            NULL, 0, NULL, 0)
-            && EAC_CTX_init_ca(pcd_ctx, ca_params.protocol, ca_params.curve,
-                NULL, 0, NULL, 0),
+    CHECK(0, EAC_CTX_init_ca(picc_ctx, ca_params.protocol, ca_params.curve)
+            && EAC_CTX_init_ca(pcd_ctx, ca_params.protocol, ca_params.curve),
             "Initializing CA");
     /* Domain parameters for CA are now set for PCD and PICC, usually we would
      * like to simply generate a key on the PICC side. Since there is no
@@ -3368,11 +3316,11 @@ static_eac_test(struct eac_worked_example tc)
     /* Set static key pair and perform mapping to the ephemeral generator */
     /* Since the static keys are pre-defined we can omit the call to
      * PACE_STEP3A_generate_mapping_data */
-    CHECK(1, EVP_PKEY_set_keys(pcd_ctx->pace_ctx->static_key,
+    CHECK(1, EVP_PKEY_set_keys_buf(pcd_ctx->pace_ctx->static_key,
                    &tc.pace_static_pcd_priv_key, &tc.pace_static_pcd_pub_key,
                    pcd_ctx->bn_ctx)
             && PACE_STEP3A_map_generator(pcd_ctx, &tc.pace_static_picc_pub_key)
-            && EVP_PKEY_set_keys(picc_ctx->pace_ctx->static_key,
+            && EVP_PKEY_set_keys_buf(picc_ctx->pace_ctx->static_key,
                 &tc.pace_static_picc_priv_key, &tc.pace_static_picc_pub_key,
                 picc_ctx->bn_ctx)
             && PACE_STEP3A_map_generator(picc_ctx, &tc.pace_static_pcd_pub_key)
@@ -3392,10 +3340,10 @@ static_eac_test(struct eac_worked_example tc)
     picc_ctx->pace_ctx->my_eph_pubkey =
         BUF_MEM_create_init(tc.pace_eph_picc_pub_key.data,
                 tc.pace_eph_picc_pub_key.length);
-    CHECK(1, EVP_PKEY_set_keys(pcd_ctx->pace_ctx->ka_ctx->key,
+    CHECK(1, EVP_PKEY_set_keys_buf(pcd_ctx->pace_ctx->ka_ctx->key,
                    &tc.pace_eph_pcd_priv_key, &tc.pace_eph_pcd_pub_key,
                    pcd_ctx->bn_ctx)
-            && EVP_PKEY_set_keys(picc_ctx->pace_ctx->ka_ctx->key,
+            && EVP_PKEY_set_keys_buf(picc_ctx->pace_ctx->ka_ctx->key,
                 &tc.pace_eph_picc_priv_key, &tc.pace_eph_picc_pub_key,
                 picc_ctx->bn_ctx)
             && PACE_STEP3B_compute_shared_secret(pcd_ctx, &tc.pace_eph_picc_pub_key)
@@ -3459,13 +3407,13 @@ static_eac_test(struct eac_worked_example tc)
     /* We need to chose one of the supported CA keys specified in the EF.CardAccess
      * BEFORE Terminal Authentication. Therefore, we need to initialize the CA
      * context before TA. */
-    parsed_ca_picc_pub_key = CA_get_pubkey(picc_ctx, (unsigned char *) tc.ef_cardsecurity.data,
+    parsed_ca_picc_pub_key = CA_get_pubkey(pcd_ctx, (unsigned char *) tc.ef_cardsecurity.data,
             tc.ef_cardsecurity.length);
     CHECK(1, buf_eq_buf(parsed_ca_picc_pub_key, &tc.ca_picc_pub_key)
-            && EAC_CTX_init_ca(pcd_ctx, tc.ca_info_oid, tc.ca_curve,
+            && CA_set_key(pcd_ctx,
                 (unsigned char *) tc.ca_pcd_priv_key.data, tc.ca_pcd_priv_key.length,
                 (unsigned char *) tc.ca_pcd_pub_key.data, tc.ca_pcd_pub_key.length)
-            && EAC_CTX_init_ca(picc_ctx, tc.ca_info_oid, tc.ca_curve,
+            && CA_set_key(picc_ctx,
                 (unsigned char *) tc.ca_picc_priv_key.data, tc.ca_picc_priv_key.length,
                 (unsigned char *) tc.ca_picc_pub_key.data, tc.ca_picc_pub_key.length),
             "Initializing Chip Authentication");

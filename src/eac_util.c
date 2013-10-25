@@ -666,76 +666,24 @@ err:
     return NULL;
 }
 
-int
-EVP_PKEY_set_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
-{
-    DH *dh = NULL;
-    EC_KEY *ec = NULL;
-    EC_POINT *ecp = NULL;
-
-    check(key, "Invalid arguments");
-
-    switch (EVP_PKEY_type(key->type)) {
-        case EVP_PKEY_DH:
-            dh = EVP_PKEY_get1_DH(key);
-            if (!dh)
-                goto err;
-
-            dh->pub_key = BN_bin2bn((unsigned char *) pub->data, pub->length,
-                    dh->pub_key);
-            if (!dh->pub_key)
-                goto err;
-            EVP_PKEY_set1_DH(key, dh);
-            DH_free(dh);
-            break;
-
-        case EVP_PKEY_EC:
-            ec = EVP_PKEY_get1_EC_KEY(key);
-            if (!ec)
-                goto err;
-
-            ecp = EC_POINT_new(EC_KEY_get0_group(ec));
-            if (!ecp || !EC_POINT_oct2point(EC_KEY_get0_group(ec), ecp,
-                    (unsigned char *) pub->data, pub->length, bn_ctx)
-                     || !EC_KEY_set_public_key(ec, ecp))
-                goto err;
-            EVP_PKEY_set1_EC_KEY(key, ec);
-            EC_POINT_free(ecp);
-            EC_KEY_free(ec);
-            break;
-
-        default:
-            log_err("Unknown protocol");
-            goto err;
-    }
-
-    return 1;
-
-err:
-    if (dh)
-        DH_free(dh);
-    if (ec)
-        EC_KEY_free(ec);
-    if (ecp)
-        EC_POINT_free(ecp);
-
-    return 0;
-}
-
 static EVP_PKEY *
 EVP_PKEY_from_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx)
 {
     EVP_PKEY *out = NULL;
 
-    out = EVP_PKEY_dup(key);
-    if (!out)
-        return NULL;
+    check(pub, "Invalid arguments");
 
-    if (!EVP_PKEY_set_pubkey(out, pub, bn_ctx)) {
+    out = EVP_PKEY_dup(key);
+    check(out, "");
+
+    if (!EVP_PKEY_set_keys(out, NULL, 0,
+                (const unsigned char *) pub->data, pub->length, bn_ctx)) {
         EVP_PKEY_free(out);
-        return NULL;
+        out = NULL;
+        goto err;
     }
 
+err:
     return out;
 }
 
@@ -953,28 +901,49 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
         case EVP_PKEY_EC:
             ec_key = EVP_PKEY_get1_EC_KEY(evp_pkey);
             group = EC_KEY_get0_group(ec_key);
-            ec_point = EC_POINT_new(group);
-            bn = BN_bin2bn(privkey, privkey_len, bn);
-            if (!ec_key || !ec_point || !bn
-                    || !EC_POINT_oct2point(group, ec_point, pubkey, pubkey_len,
-                        bn_ctx)
-                    || !EC_KEY_set_public_key(ec_key, ec_point)
-                    || !EC_KEY_set_private_key(ec_key, bn)
-                    || !EVP_PKEY_set1_EC_KEY(evp_pkey, ec_key))
+            if (!ec_key)
+                goto err;
+
+            if (pubkey) {
+                ec_point = EC_POINT_new(group);
+                if (!ec_point
+                        || !EC_POINT_oct2point(group, ec_point, pubkey,
+                            pubkey_len, bn_ctx)
+                        || !EC_KEY_set_public_key(ec_key, ec_point))
+                    goto err;
+            }
+            if (privkey) {
+                bn = BN_bin2bn(privkey, privkey_len, bn);
+                if (!bn || !EC_KEY_set_private_key(ec_key, bn))
+                    goto err;
+            }
+
+            if (!EVP_PKEY_set1_EC_KEY(evp_pkey, ec_key))
                 goto err;
             break;
 
         case EVP_PKEY_DH:
             dh = EVP_PKEY_get1_DH(evp_pkey);
-            dh->priv_key = BN_bin2bn(privkey, privkey_len, dh->priv_key);
-            dh->pub_key = BN_bin2bn(pubkey, pubkey_len, dh->pub_key);
-            if (!dh->priv_key || !dh->pub_key
-                    || !EVP_PKEY_set1_DH(evp_pkey, dh))
+            if (!dh)
+                goto err;
+
+            if (pubkey) {
+                dh->pub_key = BN_bin2bn(pubkey, pubkey_len, dh->pub_key);
+                if (!dh->pub_key)
+                    goto err;
+            }
+            if (privkey) {
+                dh->priv_key = BN_bin2bn(privkey, privkey_len, dh->priv_key);
+                if (!dh->priv_key)
+                    goto err;
+            }
+
+            if (!EVP_PKEY_set1_DH(evp_pkey, dh))
                 goto err;
             break;
 
         default:
-            log_err("Unknown protocol");
+            log_err("Unknown type of key");
             goto err;
             break;
     }
@@ -1007,8 +976,7 @@ get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx)
     switch (EVP_PKEY_type(key->type)) {
         case EVP_PKEY_DH:
             dh = EVP_PKEY_get1_DH(key);
-            if (!dh)
-                return NULL;
+            check_return(dh, "no DH key");
 
             out = BN_bn2buf(dh->pub_key);
 
@@ -1017,12 +985,10 @@ get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx)
 
         case EVP_PKEY_EC:
             ec = EVP_PKEY_get1_EC_KEY(key);
-            if (!ec)
-                return NULL;
+            check_return(ec, "no EC key");
 
             ec_pub = EC_KEY_get0_public_key(ec);
-            if (!ec_pub)
-                return NULL;
+            check_return(ec_pub, "no EC public key");
 
             out = EC_POINT_point2buf(ec, bn_ctx, ec_pub);
 
@@ -1030,6 +996,7 @@ get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx)
             break;
 
         default:
+            log_err("unknown type of key");
             return NULL;
     }
 

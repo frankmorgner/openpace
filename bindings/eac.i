@@ -174,17 +174,6 @@ err:
     }
 %}
 
-%rename(EAC_CTX_init_ca) eac_ctx_init_ca;
-%inline %{
-    static int eac_ctx_init_ca(EAC_CTX *ctx, int protocol, int curve,
-            char *privkey, int privkey_len, /* typemap applied (see ta.i) */
-            char *pubkey, int pubkey_len) {
-        return EAC_CTX_init_ca(ctx, protocol, curve,
-            (const unsigned char*) privkey, (size_t) privkey_len,
-            (const unsigned char*) pubkey, (size_t) pubkey_len);
-    }
-%}
-
 #else
 
 BUF_MEM *
@@ -234,12 +223,10 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
     const unsigned char *privkey, size_t privkey_len,
     const unsigned char *cert, size_t cert_len);
 
-int
-EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve,
-    const unsigned char *priv, size_t priv_len,
-    const unsigned char *pub, size_t pub_len);
-
 #endif
+
+int
+EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve);
 
 int
 EAC_CTX_set_encryption_ctx(EAC_CTX *ctx, int id);

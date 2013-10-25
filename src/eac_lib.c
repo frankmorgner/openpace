@@ -157,14 +157,12 @@ err:
 }
 
 int
-EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve,
-                const unsigned char *priv, size_t priv_len,
-                const unsigned char *pub, size_t pub_len)
+EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve)
 {
     CA_CTX *ca_ctx = NULL;
     int r = 0;
 
-    if (!ctx || !ctx->ca_ctxs || (!priv && pub)) {
+    if (!ctx || !ctx->ca_ctxs) {
         log_err("Invalid arguments");
         goto err;
     }
@@ -172,23 +170,11 @@ EAC_CTX_init_ca(EAC_CTX *ctx, int protocol, int curve,
     ca_ctx = CA_CTX_new();
     check(ca_ctx, "Could not create CA context");
 
-    if (protocol) {
-        if (!CA_CTX_set_protocol(ca_ctx, protocol)
-                || !EVP_PKEY_set_std_dp(ca_ctx->ka_ctx->key, curve))
-            goto err;
-    }
+    if (!CA_CTX_set_protocol(ca_ctx, protocol)
+            || !EVP_PKEY_set_std_dp(ca_ctx->ka_ctx->key, curve))
+        goto err;
 
-    if (priv && !pub) {
-        if (!d2i_AutoPrivateKey(&ca_ctx->ka_ctx->key, &priv, priv_len))
-            goto err;
-    }
-
-    if (priv && pub) {
-        r = EVP_PKEY_set_keys(ca_ctx->ka_ctx->key, priv, priv_len,
-                   pub, pub_len, ctx->bn_ctx);
-    } else {
-        r = 1;
-    }
+    r = 1;
 
 err:
     if (r && sk_push((_STACK *) ctx->ca_ctxs, ca_ctx)) {

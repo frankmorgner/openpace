@@ -690,7 +690,8 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
 {
     ASN1_INTEGER *i = NULL;
     ASN1_OBJECT *oid = NULL;
-    BUF_MEM *pubkey = NULL;
+    unsigned char *pubkey;
+    size_t pubkey_len;
     CA_CTX *ca_ctx = NULL;
     CA_DP_INFO *tmp_ca_dp_info = NULL;
     CA_INFO *tmp_ca_info = NULL;
@@ -866,23 +867,20 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
                 /* FIXME the public key for DH is actually an ASN.1
                  * UNSIGNED INTEGER, which is an ASN.1 INTEGER that is
                  * always positive. Parsing the unsigned integer should be
-                 * done in EVP_PKEY_set_pubkey. */
+                 * done in EVP_PKEY_set_key. */
                 const unsigned char *p = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
                 check(d2i_ASN1_UINTEGER(&i, &p,
                             ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length),
                         "Could not decode CA PK");
-                pubkey = BUF_MEM_create_init(i->data, i->length);
+                pubkey = i->data;
+                pubkey_len = i->length;
             } else {
-                pubkey = BUF_MEM_create_init(
-                        ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data,
-                        ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length);
+                pubkey = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
+                pubkey_len = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length;
             }
 
-            if (!EVP_PKEY_set_pubkey(ca_ctx->ka_ctx->key, pubkey, ctx->bn_ctx))
+            if (!EVP_PKEY_set_keys(ca_ctx->ka_ctx->key, NULL, 0, pubkey, pubkey_len, ctx->bn_ctx))
                 goto err;
-
-            BUF_MEM_free(pubkey);
-            pubkey = NULL;
 
         } else if (nid == NID_id_CI) {
             /* ChipIdentifer */
@@ -972,8 +970,6 @@ err:
         RI_INFO_free(tmp_ri_info);
     if (tmp_ri_dp_info)
         RI_DP_INFO_free(tmp_ri_dp_info);
-    if (pubkey)
-        BUF_MEM_free(pubkey);
     if (i)
         ASN1_INTEGER_free(i);
     if (tmp_ca_dp_info)

@@ -122,10 +122,26 @@ err:
         return;
     }
 %}
+
+%rename(CA_set_key) ca_set_key;
+%inline %{
+    static int ca_set_key(EAC_CTX *ctx,
+            char *privkey, int privkey_len, /* typemap applied (see ta.i) */
+            char *pubkey, int pubkey_len) {
+        return CA_set_key(ctx,
+            (const unsigned char*) privkey, (size_t) privkey_len,
+            (const unsigned char*) pubkey, (size_t) pubkey_len);
+    }
+%}
 #else
 
 BUF_MEM*
 CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
+
+int
+CA_set_key(const EAC_CTX *ctx,
+        const unsigned char *priv, size_t priv_len,
+        const unsigned char *pub, size_t pub_len);
 
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx);

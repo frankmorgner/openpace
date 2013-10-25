@@ -199,8 +199,6 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx);
  */
 int
 EVP_PKEY_set_std_dp(EVP_PKEY *key, int stnd_dp);
-int
-EVP_PKEY_set_pubkey(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx);
 
 /**
  * @brief Verifies an signature created with a Terminal for EAC.

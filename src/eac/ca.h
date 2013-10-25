@@ -71,9 +71,27 @@ void CA_disable_passive_authentication(EAC_CTX *ctx);
  * @return The public key or NULL in case of an error
  */
 BUF_MEM *
-CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity,
+CA_get_pubkey(const EAC_CTX *ctx,
+        const unsigned char *ef_cardsecurity,
         size_t ef_cardsecurity_len);
 
+/**
+ * @brief Initialize the CA context with keys
+ *
+ * @param[in] ctx EAC context
+ * @param[in] priv (optional) Private CA key. Can be an encoded key or a raw point/integer.
+ * @param[in] priv_len Length of \a priv
+ * @param[in] pub (optional) Public CA key
+ * @param[in] pub_len Length of \a pub
+ *
+ * @see See \c d2i_AutoPrivateKey() for supported encodings of \c priv
+ *
+ * @return 1 on success or 0 in case of an error
+ */
+int
+CA_set_key(const EAC_CTX *ctx,
+        const unsigned char *priv, size_t priv_len,
+        const unsigned char *pub, size_t pub_len);
 /**
  * @addtogroup caproto
  *
