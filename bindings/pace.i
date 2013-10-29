@@ -117,6 +117,40 @@ PACE_SEC_new(char *in, int in_len, enum s_type type); /* typemap applied */
 
 void
 PACE_SEC_clear_free(PACE_SEC *s);
+
+#if !defined(SWIG_CSTRING_UNIMPL)
+
+%rename (PACE_SEC_print_private) pace_sec_print_private;
+%inline %{
+    static void pace_sec_print_private(char **out, int *out_len, PACE_SEC *sec, int indent) {
+        BIO *bio = BIO_new(BIO_s_mem());
+        if (!bio)
+            goto err;
+
+        PACE_SEC_print_private(bio, sec, indent);
+
+        *out_len = BIO_get_mem_data(bio, NULL);
+        if (*out_len <= 0)
+            goto err;
+        *out = malloc(*out_len);
+        if (!*out)
+            goto err;
+        if (BIO_read(bio, (void*) *out, *out_len) <= 0)
+            goto err;
+
+        BIO_free_all(bio);
+        return;
+
+err:
+        *out_len = 0;
+        if (*out)
+            free(*out);
+        if (bio)
+            BIO_free_all(bio);
+    }
+%}
+
+#endif
 /** @} ***********************************************************************/
 
 /**

@@ -99,6 +99,18 @@ void PACE_SEC_clear_free(PACE_SEC * s);
  */
 PACE_SEC *
 PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type);
+
+/**
+ * @brief Print PACE_SEC object including private secret.
+ *
+ * @param[in] out Where to print the data
+ * @param[in] sec EAC context to be printed
+ * @param[in] indent Number of whitespaces used for indenting the output
+ *
+ * @return 1 on success or 0 in case of an error
+ */
+int
+PACE_SEC_print_private(BIO *out, const PACE_SEC *sec, int indent);
 /** @} ***********************************************************************/
 
 /**

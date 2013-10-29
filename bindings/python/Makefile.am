@@ -8,7 +8,7 @@ INTERFACES = $(srcdir)/../ca.i \
 
 BUILT_SOURCES = pace_wrap.c pace.py
 
-EXTRA_DIST = setup.py.in cvc_rehash.in test.py
+EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py
 CLEANFILES = $(BUILT_SOURCES) installed_files.txt setup.py
 bin_SCRIPTS = cvc_rehash
 

@@ -26,6 +26,7 @@
  */
 
 #include <eac/eac.h>
+#include <eac/pace.h>
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
 #include <openssl/evp.h>
@@ -279,6 +280,57 @@ EAC_CTX_print_private(BIO *out, const EAC_CTX *ctx, int indent)
                     ctx->ri_ctx ? ctx->ri_ctx->id : -1))
             return 0;
         stack_print_private(RI_CTX, out, ctx->ri_ctxs, indent);
+    } else {
+        if (!BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "<ABSENT>\n"))
+            return 0;
+    }
+    return 1;
+}
+
+const static char *pin_str = "PIN";
+const static char *can_str = "CAN";
+const static char *mrz_str = "MRZ";
+const static char *puk_str = "PUK";
+const static char *raw_str = "RAW";
+const static char *undef_str = "UNDEF";
+
+int
+PACE_SEC_print_private(BIO *out, const PACE_SEC *sec, int indent)
+{
+    const char *s;
+    if (sec) {
+        switch (sec->type) {
+            case PACE_RAW:
+                s = raw_str;
+                break;
+            case PACE_PIN:
+                s = pin_str;
+                break;
+            case PACE_PUK:
+                s = puk_str;
+                break;
+            case PACE_CAN:
+                s = can_str;
+                break;
+            case PACE_MRZ:
+                s = mrz_str;
+                break;
+            case PACE_SEC_UNDEF:
+                /* fall through */
+            default:
+                s = undef_str;
+                break;
+        }
+        if (!BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "%s\n", s)
+                || !BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "Secret:\n")
+                || !BUF_MEM_print(out, sec->mem, indent)
+                || !BIO_indent(out, indent, 80)
+                || !BIO_printf(out, "Encoded Secret:\n")
+                || !BUF_MEM_print(out, sec->encoded, indent))
+            return 0;
     } else {
         if (!BIO_indent(out, indent, 80)
                 || !BIO_printf(out, "<ABSENT>\n"))

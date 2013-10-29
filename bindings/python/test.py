@@ -19,7 +19,7 @@
 #!/usr/bin/env python
 import pace
 
-from chat import CHAT, CVC
+from chat import CHAT, CVC, EAC_CTX
 from pace_entity import *
 
 TEST_CVC = "\x7F\x21\x82\x01\x41\x7F\x4E\x81\xFA\x5F\x29\x01\x00\x42\x0D\x5A\
@@ -333,11 +333,11 @@ def pacetest():
 
     decrypted = pcd.decrypt(encrypted)
     if (decrypted != ENCRYPTION_TEST):
-        raise PACEException("Failed to decrypt test data")
+        raise OpenPACEException("Failed to decrypt test data")
 
     mac = picc.authenticate(ENCRYPTION_TEST)
     if (not mac):
-        raise PACEException("Failed to authenticate testdata")
+        raise OpenPACEException("Failed to authenticate testdata")
 
     id_picc = picc.EAC_Comp()
 
@@ -380,27 +380,20 @@ def cvctest():
 def tatest():
     ta = PACEEntity("123456")
 
-    if pace.EAC_CTX_init_ca(ta.ctx, pace.id_CA_ECDH_AES_CBC_CMAC_128, 11, None, None) == 0:
-        raise PACEException("Failed to initialize context", "Chip Authentication", "PICC")
+    assert pace.EAC_CTX_init_ca(ta.ctx, pace.id_CA_ECDH_AES_CBC_CMAC_128, 11) == 1
 
     # our certificates aren't up to date
     pace.TA_disable_checks(ta.ctx)
 
-    if pace.EAC_CTX_init_ta(ta.ctx, None, CVCA) == 0:
-        raise PACEException("Failed to initialize context", "Terminal Authentication", "PICC")
-
-    if not pace.TA_STEP2_import_certificate(ta.ctx, DVCA):
-        raise PACEException("Failed to import DVCA certificate", "Terminal Authentication", "PICC")
-
-    if not pace.TA_STEP2_import_certificate(ta.ctx, CHAIN_CVC):
-        raise PACEException("Failed to import terminal certificate", "Terminal Authentication", "PICC")
-
+    assert pace.EAC_CTX_init_ta(ta.ctx, None, CVCA) == 1
+    assert pace.TA_STEP2_import_certificate(ta.ctx, DVCA) == 1
+    assert pace.TA_STEP2_import_certificate(ta.ctx, CHAIN_CVC) == 1
     nonce = pace.TA_STEP4_get_nonce(ta.ctx)
-    if nonce is None:
-        raise PACEException("Failed to generate nonce", "Terminal Authentication", "PICC")
+    assert nonce is not None
 
 def catest():
-    assert (pace.CA_get_pubkey(None, EF_CARDSECURITY) is not None)
+    eac = EAC_CTX()
+    assert pace.EAC_CTX_init_ef_cardsecurity(EF_CARDSECURITY, eac.ctx) == 1
 
 def oidtest():
     assert(pace.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128") == pace.id_CA_ECDH_AES_CBC_CMAC_128)

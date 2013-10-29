@@ -29,9 +29,9 @@ OpenPACE
 import pace
 from binascii import b2a_hex
 
-class CHATException(Exception):
+class OpenPACEException(Exception):
     def __init__(self, value):
-        self.value = value
+        self.value = pace.print_ossl_err() + value
 
     def __str__(self):
         return self.value
@@ -45,7 +45,7 @@ class CHAT(object):
             self.asn1_string = pace.i2d_CVC_CHAT(chat)
             self.chat = pace.CVC_CHAT_dup(chat)
         if (self.chat is None or self.asn1_string is None):
-            raise CHATException("Failed to parse CHAT")
+            raise OpenPACEException("Failed to parse CHAT")
 
     def __del__(self):
         pace.CVC_CHAT_free(self.chat)
@@ -54,7 +54,7 @@ class CHAT(object):
         ret = pace.get_chat_repr(self.chat)
 
         if ret is None:
-            raise CHATException("Failed to parse CHAT")
+            raise OpenPACEException("Failed to parse CHAT")
 
         return ret
 
@@ -62,7 +62,7 @@ class CHAT(object):
         ret = pace.get_chat_role(self.chat)
 
         if ret is None:
-            raise CHATException("Failed to retrieve terminal role from CHAT")
+            raise OpenPACEException("Failed to retrieve terminal role from CHAT")
 
         return ret
 
@@ -70,7 +70,7 @@ class CHAT(object):
         ret = pace.get_chat_terminal_type(self.chat)
 
         if ret is None:
-            raise CHATException("Failed to retrieve terminal type from CHAT")
+            raise OpenPACEException("Failed to retrieve terminal type from CHAT")
 
         return ret
 
@@ -78,7 +78,7 @@ class CHAT(object):
         ret = pace.get_chat_rel_auth(self.chat)
 
         if ret is None:
-            raise CHATException("Failed to retrieve relative authorization from CHAT")
+            raise OpenPACEException("Failed to retrieve relative authorization from CHAT")
 
         return ret
 
@@ -98,7 +98,7 @@ class CVC(object):
         ret = pace.get_cvc_repr(self.cvc)
 
         if ret is None:
-            raise CHATException("Failed to parse CV certificate")
+            raise OpenPACEException("Failed to parse CV certificate")
 
         return ret
 
@@ -106,7 +106,7 @@ class CVC(object):
         ret = pace.CVC_get_car(self.cvc)
 
         if ret is None:
-            raise CHATException("Failed to extract CAR")
+            raise OpenPACEException("Failed to extract CAR")
 
         return ret
 
@@ -114,7 +114,7 @@ class CVC(object):
         ret = pace.CVC_get_chr(self.cvc)
 
         if ret is None:
-            raise CHATException("Failed to extract CHR")
+            raise OpenPACEException("Failed to extract CHR")
 
         return ret
 
@@ -122,7 +122,7 @@ class CVC(object):
         ret = pace.CVC_get_effective_date(self.cvc)
 
         if ret is None:
-            raise CHATException("Failed to extract effective date")
+            raise OpenPACEException("Failed to extract effective date")
 
         return ret
 
@@ -130,10 +130,46 @@ class CVC(object):
         ret = pace.CVC_get_expiration_date(self.cvc)
 
         if ret is None:
-            raise CHATException("Failed to extract expiration date")
+            raise OpenPACEException("Failed to extract expiration date")
 
         return ret
 
     def get_profile_identifier(self):
         profile_id = pace.CVC_get_profile_identifier(self.cvc)
         return profile_id
+
+
+class EAC_CTX(object):
+    def __init__(self):
+        self.ctx = pace.EAC_CTX_new()
+        if not self.ctx:
+            raise TypeError("Failed to create context")
+
+    def __del__(self):
+        pace.EAC_CTX_clear_free(self.ctx)
+
+    def __str__(self):
+        ret = pace.EAC_CTX_print_private(self.ctx)
+
+        if ret is None:
+            raise OpenPACEException("Failed to print EAC_CTX")
+
+        return ret
+
+
+class PACE_SEC(object):
+    def __init__(self, secret, secret_type):
+        self.sec = pace.PACE_SEC_new(secret, secret_type)
+        if not self.sec:
+            raise TypeError("Failed to create context")
+
+    def __del__(self):
+        pace.PACE_SEC_clear_free(self.sec)
+
+    def __str__(self):
+        ret = pace.PACE_SEC_print_private(self.sec)
+
+        if ret is None:
+            raise OpenPACEException("Failed to print PACE_SEC")
+
+        return ret
