@@ -111,7 +111,8 @@ AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
 
 AC_ARG_ENABLE([python],AS_HELP_STRING([--enable-python],[Enable python interface generation.]),[enable_python=$enableval],[enable_python="no"])
 AC_ARG_ENABLE([java],AS_HELP_STRING([--enable-java],[Enable java interface generation.]),[enable_java=$enableval],[enable_java="no"])
-if test x"$enable_python" = "xyes" -o x"$enable_java" = "xyes"
+AC_ARG_ENABLE([ruby],AS_HELP_STRING([--enable-ruby],[Enable Ruby interface generation.]),[enable_ruby=$enableval],[enable_ruby="no"])
+if test x"$enable_python" = "xyes" -o x"$enable_java" = "xyes" -o x"$enable_ruby" = "xyes"
 then
     AX_PKG_SWIG([],[], [AC_MSG_ERROR([SWIG is required to build the bindings]) ])
 fi
@@ -164,6 +165,14 @@ then
 fi
 AM_CONDITIONAL(JAVA_ENABLED, [test x"$enable_java" = "xyes"])
 
+if test x"$enable_ruby" = "xyes"
+then
+    AC_PATH_PROGS([RUBY],
+                  [ruby],
+                  [AC_MSG_ERROR([ruby required to build bindings.])])
+fi
+AM_CONDITIONAL(RUBY_ENABLED, [test x"$enable_ruby" = "xyes"])
+
 
 AC_ARG_ENABLE(cvcdir,
 AC_HELP_STRING([--enable-cvcdir=DIR],
@@ -207,6 +216,7 @@ AC_CONFIG_FILES([
                  bindings/Makefile
                  bindings/java/Makefile
                  bindings/python/Makefile
+                 bindings/ruby/Makefile
                  cross/Makefile
                  doc/Makefile
                  doc/_static/Makefile
@@ -224,6 +234,7 @@ X.509 directory:         ${X509DIR}
 Install patched OpenSSL: ${INSTALL_OPENSSL}
 Python Bindings:         ${enable_python}
 Java Bindings:           ${enable_java}
+Ruby Bindings:           ${enable_ruby}
 
 Host:                    ${host}
 Compiler:                ${CXX}
@@ -239,6 +250,8 @@ GIT:                     ${GIT}
 OPENSSL_CONFIGURE_FLAGS: ${OPENSSL_CONFIGURE_FLAGS}
 
 SWIG:                    ${SWIG}
+PYTHON:                  ${PYTHON}
+RUBY:                    ${RUBY}
 JAVA_CFLAGS:             ${JAVA_CFLAGS}
 JAVACFLAGS:              ${JAVACFLAGS}
 EOF

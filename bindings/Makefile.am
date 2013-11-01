@@ -8,3 +8,7 @@ endif
 if JAVA_ENABLED
 SUBDIRS += java
 endif
+
+if RUBY_ENABLED
+SUBDIRS += ruby
+endif
