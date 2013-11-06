@@ -8,7 +8,7 @@ INTERFACES = $(srcdir)/../ca.i \
 
 BUILT_SOURCES = pace_wrap.c
 
-EXTRA_DIST = eactest.rb extconf.rb.in
+EXTRA_DIST = example.rb extconf.rb.in
 CLEANFILES = $(BUILT_SOURCES)
 
 do_subst=$(SED)\

@@ -2,6 +2,7 @@ EF_CARDACCESS = ["318182300D060804007F00070202020201023012060A04007F000702020302
 PIN = "123456"
 
 require 'pace'
+Pace.EAC_init()
 
 secret = Pace.PACE_SEC_new(PIN, Pace::PACE_PIN)
 
@@ -55,6 +56,8 @@ puts Pace.EAC_CTX_print_private(pcd_ctx, 4)
 Pace.EAC_CTX_clear_free(pcd_ctx)
 Pace.EAC_CTX_clear_free(picc_ctx)
 Pace.PACE_SEC_clear_free(secret)
+
+Pace.EAC_cleanup()
 
 if r != 1
     exit 1

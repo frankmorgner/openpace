@@ -57,6 +57,14 @@ domain parameters (GFP/ECP).
     formatting and sending the data in the form of APDUs. If this is what
     you're trying to do, you should have a look at the :command:`npa-tool` of
     the `nPA Smart Card Library`_.
+   
+
+OpenPACE is implemented as C-library and comes with native language wrappers
+for:
+
+- Java
+- Python
+- Ruby
 
 
 *******************************************************************************
