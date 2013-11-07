@@ -31,7 +31,7 @@ libeac_la_LIBADD  += -lws2_32
 endif
 
 
-bin_PROGRAMS      = eactest cvcprint
+bin_PROGRAMS         = eactest cvcprint example
 
 EAC_LIBS             = libeac.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
@@ -40,9 +40,13 @@ eactest_SOURCES      = eactest.c
 eactest_LDADD        = $(EAC_LIBS)
 eactest_CFLAGS       = $(EAC_CFLAGS)
 
-cvcprint_SOURCES = cvcprint.c
-cvcprint_LDADD   = $(EAC_LIBS)
-cvcprint_CFLAGS  = $(EAC_CFLAGS)
+cvcprint_SOURCES     = cvcprint.c
+cvcprint_LDADD       = $(EAC_LIBS)
+cvcprint_CFLAGS      = $(EAC_CFLAGS)
+
+example_SOURCES      = example.c
+example_LDADD        = $(EAC_LIBS)
+example_CFLAGS       = $(EAC_CFLAGS)
 
 
 if INSTALL_OPENSSL

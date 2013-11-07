@@ -121,7 +121,12 @@ How to use @PACKAGE_NAME@
 *******************************************************************************
 
 If you want to know how to use @PACKAGE_NAME@ from C/C++, have a look at our
-`API documentation <../../_static/doxygen/modules.html>`_.
+`API documentation <../../_static/doxygen/modules.html>`_. Here we have a small
+example in C:
+
+.. literalinclude:: ../src/example.c
+    :language: c
+
 If you want to use other programming languages, for example
 Python or Java, you can use our :ref:`SWIG bindings <bindings>`.
 
