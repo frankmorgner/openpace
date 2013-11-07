@@ -167,9 +167,15 @@ AM_CONDITIONAL(JAVA_ENABLED, [test x"$enable_java" = "xyes"])
 
 if test x"$enable_ruby" = "xyes"
 then
-    AC_PATH_PROGS([RUBY],
+    AC_ARG_VAR([RUBY],
+               [absolute path to ruby used for building ruby bindings])
+    AC_PATH_PROG([RUBY],
                   [ruby],
-                  [AC_MSG_ERROR([ruby required to build bindings.])])
+                  [not found])
+    if test "${RUBY}" = "not found"
+    then
+        AC_MSG_ERROR([ruby required to build bindings.])
+    fi
 fi
 AM_CONDITIONAL(RUBY_ENABLED, [test x"$enable_ruby" = "xyes"])
 
