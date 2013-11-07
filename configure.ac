@@ -231,27 +231,25 @@ Libraries:               $(eval eval eval echo "${libdir}")
 CVC directory:           ${CVCDIR}
 X.509 directory:         ${X509DIR}
 
-Install patched OpenSSL: ${INSTALL_OPENSSL}
-Python Bindings:         ${enable_python}
-Java Bindings:           ${enable_java}
-Ruby Bindings:           ${enable_ruby}
-
 Host:                    ${host}
 Compiler:                ${CXX}
 Preprocessor flags:      ${CPPFLAGS}
 Compiler flags:          ${CFLAGS}
 Linker flags:            ${LDFLAGS}
 Libraries:               ${LIBS}
-
 CRYPTO_CFLAGS:           ${CRYPTO_CFLAGS}
 CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
+Install patched OpenSSL: ${INSTALL_OPENSSL}
 GIT:                     ${GIT}
 OPENSSL_CONFIGURE_FLAGS: ${OPENSSL_CONFIGURE_FLAGS}
 
 SWIG:                    ${SWIG}
+Python Bindings:         ${enable_python}
 PYTHON:                  ${PYTHON}
-RUBY:                    ${RUBY}
+Java Bindings:           ${enable_java}
 JAVA_CFLAGS:             ${JAVA_CFLAGS}
 JAVACFLAGS:              ${JAVACFLAGS}
+Ruby Bindings:           ${enable_ruby}
+RUBY:                    ${RUBY}
 EOF
