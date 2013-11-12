@@ -22,7 +22,8 @@ do this is::
     The SWIG bindings from `pyPACE`_ have been integrated into OpenPACE.
 
 .. versionadded:: 0.9
-    Added Ruby bindings.
+    - Added Ruby bindings.
+    - Added Go bindings.
 
 .. seealso::
 
@@ -61,6 +62,16 @@ Here is a sample skript that shows how OpenPACE is accessed from Ruby:
 
 .. literalinclude:: ../bindings/ruby/example.rb
     :language: ruby
+
+
+********************
+Using OpenPACE in Go
+********************
+
+Here is a sample skript that shows how OpenPACE is accessed from Ruby:
+
+.. literalinclude:: ../bindings/go/example.go
+    :language: go
 
 
 **********************

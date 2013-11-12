@@ -112,7 +112,8 @@ AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
 AC_ARG_ENABLE([python],AS_HELP_STRING([--enable-python],[Enable python interface generation.]),[enable_python=$enableval],[enable_python="no"])
 AC_ARG_ENABLE([java],AS_HELP_STRING([--enable-java],[Enable java interface generation.]),[enable_java=$enableval],[enable_java="no"])
 AC_ARG_ENABLE([ruby],AS_HELP_STRING([--enable-ruby],[Enable Ruby interface generation.]),[enable_ruby=$enableval],[enable_ruby="no"])
-if test x"$enable_python" = "xyes" -o x"$enable_java" = "xyes" -o x"$enable_ruby" = "xyes"
+AC_ARG_ENABLE([go],AS_HELP_STRING([--enable-go],[Enable Go interface generation.]),[enable_go=$enableval],[enable_go="no"])
+if test x"$enable_python" = "xyes" -o x"$enable_java" = "xyes" -o x"$enable_ruby" = "xyes" -o x"$enable_go" = "xyes"
 then
     AX_PKG_SWIG([],[], [AC_MSG_ERROR([SWIG is required to build the bindings]) ])
 fi
@@ -179,6 +180,18 @@ then
 fi
 AM_CONDITIONAL(RUBY_ENABLED, [test x"$enable_ruby" = "xyes"])
 
+if test x"$enable_go" = "xyes"
+then
+    AC_PATH_PROG([GCCGO],
+                  [gccgo],
+                  [not found])
+    if test "${GCCGO}" = "not found"
+    then
+        AC_MSG_ERROR([go tools required to build bindings.])
+    fi
+fi
+AM_CONDITIONAL(GO_ENABLED, [test x"$enable_go" = "xyes"])
+
 
 AC_ARG_ENABLE(cvcdir,
 AC_HELP_STRING([--enable-cvcdir=DIR],
@@ -223,6 +236,7 @@ AC_CONFIG_FILES([
                  bindings/java/Makefile
                  bindings/python/Makefile
                  bindings/ruby/Makefile
+                 bindings/go/Makefile
                  cross/Makefile
                  doc/Makefile
                  doc/_static/Makefile
@@ -258,4 +272,6 @@ JAVA_CFLAGS:             ${JAVA_CFLAGS}
 JAVACFLAGS:              ${JAVACFLAGS}
 Ruby Bindings:           ${enable_ruby}
 RUBY:                    ${RUBY}
+Go Bindings:             ${enable_go}
+gccgo:                   ${GCCGO}
 EOF

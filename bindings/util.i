@@ -86,7 +86,7 @@ void EAC_cleanup(void);
     }
 %}
 
-#ifndef SWIG_CSTRING_UNIMPL
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %inline %{
     static void buf2string(BUF_MEM *buf, char **out, int *out_len) {

@@ -69,7 +69,7 @@ CVC_CERTIFICATE_DESCRIPTION_new(void);
 void
 CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
 
-#if !defined(SWIG_CSTRING_UNIMPL)
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %rename (CVC_d2i_CVC_CERT) cvc_d2i_cvc_cert;
 %inline %{ /* typemap applied */
@@ -219,7 +219,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
  * @defgroup cvc            CHAT functions
  * @{ ************************************************************************/
 
-#if !defined(SWIG_CSTRING_UNIMPL)
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %rename (d2i_CVC_CHAT) d2i_cvc_chat;
 %inline %{ /* typemap applied */

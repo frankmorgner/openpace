@@ -12,3 +12,7 @@ endif
 if RUBY_ENABLED
 SUBDIRS += ruby
 endif
+
+if GO_ENABLED
+SUBDIRS += go
+endif

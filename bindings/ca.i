@@ -38,7 +38,7 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 void
 CA_disable_passive_authentication(EAC_CTX *ctx);
 
-#if !defined(SWIG_CSTRING_UNIMPL)
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %rename(CA_STEP1_get_pubkey) ca_step1_get_pubkey;
 %inline %{

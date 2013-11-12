@@ -49,7 +49,7 @@ EAC_CTX_clear_free(EAC_CTX *ctx);
 int
 EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
-#ifndef SWIG_CSTRING_UNIMPL
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %rename(EAC_encrypt) eac_encrypt;
 %inline %{

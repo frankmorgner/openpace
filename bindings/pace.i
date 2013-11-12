@@ -80,7 +80,46 @@ enum s_type {
 
 #endif
 
-#ifndef SWIG_CSTRING_UNIMPL
+#if 0
+#ifdef SWIGGO
+/* Binary String & length */
+
+%typemap(gotype) (char *STRING, size_t LENGTH) "string"
+
+%typemap(in) (char *STRING, size_t LENGTH)
+%{
+  $1 = ($1_ltype)$input.p;
+  $2 = ($2_ltype)$input.n;
+%}
+
+%typemap(out) (char *STRING, size_t LENGTH)
+%{ $result = _swig_makegostring((char*)$1, (size_t)$2); %}
+
+%typemap(directorin) (char *STRING, size_t LENGTH)
+%{ $input = _swig_makegostring((char*)$1, $2); %}
+
+%typemap(directorout) (char *STRING, size_t LENGTH)
+%{
+  $1 = ($1_ltype)$input.p;
+  $2 = ($2_ltype)$input.n;
+%}
+
+%apply (char *STRING, int LENGTH) {(char *in, int in_len)};
+%apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
+%apply (char *STRING, int LENGTH) {(char *cert, int cert_len)};
+%apply (char *STRING, int LENGTH) {(char *car, int car_len)};
+%apply (char *STRING, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *pubkey, int pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *auxdata, int auxdata_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
+#endif
+#endif
+
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %apply (char *STRING, int LENGTH) {(char *in, int in_len)};
 %apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
@@ -95,7 +134,9 @@ enum s_type {
 %apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
 %apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
 
+#ifndef SWIG_CSTRING_UNIMPL
 %cstring_output_allocate_size(char **out, int *out_len, free(*$1));
+#endif
 
 #endif
 
