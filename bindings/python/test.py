@@ -17,7 +17,7 @@
 # OpenPACE.  If not, see <http://www.gnu.org/licenses/>.
 #
 #!/usr/bin/env python
-import pace
+import eac
 
 from chat import CHAT, CVC, EAC_CTX
 from pace_entity import *
@@ -348,9 +348,9 @@ def pacetest():
 
 def cvctest():
     cvc = CVC(TEST_CVC)
-    cvc_desc = pace.d2i_CVC_CERTIFICATE_DESCRIPTION(TEST_DESCRIPTION)
+    cvc_desc = eac.d2i_CVC_CERTIFICATE_DESCRIPTION(TEST_DESCRIPTION)
     print cvc.chat
-    #pace.cvc_chat_print(cvc.chat, 4)
+    #eac.cvc_chat_print(cvc.chat, 4)
 
     asn1_chat="\x7F\x4C\x12\x06\x09\x04\x00\x7F\x00\x07\x03\x01\x02\x02\x53\x05\x00\x01\x01\x98\x04"
 
@@ -360,7 +360,7 @@ def cvctest():
     print(chat.get_terminal_type())
     print(chat.get_relative_authorizations())
 
-    pace.CVC_CERTIFICATE_DESCRIPTION_free(cvc_desc)
+    eac.CVC_CERTIFICATE_DESCRIPTION_free(cvc_desc)
 
     terminal_cert = CVC(CHAIN_CVC)
     print terminal_cert
@@ -380,29 +380,29 @@ def cvctest():
 def tatest():
     ta = PACEEntity("123456")
 
-    assert pace.EAC_CTX_init_ca(ta.ctx, pace.id_CA_ECDH_AES_CBC_CMAC_128, 11) == 1
+    assert eac.EAC_CTX_init_ca(ta.ctx, eac.id_CA_ECDH_AES_CBC_CMAC_128, 11) == 1
 
     # our certificates aren't up to date
-    pace.TA_disable_checks(ta.ctx)
+    eac.TA_disable_checks(ta.ctx)
 
-    assert pace.EAC_CTX_init_ta(ta.ctx, None, CVCA) == 1
-    assert pace.TA_STEP2_import_certificate(ta.ctx, DVCA) == 1
-    assert pace.TA_STEP2_import_certificate(ta.ctx, CHAIN_CVC) == 1
-    nonce = pace.TA_STEP4_get_nonce(ta.ctx)
+    assert eac.EAC_CTX_init_ta(ta.ctx, None, CVCA) == 1
+    assert eac.TA_STEP2_import_certificate(ta.ctx, DVCA) == 1
+    assert eac.TA_STEP2_import_certificate(ta.ctx, CHAIN_CVC) == 1
+    nonce = eac.TA_STEP4_get_nonce(ta.ctx)
     assert nonce is not None
 
 def catest():
     eac = EAC_CTX()
-    assert pace.EAC_CTX_init_ef_cardsecurity(EF_CARDSECURITY, eac.ctx) == 1
+    assert eac.EAC_CTX_init_ef_cardsecurity(EF_CARDSECURITY, eac.ctx) == 1
 
 def oidtest():
-    assert(pace.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128") == pace.id_CA_ECDH_AES_CBC_CMAC_128)
+    assert(eac.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128") == eac.id_CA_ECDH_AES_CBC_CMAC_128)
 
 if __name__ == "__main__":
-    pace.EAC_init()
+    eac.EAC_init()
     pacetest()
     cvctest()
     catest()
     oidtest()
     tatest()
-    pace.EAC_cleanup()
+    eac.EAC_cleanup()

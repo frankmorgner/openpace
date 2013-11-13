@@ -33,15 +33,15 @@ class PACEEntity {
 
         this.encoded_nonce = null;
 
-        this.secret = pace.PACE_SEC_new(byte_sec, secret_type);
+        this.secret = eac.PACE_SEC_new(byte_sec, secret_type);
         if (this.secret == null)
             throw new NullPointerException("Failed to initialize secret");
 
-        this.eac_context = pace.EAC_CTX_new();
+        this.eac_context = eac.EAC_CTX_new();
         if (this.eac_context == null)
             throw new NullPointerException("Failed to create EAC context");
 
-        if (pace.EAC_CTX_init_ef_cardaccess(ef_card_access, this.eac_context) == 0)
+        if (eac.EAC_CTX_init_ef_cardaccess(ef_card_access, this.eac_context) == 0)
             throw new NullPointerException("Failed to initialize EAC context from EF.CardAccess");
 
         this.static_key = null;
@@ -50,7 +50,7 @@ class PACEEntity {
     }
 
     public SWIGTYPE_p_BUF_MEM generate_static_key() {
-        this.static_key = pace.PACE_STEP3A_generate_mapping_data(this.eac_context);
+        this.static_key = eac.PACE_STEP3A_generate_mapping_data(this.eac_context);
         if (this.static_key == null)
             throw new NullPointerException("Failed to generate static key");
         return this.static_key;
@@ -59,11 +59,11 @@ class PACEEntity {
     public void map_generator(SWIGTYPE_p_BUF_MEM opp_static_pub) {
         int ret;
         this.opp_static_pub = opp_static_pub;
-        ret = pace.PACE_STEP3A_map_generator(this.eac_context, opp_static_pub);
+        ret = eac.PACE_STEP3A_map_generator(this.eac_context, opp_static_pub);
     }
 
     public SWIGTYPE_p_BUF_MEM generate_ephemeral_key() {
-        this.ephemeral_key = pace.PACE_STEP3B_generate_ephemeral_key(this.eac_context);
+        this.ephemeral_key = eac.PACE_STEP3B_generate_ephemeral_key(this.eac_context);
         if (this.ephemeral_key == null)
             throw new NullPointerException("Failed to generate ephemeral key");
         return this.ephemeral_key;
@@ -71,15 +71,15 @@ class PACEEntity {
 
     public void compute_shared_secret(SWIGTYPE_p_BUF_MEM opp_static_pub) {
         this.opp_eph_pub = opp_static_pub;
-        if (pace.PACE_STEP3B_compute_shared_secret(this.eac_context,
+        if (eac.PACE_STEP3B_compute_shared_secret(this.eac_context,
                 opp_static_pub) == 0)
             throw new NullPointerException("Failed to compute shared secret");
     }
 
     public void derive_keys() {
-        if (pace.PACE_STEP3C_derive_keys(this.eac_context) == 0)
+        if (eac.PACE_STEP3C_derive_keys(this.eac_context) == 0)
             throw new NullPointerException("Failed to derive keys");
-        if (pace.EAC_CTX_set_encryption_ctx(this.eac_context, pace.EAC_ID_PACE) == 0)
+        if (eac.EAC_CTX_set_encryption_ctx(this.eac_context, eac.EAC_ID_PACE) == 0)
             throw new NullPointerException("Failed to initialize Secure Messaging context");
 
     }
@@ -92,7 +92,7 @@ class PICC extends PACEEntity {
 
     public SWIGTYPE_p_BUF_MEM generate_nonce() throws NullPointerException {
 
-        this.encoded_nonce = pace.PACE_STEP1_enc_nonce(this.eac_context, this.secret);
+        this.encoded_nonce = eac.PACE_STEP1_enc_nonce(this.eac_context, this.secret);
         if (this.encoded_nonce == null)
             throw new NullPointerException("Failed to generate nonce");
         return this.encoded_nonce;
@@ -100,15 +100,15 @@ class PICC extends PACEEntity {
 
     public int verify_authentication_token(SWIGTYPE_p_BUF_MEM token) {
         int ret;
-        ret = pace.PACE_STEP3D_verify_authentication_token(this.eac_context, token);
-        if (pace.EAC_CTX_set_encryption_ctx(this.eac_context, pace.EAC_ID_PACE) == 0)
+        ret = eac.PACE_STEP3D_verify_authentication_token(this.eac_context, token);
+        if (eac.EAC_CTX_set_encryption_ctx(this.eac_context, eac.EAC_ID_PACE) == 0)
             throw new NullPointerException("Failed to initialize Secure Messaging context");
         return ret;
     }
 
     public SWIGTYPE_p_BUF_MEM get_id() throws NullPointerException {
         SWIGTYPE_p_BUF_MEM ret;
-        ret = pace.EAC_Comp(this.eac_context, pace.EAC_ID_PACE, this.ephemeral_key);
+        ret = eac.EAC_Comp(this.eac_context, eac.EAC_ID_PACE, this.ephemeral_key);
         if (ret == null)
             throw new NullPointerException("Failed to get ID_PICC");
         return ret;
@@ -124,20 +124,20 @@ class PCD extends PACEEntity {
         int ret;
 
         this.encoded_nonce = enc_nonce;
-        ret = pace.PACE_STEP2_dec_nonce(this.eac_context, this.secret, this.encoded_nonce);
+        ret = eac.PACE_STEP2_dec_nonce(this.eac_context, this.secret, this.encoded_nonce);
 
     }
 
     public SWIGTYPE_p_BUF_MEM compute_authentication_token() {
         SWIGTYPE_p_BUF_MEM ret;
-        ret = pace.PACE_STEP3D_compute_authentication_token(this.eac_context, this.opp_eph_pub);
+        ret = eac.PACE_STEP3D_compute_authentication_token(this.eac_context, this.opp_eph_pub);
         return ret;
     }
 }
 
 public class JPace {
 	static {
-		System.loadLibrary("jpace");
+		System.loadLibrary("jeac");
 	}
 
 	public static void main(String argv[]) {

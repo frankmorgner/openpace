@@ -1,12 +1,12 @@
 INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../cvc.i \
 			 $(srcdir)/../eac.i \
-			 $(srcdir)/../pace.i \
+			 $(srcdir)/../eac.i \
 			 $(srcdir)/../ta.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-BUILT_SOURCES = pace_wrap.c
+BUILT_SOURCES = eac_wrap.c
 
 EXTRA_DIST = example.rb extconf.rb.in
 CLEANFILES = $(BUILT_SOURCES)
@@ -27,16 +27,16 @@ ext/extconf.rb: extconf.rb.in
 	mkdir -p ext
 	$(do_subst) < $(srcdir)/extconf.rb.in > ext/extconf.rb
 
-pace_wrap.c:
-	$(SWIG) -ruby -outdir $(builddir) -I$(srcdir)/.. pace.i
+eac_wrap.c:
+	$(SWIG) -ruby -outdir $(builddir) -I$(srcdir)/.. eac.i
 
-ext/Makefile: ext/extconf.rb pace_wrap.c $(top_builddir)/src/libeac.la
+ext/Makefile: ext/extconf.rb eac_wrap.c $(top_builddir)/src/libeac.la
 	cd ext && $(RUBY) extconf.rb
 
-ext/pace.so: ext/Makefile
+ext/eac.so: ext/Makefile
 	$(MAKE) -C ext
 
-all-local: ext/pace.so
+all-local: ext/eac.so
 
 clean-local:
 	$(MAKE) clean -C ext

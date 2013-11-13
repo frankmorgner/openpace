@@ -6,7 +6,7 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-BUILT_SOURCES = pace_wrap.c pace.py
+BUILT_SOURCES = eac_wrap.c eac.py
 
 EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py
 CLEANFILES = $(BUILT_SOURCES) installed_files.txt setup.py
@@ -30,7 +30,7 @@ do_subst=$(SED)\
 	-e's,[@]srcdir[@],$(srcdir),g'
 
 
-all-local: pace.py
+all-local: eac.py
 
 $(top_builddir)/src/libeac.la:
 	$(MAKE) -C $(top_builddir)/src libeac.la
@@ -53,3 +53,7 @@ uninstall-local:
 
 clean-local:
 	rm -rf build
+	rm -f *.pyc setup.inc
+
+distclean-local:
+	rm -f cvc_rehash setup

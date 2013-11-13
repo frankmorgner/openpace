@@ -3,4 +3,4 @@ $CFLAGS = '@OPENPACE_CFLAGS@ @CRYPTO_CFLAGS@ @CFLAGS@'
 $LDFLAGS = '@OPENPACE_LIBS@ @CRYPTO_LIBS@ @LDFLAGS@'
 $CPPFLAGS = '@CPPFLAGS@'
 $prefix = '@prefix@'
-create_makefile('pace', '..')
+create_makefile('eac', '..')

@@ -25,7 +25,7 @@ and related methods from OpenPACE
 :License: GPL
 """
 
-import pace
+import eac
 import string, binascii
 
 EF_CARD_ACCESS = "\x31\x81\x82\x30\x0D\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x02\x02\x01\x02\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x02\x02\x01\x02\x02\x01\x41\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x04\x02\x02\x02\x01\x02\x02\x01\x0D\x30\x1C\x06\x09\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x30\x0C\x06\x07\x04\x00\x7F\x00\x07\x01\x02\x02\x01\x0D\x02\x01\x41\x30\x2B\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x06\x16\x1F\x65\x50\x41\x20\x2D\x20\x42\x44\x72\x20\x47\x6D\x62\x48\x20\x2D\x20\x54\x65\x73\x74\x6B\x61\x72\x74\x65\x20\x76\x32\x2E\x30\x04\x49\x17\x15\x41\x19\x28\x80\x0A\x01\xB4\x21\xFA\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\x10\x10\x29\x10\x10"
@@ -69,7 +69,7 @@ class PACEException(Exception):
         self.role = role
 
     def __str__(self):
-        pace.print_ossl_err()
+        eac.print_ossl_err()
         print
 
         ret_str = "Error "
@@ -88,76 +88,76 @@ class PACEEntity(object):
         pin -- the (low entropy) shared secret for the PACE protocol
         """
         self.pin = pin
-        self.ctx = pace.EAC_CTX_new()
-        self.sec = pace.PACE_SEC_new(self.pin, pace.PACE_PIN)
-        pace.EAC_CTX_init_ef_cardaccess(EF_CARD_ACCESS, self.ctx)
+        self.ctx = eac.EAC_CTX_new()
+        self.sec = eac.PACE_SEC_new(self.pin, eac.PACE_PIN)
+        eac.EAC_CTX_init_ef_cardaccess(EF_CARD_ACCESS, self.ctx)
         self._enc_nonce = ""
         self._ephemeral_pubkey = ""
         self._opp_pubkey = ""
 
     def __del__(self):
         if (self.ctx):
-            pace.EAC_CTX_clear_free(self.ctx)
+            eac.EAC_CTX_clear_free(self.ctx)
         if (self.sec):
-            pace.PACE_SEC_clear_free(self.sec)
+            eac.PACE_SEC_clear_free(self.sec)
 
     def __str__(self):
-        ret_string = pace.EAC_CTX_print_private(self.ctx, 0)
+        ret_string = eac.EAC_CTX_print_private(self.ctx, 0)
         return ret_string
 
     def get_static_pubkey(self):
-        self._static_pubkey = pace.PACE_STEP3A_generate_mapping_data(self.ctx)
+        self._static_pubkey = eac.PACE_STEP3A_generate_mapping_data(self.ctx)
         return self._static_pubkey
 
     def perform_mapping(self, pubkey):
-        pace.PACE_STEP3A_map_generator(self.ctx, pubkey)
+        eac.PACE_STEP3A_map_generator(self.ctx, pubkey)
 
     def generate_ephemeral_pubkey(self):
-        self._ephemeral_pubkey = pace.PACE_STEP3B_generate_ephemeral_key(self.ctx)
+        self._ephemeral_pubkey = eac.PACE_STEP3B_generate_ephemeral_key(self.ctx)
         return self._ephemeral_pubkey
 
     def compute_shared_secret(self, pubkey):
         self._opp_pubkey = pubkey
-        if (not pace.PACE_STEP3B_compute_shared_secret(self.ctx, pubkey)):
+        if (not eac.PACE_STEP3B_compute_shared_secret(self.ctx, pubkey)):
             raise PACEException("Failed to compute shared secret", "Step 3B")
 
     def derive_keys(self):
-        if (not pace.PACE_STEP3C_derive_keys(self.ctx)):
+        if (not eac.PACE_STEP3C_derive_keys(self.ctx)):
             raise PACEException("Failed to derive keys", "Step 3C")
 
     def encrypt(self, data):
         """Encrypt a block of data using the secret established by the PACE
-        protocol. This method can only be used after a successful run of PACE.
+        protocol. This method can only be used after a successful run of eac.
         """
-        enc = pace.EAC_encrypt(self.ctx, data)
-        if not enc or not pace.EAC_increment_ssc(self.ctx):
+        enc = eac.EAC_encrypt(self.ctx, data)
+        if not enc or not eac.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to encrypt the following data: " + data)
         return enc
 
     def decrypt(self, data):
         """Decrypt a block of data using the secret established by the PACE
-        protocol. This method can only be used after a successful run of PACE.
+        protocol. This method can only be used after a successful run of eac.
         """
-        dec = pace.EAC_decrypt(self.ctx, data)
-        if not dec or not pace.EAC_increment_ssc(self.ctx):
+        dec = eac.EAC_decrypt(self.ctx, data)
+        if not dec or not eac.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to decrypt the following data: " + data)
         return dec
 
     def authenticate(self, data):
         """Compute a MAC for block of data using the secret established by the
         PACE protocol. This method can only be used after a successful run of
-        PACE.
+        eac.
         """
-        auth = pace.EAC_authenticate(self.ctx, data)
-        if not auth or not pace.EAC_increment_ssc(self.ctx):
+        auth = eac.EAC_authenticate(self.ctx, data)
+        if not auth or not eac.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to compute MAC for: " + data)
         return auth
 
     def EAC_CTX_set_encryption_ctx(self):
-        pace.EAC_CTX_set_encryption_ctx(self.ctx, pace.EAC_ID_PACE)
+        eac.EAC_CTX_set_encryption_ctx(self.ctx, eac.EAC_ID_PACE)
 
     def EAC_Comp(self):
-        return pace.EAC_Comp(self.ctx, pace.EAC_ID_PACE, self._ephemeral_pubkey)
+        return eac.EAC_Comp(self.ctx, eac.EAC_ID_PACE, self._ephemeral_pubkey)
 
 class PICC(PACEEntity):
     """
@@ -172,19 +172,19 @@ class PICC(PACEEntity):
         return "PICC:\n" + super(PICC, self).__str__()
 
     def generate_nonce(self):
-        self._enc_nonce = pace.PACE_STEP1_enc_nonce(self.ctx, self.sec)
+        self._enc_nonce = eac.PACE_STEP1_enc_nonce(self.ctx, self.sec)
         if not self._enc_nonce:
             raise PACEException("Could not generate nonce", "Step 1", "PICC")
         return self._enc_nonce
 
     def verify_authentication_token(self, token):
-        ret = pace.PACE_STEP3D_verify_authentication_token(self.ctx, token)
+        ret = eac.PACE_STEP3D_verify_authentication_token(self.ctx, token)
         if (not ret):
             raise PACEException("Failed to verify authentication token")
-        if (pace.EAC_CTX_set_encryption_ctx(self.ctx, pace.EAC_ID_PACE) == 0):
+        if (eac.EAC_CTX_set_encryption_ctx(self.ctx, eac.EAC_ID_PACE) == 0):
             raise PACEException("Failed to initialize Secure Messaging context")
         # PICC starts with ssc = 1
-        if not pace.EAC_increment_ssc(self.ctx):
+        if not eac.EAC_increment_ssc(self.ctx):
             raise PACEException("Failed to incremement ssc")
         return ret
 
@@ -199,13 +199,13 @@ class PCD(PACEEntity):
 
     def decrypt_nonce(self, enc_nonce):
         self._enc_nonce = enc_nonce
-        if (not pace.PACE_STEP2_dec_nonce(self.ctx, self.sec, enc_nonce)):
+        if (not eac.PACE_STEP2_dec_nonce(self.ctx, self.sec, enc_nonce)):
             raise PACEException("Could not decrypt nonce", "Step 2", "PCD")
 
     def get_authentication_token(self):
-        ret = pace.PACE_STEP3D_compute_authentication_token(self.ctx, self._opp_pubkey)
+        ret = eac.PACE_STEP3D_compute_authentication_token(self.ctx, self._opp_pubkey)
         if (not ret):
             raise PACEException("Failed to compute authentication token")
-        if (pace.EAC_CTX_set_encryption_ctx(self.ctx, pace.EAC_ID_PACE) == 0):
+        if (eac.EAC_CTX_set_encryption_ctx(self.ctx, eac.EAC_ID_PACE) == 0):
             raise PACEException("Failed to initialize Secure Messaging context")
         return ret

@@ -24,6 +24,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+%module eac
+
+%include "cstring.i"
+
 %{
 #include <eac/eac.h>
 #include <openssl/bio.h>
@@ -33,6 +37,113 @@
 /* included in OpenPACE, but not propagated */
 extern void BUF_MEM_clear_free(BUF_MEM *b);
 %}
+
+/**
+ * @defgroup typemaps              Typemaps
+ * @{ ************************************************************************/
+
+#ifdef SWIGJAVA
+
+/* Typemap to convert byte arrays to character pointer + length */
+%typemap(in)     (char *BYTE, int LENGTH) {
+    /* Functions from jni.h */
+    $1 = (char *) JCALL2(GetByteArrayElements, jenv, $input, 0);
+    $2 = (int)    JCALL1(GetArrayLength,       jenv, $input);
+}
+%typemap(jni)    (char *BYTE, int LENGTH) "jbyteArray"
+%typemap(jtype)  (char *BYTE, int LENGTH) "byte[]"
+%typemap(jstype) (char *BYTE, int LENGTH) "byte[]"
+%typemap(javain) (char *BYTE, int LENGTH) "$javainput"
+
+%apply (char *BYTE, int LENGTH) {(char *in, int in_len)};
+%apply (char *BYTE, int LENGTH) {(char *privkey, int privkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *cert, int cert_len)};
+%apply (char *BYTE, int LENGTH) {(char *car, int car_len)};
+%apply (char *BYTE, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *pubkey, int pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *auxdata, int auxdata_len)};
+%apply (char *BYTE, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *BYTE, int LENGTH) {(char *signature, int signature_len)};
+
+#endif
+
+#if 0
+#ifdef SWIGGO
+/* Binary String & length */
+
+%typemap(gotype) (char *STRING, size_t LENGTH) "string"
+
+%typemap(in) (char *STRING, size_t LENGTH)
+%{
+  $1 = ($1_ltype)$input.p;
+  $2 = ($2_ltype)$input.n;
+%}
+
+%typemap(out) (char *STRING, size_t LENGTH)
+%{ $result = _swig_makegostring((char*)$1, (size_t)$2); %}
+
+%typemap(directorin) (char *STRING, size_t LENGTH)
+%{ $input = _swig_makegostring((char*)$1, $2); %}
+
+%typemap(directorout) (char *STRING, size_t LENGTH)
+%{
+  $1 = ($1_ltype)$input.p;
+  $2 = ($2_ltype)$input.n;
+%}
+
+%apply (char *STRING, int LENGTH) {(char *in, int in_len)};
+%apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
+%apply (char *STRING, int LENGTH) {(char *cert, int cert_len)};
+%apply (char *STRING, int LENGTH) {(char *car, int car_len)};
+%apply (char *STRING, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *pubkey, int pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *auxdata, int auxdata_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
+#endif
+#endif
+
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
+
+%apply (char *STRING, int LENGTH) {(char *in, int in_len)};
+%apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
+%apply (char *STRING, int LENGTH) {(char *cert, int cert_len)};
+%apply (char *STRING, int LENGTH) {(char *car, int car_len)};
+%apply (char *STRING, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *pubkey, int pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *auxdata, int auxdata_len)};
+%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
+%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
+
+#ifndef SWIG_CSTRING_UNIMPL
+%cstring_output_allocate_size(char **out, int *out_len, free(*$1));
+#endif
+
+#endif
+
+/** @} ***********************************************************************/
+
+typedef unsigned short uint16_t;
+
+#define EAC_TR_VERSION_2_01 1
+#define EAC_TR_VERSION_2_02 2
+
+%include "util.i"
+
+%include "ca.i"
+%include "cvc.i"
+%include "objects.i"
+%include "pace.i"
+%include "ta.i"
 
 
 #define EAC_ID_PACE 0

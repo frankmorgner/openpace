@@ -26,12 +26,12 @@ OpenPACE
 :License: GPL
 """
 
-import pace
+import eac
 from binascii import b2a_hex
 
 class OpenPACEException(Exception):
     def __init__(self, value):
-        self.value = pace.print_ossl_err() + value
+        self.value = eac.print_ossl_err() + value
 
     def __str__(self):
         return self.value
@@ -40,18 +40,18 @@ class CHAT(object):
     def __init__(self, chat):
         if (type(chat) == str):
             self.asn1_string = chat
-            self.chat = pace.d2i_CVC_CHAT(chat)
+            self.chat = eac.d2i_CVC_CHAT(chat)
         elif (type(chat).__name__ == 'SwigPyObject'):
-            self.asn1_string = pace.i2d_CVC_CHAT(chat)
-            self.chat = pace.CVC_CHAT_dup(chat)
+            self.asn1_string = eac.i2d_CVC_CHAT(chat)
+            self.chat = eac.CVC_CHAT_dup(chat)
         if (self.chat is None or self.asn1_string is None):
             raise OpenPACEException("Failed to parse CHAT")
 
     def __del__(self):
-        pace.CVC_CHAT_free(self.chat)
+        eac.CVC_CHAT_free(self.chat)
 
     def __str__(self):
-        ret = pace.get_chat_repr(self.chat)
+        ret = eac.get_chat_repr(self.chat)
 
         if ret is None:
             raise OpenPACEException("Failed to parse CHAT")
@@ -59,7 +59,7 @@ class CHAT(object):
         return ret
 
     def get_role(self):
-        ret = pace.get_chat_role(self.chat)
+        ret = eac.get_chat_role(self.chat)
 
         if ret is None:
             raise OpenPACEException("Failed to retrieve terminal role from CHAT")
@@ -67,7 +67,7 @@ class CHAT(object):
         return ret
 
     def get_terminal_type(self):
-        ret = pace.get_chat_terminal_type(self.chat)
+        ret = eac.get_chat_terminal_type(self.chat)
 
         if ret is None:
             raise OpenPACEException("Failed to retrieve terminal type from CHAT")
@@ -75,7 +75,7 @@ class CHAT(object):
         return ret
 
     def get_relative_authorizations(self):
-        ret = pace.get_chat_rel_auth(self.chat)
+        ret = eac.get_chat_rel_auth(self.chat)
 
         if ret is None:
             raise OpenPACEException("Failed to retrieve relative authorization from CHAT")
@@ -86,16 +86,16 @@ class CHAT(object):
 class CVC(object):
     def __init__(self, asn1_string):
         self.asn1_string = asn1_string
-        self.cvc = pace.CVC_d2i_CVC_CERT(asn1_string)
+        self.cvc = eac.CVC_d2i_CVC_CERT(asn1_string)
         if not self.cvc:
             raise TypeError("Failed to parse certificate")
-        self.chat = CHAT(pace.cvc_get_chat(self.cvc))
+        self.chat = CHAT(eac.cvc_get_chat(self.cvc))
 
     def __del__(self):
-        pace.CVC_CERT_free(self.cvc)
+        eac.CVC_CERT_free(self.cvc)
 
     def __str__(self):
-        ret = pace.get_cvc_repr(self.cvc)
+        ret = eac.get_cvc_repr(self.cvc)
 
         if ret is None:
             raise OpenPACEException("Failed to parse CV certificate")
@@ -103,7 +103,7 @@ class CVC(object):
         return ret
 
     def get_car(self):
-        ret = pace.CVC_get_car(self.cvc)
+        ret = eac.CVC_get_car(self.cvc)
 
         if ret is None:
             raise OpenPACEException("Failed to extract CAR")
@@ -111,7 +111,7 @@ class CVC(object):
         return ret
 
     def get_chr(self):
-        ret = pace.CVC_get_chr(self.cvc)
+        ret = eac.CVC_get_chr(self.cvc)
 
         if ret is None:
             raise OpenPACEException("Failed to extract CHR")
@@ -119,7 +119,7 @@ class CVC(object):
         return ret
 
     def get_effective_date(self):
-        ret = pace.CVC_get_effective_date(self.cvc)
+        ret = eac.CVC_get_effective_date(self.cvc)
 
         if ret is None:
             raise OpenPACEException("Failed to extract effective date")
@@ -127,7 +127,7 @@ class CVC(object):
         return ret
 
     def get_expiration_date(self):
-        ret = pace.CVC_get_expiration_date(self.cvc)
+        ret = eac.CVC_get_expiration_date(self.cvc)
 
         if ret is None:
             raise OpenPACEException("Failed to extract expiration date")
@@ -135,21 +135,21 @@ class CVC(object):
         return ret
 
     def get_profile_identifier(self):
-        profile_id = pace.CVC_get_profile_identifier(self.cvc)
+        profile_id = eac.CVC_get_profile_identifier(self.cvc)
         return profile_id
 
 
 class EAC_CTX(object):
     def __init__(self):
-        self.ctx = pace.EAC_CTX_new()
+        self.ctx = eac.EAC_CTX_new()
         if not self.ctx:
             raise TypeError("Failed to create context")
 
     def __del__(self):
-        pace.EAC_CTX_clear_free(self.ctx)
+        eac.EAC_CTX_clear_free(self.ctx)
 
     def __str__(self):
-        ret = pace.EAC_CTX_print_private(self.ctx)
+        ret = eac.EAC_CTX_print_private(self.ctx)
 
         if ret is None:
             raise OpenPACEException("Failed to print EAC_CTX")
@@ -159,15 +159,15 @@ class EAC_CTX(object):
 
 class PACE_SEC(object):
     def __init__(self, secret, secret_type):
-        self.sec = pace.PACE_SEC_new(secret, secret_type)
+        self.sec = eac.PACE_SEC_new(secret, secret_type)
         if not self.sec:
             raise TypeError("Failed to create context")
 
     def __del__(self):
-        pace.PACE_SEC_clear_free(self.sec)
+        eac.PACE_SEC_clear_free(self.sec)
 
     def __str__(self):
-        ret = pace.PACE_SEC_print_private(self.sec)
+        ret = eac.PACE_SEC_print_private(self.sec)
 
         if ret is None:
             raise OpenPACEException("Failed to print PACE_SEC")
