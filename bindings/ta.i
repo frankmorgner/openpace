@@ -38,17 +38,14 @@ TA_disable_checks(EAC_CTX *ctx);
 
 %rename(TA_STEP2_import_certificate) ta_step2_import_certificate;
 %inline %{
-    static int ta_step2_import_certificate(const EAC_CTX *ctx, char *in, int in_len) {
-        if (in_len < 0)
-            return 0;
-        else
-            return TA_STEP2_import_certificate(ctx, (unsigned char*) in, (size_t) in_len);
+    static int ta_step2_import_certificate(const EAC_CTX *ctx, char *in, size_t in_len) {
+            return TA_STEP2_import_certificate(ctx, (unsigned char*) in, in_len);
     }
 %}
 
 %rename(TA_STEP3_generate_ephemeral_key) ta_step3_generate_ephemeral_ta_key;
 %inline %{
-    static void ta_step3_generate_ephemeral_ta_key(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void ta_step3_generate_ephemeral_ta_key(char **out, size_t *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = TA_STEP3_generate_ephemeral_key(ctx);
@@ -61,7 +58,7 @@ TA_disable_checks(EAC_CTX *ctx);
 
 %rename(TA_STEP4_get_nonce) ta_step4_get_nonce;
 %inline %{
-    static void ta_step4_get_nonce(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void ta_step4_get_nonce(char **out, size_t *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = TA_STEP4_get_nonce(ctx);
@@ -74,7 +71,7 @@ TA_disable_checks(EAC_CTX *ctx);
 
 %rename(TA_STEP4_set_nonce) ta_step4_set_nonce;
 %inline %{
-    static int ta_step4_set_nonce(const EAC_CTX *ctx, char *in, int in_len) {
+    static int ta_step4_set_nonce(const EAC_CTX *ctx, char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -90,7 +87,7 @@ TA_disable_checks(EAC_CTX *ctx);
 
 %rename(TA_STEP5_sign) ta_step5_sign;
 %inline %{
-    static void ta_step5_sign(char **out, int *out_len, const EAC_CTX *ctx,
+    static void ta_step5_sign(char **out, size_t *out_len, const EAC_CTX *ctx,
             char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len,
             char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len,
             char *auxdata, int auxdata_len) {

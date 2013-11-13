@@ -45,87 +45,48 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 #ifdef SWIGJAVA
 
 /* Typemap to convert byte arrays to character pointer + length */
-%typemap(in)     (char *BYTE, int LENGTH) {
+%typemap(in)     (char *BYTE, size_t LENGTH) {
     /* Functions from jni.h */
     $1 = (char *) JCALL2(GetByteArrayElements, jenv, $input, 0);
-    $2 = (int)    JCALL1(GetArrayLength,       jenv, $input);
+    $2 = (size_t)    JCALL1(GetArrayLength,    jenv, $input);
 }
-%typemap(jni)    (char *BYTE, int LENGTH) "jbyteArray"
-%typemap(jtype)  (char *BYTE, int LENGTH) "byte[]"
-%typemap(jstype) (char *BYTE, int LENGTH) "byte[]"
-%typemap(javain) (char *BYTE, int LENGTH) "$javainput"
+%typemap(jni)    (char *BYTE, size_t LENGTH) "jbyteArray"
+%typemap(jtype)  (char *BYTE, size_t LENGTH) "byte[]"
+%typemap(jstype) (char *BYTE, size_t LENGTH) "byte[]"
+%typemap(javain) (char *BYTE, size_t LENGTH) "$javainput"
 
-%apply (char *BYTE, int LENGTH) {(char *in, int in_len)};
-%apply (char *BYTE, int LENGTH) {(char *privkey, int privkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *cert, int cert_len)};
-%apply (char *BYTE, int LENGTH) {(char *car, int car_len)};
-%apply (char *BYTE, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *pubkey, int pubkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *auxdata, int auxdata_len)};
-%apply (char *BYTE, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
-%apply (char *BYTE, int LENGTH) {(char *signature, int signature_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *in, size_t in_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *privkey, size_t privkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *cert, size_t cert_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *car, size_t car_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *comp_pubkey, size_t comp_pubkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *pubkey, size_t pubkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *my_ta_eph_pubkey, size_t my_ta_eph_pubkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *opp_pace_eph_pubkey, size_t opp_pace_eph_pubkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *auxdata, size_t auxdata_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *opp_ta_comp_pubkey, size_t opp_ta_comp_pubkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *my_pace_comp_eph_pubkey, size_t my_pace_comp_eph_pubkey_len)};
+%apply (char *BYTE, size_t LENGTH) {(char *signature, size_t signature_len)};
 
-#endif
-
-#if 0
-#ifdef SWIGGO
-/* Binary String & length */
-
-%typemap(gotype) (char *STRING, size_t LENGTH) "string"
-
-%typemap(in) (char *STRING, size_t LENGTH)
-%{
-  $1 = ($1_ltype)$input.p;
-  $2 = ($2_ltype)$input.n;
-%}
-
-%typemap(out) (char *STRING, size_t LENGTH)
-%{ $result = _swig_makegostring((char*)$1, (size_t)$2); %}
-
-%typemap(directorin) (char *STRING, size_t LENGTH)
-%{ $input = _swig_makegostring((char*)$1, $2); %}
-
-%typemap(directorout) (char *STRING, size_t LENGTH)
-%{
-  $1 = ($1_ltype)$input.p;
-  $2 = ($2_ltype)$input.n;
-%}
-
-%apply (char *STRING, int LENGTH) {(char *in, int in_len)};
-%apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
-%apply (char *STRING, int LENGTH) {(char *cert, int cert_len)};
-%apply (char *STRING, int LENGTH) {(char *car, int car_len)};
-%apply (char *STRING, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *pubkey, int pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *auxdata, int auxdata_len)};
-%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
-#endif
 #endif
 
 #if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
-%apply (char *STRING, int LENGTH) {(char *in, int in_len)};
-%apply (char *STRING, int LENGTH) {(char *privkey, int privkey_len)};
-%apply (char *STRING, int LENGTH) {(char *cert, int cert_len)};
-%apply (char *STRING, int LENGTH) {(char *car, int car_len)};
-%apply (char *STRING, int LENGTH) {(char *comp_pubkey, int comp_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *pubkey, int pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *auxdata, int auxdata_len)};
-%apply (char *STRING, int LENGTH) {(char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len)};
-%apply (char *STRING, int LENGTH) {(char *signature, int signature_len)};
+%apply (char *STRING, size_t LENGTH) {(char *in, size_t in_len)};
+%apply (char *STRING, size_t LENGTH) {(char *privkey, size_t privkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *cert, size_t cert_len)};
+%apply (char *STRING, size_t LENGTH) {(char *car, size_t car_len)};
+%apply (char *STRING, size_t LENGTH) {(char *comp_pubkey, size_t comp_pubkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *pubkey, size_t pubkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *my_ta_eph_pubkey, size_t my_ta_eph_pubkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *opp_pace_eph_pubkey, size_t opp_pace_eph_pubkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *auxdata, size_t auxdata_len)};
+%apply (char *STRING, size_t LENGTH) {(char *opp_ta_comp_pubkey, size_t opp_ta_comp_pubkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *my_pace_comp_eph_pubkey, size_t my_pace_comp_eph_pubkey_len)};
+%apply (char *STRING, size_t LENGTH) {(char *signature, size_t signature_len)};
 
 #ifndef SWIG_CSTRING_UNIMPL
-%cstring_output_allocate_size(char **out, int *out_len, free(*$1));
+%cstring_output_allocate_size(char **out, size_t *out_len, free(*$1));
 #endif
 
 #endif
@@ -164,8 +125,8 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_encrypt) eac_encrypt;
 %inline %{
-    static void eac_encrypt(char **out, int *out_len, const EAC_CTX *ctx,
-            char *in, int in_len) {
+    static void eac_encrypt(char **out, size_t *out_len, const EAC_CTX *ctx,
+            char *in, size_t in_len) {
         BUF_MEM *out_buf = NULL, *data = NULL;
 
         data = get_buf(in, in_len);
@@ -180,8 +141,8 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_decrypt) eac_decrypt;
 %inline %{
-    static void eac_decrypt(char **out, int *out_len, const EAC_CTX *ctx,
-            char *in, int in_len) {
+    static void eac_decrypt(char **out, size_t *out_len, const EAC_CTX *ctx,
+            char *in, size_t in_len) {
         BUF_MEM *out_buf = NULL, *data = NULL;
 
         data = get_buf(in, in_len);
@@ -195,8 +156,8 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_authenticate) eac_authenticate;
 %inline %{
-    static void eac_authenticate(char **out, int *out_len, const EAC_CTX *ctx,
-            char *in, int in_len) {
+    static void eac_authenticate(char **out, size_t *out_len, const EAC_CTX *ctx,
+            char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
         in_buf = get_buf(in, in_len);
@@ -209,8 +170,8 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename(EAC_Comp) eac_comp;
 %inline %{
-    static void eac_comp(char **out, int *out_len, const EAC_CTX *ctx, int id,
-            char *in, int in_len) {
+    static void eac_comp(char **out, size_t *out_len, const EAC_CTX *ctx, int id,
+            char *in, size_t in_len) {
 
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
@@ -224,7 +185,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 %rename (EAC_CTX_print_private) eac_ctx_print_private;
 %inline %{
-    static void eac_ctx_print_private(char **out, int *out_len, EAC_CTX *eac_ctx, int indent) {
+    static void eac_ctx_print_private(char **out, size_t *out_len, EAC_CTX *eac_ctx, int indent) {
         BIO *bio = BIO_new(BIO_s_mem());
         if (!bio)
             goto err;
@@ -254,33 +215,27 @@ err:
 
 %rename(EAC_CTX_init_ef_cardaccess) eac_ctx_init_ef_cardaccess;
 %inline %{
-    static int eac_ctx_init_ef_cardaccess(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
-        if (in_len < 0)
-            return 0;
-        else
+    static int eac_ctx_init_ef_cardaccess(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
             return EAC_CTX_init_ef_cardaccess((unsigned char*) in,
-                    (unsigned int) in_len, ctx);
+                    in_len, ctx);
     }
 %}
 
 %rename(EAC_CTX_init_ef_cardsecurity) eac_ctx_init_ef_cardsecurity;
 %inline %{
-    static int eac_ctx_init_ef_cardsecurity(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
-        if (in_len < 0)
-            return 0;
-        else
+    static int eac_ctx_init_ef_cardsecurity(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
             return EAC_CTX_init_ef_cardsecurity((unsigned char*) in,
-                    (unsigned int) in_len, ctx);
+                    in_len, ctx);
     }
 %}
 
 %rename(EAC_CTX_init_ta) eac_ctx_init_ta;
 %inline %{
     static int eac_ctx_init_ta(const EAC_CTX *ctx,
-            char *privkey, int privkey_len, char *cert, int cert_len) {
+            char *privkey, size_t privkey_len, char *cert, size_t cert_len) {
         return EAC_CTX_init_ta(ctx,
-            (unsigned char*) privkey, (size_t) privkey_len,
-            (unsigned char*) cert, (size_t) cert_len);
+            (unsigned char*) privkey, privkey_len,
+            (unsigned char*) cert, cert_len);
 
     }
 %}
@@ -302,31 +257,25 @@ EAC_Comp(const EAC_CTX *ctx, int id, const BUF_MEM *pub);
 #ifdef SWIGJAVA
 %rename(EAC_CTX_init_ef_cardaccess) eac_ctx_init_ef_cardaccess;
 %inline %{
-    static int eac_ctx_init_ef_cardaccess(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
-        if (in_len < 0)
-            return 0;
-        else
+    static int eac_ctx_init_ef_cardaccess(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
             return EAC_CTX_init_ef_cardaccess((unsigned char*) in,
-                    (unsigned int) in_len, ctx);
+                    in_len, ctx);
     }
 %}
 
 %rename(EAC_CTX_init_ef_cardsecurity) eac_ctx_init_ef_cardsecurity;
 %inline %{
-    static int eac_ctx_init_ef_cardsecurity(char *in, int in_len, EAC_CTX *ctx) { /* typemap applied */
-        if (in_len < 0)
-            return 0;
-        else
+    static int eac_ctx_init_ef_cardsecurity(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
             return EAC_CTX_init_ef_cardsecurity((unsigned char*) in,
-                    (unsigned int) in_len, ctx);
+                    in_len, ctx);
     }
 %}
 #else
 int
-EAC_CTX_init_ef_cardaccess(unsigned char *in, unsigned int in_len, EAC_CTX *ctx);
+EAC_CTX_init_ef_cardaccess(unsigned char *in, unsigned size_t in_len, EAC_CTX *ctx);
 
 int
-EAC_CTX_init_ef_cardsecurity(unsigned char *in, unsigned int in_len, EAC_CTX *ctx);
+EAC_CTX_init_ef_cardsecurity(unsigned char *in, unsigned size_t in_len, EAC_CTX *ctx);
 #endif
 
 int

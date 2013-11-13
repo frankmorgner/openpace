@@ -13,9 +13,9 @@ func main() {
 
     eac.EAC_init()
 
-    secret := eac.PACE_SEC_new(PIN, len(PIN), eac.PACE_PIN)
+    secret := eac.PACE_SEC_new(PIN, eac.PACE_PIN)
 
-    buf := eac.Get_buf(EF_CARDACCESS, len(EF_CARDACCESS))
+    buf := eac.Get_buf(EF_CARDACCESS)
     eac.Hexdump("EF.CardAccess", buf)
 
     /*fmt.Println("Secret:")*/
@@ -23,8 +23,8 @@ func main() {
 
     picc_ctx := eac.EAC_CTX_new()
     pcd_ctx := eac.EAC_CTX_new()
-    eac.EAC_CTX_init_ef_cardaccess(EF_CARDACCESS, len(EF_CARDACCESS), pcd_ctx)
-    eac.EAC_CTX_init_ef_cardaccess(EF_CARDACCESS, len(EF_CARDACCESS), picc_ctx)
+    eac.EAC_CTX_init_ef_cardaccess(EF_CARDACCESS, pcd_ctx)
+    eac.EAC_CTX_init_ef_cardaccess(EF_CARDACCESS, picc_ctx)
 
     fmt.Println("PACE step 1")
     enc_nonce := eac.PACE_STEP1_enc_nonce(picc_ctx, secret)

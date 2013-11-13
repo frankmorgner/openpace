@@ -42,7 +42,7 @@ CA_disable_passive_authentication(EAC_CTX *ctx);
 
 %rename(CA_STEP1_get_pubkey) ca_step1_get_pubkey;
 %inline %{
-    static void ca_step1_get_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void ca_step1_get_pubkey(char **out, size_t *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = CA_STEP1_get_pubkey(ctx);
         buf2string(out_buf, out, out_len);
         BUF_MEM_clear_free(out_buf);
@@ -52,7 +52,7 @@ CA_disable_passive_authentication(EAC_CTX *ctx);
 
 %rename(CA_STEP2_get_eph_pubkey) ca_step2_get_eph_pubkey;
 %inline %{
-    static void ca_step2_get_eph_pubkey(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void ca_step2_get_eph_pubkey(char **out, size_t *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = CA_STEP2_get_eph_pubkey(ctx);
         buf2string(out_buf, out, out_len);
         BUF_MEM_clear_free(out_buf);
@@ -63,8 +63,8 @@ CA_disable_passive_authentication(EAC_CTX *ctx);
 %rename(CA_STEP3_check_pcd_pubkey) ca_step3_check_pcd_pubkey;
 %inline %{
     static int ca_step3_check_pcd_pubkey (const EAC_CTX *ctx,
-            char *comp_pubkey, int comp_pubkey_len, /* typemap applied */
-            char *pubkey, int pubkey_len) /* typemap applied */ {
+            char *comp_pubkey, size_t comp_pubkey_len, /* typemap applied */
+            char *pubkey, size_t pubkey_len) /* typemap applied */ {
         BUF_MEM *comp_pubkey_buf = NULL, *pubkey_buf = NULL;
         int ret = -1;
 
@@ -87,7 +87,7 @@ err:
 %rename(CA_STEP4_compute_shared_secret) ca_step4_compute_shared_secret;
 %inline %{
     static int ca_step4_compute_shared_secret (const EAC_CTX *ctx,
-            char *pubkey, int pubkey_len) /* typemap applied */ {
+            char *pubkey, size_t pubkey_len) /* typemap applied */ {
         BUF_MEM *pubkey_buf = NULL;
         int ret = -1;
 
@@ -107,12 +107,12 @@ err:
 
 %rename(CA_get_pubkey) ca_get_pubkey;
 %inline %{
-    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, int *out_len, char *in, int
+    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, size_t *out_len, char *in, size_t
             in_len) /* typemap applied */ {
         BUF_MEM *pubkey;
 
         if (in_len > 0) {
-            pubkey = CA_get_pubkey(ctx, (unsigned char*) in, (size_t) in_len);
+            pubkey = CA_get_pubkey(ctx, (unsigned char*) in, in_len);
             buf2string(pubkey, out, out_len);
             BUF_MEM_clear_free(pubkey);
         } else {
@@ -126,11 +126,11 @@ err:
 %rename(CA_set_key) ca_set_key;
 %inline %{
     static int ca_set_key(EAC_CTX *ctx,
-            char *privkey, int privkey_len, /* typemap applied (see ta.i) */
-            char *pubkey, int pubkey_len) {
+            char *privkey, size_t privkey_len, /* typemap applied (see ta.i) */
+            char *pubkey, size_t pubkey_len) {
         return CA_set_key(ctx,
-            (const unsigned char*) privkey, (size_t) privkey_len,
-            (const unsigned char*) pubkey, (size_t) pubkey_len);
+            (const unsigned char*) privkey, privkey_len,
+            (const unsigned char*) pubkey, pubkey_len);
     }
 %}
 #else
@@ -166,7 +166,7 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 %rename(CA_STEP5_derive_keys) ca_step5_derive_keys;
 %inline %{
     static PyObject* ca_step5_derive_keys (const EAC_CTX *ctx,
-            char *pubkey, int pubkey_len) /* typemap applied */ {
+            char *pubkey, size_t pubkey_len) /* typemap applied */ {
         BUF_MEM *pubkey_buf = NULL, *nonce = NULL, *token = NULL;
         PyObject *out = NULL, *nonce_str = NULL, *token_str = NULL;
 

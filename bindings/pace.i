@@ -44,7 +44,7 @@ enum s_type {
  * @{ ************************************************************************/
 
 PACE_SEC *
-PACE_SEC_new(char *in, int in_len, enum s_type type); /* typemap applied */
+PACE_SEC_new(char *in, size_t in_len, enum s_type type); /* typemap applied */
 
 void
 PACE_SEC_clear_free(PACE_SEC *s);
@@ -53,7 +53,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
 
 %rename (PACE_SEC_print_private) pace_sec_print_private;
 %inline %{
-    static void pace_sec_print_private(char **out, int *out_len, PACE_SEC *sec, int indent) {
+    static void pace_sec_print_private(char **out, size_t *out_len, PACE_SEC *sec, int indent) {
         BIO *bio = BIO_new(BIO_s_mem());
         if (!bio)
             goto err;
@@ -92,7 +92,7 @@ err:
 
 %rename(PACE_STEP1_enc_nonce) pace_step1_enc_nonce;
 %inline %{
-    static void pace_step1_enc_nonce(char **out, int *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
+    static void pace_step1_enc_nonce(char **out, size_t *out_len, const EAC_CTX *ctx, const PACE_SEC *pi) {
         BUF_MEM *enc_nonce = PACE_STEP1_enc_nonce(ctx, pi);
         if (!enc_nonce) {
             *out_len = 0;
@@ -106,7 +106,7 @@ err:
 
 %rename(PACE_STEP2_dec_nonce) pace_step2_dec_nonce;
 %inline %{
-    static int pace_step2_dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi, char *in, int in_len) {
+    static int pace_step2_dec_nonce(const EAC_CTX *ctx, const PACE_SEC *pi, char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -122,7 +122,7 @@ err:
 
 %rename(PACE_STEP3A_generate_mapping_data) pace_step3a_generate_mapping_data;
 %inline %{
-    static void pace_step3a_generate_mapping_data(char **out, int *out_len, const EAC_CTX *ctx) {
+    static void pace_step3a_generate_mapping_data(char **out, size_t *out_len, const EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3A_generate_mapping_data(ctx);
@@ -134,7 +134,7 @@ err:
 
 %rename(PACE_STEP3B_compute_shared_secret) pace_step3b_compute_shared_secret;
 %inline %{
-    static int pace_step3b_compute_shared_secret(const EAC_CTX *ctx, char *in, int in_len) {
+    static int pace_step3b_compute_shared_secret(const EAC_CTX *ctx, char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -150,7 +150,7 @@ err:
 
 %rename(PACE_STEP3A_map_generator) pace_step3a_map_generator;
 %inline %{
-    static int pace_step3a_map_generator(const EAC_CTX *ctx, char *in, int in_len) {
+    static int pace_step3a_map_generator(const EAC_CTX *ctx, char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 
@@ -169,7 +169,7 @@ err:
 
 %rename(PACE_STEP3B_generate_ephemeral_key) pace_step3b_generate_ephemeral_pace_key;
 %inline %{
-    static void pace_step3b_generate_ephemeral_pace_key(char **out, int *out_len, EAC_CTX *ctx) {
+    static void pace_step3b_generate_ephemeral_pace_key(char **out, size_t *out_len, EAC_CTX *ctx) {
         BUF_MEM *out_buf = NULL;
 
         out_buf = PACE_STEP3B_generate_ephemeral_key(ctx);
@@ -182,8 +182,8 @@ err:
 
 %rename(PACE_STEP3D_compute_authentication_token) pace_step3d_compute_authentication_token;
 %inline %{
-    static void pace_step3d_compute_authentication_token(char **out, int *out_len,
-            const EAC_CTX *ctx, char *in, int in_len) {
+    static void pace_step3d_compute_authentication_token(char **out, size_t *out_len,
+            const EAC_CTX *ctx, char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL, *out_buf = NULL;
 
         in_buf = get_buf(in, in_len);
@@ -199,7 +199,7 @@ err:
 
 %rename(PACE_STEP3D_verify_authentication_token) pace_step3d_verify_authentication_token;
 %inline %{
-    static int pace_step3d_verify_authentication_token(const EAC_CTX *ctx, char *in, int in_len) {
+    static int pace_step3d_verify_authentication_token(const EAC_CTX *ctx, char *in, size_t in_len) {
         BUF_MEM *in_buf = NULL;
         int ret = 0;
 

@@ -73,7 +73,7 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
 
 %rename (CVC_d2i_CVC_CERT) cvc_d2i_cvc_cert;
 %inline %{ /* typemap applied */
-    static CVC_CERT *cvc_d2i_cvc_cert(char *in, int in_len) {
+    static CVC_CERT *cvc_d2i_cvc_cert(char *in, size_t in_len) {
         CVC_CERT *cvc = NULL;
         const unsigned char **p = (const unsigned char **) &in;
         cvc = CVC_d2i_CVC_CERT(NULL, p, in_len);
@@ -83,7 +83,7 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
 
 %rename (d2i_CVC_CERTIFICATE_DESCRIPTION) d2i_cvc_certificate_description;
 %inline %{ /* typemap applied */
-    static CVC_CERTIFICATE_DESCRIPTION *d2i_cvc_certificate_description(char *in, int in_len) {
+    static CVC_CERTIFICATE_DESCRIPTION *d2i_cvc_certificate_description(char *in, size_t in_len) {
         CVC_CERTIFICATE_DESCRIPTION *description = NULL;
         const unsigned char **p = (const unsigned char **) &in;
         description = d2i_CVC_CERTIFICATE_DESCRIPTION(NULL, p, in_len);
@@ -93,7 +93,7 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
 
 %inline %{
     static void get_termsOfUsage(CVC_CERTIFICATE_DESCRIPTION *desc, char **out,
-            int *out_len) {
+            size_t *out_len) {
     
         const unsigned char *p;
         int l;
@@ -145,7 +145,7 @@ err:
 %}
 
 %inline %{
-    static void get_issuer_name(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_issuer_name(char **out, size_t *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->issuerName)
             return;
 
@@ -160,7 +160,7 @@ err:
 %}
 
 %inline %{
-    static void get_subject_name(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_subject_name(char **out, size_t *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->issuerName)
             return;
 
@@ -175,7 +175,7 @@ err:
 %}
 
 %inline %{
-    static void get_subject_url(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_subject_url(char **out, size_t *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->subjectURL)
             return;
 
@@ -190,7 +190,7 @@ err:
 %}
 
 %inline %{
-    static void get_issuer_url(char **out, int *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
+    static void get_issuer_url(char **out, size_t *out_len, CVC_CERTIFICATE_DESCRIPTION *desc) {
         if (!desc || !desc->issuerURL)
             return;
 
@@ -223,7 +223,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 
 %rename (d2i_CVC_CHAT) d2i_cvc_chat;
 %inline %{ /* typemap applied */
-    static CVC_CHAT *d2i_cvc_chat(char *in, int in_len) {
+    static CVC_CHAT *d2i_cvc_chat(char *in, size_t in_len) {
         CVC_CHAT *chat = NULL;
         const unsigned char **p = (const unsigned char **) &in;
         chat = d2i_CVC_CHAT(NULL, p, (long) in_len);
@@ -233,7 +233,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 
 %rename (i2d_CVC_CHAT) i2d_cvc_chat;
 %inline %{ /* typemap applied */
-    void i2d_cvc_chat(CVC_CHAT *chat, char **out, int *out_len) {
+    void i2d_cvc_chat(CVC_CHAT *chat, char **out, size_t *out_len) {
         unsigned char *tmp;
         int new_len;
 
@@ -267,7 +267,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    static void print_binary_chat(char *in, int in_len) {
+    static void print_binary_chat(char *in, size_t in_len) {
         CVC_CHAT *chat = NULL;
         if (!in || (in_len <= 0))
             return;
@@ -289,7 +289,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    static void get_binary_chat(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_binary_chat(CVC_CHAT *chat, char **out, size_t *out_len) {
 
         if (!chat || !chat->relative_authorization) {
             /* Return a NULL pointer on error */
@@ -308,7 +308,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 
 
 %inline %{
-    static void get_chat_role(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_role(CVC_CHAT *chat, char **out, size_t *out_len) {
         int role = 0;
 
         if (!chat || !out || !out_len)
@@ -362,7 +362,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 %}
 
 %inline %{
-    static void get_chat_terminal_type(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_terminal_type(CVC_CHAT *chat, char **out, size_t *out_len) {
         const char *terminal_type = NULL;
 
         if (!chat || !out || !out_len)
@@ -395,7 +395,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
     /**
      * @brief Get a string representation of a CHAT.
      */
-    static void get_chat_rel_auth(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_rel_auth(CVC_CHAT *chat, char **out, size_t *out_len) {
         BIO *bio =  NULL;
 
         if (!out || !out_len)
@@ -435,7 +435,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
     /**
      * @brief Get a string representation of a CHAT.
      */
-    static void get_chat_repr(CVC_CHAT *chat, char **out, int *out_len) {
+    static void get_chat_repr(CVC_CHAT *chat, char **out, size_t *out_len) {
         BIO *bio =  NULL;
 
         if (!out || !out_len)
@@ -475,7 +475,7 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
     /**
      * @brief Get a string representation of a CHAT.
      */
-    static void get_cvc_repr(CVC_CERT *chat, char **out, int *out_len) {
+    static void get_cvc_repr(CVC_CERT *chat, char **out, size_t *out_len) {
         BIO *bio =  NULL;
 
         if (!out || !out_len)

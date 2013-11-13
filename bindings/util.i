@@ -67,10 +67,10 @@ void EAC_cleanup(void);
 
 %inline %{
     /* Converts a binary string and a length into a BUF_MEM structure */
-    static BUF_MEM * get_buf(char *in, int in_len) {
+    static BUF_MEM * get_buf(char *in, size_t in_len) {
         BUF_MEM *buf = NULL;
         if (in_len > 0)
-            buf = BUF_MEM_create_init(in, (size_t) in_len);
+            buf = BUF_MEM_create_init(in, in_len);
         return buf;
     }
 %}
@@ -89,7 +89,7 @@ void EAC_cleanup(void);
 #if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
 
 %inline %{
-    static void buf2string(BUF_MEM *buf, char **out, int *out_len) {
+    static void buf2string(BUF_MEM *buf, char **out, size_t *out_len) {
         if (!buf) { /* Return a NULL pointer on error */
             *out = NULL;
             out_len = 0;
