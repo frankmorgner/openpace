@@ -460,7 +460,7 @@ EAC_CTX_init_ri(EAC_CTX *ctx, int protocol, int stnd_dp);
  *
  * @return 1 on success or 0 in case of an error
  */
-int EAC_CTX_init_ef_cardaccess(unsigned const char * in, unsigned int in_len,
+int EAC_CTX_init_ef_cardaccess(unsigned const char * in, size_t in_len,
         EAC_CTX *ctx);
 
 /**

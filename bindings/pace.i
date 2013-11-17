@@ -43,9 +43,11 @@ enum s_type {
  * @defgroup manage              Data Managment
  * @{ ************************************************************************/
 
+%newobject PACE_SEC_new;
 PACE_SEC *
 PACE_SEC_new(char *in, size_t in_len, enum s_type type); /* typemap applied */
 
+%delobject PACE_SEC_clear_free;
 void
 PACE_SEC_clear_free(PACE_SEC *s);
 

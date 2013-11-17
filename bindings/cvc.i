@@ -31,14 +31,15 @@
 #include <string.h>
 %}
 
-/*int i2d_CVC_CERT(CVC_CERT *a, unsigned char **out);*/
-
+%newobject CVC_CERT_new;
 CVC_CERT *
 CVC_CERT_new(void);
 
+%delobject CVC_CERT_free;
 void
 CVC_CERT_free(CVC_CERT *a);
 
+%newobject CVC_CERT_dup;
 CVC_CERT *
 CVC_CERT_dup(CVC_CERT *x)
 {
@@ -48,29 +49,44 @@ CVC_CERT_dup(CVC_CERT *x)
 short
 CVC_get_profile_identifier(const CVC_CERT *cert);
 
+%newobject CVC_get_car;
 char *
 CVC_get_car(const CVC_CERT *cert);
 
+%newobject CVC_get_chr;
 char *
 CVC_get_chr(const CVC_CERT *cert);
 
+%newobject CVC_get_effective_date;
 char *
 CVC_get_effective_date(const CVC_CERT *cert);
 
+%newobject CVC_get_expiration_date;
 char *
 CVC_get_expiration_date(const CVC_CERT *cert);
 
-/*int i2d_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRPTION *a,
-        unsigned char **out);*/
-
+%newobject CVC_CERTIFICATE_DESCRIPTION_new;
 CVC_CERTIFICATE_DESCRIPTION *
 CVC_CERTIFICATE_DESCRIPTION_new(void);
 
+%delobject CVC_CERTIFICATE_DESCRIPTION_free;
 void
 CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
 
-#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
+%rename (cvc_chat_print) CVC_CHAT_PRINT;
+%inline %{
+    static void CVC_CHAT_PRINT(CVC_CHAT *chat, int indent) {
+        BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
+        if (!bio_stdout)
+            return;
+        cvc_chat_print(bio_stdout, chat, indent);
+        BIO_free_all(bio_stdout);
+    }
+%}
 
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO) || defined(SWIGJAVA)
+
+%newobject CVC_d2i_CVC_CERT;
 %rename (CVC_d2i_CVC_CERT) cvc_d2i_cvc_cert;
 %inline %{ /* typemap applied */
     static CVC_CERT *cvc_d2i_cvc_cert(char *in, size_t in_len) {
@@ -81,6 +97,7 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
     }
 %}
 
+%newobject d2i_CVC_CERTIFICATE_DESCRIPTION;
 %rename (d2i_CVC_CERTIFICATE_DESCRIPTION) d2i_cvc_certificate_description;
 %inline %{ /* typemap applied */
     static CVC_CERTIFICATE_DESCRIPTION *d2i_cvc_certificate_description(char *in, size_t in_len) {
@@ -90,6 +107,8 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
         return description;
     }
 %}
+
+#if !defined(SWIGGO) && !defined(SWIGJAVA)
 
 %inline %{
     static void get_termsOfUsage(CVC_CERTIFICATE_DESCRIPTION *desc, char **out,
@@ -204,23 +223,9 @@ err:
     }
 %}
 
-#else
-
-CVC_CERT
-*CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len);
-
-CVC_CERT *
-d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
-        const unsigned char **in, long len);
-
 #endif
 
-/**
- * @defgroup cvc            CHAT functions
- * @{ ************************************************************************/
-
-#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
-
+%newobject d2i_CVC_CHAT;
 %rename (d2i_CVC_CHAT) d2i_cvc_chat;
 %inline %{ /* typemap applied */
     static CVC_CHAT *d2i_cvc_chat(char *in, size_t in_len) {
@@ -228,6 +233,28 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
         const unsigned char **p = (const unsigned char **) &in;
         chat = d2i_CVC_CHAT(NULL, p, (long) in_len);
         return chat;
+    }
+%}
+
+%inline %{
+    static void print_binary_chat(char *in, size_t in_len) {
+        CVC_CHAT *chat = NULL;
+        if (!in || (in_len <= 0))
+            return;
+
+        const unsigned char **p = (const unsigned char**)&in;
+
+        /* Convert string to CHAT structure */
+        chat = d2i_CVC_CHAT(NULL, p, in_len);
+        if (!chat)
+            return;
+
+        /* Print CHAT structure */
+        CVC_CHAT_PRINT(chat, 0);
+
+        /* Free memory */
+        free(chat);
+        return;
     }
 %}
 
@@ -255,39 +282,6 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
     }
 %}
 
-%rename (cvc_chat_print) CVC_CHAT_PRINT;
-%inline %{
-    static void CVC_CHAT_PRINT(CVC_CHAT *chat, int indent) {
-        BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
-        if (!bio_stdout)
-            return;
-        cvc_chat_print(bio_stdout, chat, indent);
-        BIO_free_all(bio_stdout);
-    }
-%}
-
-%inline %{
-    static void print_binary_chat(char *in, size_t in_len) {
-        CVC_CHAT *chat = NULL;
-        if (!in || (in_len <= 0))
-            return;
-
-        const unsigned char **p = (const unsigned char**)&in;
-
-        /* Convert string to CHAT structure */
-        chat = d2i_CVC_CHAT(NULL, p, in_len);
-        if (!chat)
-            return;
-
-        /* Print CHAT structure */
-        CVC_CHAT_PRINT(chat, 0);
-
-        /* Free memory */
-        free(chat);
-        return;
-    }
-%}
-
 %inline %{
     static void get_binary_chat(CVC_CHAT *chat, char **out, size_t *out_len) {
 
@@ -305,7 +299,6 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
 
     }
 %}
-
 
 %inline %{
     static void get_chat_role(CVC_CHAT *chat, char **out, size_t *out_len) {
@@ -511,23 +504,16 @@ d2i_CVC_CERTIFICATE_DESCRIPTION(CVC_CERTIFICATE_DESCRIPTION **desc,
     }
 %}
 
-#else
-
-CVC_CHAT *
-d2i_CVC_CHAT(CVC_CHAT **chat, const unsigned char **in, long len);
-
-int i2d_CVC_CHAT(CVC_CHAT *chat, unsigned char **out);
-
-void cvc_chat_print(BIO *bio, CVC_CHAT *chat, int indent);
-
 #endif
 
+%delobject CVC_CHAT_free;
 void
 CVC_CHAT_free(CVC_CHAT *);
 
 CVC_CHAT *
 cvc_get_chat(CVC_CERT *cvc);
 
+%newobject CVC_CHAT_dup;
 CVC_CHAT *
 CVC_CHAT_dup(CVC_CHAT *x)
 {

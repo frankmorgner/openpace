@@ -38,7 +38,7 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 void
 CA_disable_passive_authentication(EAC_CTX *ctx);
 
-#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
+#if !defined(SWIG_CSTRING_UNIMPL)
 
 %rename(CA_STEP1_get_pubkey) ca_step1_get_pubkey;
 %inline %{
@@ -104,48 +104,13 @@ err:
     }
 %}
 
-
-%rename(CA_get_pubkey) ca_get_pubkey;
-%inline %{
-    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, size_t *out_len, char *in, size_t
-            in_len) /* typemap applied */ {
-        BUF_MEM *pubkey;
-
-        if (in_len > 0) {
-            pubkey = CA_get_pubkey(ctx, (unsigned char*) in, in_len);
-            buf2string(pubkey, out, out_len);
-            BUF_MEM_clear_free(pubkey);
-        } else {
-            *out_len = 0;
-            *out = NULL;
-        }
-        return;
-    }
-%}
-
-%rename(CA_set_key) ca_set_key;
-%inline %{
-    static int ca_set_key(EAC_CTX *ctx,
-            char *privkey, size_t privkey_len, /* typemap applied (see ta.i) */
-            char *pubkey, size_t pubkey_len) {
-        return CA_set_key(ctx,
-            (const unsigned char*) privkey, privkey_len,
-            (const unsigned char*) pubkey, pubkey_len);
-    }
-%}
 #else
 
-BUF_MEM*
-CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
-
-int
-CA_set_key(const EAC_CTX *ctx,
-        const unsigned char *priv, size_t priv_len,
-        const unsigned char *pub, size_t pub_len);
-
+%newobject CA_STEP1_get_pubkey;
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx);
 
+%newobject CA_STEP2_get_eph_pubkey;
 BUF_MEM *
 CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
 
@@ -159,8 +124,12 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
 int
 CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 
-
 #endif
+
+int
+CA_set_key(const EAC_CTX *ctx,
+        const unsigned char *priv, size_t priv_len,
+        const unsigned char *pub, size_t pub_len);
 
 #ifdef SWIGPYTHON
 %rename(CA_STEP5_derive_keys) ca_step5_derive_keys;
@@ -199,7 +168,7 @@ err:
             BUF_MEM_clear_free(nonce);
         if (token)
             BUF_MEM_clear_free(token);
-        /* Do we have to free nonce_str and token_str ? */
+
         return out;
     }
 %}

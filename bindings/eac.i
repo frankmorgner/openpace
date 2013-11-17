@@ -67,6 +67,8 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 %apply (char *BYTE, size_t LENGTH) {(char *opp_ta_comp_pubkey, size_t opp_ta_comp_pubkey_len)};
 %apply (char *BYTE, size_t LENGTH) {(char *my_pace_comp_eph_pubkey, size_t my_pace_comp_eph_pubkey_len)};
 %apply (char *BYTE, size_t LENGTH) {(char *signature, size_t signature_len)};
+%apply (char *BYTE, size_t LENGTH) {(unsigned char *priv, size_t priv_len)};
+%apply (char *BYTE, size_t LENGTH) {(unsigned char *pub, size_t pub_len)};
 
 #endif
 
@@ -87,6 +89,7 @@ extern void BUF_MEM_clear_free(BUF_MEM *b);
 
 #ifndef SWIG_CSTRING_UNIMPL
 %cstring_output_allocate_size(char **out, size_t *out_len, free(*$1));
+#else
 #endif
 
 #endif
@@ -112,16 +115,20 @@ typedef unsigned short uint16_t;
 #define EAC_ID_TA 2
 #define EAC_ID_EAC 3
 
+%newobject EAC_CTX_new;
 EAC_CTX *
 EAC_CTX_new();
 
+%delobject EAC_CTX_clear_free;
 void
 EAC_CTX_clear_free(EAC_CTX *ctx);
 
 int
 EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
-#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO)
+#if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO) || defined(SWIGJAVA)
+
+#if !defined(SWIGGO) && !defined(SWIGJAVA)
 
 %rename(EAC_encrypt) eac_encrypt;
 %inline %{
@@ -213,6 +220,33 @@ err:
     }
 %}
 
+#else
+
+BUF_MEM *
+EAC_encrypt(const EAC_CTX *ctx, const BUF_MEM *data);
+
+BUF_MEM *
+EAC_decrypt(const EAC_CTX *ctx, const BUF_MEM *data);
+
+BUF_MEM *
+EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data);
+
+BUF_MEM *
+EAC_Comp(const EAC_CTX *ctx, int id, const BUF_MEM *pub);
+
+int
+EAC_CTX_init_ef_cardaccess(unsigned char *in, size_t in_len, EAC_CTX *ctx);
+
+int
+EAC_CTX_init_ef_cardsecurity(unsigned char *in, size_t in_len, EAC_CTX *ctx);
+
+int
+EAC_CTX_init_ta(const EAC_CTX *ctx,
+    const unsigned char *privkey, size_t privkey_len,
+    const unsigned char *cert, size_t cert_len);
+
+#endif
+
 %rename(EAC_CTX_init_ef_cardaccess) eac_ctx_init_ef_cardaccess;
 %inline %{
     static int eac_ctx_init_ef_cardaccess(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
@@ -254,29 +288,11 @@ EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data);
 BUF_MEM *
 EAC_Comp(const EAC_CTX *ctx, int id, const BUF_MEM *pub);
 
-#ifdef SWIGJAVA
-%rename(EAC_CTX_init_ef_cardaccess) eac_ctx_init_ef_cardaccess;
-%inline %{
-    static int eac_ctx_init_ef_cardaccess(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
-            return EAC_CTX_init_ef_cardaccess((unsigned char*) in,
-                    in_len, ctx);
-    }
-%}
-
-%rename(EAC_CTX_init_ef_cardsecurity) eac_ctx_init_ef_cardsecurity;
-%inline %{
-    static int eac_ctx_init_ef_cardsecurity(char *in, size_t in_len, EAC_CTX *ctx) { /* typemap applied */
-            return EAC_CTX_init_ef_cardsecurity((unsigned char*) in,
-                    in_len, ctx);
-    }
-%}
-#else
 int
-EAC_CTX_init_ef_cardaccess(unsigned char *in, unsigned size_t in_len, EAC_CTX *ctx);
+EAC_CTX_init_ef_cardaccess(unsigned char *in, size_t in_len, EAC_CTX *ctx);
 
 int
-EAC_CTX_init_ef_cardsecurity(unsigned char *in, unsigned size_t in_len, EAC_CTX *ctx);
-#endif
+EAC_CTX_init_ef_cardsecurity(unsigned char *in, size_t in_len, EAC_CTX *ctx);
 
 int
 EAC_CTX_init_ta(const EAC_CTX *ctx,

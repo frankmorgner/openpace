@@ -153,15 +153,18 @@ int
 TA_STEP2_import_certificate(const EAC_CTX *ctx, const unsigned char *in,
         size_t in_len);
 
+%newobject TA_STEP3_generate_ephemeral_key;
 BUF_MEM *
 TA_STEP3_generate_ephemeral_key(const EAC_CTX *ctx);
 
+%newobject TA_STEP4_get_nonce;
 BUF_MEM *
 TA_STEP4_get_nonce(const EAC_CTX *ctx);
 
 int
 TA_STEP4_set_nonce(const EAC_CTX *ctx, const BUF_MEM *nonce);
 
+%newobject TA_STEP5_sign;
 BUF_MEM *
 TA_STEP5_sign(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey,
            const BUF_MEM *opp_pace_eph_pubkey, const BUF_MEM *auxdata);
