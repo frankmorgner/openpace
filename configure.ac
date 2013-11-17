@@ -13,7 +13,6 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_CXX
 AC_PROG_SED
 AM_PROG_CC_C_O
 PKG_PROG_PKG_CONFIG
@@ -252,7 +251,7 @@ CVC directory:           ${CVCDIR}
 X.509 directory:         ${X509DIR}
 
 Host:                    ${host}
-Compiler:                ${CXX}
+Compiler:                ${CC}
 Preprocessor flags:      ${CPPFLAGS}
 Compiler flags:          ${CFLAGS}
 Linker flags:            ${LDFLAGS}
