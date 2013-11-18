@@ -25,6 +25,7 @@ Welcome to OpenPACE's documentation!
         - Linux (Debian, Ubuntu, SUSE, OpenMoko)
         - Mac OS
         - Solaris
+        - Android
 
 OpenPACE implements Extended Access Control (EAC) version 2 as specified in
 `BSI TR-03110`_. OpenPACE comprises support for the following protocols:
@@ -115,6 +116,52 @@ switch statement and you need to make sure to call ``EAC_init()`` first.  For
 patching OpenSSL we provide :file:`oids.patch`. You can configure
 OpenPACE with :option:`--enable-openssl-install`, which will
 automatically download, patch, build and install OpenSSL if needed.
+
+===============================================================================
+Cross compiling OpenPACE
+===============================================================================
+
+We have added some scripts for the ease of cross compiling for Windows and
+Android. Both are tested with Debian wheezy. First create a working
+:file:`Makefile`::
+
+    test -x configure || autoreconf --verbose --install
+    ./configure
+
+Compiling for Windows
+-------------------------------------------------------------------------------
+
+Cross compilation for Windows can be done with::
+
+    make win
+
+================ ==================== ===========================================================================================
+Make Variable    Default              Meaning
+================ ==================== ===========================================================================================
+``WIN_TOOL``     ``i686-w64-mingw32`` cross compiler
+``WIN_TOOL_DIR`` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
+================ ==================== ===========================================================================================
+
+On successfull compilation, the Windows binaris can be found in
+:file:`openpace-0.9_win32`.
+
+Compiling for Android
+-------------------------------------------------------------------------------
+
+Cross compilation for Android can be done with::
+
+    make android
+
+============================= ============================================================================== =====================================================
+Make Variable                 Default                                                                        Meaning
+============================= ============================================================================== =====================================================
+``ANDROID_ARCH``              ``arm``                                                                        target Architecture
+``ANDROID_TOOL``              ``${ANDROID_ARCH}-linux-androideabi``                                          cross compiler
+``MAKE_STANDALONE_TOOLCHAIN`` ``${HOME}/.local/opt/android-ndk-r9/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
+============================= ============================================================================== =====================================================
+
+On successfull compilation, the Android binaris can be found in
+:file:`openpace-0.9_${ANDROID_ARCH}`.
 
 
 *******************************************************************************
