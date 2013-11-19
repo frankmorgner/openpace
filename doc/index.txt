@@ -52,13 +52,6 @@ certificates will be looked up in the file system.
 OpenPACE supports all variants of |PACE| (DH/ECDH, GM/IM), |TA|
 (RSASSA-PKCS1-v1_5/RSASSA-PSS/ECDSA), |CA| (DH/ECDH) and all standardized
 domain parameters (GFP/ECP).
-
-.. note::
-    OpenPACE only implements the cryptographic protocols of the |EAC|. If you
-    actually want to exchange data with a smart card, you need to take care of
-    formatting and sending the data in the form of APDUs. If this is what
-    you're trying to do, you should have a look at the :command:`npa-tool` of
-    the `nPA Smart Card Library`_.
    
 
 OpenPACE is implemented as C-library and comes with native language wrappers
@@ -69,6 +62,13 @@ for:
 - Javascript
 - Java
 - Go
+
+.. note::
+    OpenPACE only implements the cryptographic protocols of the |EAC|. If you
+    actually want to exchange data with a smart card, you need to take care of
+    formatting and sending the data in the form of APDUs. If this is what
+    you're trying to do, you should have a look at the :command:`npa-tool` of
+    the `nPA Smart Card Library`_.
 
 
 *******************************************************************************
@@ -184,7 +184,7 @@ Make Variable                 Default                            Meaning
 
 On successfull compilation, the compiled bitcode files can be found in
 :file:`openpace-0.9_bc`. You can run our testsuite
-completely in Javascript or in `your browser <../../_static/eactest.html>`_::
+completely in Javascript or `in your browser <../../_static/eactest.html>`_::
 
     nodejs openpace-0.9_bc/eactest.js
     # WARNING: the browser will yield warnings about the slow script
@@ -195,15 +195,31 @@ completely in Javascript or in `your browser <../../_static/eactest.html>`_::
 How to use OpenPACE
 *******************************************************************************
 
-If you want to know how to use OpenPACE from C/C++, have a look at our
-`API documentation <../../_static/doxygen/modules.html>`_. Here we have a small
-example in C:
+OpenPACE is a native C library on top of OpenSSL. If you want to know how to
+use OpenPACE from C/C++, have a look at our `API documentation
+<../../_static/doxygen/modules.html>`_.
 
-.. literalinclude:: ../src/example.c
-    :language: c
+OpenPACE uses SWIG_ to offer bindings in some more programming languages. The
+bindings are easily portable to lots of different languages. Currently, native
+language bindings need to be explicitly turned on with ``./configure
+--enable-...``
 
-If you want to use other programming languages, for example
-Python or Java, you can use our :ref:`SWIG bindings <bindings>`.
+If you have chosen to install OpenPACE in a non-standard location you have to
+set up the :envvar:`LD_LIBRARY_PATH` environment variable correctly. One way to
+do this is::
+
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/libeac
+
+With LLVM and Emscripten_ the library can also be compiled into Javascript
+code. In this case you get a standalone Javascript library that can be used
+without restrictions.
+
+More details and a number of examples are covered here:
+
+.. toctree::
+    :maxdepth: 2
+
+    usage
 
 
 *******************************************************************************
@@ -222,7 +238,6 @@ Further Reading
     :maxdepth: 3
 
     protocols
-    bindings.txt
 
 
 *******************************************************************************
@@ -234,4 +249,5 @@ References
 .. _`BSI TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
 .. _`nPA Smart Card Library`: http://vsmartcard.sourceforge.net/npa/README.html
 .. _`OpenSSL`: http://openssl.org
+.. _`SWIG`: http://swig.org
 .. _`Emscripten`: https://github.com/kripken/emscripten
