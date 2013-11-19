@@ -25,8 +25,8 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
-#include "misc.h"
 #include "eac_util.h"
+#include "misc.h"
 #include <eac/ca.h>
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
@@ -43,6 +43,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
+#include <openssl/rand.h>
 #include <openssl/x509.h>
 #include <stdio.h>
 #include <string.h>
@@ -2659,6 +2660,54 @@ static void hexdump(const char *title, const unsigned char *s, size_t l)
 }
 printf("%s:%d\n", __FILE__, __LINE__);
 #endif
+
+#if 0
+#ifdef EMSCRIPTEN
+static int predictable_index = 0;
+/* we use tc_dh_shared_secret_k as it at least looks randomly */
+const static char *predictable_buffer = tc_dh_shared_secret_k;
+const static size_t predictable_max = sizeof tc_dh_shared_secret_k;
+RAND_METHOD predictable;
+
+#define MIN(a,b) (a<b?a:b)
+int predictable_bytes(unsigned char *buf, int num)
+{
+   int count = 0;
+   int i = predictable_index;
+   int to_copy;
+
+   while (count < num) {
+      if (i >= predictable_max)
+         i = 0;
+
+      to_copy = MIN(predictable_max-i, num);
+
+      memcpy(buf, predictable_buffer+i, to_copy);
+
+      count += to_copy;
+      i += to_copy;
+   }
+
+   if (i >= predictable_max)
+      predictable_index = 0;
+   else
+      predictable_index = i;
+
+   return count;
+}
+
+void set_rand(void)
+{
+   memset(&predictable, 0, sizeof predictable);
+   predictable.bytes = predictable_bytes;
+   predictable.pseudorand = predictable_bytes;
+   RAND_set_rand_method(&predictable);
+}
+#else
+void set_rand(void) { }
+#endif
+#endif
+
 
 static EVP_PKEY *
 generate_signature_key(int curve)

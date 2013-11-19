@@ -32,6 +32,9 @@ win:
 android:
 	$(MAKE) -C cross $@
 
+emscripten:
+	$(MAKE) -C cross $@
+
 .PHONY: doc
 doc:
 	$(MAKE) -C doc $@

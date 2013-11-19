@@ -4,6 +4,22 @@ EXTRA_DIST = gentoo.config-1.0.0
 all-local:
 	@echo Use \`$(MAKE) win\` to cross compile for Windows
 	@echo Use \`$(MAKE) android\` to cross compile for Android
+	@echo Use \`$(MAKE) emscripten\` to cross compile for Javascript
+
+
+
+EMSCRIPTEN_DIR ?= ${HOME}/.local/src/emscripten
+EMSCRIPTEN_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_bc
+
+emscripten:
+	cd $(top_builddir) && emconfigure ./configure \
+		--prefix=/ \
+		--enable-openssl-install \
+		CFLAGS="-O2 -Wno-warn-absolute-paths" \
+		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN_DIR)/system/include/libc -O2 -Wno-warn-absolute-paths"
+	emmake $(MAKE) -C $(top_builddir) install DESTDIR=$(EMSCRIPTEN_TARGETDIR)
+	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.html
+	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.js
 
 
 

@@ -26,6 +26,7 @@ Welcome to OpenPACE's documentation!
         - Mac OS
         - Solaris
         - Android
+        - Javascript
 
 OpenPACE implements Extended Access Control (EAC) version 2 as specified in
 `BSI TR-03110`_. OpenPACE comprises support for the following protocols:
@@ -63,9 +64,10 @@ domain parameters (GFP/ECP).
 OpenPACE is implemented as C-library and comes with native language wrappers
 for:
 
-- Java
 - Python
 - Ruby
+- Javascript
+- Java
 - Go
 
 
@@ -142,7 +144,7 @@ Make Variable    Default              Meaning
 ``WIN_TOOL_DIR`` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
 ================ ==================== ===========================================================================================
 
-On successfull compilation, the Windows binaris can be found in
+On successfull compilation, the Windows binaries can be found in
 :file:`openpace-0.9_win32`.
 
 Compiling for Android
@@ -160,8 +162,33 @@ Make Variable                 Default                                           
 ``MAKE_STANDALONE_TOOLCHAIN`` ``${HOME}/.local/opt/android-ndk-r9/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
 ============================= ============================================================================== =====================================================
 
-On successfull compilation, the Android binaris can be found in
+On successfull compilation, the Android binaries can be found in
 :file:`openpace-0.9_${ANDROID_ARCH}`.
+
+.. _javascript_api:
+
+Compiling for Javascript
+-------------------------------------------------------------------------------
+
+Technically the process for getting OpenPACE into Javascript is similar to
+cross compiling. With Emscripten_ the library is compiled into LLVM bytecode
+and then translated into Javascript. Use the following command::
+
+    make emscripten
+
+============================= ================================== ==============================================================================
+Make Variable                 Default                            Meaning
+============================= ================================== ==============================================================================
+``EMSCRIPTEN_DIR``            ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc` folder
+============================= ================================== ==============================================================================
+
+On successfull compilation, the compiled bitcode files can be found in
+:file:`openpace-0.9_bc`. You can run our testsuite
+completely in Javascript or in `your browser <../../_static/eactest.html>`_::
+
+    nodejs openpace-0.9_bc/eactest.js
+    # WARNING: the browser will yield warnings about the slow script
+    firefox openpace-0.9_bc/eactest.html
 
 
 *******************************************************************************
@@ -207,3 +234,4 @@ References
 .. _`BSI TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
 .. _`nPA Smart Card Library`: http://vsmartcard.sourceforge.net/npa/README.html
 .. _`OpenSSL`: http://openssl.org
+.. _`Emscripten`: https://github.com/kripken/emscripten
