@@ -392,8 +392,8 @@ def tatest():
     assert nonce is not None
 
 def catest():
-    eac = EAC_CTX()
-    assert eac.EAC_CTX_init_ef_cardsecurity(EF_CARDSECURITY, eac.ctx) == 1
+    eac_ctx = EAC_CTX()
+    assert eac.EAC_CTX_init_ef_cardsecurity(EF_CARDSECURITY, eac_ctx.ctx) == 1
 
 def oidtest():
     assert(eac.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128") == eac.id_CA_ECDH_AES_CBC_CMAC_128)
