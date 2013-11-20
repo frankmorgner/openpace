@@ -685,7 +685,7 @@ err:
 }
 
 int
-EAC_CTX_init_ef_cardaccess(const unsigned char * in, unsigned int in_len,
+EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
         EAC_CTX *ctx)
 {
     ASN1_INTEGER *i = NULL;
