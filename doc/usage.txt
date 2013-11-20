@@ -97,6 +97,11 @@ Ruby bindings must be configured with :option:`--enable-java`. They depend on
 SWIG, a java compiler and the JNI developement headers. You may set the
 :envvar:`JAVAC` environment variable to your preferred Java compiler.
 
+Here is a sample program that shows how OpenPACE is accessed from Java:
+
+.. literalinclude:: ../bindings/java/Example.java
+    :language: java
+
 
 ****************************
 Using OpenPACE in Javascript

@@ -22,27 +22,30 @@ BUILT_SOURCES_SWIG = eacConstants.java \
 					 SWIGTYPE_p_unsigned_char.java \
 					 eac_wrap.c
 
-CLASSES_JPACE = eac.class \
-				eacConstants.class \
-				eacJNI.class \
-				JPace.class \
+CLASSES_SWIG = SWIGTYPE_p_BUF_MEM.class \
+			   SWIGTYPE_p_CVC_CERT.class \
+			   SWIGTYPE_p_CVC_CERTIFICATE_DESCRIPTION.class \
+			   SWIGTYPE_p_CVC_CHAT.class \
+			   SWIGTYPE_p_EAC_CTX.class \
+			   SWIGTYPE_p_PACE_SEC.class \
+			   SWIGTYPE_p_p_BUF_MEM.class \
+			   SWIGTYPE_p_p_char.class \
+			   SWIGTYPE_p_size_t.class \
+			   SWIGTYPE_p_unsigned_char.class \
+			   eacConstants.class \
+			   eacJNI.class \
+			   s_type.class \
+			   eac.class
+
+CLASSES_JPACE = JPace.class \
 				PACEEntity.class \
 				PCD.class \
-				PICC.class \
-				s_type.class \
-				SWIGTYPE_p_BUF_MEM.class \
-				SWIGTYPE_p_CVC_CERT.class \
-				SWIGTYPE_p_CVC_CERTIFICATE_DESCRIPTION.class \
-				SWIGTYPE_p_CVC_CHAT.class \
-				SWIGTYPE_p_EAC_CTX.class \
-				SWIGTYPE_p_PACE_SEC.class \
-				SWIGTYPE_p_p_BUF_MEM.class \
-				SWIGTYPE_p_p_char.class \
-				SWIGTYPE_p_size_t.class \
-				SWIGTYPE_p_unsigned_char.class
+				PICC.class
 
-EXTRA_DIST = JPace.java
-CLEANFILES = $(BUILT_SOURCES_SWIG) $(CLASSES_JPACE)
+CLASSES_EXAMPLE = Example.class
+
+EXTRA_DIST = JPace.java Example.java
+CLEANFILES = $(BUILT_SOURCES_SWIG) $(CLASSES_SWIG) $(CLASSES_JPACE) $(CLASSES_EXAMPLE)
 
 lib_LTLIBRARIES = libjeac.la
 
@@ -54,7 +57,10 @@ $(BUILT_SOURCES_SWIG): $(INTERFACES)
 	$(SWIG) -java -outdir $(builddir) -I$(srcdir)/.. eac.i
 
 
-all-local: $(BUILT_SOURCES) $(CLASSES_JPACE)
+all-local: $(BUILT_SOURCES) $(CLASSES_JPACE) $(CLASSES_EXAMPLE)
 
 $(CLASSES_JPACE): JPace.java $(BUILT_SOURCES_SWIG)
 	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/JPace.java
+
+$(CLASSES_EXAMPLE): Example.java $(BUILT_SOURCES_SWIG)
+	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/Example.java
