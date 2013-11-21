@@ -187,8 +187,12 @@ On successfull compilation, the compiled bitcode files can be found in
 completely in Javascript or `in your browser <../../_static/eactest.html>`_::
 
     nodejs openpace-0.9_bc/eactest.js
-    # WARNING: the browser will yield warnings about the slow script
+    # WARNING: Our tests are very time consuming and might stall your browser for a moment or two...
     firefox openpace-0.9_bc/eactest.html
+
+.. warning::
+    `Javascript cryptography is considered harmful`_. You may want to think
+    twice before using the Javascript version of OpenPACE.
 
 
 *******************************************************************************
@@ -210,9 +214,8 @@ do this is::
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/libeac
 
-With LLVM and Emscripten_ the library can also be compiled into Javascript
-code. In this case you get a standalone Javascript library that can be used
-without restrictions.
+If OpenPACE is compiled for Javascript, it results in a standalone Javascript
+file that can be used without special requirements.
 
 More details and a number of examples are covered here:
 
@@ -251,3 +254,4 @@ References
 .. _`OpenSSL`: http://openssl.org
 .. _`SWIG`: http://swig.org
 .. _`Emscripten`: https://github.com/kripken/emscripten
+.. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
