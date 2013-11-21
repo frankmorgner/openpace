@@ -23,7 +23,7 @@ do_subst=$(SED)\
 
 $(BUILT_SOURCES): $(INTERFACES)
 
-ext/extconf.rb: extconf.rb.in
+ext/extconf.rb: $(srcdir)/extconf.rb.in
 	mkdir -p ext
 	$(do_subst) < $(srcdir)/extconf.rb.in > ext/extconf.rb
 
@@ -32,6 +32,9 @@ eac_wrap.c:
 
 ext/Makefile: ext/extconf.rb eac_wrap.c $(top_builddir)/src/libeac.la
 	cd ext && $(RUBY) extconf.rb
+	echo '' >> ext/Makefile
+	echo 'uninstall:' >> ext/Makefile
+	echo '	$$(RM) $$(RUBYARCHDIR)/$$(DLLIB)' >> ext/Makefile
 
 ext/eac.so: ext/Makefile
 	$(MAKE) -C ext
@@ -45,4 +48,11 @@ distclean-local:
 	rm -rf ext
 
 install-exec-local:
-	$(MAKE) install -C ext
+	(test -z "$(DESTDIR)" \
+		&& $(MAKE) install -C ext DESTDIR=$(prefix)) \
+		|| $(MAKE) install -C ext DESTDIR=$(DESTDIR)
+
+uninstall-local:
+	(test -z "$(DESTDIR)" \
+		&& $(MAKE) uninstall -C ext DESTDIR=$(prefix)) \
+		|| $(MAKE) uninstall -C ext DESTDIR=$(DESTDIR)

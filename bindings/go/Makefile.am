@@ -6,10 +6,10 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-BUILT_SOURCES = eac_wrap.c
+BUILT_SOURCES = eac_wrap.c eac.go
 
 EXTRA_DIST = example.go
-CLEANFILES = $(BUILT_SOURCES) eac.go
+CLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libgeac.la
 
@@ -23,11 +23,13 @@ $(BUILT_SOURCES): $(INTERFACES)
 eac.o: $(BUILT_SOURCES)
 	$(GCCGO) -c eac.go
 
-example.o: example.go
-	$(GCCGO) -c example.go
+example.o: $(srcdir)/example.go
+	$(GCCGO) -c $(srcdir)/example.go
 
 example: example.o eac.o
 	$(GCCGO) example.o eac.o libgeac_la-eac_wrap.o $(top_builddir)/src/.libs/libeac.a $(CRYPTO_LIBS) -o example
+
+libgeac_la-local: $(BUILT_SOURCES)
 
 all-local: eac.o example
 

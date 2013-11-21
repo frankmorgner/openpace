@@ -8,8 +8,8 @@ INTERFACES = $(srcdir)/../ca.i \
 
 BUILT_SOURCES = eac_wrap.c eac.py
 
-EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py
-CLEANFILES = $(BUILT_SOURCES) installed_files.txt setup.py
+EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py example.py
+CLEANFILES = installed_files.txt setup.py $(BUILT_SOURCES)
 bin_SCRIPTS = cvc_rehash
 
 do_subst=$(SED)\

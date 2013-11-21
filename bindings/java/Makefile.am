@@ -45,7 +45,7 @@ CLASSES_JPACE = JPace.class \
 CLASSES_EXAMPLE = Example.class
 
 EXTRA_DIST = JPace.java Example.java
-CLEANFILES = $(BUILT_SOURCES_SWIG) $(CLASSES_SWIG) $(CLASSES_JPACE) $(CLASSES_EXAMPLE)
+CLEANFILES = $(CLASSES_SWIG) $(CLASSES_JPACE) $(CLASSES_EXAMPLE) $(BUILT_SOURCES_SWIG)
 
 lib_LTLIBRARIES = libjeac.la
 
@@ -56,11 +56,12 @@ libjeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
 $(BUILT_SOURCES_SWIG): $(INTERFACES)
 	$(SWIG) -java -outdir $(builddir) -I$(srcdir)/.. eac.i
 
+libjeac_la-local: $(BUILT_SOURCES_SWIG)
 
-all-local: $(BUILT_SOURCES) $(CLASSES_JPACE) $(CLASSES_EXAMPLE)
+all-local: $(CLASSES_JPACE) $(CLASSES_EXAMPLE)
 
-$(CLASSES_JPACE): JPace.java $(BUILT_SOURCES_SWIG)
+$(CLASSES_JPACE): $(srcdir)/JPace.java $(BUILT_SOURCES_SWIG)
 	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/JPace.java
 
-$(CLASSES_EXAMPLE): Example.java $(BUILT_SOURCES_SWIG)
+$(CLASSES_EXAMPLE): $(srcdir)/Example.java $(BUILT_SOURCES_SWIG)
 	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/Example.java
