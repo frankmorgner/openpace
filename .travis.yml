@@ -1,0 +1,4 @@
+language: C
+compiler: gcc
+script: autoreconf -vsi && ./configure --enable-openssl-install && make && LD_LIBRARY_PATH=src/openssl/ src/eactest
+
