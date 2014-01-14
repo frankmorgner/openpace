@@ -66,7 +66,7 @@ $(OPENSSL_CONFIG):
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
 $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
 	cd $(OPENSSL_DIR) \
-		&& $(OPENSSL_CONFIG) $(OPENSSL_CONFIGURE_FLAGS)
+		&& CC=$(CC) $(OPENSSL_CONFIG) $(OPENSSL_CONFIGURE_FLAGS)
 
 # Patch OpenSSL with OpenPACE object identifiers
 .PHONY: patch_openssl
