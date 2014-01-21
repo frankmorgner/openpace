@@ -5,4 +5,4 @@ install: sudo apt-get install swig python-dev
 env:
     - CONF="--enable-openssl-install"
     - CONF="--enable-openssl-install --enable-python"
-script: autoreconf -vsi && ./configure $CONF && make && make check-local
+script: autoreconf -vsi && ./configure $CONF && make && make check
