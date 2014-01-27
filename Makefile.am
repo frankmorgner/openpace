@@ -73,7 +73,7 @@ test-python:
 	cp $(builddir)/bindings/python/build/*/_eac.*so $(builddir)/bindings/python
 	$(ENV) \
 		$(PYTHON) $(srcdir)/bindings/python/test.py \
-		&& $(PYTHON) $(srcdir)/bindings/python/example.py \
+		&& $(ENV) $(PYTHON) $(srcdir)/bindings/python/example.py \
 		|| (rm $(builddir)/bindings/python/_eac.*so && false)
 	rm $(builddir)/bindings/python/_eac.*so
 
@@ -85,7 +85,7 @@ test-java:
 	cd $(builddir)/bindings/java \
 		$(ENV) \
 		&& java Example \
-		&& java JPace
+		&& $(ENV) java JPace
 
 test-ruby:
 	$(ENV) \
