@@ -23,6 +23,7 @@ Welcome to OpenPACE's documentation!
     :Tested Platforms:
         - Windows
         - Linux (Debian, Ubuntu, SUSE, OpenMoko)
+        - FreeBSD
         - Mac OS
         - Solaris
         - Android
