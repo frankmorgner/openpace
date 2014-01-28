@@ -51,7 +51,7 @@ example_CFLAGS       = $(EAC_CFLAGS)
 
 if INSTALL_OPENSSL
 OPENSSL_DIR           = $(abs_builddir)/openssl
-OPENSSL_CONFIG        = $(OPENSSL_DIR)/Configure
+OPENSSL_CONFIGURE     = $(OPENSSL_DIR)/Configure
 OPENSSL_INCLUDES      = $(OPENSSL_DIR)/include
 OPENSSL_LIBCRYPTO_A   = $(OPENSSL_DIR)/libcrypto.a
 OPENSSL_MAKEFILE      = $(OPENSSL_DIR)/Makefile
@@ -60,13 +60,13 @@ OPENSSL_LIBS_PRIVATE  = `grep Libs.private $(OPENSSL_DIR)/libcrypto.pc | $(SED) 
 
 
 # Fetch OpenSSL
-$(OPENSSL_CONFIG):
+$(OPENSSL_CONFIGURE):
 	$(GIT) clone --depth=10 git://openssl.net/openssl -b OpenSSL_1_0_2-stable $(OPENSSL_DIR)
 
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
-$(OPENSSL_MAKEFILE): $(OPENSSL_CONFIG)
+$(OPENSSL_MAKEFILE): $(OPENSSL_CONFIGURE)
 	cd $(OPENSSL_DIR) \
-		&& CC=$(CC) $(OPENSSL_CONFIG) $(OPENSSL_CONFIGURE_FLAGS)
+		&& CROSS_COMPILE="" MAKE=$(MAKE) CC=$(CC) AR=$(AR) RANLIB=$(RANLIB) $(OPENSSL_CONFIGURE) $(OPENSSL_CONFIGURE_FLAGS)
 
 # Patch OpenSSL with OpenPACE object identifiers
 .PHONY: patch_openssl
