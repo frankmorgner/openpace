@@ -1,4 +1,8 @@
 language: C
 compiler: gcc
-script: autoreconf -vsi && ./configure --enable-openssl-install && make && make test-eactest
-
+before_install: sudo apt-get update
+install: sudo apt-get install swig python-dev
+env:
+    - CONF="--enable-openssl-install"
+    - CONF="--enable-openssl-install --enable-python"
+script: autoreconf -vsi && ./configure $CONF && make && make check
