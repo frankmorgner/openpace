@@ -181,12 +181,18 @@ AM_CONDITIONAL(RUBY_ENABLED, [test x"$enable_ruby" = "xyes"])
 
 if test x"$enable_go" = "xyes"
 then
+    AC_ARG_VAR([GCCGOFLAGS], [Go compiler flags])
+    AC_ARG_VAR([SWIGGOPARAMS], [Parameters passed to swig for creating the go bindings])
     AC_PATH_PROG([GCCGO],
                   [gccgo],
                   [not found])
     if test "${GCCGO}" = "not found"
     then
         AC_MSG_ERROR([go tools required to build bindings.])
+    fi
+    if test -z "${SWIGGOPARAMS}"
+    then
+        SWIGGOPARAMS="-intgosize 32"
     fi
 fi
 AM_CONDITIONAL(GO_ENABLED, [test x"$enable_go" = "xyes"])
@@ -273,4 +279,6 @@ Ruby Bindings:           ${enable_ruby}
 RUBY:                    ${RUBY}
 Go Bindings:             ${enable_go}
 gccgo:                   ${GCCGO}
+GCCGOFLAGS:              ${GCCGOFLAGS}
+SWIGGOPARAMS:            ${SWIGGOPARAMS}
 EOF

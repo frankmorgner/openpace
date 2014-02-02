@@ -18,16 +18,16 @@ libgeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS)
 libgeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
 
 $(BUILT_SOURCES): $(INTERFACES)
-	$(SWIG) -go -gccgo -intgosize 32 -outdir $(builddir) -I$(srcdir)/.. eac.i
+	$(SWIG) $(SWIGGOPARAMS) -go -gccgo -outdir $(builddir) -I$(srcdir)/.. eac.i
 
 eac.o: $(BUILT_SOURCES)
-	$(GCCGO) -c eac.go
+	$(GCCGO) -c eac.go $(GCCGOFLAGS)
 
 example.o: $(srcdir)/example.go
-	$(GCCGO) -c $(srcdir)/example.go
+	$(GCCGO) -c $(srcdir)/example.go $(GCCGOFLAGS)
 
 example: example.o eac.o
-	$(GCCGO) example.o eac.o libgeac_la-eac_wrap.o $(top_builddir)/src/.libs/libeac.a $(CRYPTO_LIBS) -o example
+	$(GCCGO) example.o eac.o libgeac_la-eac_wrap.o $(top_builddir)/src/.libs/libeac.a $(CRYPTO_LIBS) $(GCCGOFLAGS) -o example
 
 libgeac_la-local: $(BUILT_SOURCES)
 
