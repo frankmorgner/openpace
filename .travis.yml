@@ -1,10 +1,11 @@
 language: C
 compiler: gcc
 before_install: sudo apt-get update
-install: sudo apt-get install swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo
+install: sudo apt-get install swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev
 env:
     - CONF="--enable-openssl-install"
     - CONF="--enable-openssl-install --enable-python"
     - CONF="--enable-openssl-install --enable-java"
+    - CONF="--enable-openssl-install --enable-ruby"
     - CONF="--enable-openssl-install --enable-go" GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" "
 script: autoreconf -vsi && ./configure $CONF && make && make check
