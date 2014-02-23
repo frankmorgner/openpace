@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src cross bindings doc
 
-EXTRA_DIST = libeac.pc.in bootstrap oids.patch
+EXTRA_DIST = libeac.pc.in bootstrap
 DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-go --enable-ruby --enable-python --enable-openssl-install
 
 if WIN32
@@ -66,30 +66,25 @@ ENV = env \
 	  RUBYLIB=$(abs_builddir)/bindings/ruby/ext
 
 test-eactest:
-	$(ENV) \
-		$(builddir)/src/eactest
+	$(ENV) $(builddir)/src/eactest
 
 test-python:
 	cp $(builddir)/bindings/python/build/*/_eac.*so $(builddir)/bindings/python
-	$(ENV) \
-		$(PYTHON) $(srcdir)/bindings/python/test.py \
+	$(ENV) $(PYTHON) $(srcdir)/bindings/python/test.py \
 		&& $(ENV) $(PYTHON) $(srcdir)/bindings/python/example.py \
 		|| (rm $(builddir)/bindings/python/_eac.*so && false)
 	rm $(builddir)/bindings/python/_eac.*so
 
 test-go:
-	$(ENV) \
-		$(builddir)/bindings/go/example
+	$(ENV) $(builddir)/bindings/go/example
 
 test-java:
 	cd $(builddir)/bindings/java \
-		$(ENV) \
-		&& java Example \
+		$(ENV) java Example \
 		&& $(ENV) java JPace
 
 test-ruby:
-	$(ENV) \
-		$(RUBY) $(srcdir)/bindings/ruby/example.rb
+	$(ENV) $(RUBY) $(srcdir)/bindings/ruby/example.rb
 
 install-data-local:
 	$(INSTALL) -d $(DESTDIR)$(CVCDIR)
