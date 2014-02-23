@@ -23,6 +23,7 @@ Welcome to @PACKAGE_NAME@'s documentation!
     :Tested Platforms:
         - Windows
         - Linux (Debian, Ubuntu, SUSE, OpenMoko)
+        - FreeBSD
         - Mac OS
         - Solaris
         - Android
@@ -230,7 +231,10 @@ Where to get help
 *******************************************************************************
 
 Do you have questions, suggestions or contributions? Feedback of any kind is
-more than welcome! Please use our `project trackers <@PACKAGE_BUGREPORT@>`_.
+more than welcome! You can contact us through our `GitHub
+<https://github.com/frankmorgner/openpace/>`_ `repositories
+<https://github.com/d0/openpace/>`_ or the `project trackers
+<@PACKAGE_BUGREPORT@>`_.
 
 
 *******************************************************************************
