@@ -1,3 +1,5 @@
+EXTRA_DIST = bsi_objects.txt
+
 nobase_include_HEADERS = eac/ca.h \
 						 eac/cv_cert.h \
 						 eac/eac.h \
@@ -73,7 +75,7 @@ $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIGURE)
 patch_openssl: $(OPENSSL_MAKEFILE)
 	grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 $(OPENSSL_OBJ_MAC) > /dev/null \
 		|| (cd $(OPENSSL_DIR) \
-			&& $(GIT) apply $(abs_top_srcdir)/oids.patch \
+			&& cat $(abs_srcdir)/bsi_objects.txt >> crypto/objects/objects.txt \
 			&& $(MAKE) update depend -C $(OPENSSL_DIR))
 
 # Build OpenSSL
