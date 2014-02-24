@@ -11,6 +11,9 @@
 Welcome to @PACKAGE_NAME@'s documentation!
 ###############################################################################
 
+.. image:: https://travis-ci.org/frankmorgner/openpace.png?branch=master
+  :target: https://travis-ci.org/frankmorgner/openpace
+
 .. sidebar:: Summary
 
     @PACKAGE_SUMMARY@
