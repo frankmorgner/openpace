@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src cross bindings doc
 
 EXTRA_DIST = libeac.pc.in bootstrap
-DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-go --enable-ruby --enable-python --enable-openssl-install
+DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-go --enable-ruby --enable-python --disable-openssl-install
 
 if WIN32
 WS2_32 = -lws2_32
