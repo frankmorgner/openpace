@@ -20,6 +20,8 @@ emscripten:
 	emmake $(MAKE) -C $(top_builddir) install DESTDIR=$(EMSCRIPTEN_TARGETDIR)
 	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.html
 	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.js
+	emcc -O2 $(top_builddir)/src/cvcprint-cvcprint.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvcprint.html
+	emcc -O2 $(top_builddir)/src/cvcprint-cvcprint.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvcprint.js
 
 
 
