@@ -17,7 +17,7 @@ doc: $(DOXYGEN_HTML) *.in *.txt *.txt.in
 	$(do_subst) < index.txt.in > index.txt
 	env LD_LIBRARY_PATH=`pwd`/../bindings/python:`pwd`/../src/.libs:`pwd`/../src/openssl \
 		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH} \
-		$(MAKE) -f Makefile.sphinx html && rm -rf build/rst && sphinx-build -b rst . build/rst && cp build/rst/index.rst $(top_builddir)/README.rst
+		$(MAKE) -f Makefile.sphinx html
 	touch doc
 
 $(DOXYGEN_HTML): $(top_srcdir)/src/eac/*.h Doxyfile.in
