@@ -901,8 +901,8 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
             check(d2i_RI_INFO(&tmp_ri_info, &in, info_len),
                     "Could not decode RI info");
 
-            /* lookup or create a ri context */
-            get_ctx_by_keyID(ri_ctx, ctx->ri_ctxs, tmp_ri_info->params->keyID, RI_CTX);
+            /* create a ri context */
+            get_ctx_by_keyID(ri_ctx, ctx->ri_ctxs, NULL, RI_CTX);
             if (!ri_ctx) {
                 goto err;
             }
