@@ -244,9 +244,9 @@ PACE_CTX_print_private(BIO *out, const PACE_CTX *ctx, int indent)
     structure *__ctx; \
     __count = sk_num((_STACK*) stack); \
     for (__i = 0; __i < __count; __i++) { \
-        BIO_indent(out, indent, 80); \
+        if (!BIO_indent(out, indent, 80)) break; \
         __ctx = sk_value((_STACK*) stack, __i); \
-        BIO_printf(out, "Context %d\n", __i+1); \
+        if (!BIO_printf(out, "Context %d\n", __i+1)) break; \
         structure##_print_private(bio, __ctx, indent+4); \
     } \
 }

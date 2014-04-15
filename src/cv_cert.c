@@ -718,8 +718,9 @@ cvc_chat_print(BIO *bio, const CVC_CHAT *chat, int indent)
                 || !BIO_printf(bio, "Signature terminal\n"))
             goto err;
     } else {
-        BIO_indent(bio, indent, 80);
-        BIO_printf(bio, "Invalid terminal type\n");
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "Invalid terminal type\n"))
+            goto err;
         goto err;
     }
 
