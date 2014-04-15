@@ -94,7 +94,7 @@ static int read_file(const char *filename, unsigned char **out, size_t *outlen)
 {
     FILE *fp = NULL;
     int fail = 1;
-    size_t filesize;
+    int filesize;
     unsigned char *p;
 
     fp = fopen(filename, "rb");
@@ -104,6 +104,8 @@ static int read_file(const char *filename, unsigned char **out, size_t *outlen)
     if (0 > fseek(fp, 0L, SEEK_END))
         err("count not seek file");
     filesize = ftell(fp);
+    if (0 > filesize)
+        err("count not tell file");
     fseek(fp, 0L, SEEK_SET);
 
     p = (unsigned char*) realloc(*out, filesize);
