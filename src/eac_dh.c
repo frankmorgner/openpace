@@ -306,9 +306,9 @@ DH_get_q(const DH *dh, BN_CTX *ctx)
     /* q should always be prime */
     i = BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL);
     if (i <= 0) {
-        if (i == 0)
-            log_err("Unable to get Sophie Germain prime");
-        goto err;
+       if (i == 0)
+          log_err("Unable to get Sophie Germain prime");
+       goto err;
     }
 
     return q;
