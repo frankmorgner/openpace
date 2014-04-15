@@ -66,13 +66,8 @@ EAC_remove_iso_pad(const BUF_MEM *padded)
     /* Flawfinder: ignore */
     memcpy(out->data, padded->data, m_len);
 
-    return out;
-
 err:
-    if (out)
-        BUF_MEM_free(out);
-
-    return NULL;
+    return out;
 }
 
 int EAC_increment_ssc(const EAC_CTX *ctx)

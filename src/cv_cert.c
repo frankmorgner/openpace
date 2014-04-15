@@ -338,7 +338,6 @@ CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key)
     unsigned char *body = NULL;
     int body_len;
     BUF_MEM *signature = NULL, *body_buf = NULL;
-    EVP_PKEY_CTX *tmp_key_ctx = NULL;
 
     if (!cert || !cert->signature || !key)
         goto err;
@@ -356,8 +355,6 @@ CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key)
             key, signature, body_buf);
 
 err:
-    if (tmp_key_ctx)
-        EVP_PKEY_CTX_free(tmp_key_ctx);
     if (body)
         OPENSSL_free(body);
     if (body_buf)
@@ -462,10 +459,6 @@ CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
     return key;
 
 err:
-    if (ec)
-        EC_KEY_free(ec);
-    if (rsa)
-        RSA_free(rsa);
     if (key)
         EVP_PKEY_free(key);
     return NULL;

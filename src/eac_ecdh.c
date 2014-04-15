@@ -43,58 +43,60 @@ init_ecdh(EC_KEY ** ecdh, int standardizedDomainParameters)
         return 0;
     }
 
-    if (!*ecdh) {
-        switch(standardizedDomainParameters) {
-            case 8:
-                /* NOTE: prime192v1 is equivalent to secp192r1 */
-                tmp = EC_KEY_new_by_curve_name(NID_X9_62_prime192v1);
-                break;
-            case 9:
-                tmp = EC_KEY_new_by_curve_name(NID_brainpoolP192r1);
-                break;
-            case 10:
-                tmp = EC_KEY_new_by_curve_name(NID_secp224r1);
-                break;
-            case 11:
-                tmp = EC_KEY_new_by_curve_name(NID_brainpoolP224r1);
-                break;
-            case 12:
-                /* NOTE: prime256v1 is equivalent to secp256r1 */
-                tmp = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-                break;
-            case 13:
-                tmp = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
-                break;
-            case 14:
-                tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1);
-                break;
-            case 15:
-                tmp = EC_KEY_new_by_curve_name(NID_secp384r1);
-                break;
-            case 16:
-                tmp = EC_KEY_new_by_curve_name(NID_brainpoolP384r1);
-                break;
-            case 17:
-                tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1);
-                break;
-            case 18:
-                tmp = EC_KEY_new_by_curve_name(NID_secp521r1);
-                break;
-            default:
-                log_err("Invalid arguments");
-                goto err;
-        }
-        if (!tmp)
+    switch(standardizedDomainParameters) {
+        case 8:
+            /* NOTE: prime192v1 is equivalent to secp192r1 */
+            tmp = EC_KEY_new_by_curve_name(NID_X9_62_prime192v1);
+            break;
+        case 9:
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP192r1);
+            break;
+        case 10:
+            tmp = EC_KEY_new_by_curve_name(NID_secp224r1);
+            break;
+        case 11:
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP224r1);
+            break;
+        case 12:
+            /* NOTE: prime256v1 is equivalent to secp256r1 */
+            tmp = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+            break;
+        case 13:
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
+            break;
+        case 14:
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1);
+            break;
+        case 15:
+            tmp = EC_KEY_new_by_curve_name(NID_secp384r1);
+            break;
+        case 16:
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP384r1);
+            break;
+        case 17:
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1);
+            break;
+        case 18:
+            tmp = EC_KEY_new_by_curve_name(NID_secp521r1);
+            break;
+        default:
+            log_err("Invalid arguments");
             goto err;
     }
+    if (!tmp)
+        goto err;
 
-    if (!*ecdh)
-        *ecdh = tmp;
+    if (*ecdh) {
+        EC_KEY_free(*ecdh);
+    }
+    *ecdh = tmp;
+
     return 1;
 
 err:
     if (!*ecdh && tmp)
         EC_KEY_free(tmp);
+
     return 0;
 }
 

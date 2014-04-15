@@ -385,13 +385,8 @@ add_iso_pad(const BUF_MEM * m, int block_size)
     memset(out->data + m->length, 0x80, 1);
     memset(out->data + m->length + 1, 0, p_len - m->length - 1);
 
-    return out;
-
 err:
-    if (out)
-        BUF_MEM_free(out);
-
-    return NULL;
+    return out;
 }
 
 int encode_ssc(const BIGNUM *ssc, const KA_CTX *ctx, unsigned char **encoded)
@@ -651,18 +646,13 @@ EVP_PKEY_dup(EVP_PKEY *key)
 err:
     if (dh_in)
         DH_free(dh_in);
-    if (dh_out)
-        DH_free(dh_out);
     if (ec_in)
         EC_KEY_free(ec_in);
-    if (ec_out)
-        EC_KEY_free(ec_out);
     if (rsa_out)
         RSA_free(rsa_out);
     if (rsa_in)
         RSA_free(rsa_in);
-    if (out)
-        EVP_PKEY_free(out);
+
     return NULL;
 }
 

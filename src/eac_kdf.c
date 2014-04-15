@@ -90,14 +90,6 @@ err:
         OPENSSL_cleanse(in->data, in->max);
         BUF_MEM_free(in);
     }
-    if (out) {
-        OPENSSL_cleanse(out->data, out->max);
-        BUF_MEM_free(out);
-    }
-    if (digest) {
-        OPENSSL_cleanse(digest->data, digest->max);
-        BUF_MEM_free(digest);
-    }
 
     return NULL;
 }

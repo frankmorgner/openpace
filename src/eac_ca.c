@@ -263,9 +263,6 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
 
 err:
     BUF_MEM_clear_free(r);
-    if (authentication_token) {
-        BUF_MEM_free(authentication_token);
-    }
 
     return 0;
 }

@@ -3330,7 +3330,6 @@ static_eac_test(struct eac_worked_example *tc)
             *parsed_ca_picc_pub_key = NULL;
     EAC_CTX *picc_ctx = NULL, *pcd_ctx = NULL;
     BIO *bio = NULL;
-    CVC_CERT *ta_cert = NULL;
 
     if (!tc)
        goto err;
@@ -3624,8 +3623,6 @@ err:
         BUF_MEM_free(ta_pcd_comp_eph_pub_key_for_ca);
     if (parsed_ca_picc_pub_key)
         BUF_MEM_free(parsed_ca_picc_pub_key);
-    if (ta_cert)
-        CVC_CERT_free(ta_cert);
     if (signature)
         BUF_MEM_free(signature);
     if (ta_comp_ephemeral_key_for_ca)

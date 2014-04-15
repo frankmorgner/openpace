@@ -149,9 +149,6 @@ PACE_STEP3B_compute_shared_secret(const EAC_CTX * ctx, const BUF_MEM * in)
     r = 1;
 
 err:
-    if (my_pub)
-        BUF_MEM_free(my_pub);
-
     return r;
 }
 

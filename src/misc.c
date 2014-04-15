@@ -164,13 +164,8 @@ BUF_MEM_dup(const BUF_MEM * in)
     memcpy(out->data, in->data, in->length);
     out->max = in->max;
 
-    return out;
-
 err:
-    if (out)
-        BUF_MEM_free(out);
-
-    return NULL;
+    return out;
 }
 
 BUF_MEM *
