@@ -3318,7 +3318,7 @@ err:
 
 /* Perform one EAC protocol run using static test data */
 static int
-static_eac_test(struct eac_worked_example tc)
+static_eac_test(struct eac_worked_example *tc)
 {
     int failed = 1, i;
     PACE_SEC *pace_sec = NULL;
@@ -3332,33 +3332,35 @@ static_eac_test(struct eac_worked_example tc)
     BIO *bio = NULL;
     CVC_CERT *ta_cert = NULL;
 
+    if (!tc)
+       goto err;
 
-    print_desc(tc.pace_info_oid, tc.pace_curve);
+    print_desc(tc->pace_info_oid, tc->pace_curve);
 
     /* PACE */
 
     /* Initialization */
-    pace_sec = PACE_SEC_new(tc.password, strlen(tc.password),
-            tc.password_type);
+    pace_sec = PACE_SEC_new(tc->password, strlen(tc->password),
+            tc->password_type);
     picc_ctx = EAC_CTX_new();
     pcd_ctx = EAC_CTX_new();
     CA_disable_passive_authentication(pcd_ctx);
-    CHECK(1, EAC_CTX_init_ef_cardsecurity((unsigned char *) tc.ef_cardsecurity.data,
-                tc.ef_cardsecurity.length, picc_ctx)
-            && EAC_CTX_init_ef_cardaccess((unsigned char *) tc.ef_cardaccess.data,
-                tc.ef_cardaccess.length, pcd_ctx)
-            && picc_ctx->pace_ctx->version == tc.pace_version
-            && picc_ctx->pace_ctx->protocol == tc.pace_info_oid
-            && pcd_ctx->pace_ctx->version == tc.pace_version
-            && pcd_ctx->pace_ctx->protocol == tc.pace_info_oid,
+    CHECK(1, EAC_CTX_init_ef_cardsecurity((unsigned char *) tc->ef_cardsecurity.data,
+                tc->ef_cardsecurity.length, picc_ctx)
+            && EAC_CTX_init_ef_cardaccess((unsigned char *) tc->ef_cardaccess.data,
+                tc->ef_cardaccess.length, pcd_ctx)
+            && picc_ctx->pace_ctx->version == tc->pace_version
+            && picc_ctx->pace_ctx->protocol == tc->pace_info_oid
+            && pcd_ctx->pace_ctx->version == tc->pace_version
+            && pcd_ctx->pace_ctx->protocol == tc->pace_info_oid,
             "Parsing EF.CardAccess or EF.CardSecurity");
 
 
     /* Generate, En-/Decrypt Nonce */
-    picc_ctx->pace_ctx->nonce = BUF_MEM_create_init((unsigned char *) tc.pace_nonce.data, tc.pace_nonce.length);
-    enc_nonce = BUF_MEM_create_init((unsigned char *) tc.pace_enc_nonce.data, tc.pace_enc_nonce.length);
+    picc_ctx->pace_ctx->nonce = BUF_MEM_create_init((unsigned char *) tc->pace_nonce.data, tc->pace_nonce.length);
+    enc_nonce = BUF_MEM_create_init((unsigned char *) tc->pace_enc_nonce.data, tc->pace_enc_nonce.length);
     CHECK(1, PACE_STEP2_dec_nonce(pcd_ctx, pace_sec, enc_nonce)
-            && buf_eq_buf(pcd_ctx->pace_ctx->nonce, &tc.pace_nonce),
+            && buf_eq_buf(pcd_ctx->pace_ctx->nonce, &tc->pace_nonce),
             "PACE step 2: Terminal decrypted the correct nonce");
 
 
@@ -3366,17 +3368,17 @@ static_eac_test(struct eac_worked_example tc)
     /* Since the static keys are pre-defined we can omit the call to
      * PACE_STEP3A_generate_mapping_data */
     CHECK(1, EVP_PKEY_set_keys_buf(pcd_ctx->pace_ctx->static_key,
-                   &tc.pace_static_pcd_priv_key, &tc.pace_static_pcd_pub_key,
+                   &tc->pace_static_pcd_priv_key, &tc->pace_static_pcd_pub_key,
                    pcd_ctx->bn_ctx)
-            && PACE_STEP3A_map_generator(pcd_ctx, &tc.pace_static_picc_pub_key)
+            && PACE_STEP3A_map_generator(pcd_ctx, &tc->pace_static_picc_pub_key)
             && EVP_PKEY_set_keys_buf(picc_ctx->pace_ctx->static_key,
-                &tc.pace_static_picc_priv_key, &tc.pace_static_picc_pub_key,
+                &tc->pace_static_picc_priv_key, &tc->pace_static_picc_pub_key,
                 picc_ctx->bn_ctx)
-            && PACE_STEP3A_map_generator(picc_ctx, &tc.pace_static_pcd_pub_key)
+            && PACE_STEP3A_map_generator(picc_ctx, &tc->pace_static_pcd_pub_key)
             && check_generator(picc_ctx->pace_ctx->ka_ctx->key,
-                tc.pace_eph_generator, picc_ctx->bn_ctx)
+                tc->pace_eph_generator, picc_ctx->bn_ctx)
             && check_generator(pcd_ctx->pace_ctx->ka_ctx->key,
-                tc.pace_eph_generator, pcd_ctx->bn_ctx),
+                tc->pace_eph_generator, pcd_ctx->bn_ctx),
             "PACE step 3a: Mapped to ephemeral domain parameters");
 
 
@@ -3384,41 +3386,41 @@ static_eac_test(struct eac_worked_example tc)
     /* Since the static keys are pre-defined we can omit the call to
      * PACE_STEP3B_generate_ephemeral_key */
     pcd_ctx->pace_ctx->my_eph_pubkey =
-        BUF_MEM_create_init(tc.pace_eph_pcd_pub_key.data,
-                tc.pace_eph_pcd_pub_key.length);
+        BUF_MEM_create_init(tc->pace_eph_pcd_pub_key.data,
+                tc->pace_eph_pcd_pub_key.length);
     picc_ctx->pace_ctx->my_eph_pubkey =
-        BUF_MEM_create_init(tc.pace_eph_picc_pub_key.data,
-                tc.pace_eph_picc_pub_key.length);
+        BUF_MEM_create_init(tc->pace_eph_picc_pub_key.data,
+                tc->pace_eph_picc_pub_key.length);
     CHECK(1, EVP_PKEY_set_keys_buf(pcd_ctx->pace_ctx->ka_ctx->key,
-                   &tc.pace_eph_pcd_priv_key, &tc.pace_eph_pcd_pub_key,
+                   &tc->pace_eph_pcd_priv_key, &tc->pace_eph_pcd_pub_key,
                    pcd_ctx->bn_ctx)
             && EVP_PKEY_set_keys_buf(picc_ctx->pace_ctx->ka_ctx->key,
-                &tc.pace_eph_picc_priv_key, &tc.pace_eph_picc_pub_key,
+                &tc->pace_eph_picc_priv_key, &tc->pace_eph_picc_pub_key,
                 picc_ctx->bn_ctx)
-            && PACE_STEP3B_compute_shared_secret(pcd_ctx, &tc.pace_eph_picc_pub_key)
-            && buf_eq_buf(pcd_ctx->pace_ctx->ka_ctx->shared_secret, &tc.pace_shared_secret_k)
-            && PACE_STEP3B_compute_shared_secret(picc_ctx, &tc.pace_eph_pcd_pub_key)
-            && buf_eq_buf(picc_ctx->pace_ctx->ka_ctx->shared_secret, &tc.pace_shared_secret_k),
+            && PACE_STEP3B_compute_shared_secret(pcd_ctx, &tc->pace_eph_picc_pub_key)
+            && buf_eq_buf(pcd_ctx->pace_ctx->ka_ctx->shared_secret, &tc->pace_shared_secret_k)
+            && PACE_STEP3B_compute_shared_secret(picc_ctx, &tc->pace_eph_pcd_pub_key)
+            && buf_eq_buf(picc_ctx->pace_ctx->ka_ctx->shared_secret, &tc->pace_shared_secret_k),
             "PACE step 3b: computed shared secret");
 
 
     /* Derive session keys */
     CHECK(1, PACE_STEP3C_derive_keys(pcd_ctx)
-            && buf_eq_buf(pcd_ctx->pace_ctx->ka_ctx->k_enc, &tc.pace_k_enc)
-            && buf_eq_buf(pcd_ctx->pace_ctx->ka_ctx->k_mac, &tc.pace_k_mac)
+            && buf_eq_buf(pcd_ctx->pace_ctx->ka_ctx->k_enc, &tc->pace_k_enc)
+            && buf_eq_buf(pcd_ctx->pace_ctx->ka_ctx->k_mac, &tc->pace_k_mac)
             && PACE_STEP3C_derive_keys(picc_ctx)
-            && buf_eq_buf(picc_ctx->pace_ctx->ka_ctx->k_enc, &tc.pace_k_enc)
-            && buf_eq_buf(picc_ctx->pace_ctx->ka_ctx->k_mac, &tc.pace_k_mac),
+            && buf_eq_buf(picc_ctx->pace_ctx->ka_ctx->k_enc, &tc->pace_k_enc)
+            && buf_eq_buf(picc_ctx->pace_ctx->ka_ctx->k_mac, &tc->pace_k_mac),
             "PACE step 3c: Derived Keys");
 
 
     /* Derive and verify authentication tokens */
     token_pcd = PACE_STEP3D_compute_authentication_token(pcd_ctx,
-            &tc.pace_eph_picc_pub_key);
+            &tc->pace_eph_picc_pub_key);
     token_picc = PACE_STEP3D_compute_authentication_token(picc_ctx,
-            &tc.pace_eph_pcd_pub_key);
-    CHECK(1, buf_eq_buf(token_pcd, &tc.pace_authentication_token_pcd)
-            && buf_eq_buf(token_picc, &tc.pace_authentication_token_picc)
+            &tc->pace_eph_pcd_pub_key);
+    CHECK(1, buf_eq_buf(token_pcd, &tc->pace_authentication_token_pcd)
+            && buf_eq_buf(token_picc, &tc->pace_authentication_token_picc)
             && PACE_STEP3D_verify_authentication_token(picc_ctx, token_pcd) == 1
             && PACE_STEP3D_verify_authentication_token(pcd_ctx, token_picc) == 1,
             "PACE step 3d: Computed and verified authentication tokens");
@@ -3432,19 +3434,19 @@ static_eac_test(struct eac_worked_example tc)
      * which one we are using for encryption/decryption or authentication */
 
     /* En-/Decrypt some test data */
-    for (i = 0; (size_t) i < tc.pace_encrypt_decrypt_len; i++) {
-        if (!test_enc(pcd_ctx, tc.pace_encrypt_decrypt[i].ssc,
-                    &tc.pace_encrypt_decrypt[i].data,
-                    &tc.pace_encrypt_decrypt[i].cipher))
-            goto err;;
+    for (i = 0; (size_t) i < tc->pace_encrypt_decrypt_len; i++) {
+        if (!test_enc(pcd_ctx, tc->pace_encrypt_decrypt[i].ssc,
+                    &tc->pace_encrypt_decrypt[i].data,
+                    &tc->pace_encrypt_decrypt[i].cipher))
+            goto err;
     }
 
     /* Authenticate some test data */
-    for (i = 0; (size_t) i < tc.pace_authenticate_len; i++) {
-        if (!test_auth(picc_ctx, tc.pace_authenticate[i].ssc,
-                    &tc.pace_authenticate[i].data,
-                    &tc.pace_authenticate[i].mac))
-            goto err;;
+    for (i = 0; (size_t) i < tc->pace_authenticate_len; i++) {
+        if (!test_auth(picc_ctx, tc->pace_authenticate[i].ssc,
+                    &tc->pace_authenticate[i].data,
+                    &tc->pace_authenticate[i].mac))
+            goto err;
     }
 
     /* Terminal Authentication*/
@@ -3456,76 +3458,85 @@ static_eac_test(struct eac_worked_example tc)
     /* We need to chose one of the supported CA keys specified in the EF.CardAccess
      * BEFORE Terminal Authentication. Therefore, we need to initialize the CA
      * context before TA. */
-    parsed_ca_picc_pub_key = CA_get_pubkey(pcd_ctx, (unsigned char *) tc.ef_cardsecurity.data,
-            tc.ef_cardsecurity.length);
-    CHECK(1, buf_eq_buf(parsed_ca_picc_pub_key, &tc.ca_picc_pub_key)
+    parsed_ca_picc_pub_key = CA_get_pubkey(pcd_ctx, (unsigned char *) tc->ef_cardsecurity.data,
+            tc->ef_cardsecurity.length);
+    CHECK(1, buf_eq_buf(parsed_ca_picc_pub_key, &tc->ca_picc_pub_key)
             && CA_set_key(pcd_ctx,
-                (unsigned char *) tc.ca_pcd_priv_key.data, tc.ca_pcd_priv_key.length,
-                (unsigned char *) tc.ca_pcd_pub_key.data, tc.ca_pcd_pub_key.length)
+                (unsigned char *) tc->ca_pcd_priv_key.data, tc->ca_pcd_priv_key.length,
+                (unsigned char *) tc->ca_pcd_pub_key.data, tc->ca_pcd_pub_key.length)
             && CA_set_key(picc_ctx,
-                (unsigned char *) tc.ca_picc_priv_key.data, tc.ca_picc_priv_key.length,
-                (unsigned char *) tc.ca_picc_pub_key.data, tc.ca_picc_pub_key.length),
+                (unsigned char *) tc->ca_picc_priv_key.data, tc->ca_picc_priv_key.length,
+                (unsigned char *) tc->ca_picc_pub_key.data, tc->ca_picc_pub_key.length),
             "Initializing Chip Authentication");
 
     /* Initialize the TA contexts. The PICC gets initialized with the trust anchor
      * (CVCA) and the PCD gets initialized with the terminal certificate */
-    CHECK(1, EAC_CTX_init_ta(pcd_ctx, (unsigned char *) tc.ta_pcd_key.data,
-                tc.ta_pcd_key.length, (unsigned char *) tc.ta_cert.data,
-                tc.ta_cert.length)
+    CHECK(1, EAC_CTX_init_ta(pcd_ctx, (unsigned char *) tc->ta_pcd_key.data,
+                tc->ta_pcd_key.length, (unsigned char *) tc->ta_cert.data,
+                tc->ta_cert.length)
             && EAC_CTX_init_ta(picc_ctx, NULL, 0, (unsigned char *)
-                tc.ta_cvca.data, tc.ta_cvca.length),
+                tc->ta_cvca.data, tc->ta_cvca.length),
             "Initializing Terminal Authentication");
     OK;
-    print_desc(pcd_ctx->ta_ctx->protocol, tc.ta_curve);
+    print_desc(pcd_ctx->ta_ctx->protocol, tc->ta_curve);
 
     /* Import the certificate chain. Currently we only support chains of length
      * three (CVCA certificate, DV certificate and terminal certificate). The
      * trust anchor is already imported during the EAC_CTX_init_ta call above */
-    CHECK(1, TA_STEP2_import_certificate(picc_ctx, (unsigned char *) tc.ta_dv_cert.data,
-                tc.ta_dv_cert.length)
-            && TA_STEP2_import_certificate(picc_ctx, (unsigned char *) tc.ta_cert.data,
-                tc.ta_cert.length),
+    CHECK(1, TA_STEP2_import_certificate(picc_ctx, (unsigned char *) tc->ta_dv_cert.data,
+                tc->ta_dv_cert.length)
+            && TA_STEP2_import_certificate(picc_ctx, (unsigned char *) tc->ta_cert.data,
+                tc->ta_cert.length),
             "TA step 2: Imported and verified terminal's certificate");
 
     /* Import the specified nonce. This makes TA_STEP4_get_nonce superfluous. */
-    CHECK(1, TA_STEP4_set_nonce(picc_ctx, &tc.ta_nonce)
-            && TA_STEP4_set_nonce(pcd_ctx, &tc.ta_nonce),
+    CHECK(1, TA_STEP4_set_nonce(picc_ctx, &tc->ta_nonce)
+            && TA_STEP4_set_nonce(pcd_ctx, &tc->ta_nonce),
             "TA STEP 4: Imported nonce");
 
     /* Create the signature. Since the challenge is pre-specified we do not
      * generate it on our own (and therefore don't call TA_STEP4_get_nonce */
-    ephemeral_pub_picc = BUF_MEM_create_init(tc.pace_eph_picc_pub_key.data, tc.pace_eph_picc_pub_key.length);
+    ephemeral_pub_picc = BUF_MEM_create_init(tc->pace_eph_picc_pub_key.data, tc->pace_eph_picc_pub_key.length);
     id_picc = EAC_Comp(picc_ctx, EAC_ID_PACE, ephemeral_pub_picc);
-    ta_pcd_eph_pub_key_for_ca = BUF_MEM_create_init(tc.ca_pcd_pub_key.data, tc.ca_pcd_pub_key.length);
+    ta_pcd_eph_pub_key_for_ca = BUF_MEM_create_init(tc->ca_pcd_pub_key.data, tc->ca_pcd_pub_key.length);
     ta_pcd_comp_eph_pub_key_for_ca = EAC_Comp(picc_ctx, EAC_ID_CA, ta_pcd_eph_pub_key_for_ca);
-    signature = TA_STEP5_sign(pcd_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc, &tc.ta_auxdata);
+    signature = TA_STEP5_sign(pcd_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc, &tc->ta_auxdata);
     CHECK(1, signature,
             "TA step 5: Signed nonce, public key, auxiliary data");
 
     /* Verify the response */
     switch(picc_ctx->ta_ctx->protocol) {
         case HACK_id_TA_RSA_v1_5_SHA_1:
+           /* fall through */
         case HACK_id_TA_RSA_v1_5_SHA_256:
+           /* fall through */
         case HACK_id_TA_RSA_v1_5_SHA_512:
             /* In case of a probabilistic signature our signature will not be
              * equal to the signature specified in the worked example. Therefore,
              * we only compare the signatures in the deterministic case */
-            CHECK(0, buf_eq_buf(signature, &tc.ta_pcd_signature),
+            CHECK(0, buf_eq_buf(signature, &tc->ta_pcd_signature),
                     "Signature does match test data");
         case HACK_id_TA_RSA_PSS_SHA_1:
+           /* fall through */
         case HACK_id_TA_RSA_PSS_SHA_256:
+           /* fall through */
         case HACK_id_TA_RSA_PSS_SHA_512:
+           /* fall through */
         case HACK_id_TA_ECDSA_SHA_1:
+           /* fall through */
         case HACK_id_TA_ECDSA_SHA_224:
+           /* fall through */
         case HACK_id_TA_ECDSA_SHA_256:
+           /* fall through */
         case HACK_id_TA_ECDSA_SHA_384:
+           /* fall through */
         case HACK_id_TA_ECDSA_SHA_512:
             /* Verify both our as well as the pre-defined signature (equal in the
              * deterministic case). */
             CHECK(1, TA_STEP6_verify(picc_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc,
-                        &tc.ta_auxdata, signature) == 1
+                        &tc->ta_auxdata, signature) == 1
                     && TA_STEP6_verify(picc_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc,
-                        &tc.ta_auxdata, &tc.ta_pcd_signature) == 1,
+                        &tc->ta_auxdata, &tc->ta_pcd_signature) == 1,
                     "TA step 6: Verified signature");
             break;
         default:
@@ -3533,13 +3544,13 @@ static_eac_test(struct eac_worked_example tc)
     }
 
     OK;
-    print_desc(tc.ca_info_oid, tc.ca_curve);
+    print_desc(tc->ca_info_oid, tc->ca_curve);
 
 
     /* Chip Authentication */
     /* Generate the ephemeral CA key */
     ta_comp_ephemeral_key_for_ca = CA_STEP2_get_eph_pubkey(pcd_ctx);
-    CHECK(1, buf_eq_buf(ta_comp_ephemeral_key_for_ca, &tc.ca_pcd_pub_key),
+    CHECK(1, buf_eq_buf(ta_comp_ephemeral_key_for_ca, &tc->ca_pcd_pub_key),
             "CA step 2: Encoded PCD's ephemeral key");
 
     /* We do not have the compressed public key and thus can't perform
@@ -3548,20 +3559,20 @@ static_eac_test(struct eac_worked_example tc)
     /* Perform the key agreement and check the results. */
     CHECK(1, CA_STEP4_compute_shared_secret(picc_ctx, ta_comp_ephemeral_key_for_ca)
             && buf_eq_buf(picc_ctx->ca_ctx->ka_ctx->shared_secret,
-                &tc.ca_shared_secret_k)
-            && CA_STEP4_compute_shared_secret(pcd_ctx, &tc.ca_picc_pub_key)
+                &tc->ca_shared_secret_k)
+            && CA_STEP4_compute_shared_secret(pcd_ctx, &tc->ca_picc_pub_key)
             && buf_eq_buf(pcd_ctx->ca_ctx->ka_ctx->shared_secret,
-                &tc.ca_shared_secret_k),
+                &tc->ca_shared_secret_k),
             "CA step 4: Compute shared secret");
 
     /* Derive session keys */
-    CHECK(1, CA_STEP6_derive_keys(pcd_ctx, &tc.ca_nonce, &tc.ca_picc_token)
+    CHECK(1, CA_STEP6_derive_keys(pcd_ctx, &tc->ca_nonce, &tc->ca_picc_token)
             && buf_eq_buf(pcd_ctx->ca_ctx->ka_ctx->shared_secret,
-                &tc.ca_shared_secret_k)
+                &tc->ca_shared_secret_k)
             && buf_eq_buf(pcd_ctx->ca_ctx->ka_ctx->k_enc,
-                &tc.ca_k_enc)
+                &tc->ca_k_enc)
             && buf_eq_buf(pcd_ctx->ca_ctx->ka_ctx->k_mac,
-                &tc.ca_k_mac),
+                &tc->ca_k_mac),
             "CA step 6: Derived keys for terminal");
 
     /* Initialize secure channel (here keys were derived for PCD only) */
@@ -3575,8 +3586,8 @@ err:
         bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
         if (bio) {
             /*CVC_CERT *cert = NULL;
-            cert = CVC_d2i_CVC_CERT(&cert, (const unsigned char **) &tc.ta_cvca.data, tc.ta_cvca.length);
-            cert = CVC_d2i_CVC_CERT(&cert, (const unsigned char **) &tc.ta_dv_cert.data, tc.ta_dv_cert.length);
+            cert = CVC_d2i_CVC_CERT(&cert, (const unsigned char **) &tc->ta_cvca.data, tc->ta_cvca.length);
+            cert = CVC_d2i_CVC_CERT(&cert, (const unsigned char **) &tc->ta_dv_cert.data, tc->ta_dv_cert.length);
             CVC_CERT_print_ctx(bio, cert, 0, NULL);
             CVC_CERT_print_ctx(bio, picc_ctx->ta_ctx->current_cert, 0, NULL);*/
             BIO_printf(bio, "    PICC's EAC Context:\n");
@@ -3586,9 +3597,9 @@ err:
             BIO_printf(bio, "    PACE step 1: Encrypted Nonce:\n");
             BUF_MEM_print(bio, enc_nonce, 6);
             BIO_printf(bio, "    PACE step 3a: PCD's mapping data:\n");
-            BUF_MEM_print(bio, &tc.pace_eph_pcd_pub_key, 6);
+            BUF_MEM_print(bio, &tc->pace_eph_pcd_pub_key, 6);
             BIO_printf(bio, "    PACE step 3a: PICC's mapping data:\n");
-            BUF_MEM_print(bio, &tc.pace_eph_picc_pub_key, 6);
+            BUF_MEM_print(bio, &tc->pace_eph_picc_pub_key, 6);
             BIO_printf(bio, "    PACE step 3d: PCD's Authentication Token:\n");
             BUF_MEM_print(bio, token_pcd, 6);
             BIO_printf(bio, "    PACE step 3d: PICC's Authentication Token:\n");
@@ -3598,7 +3609,7 @@ err:
             BIO_printf(bio, "    TA step 3: PCD's compressed CA public key:\n");
             BUF_MEM_print(bio, ta_comp_ephemeral_key_for_ca, 6);
             BIO_printf(bio, "    TA step 5: PCD's signature:\n");
-            BUF_MEM_print(bio, &tc.ta_pcd_signature, 6);
+            BUF_MEM_print(bio, &tc->ta_pcd_signature, 6);
             BIO_free_all(bio);
         }
     }
@@ -3642,7 +3653,7 @@ test_worked_examples(void)
     printf("EAC worked examples:\n");
 
     for (i = 0; i<(sizeof eac_examples)/sizeof(*eac_examples); i++) {
-        failed += static_eac_test(eac_examples[i]);
+        failed += static_eac_test(&eac_examples[i]);
     }
 
     return failed;
