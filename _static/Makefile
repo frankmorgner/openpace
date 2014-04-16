@@ -175,12 +175,12 @@ OPENSSL_CONFIGURE_FLAGS = enable-ssl-trace no-asm shared --prefix="/home/fm/.loc
 OTOOL = 
 OTOOL64 = 
 PACKAGE = openpace
-PACKAGE_BUGREPORT = http://sourceforge.net/projects/openpace/support
+PACKAGE_BUGREPORT = https://github.com/frankmorgner/openpace/issues
 PACKAGE_NAME = OpenPACE
 PACKAGE_STRING = OpenPACE 0.9
 PACKAGE_SUMMARY = Cryptographic library for EAC version 2
 PACKAGE_TARNAME = openpace
-PACKAGE_URL = http://openpace.sourceforge.net
+PACKAGE_URL = http://frankmorgner.github.io/openpace/
 PACKAGE_VERSION = 0.9
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
