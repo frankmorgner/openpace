@@ -1,0 +1,574 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Usage of OpenPACE &mdash; OpenPACE 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="OpenPACE 0.9 documentation" href="index.html" />
+    <link rel="next" title="Python API to OpenPACE" href="python_api.html" />
+    <link rel="prev" title="Welcome to OpenPACE’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="python_api.html" title="Python API to OpenPACE"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to OpenPACE’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">OpenPACE 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="usage-of-openpace">
+<span id="bindings"></span><h1>Usage of OpenPACE<a class="headerlink" href="#usage-of-openpace" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="using-openpace-in-c-c">
+<h2>Using OpenPACE in C/C++<a class="headerlink" href="#using-openpace-in-c-c" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">See the <a class="reference external" href="_static/doxygen/modules.html">OpenPACE API documentation</a>
+for the native C/C++ interface</p>
+</div>
+<p>Here we have a small example in C:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">EF_CARDACCESS</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x31</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span> <span class="mh">0x82</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x0D</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x12</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x12</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x0D</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x0C</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x0D</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x2B</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x16</span><span class="p">,</span> <span class="mh">0x1F</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0x50</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x2D</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x42</span><span class="p">,</span> <span class="mh">0x44</span><span class="p">,</span> <span class="mh">0x72</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x47</span><span class="p">,</span> <span class="mh">0x6D</span><span class="p">,</span> <span class="mh">0x62</span><span class="p">,</span> <span class="mh">0x48</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x2D</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x54</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0x73</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span> <span class="mh">0x6B</span><span class="p">,</span> <span class="mh">0x61</span><span class="p">,</span> <span class="mh">0x72</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x76</span><span class="p">,</span> <span class="mh">0x32</span><span class="p">,</span> <span class="mh">0x2E</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x49</span><span class="p">,</span> <span class="mh">0x17</span><span class="p">,</span> <span class="mh">0x15</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x19</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">,</span> <span class="mh">0x80</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0xB4</span><span class="p">,</span> <span class="mh">0x21</span><span class="p">,</span> <span class="mh">0xFA</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x29</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="p">};</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="n">PIN</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;123456&quot;</span><span class="p">;</span>
+
+<span class="cp">#include &lt;eac/eac.h&gt;</span>
+<span class="cp">#include &lt;eac/pace.h&gt;</span>
+<span class="cp">#include &lt;openssl/bio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">EAC_init</span><span class="p">();</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;EF.CardAccess:&quot;</span><span class="p">);</span>
+    <span class="n">BIO</span> <span class="o">*</span><span class="n">bio</span> <span class="o">=</span> <span class="n">BIO_new_fp</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">BIO_NOCLOSE</span><span class="o">|</span><span class="n">BIO_FP_TEXT</span><span class="p">);</span>
+    <span class="n">BIO_dump_indent</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+
+    <span class="n">PACE_SEC</span> <span class="o">*</span><span class="n">secret</span> <span class="o">=</span> <span class="n">PACE_SEC_new</span><span class="p">(</span><span class="n">PIN</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">PIN</span><span class="p">),</span> <span class="n">PACE_PIN</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Secret:&quot;</span><span class="p">);</span>
+    <span class="n">PACE_SEC_print_private</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+
+    <span class="n">EAC_CTX</span> <span class="o">*</span><span class="n">picc_ctx</span> <span class="o">=</span> <span class="n">EAC_CTX_new</span><span class="p">();</span>
+    <span class="n">EAC_CTX</span> <span class="o">*</span><span class="n">pcd_ctx</span> <span class="o">=</span> <span class="n">EAC_CTX_new</span><span class="p">();</span>
+    <span class="n">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="n">pcd_ctx</span><span class="p">);</span>
+    <span class="n">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="n">picc_ctx</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PACE step 1&quot;</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">enc_nonce</span> <span class="o">=</span> <span class="n">PACE_STEP1_enc_nonce</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">secret</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PACE step 2&quot;</span><span class="p">);</span>
+    <span class="n">PACE_STEP2_dec_nonce</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">enc_nonce</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PACE step 3A&quot;</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">pcd_mapping_data</span> <span class="o">=</span> <span class="n">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">picc_mapping_data</span> <span class="o">=</span> <span class="n">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">);</span>
+
+    <span class="n">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_mapping_data</span><span class="p">);</span>
+    <span class="n">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_mapping_data</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PACE step 3B&quot;</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">pcd_ephemeral_pubkey</span> <span class="o">=</span> <span class="n">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">picc_ephemeral_pubkey</span> <span class="o">=</span> <span class="n">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">);</span>
+
+    <span class="n">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="p">);</span>
+    <span class="n">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PACE step 3C&quot;</span><span class="p">);</span>
+    <span class="n">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">);</span>
+    <span class="n">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PACE step 3D&quot;</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">pcd_token</span> <span class="o">=</span> <span class="n">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="p">);</span>
+    <span class="n">BUF_MEM</span> <span class="o">*</span><span class="n">picc_token</span> <span class="o">=</span> <span class="n">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="p">);</span>
+
+    <span class="n">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_token</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_token</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PICC&#39;s EAC_CTX:&quot;</span><span class="p">);</span>
+    <span class="n">EAC_CTX_print_private</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">picc_ctx</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PCD&#39;s EAC_CTX:&quot;</span><span class="p">);</span>
+    <span class="n">EAC_CTX_print_private</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">pcd_ctx</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+
+    <span class="n">EAC_CTX_clear_free</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">);</span>
+    <span class="n">EAC_CTX_clear_free</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">);</span>
+    <span class="n">PACE_SEC_clear_free</span><span class="p">(</span><span class="n">secret</span><span class="p">);</span>
+
+    <span class="n">EAC_cleanup</span><span class="p">();</span>
+
+    <span class="n">BIO_free_all</span><span class="p">(</span><span class="n">bio</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">enc_nonce</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">pcd_mapping_data</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">picc_mapping_data</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">pcd_ephemeral_pubkey</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">picc_ephemeral_pubkey</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">pcd_token</span><span class="p">);</span>
+    <span class="n">BUF_MEM_free</span><span class="p">(</span><span class="n">picc_token</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Have a look at the <a class="reference external" href="http://vsmartcard.sourceforge.net/npa/README.html">nPA Smart Card Library</a> <a class="footnote-reference" href="#id3" id="id4">[2]</a> for a more complex project
+that uses the C Interface from OpenPACE.</p>
+</div>
+</div>
+<div class="section" id="using-openpace-in-python">
+<h2>Using OpenPACE in Python<a class="headerlink" href="#using-openpace-in-python" title="Permalink to this headline">¶</a></h2>
+<p>Python bindings must be configured with <em class="xref std std-option">--enable-python</em>. They depend
+on SWIG and Python.</p>
+<p>In case of a non-standard installation of OpenPACE you might &#8211; in addition to
+<span class="target" id="index-0"></span><tt class="xref std std-envvar docutils literal"><span class="pre">LD_LIBRARY_PATH</span></tt> &#8211; also need to setup the <span class="target" id="index-1"></span><tt class="xref std std-envvar docutils literal"><span class="pre">PYTHONPATH</span></tt>
+environment variable.</p>
+<p>Here is a sample script that shows how OpenPACE is accessed from Python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">EF_CARDACCESS</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\x31\x81\x82\x30\x0D\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x02\x02\x01\x02\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x02\x02\x01\x02\x02\x01\x41\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x04\x02\x02\x02\x01\x02\x02\x01\x0D\x30\x1C\x06\x09\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x30\x0C\x06\x07\x04\x00\x7F\x00\x07\x01\x02\x02\x01\x0D\x02\x01\x41\x30\x2B\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x06\x16\x1F\x65\x50\x41\x20\x2D\x20\x42\x44\x72\x20\x47\x6D\x62\x48\x20\x2D\x20\x54\x65\x73\x74\x6B\x61\x72\x74\x65\x20\x76\x32\x2E\x30\x04\x49\x17\x15\x41\x19\x28\x80\x0A\x01\xB4\x21\xFA\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\x10\x10\x29\x10\x10</span><span class="s">&quot;</span>
+<span class="n">PIN</span> <span class="o">=</span> <span class="s">&quot;123456&quot;</span>
+
+<span class="kn">import</span> <span class="nn">eac</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">EAC_init</span><span class="p">()</span>
+
+<span class="n">secret</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_SEC_new</span><span class="p">(</span><span class="n">PIN</span><span class="p">,</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_PIN</span><span class="p">)</span>
+
+<span class="n">buf</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">get_buf</span><span class="p">(</span><span class="n">EF_CARDACCESS</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">hexdump</span><span class="p">(</span><span class="s">&quot;EF.CardAccess&quot;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;Secret:&quot;</span>
+<span class="k">print</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_SEC_print_private</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">picc_ctx</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_new</span><span class="p">()</span>
+<span class="n">pcd_ctx</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_new</span><span class="p">()</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="n">EF_CARDACCESS</span><span class="p">,</span> <span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PACE step 1&quot;</span>
+<span class="n">enc_nonce</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP1_enc_nonce</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PACE step 2&quot;</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP2_dec_nonce</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">enc_nonce</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PACE step 3A&quot;</span>
+<span class="n">pcd_mapping_data</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">picc_mapping_data</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_mapping_data</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_mapping_data</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PACE step 3B&quot;</span>
+<span class="n">pcd_ephemeral_pubkey</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">picc_ephemeral_pubkey</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PACE step 3C&quot;</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PACE step 3D&quot;</span>
+<span class="n">pcd_token</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="p">)</span>
+<span class="n">picc_token</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="p">)</span>
+
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_token</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="n">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_token</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;PICC&#39;s EAC_CTX:&quot;</span>
+<span class="k">print</span> <span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_print_private</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;PCD&#39;s EAC_CTX:&quot;</span>
+<span class="k">print</span> <span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_print_private</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_clear_free</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">EAC_CTX_clear_free</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+<span class="n">eac</span><span class="o">.</span><span class="n">PACE_SEC_clear_free</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span>
+
+<span class="n">eac</span><span class="o">.</span><span class="n">EAC_cleanup</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Have a look at the <a class="reference external" href="http://vsmartcard.sourceforge.net/virtualsmartcard/README.html">Emulator for the German Identity Card</a> <a class="footnote-reference" href="#id5" id="id6">[3]</a> for a more
+complex project that uses the Python Interface from OpenPACE.</p>
+</div>
+<p>Unfortunately, OpenPACE&#8217;s Python bindings are currently poorly documented:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python_api.html">Python API to OpenPACE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#pace-module">pace Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#module-pace_entity">pace_entity Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#module-chat">chat Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.8: </span>The SWIG bindings from <a class="reference external" href="http://pypace.sourceforge.net">pyPACE</a> <a class="footnote-reference" href="#id1" id="id2">[1]</a> have been integrated into OpenPACE.</p>
+</div>
+<div class="section" id="using-openpace-in-ruby">
+<h2>Using OpenPACE in Ruby<a class="headerlink" href="#using-openpace-in-ruby" title="Permalink to this headline">¶</a></h2>
+<p>Ruby bindings must be configured with <em class="xref std std-option">--enable-ruby</em>. They depend on
+SWIG and Ruby.</p>
+<p>Here is a sample script that shows how OpenPACE is accessed from Ruby:</p>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="no">EF_CARDACCESS</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;318182300D060804007F00070202020201023012060A04007F000702020302020201020201413012060A04007F0007020204020202010202010D301C060904007F000702020302300C060704007F0007010202010D020141302B060804007F0007020206161F655041202D2042447220476D6248202D20546573746B617274652076322E3004491715411928800A01B421FA07000000000000000000000000000000000000201010291010&quot;</span><span class="o">].</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;H*&#39;</span><span class="p">)</span>
+<span class="no">PIN</span> <span class="o">=</span> <span class="s2">&quot;123456&quot;</span>
+
+<span class="nb">require</span> <span class="s1">&#39;eac&#39;</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">EAC_init</span><span class="p">()</span>
+
+<span class="n">secret</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_SEC_new</span><span class="p">(</span><span class="no">PIN</span><span class="p">,</span> <span class="ss">Eac</span><span class="p">:</span><span class="ss">:PACE_PIN</span><span class="p">)</span>
+
+<span class="n">buf</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">get_buf</span><span class="p">(</span><span class="no">EF_CARDACCESS</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">hexdump</span><span class="p">(</span><span class="s2">&quot;EF.CardAccess&quot;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;Secret:&quot;</span>
+<span class="nb">puts</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_SEC_print_private</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">picc_ctx</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_new</span><span class="p">()</span>
+<span class="n">pcd_ctx</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_new</span><span class="p">()</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="no">EF_CARDACCESS</span><span class="p">,</span> <span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="no">EF_CARDACCESS</span><span class="p">,</span> <span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PACE step 1&quot;</span>
+<span class="n">enc_nonce</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP1_enc_nonce</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PACE step 2&quot;</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP2_dec_nonce</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">enc_nonce</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PACE step 3A&quot;</span>
+<span class="n">pcd_mapping_data</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">picc_mapping_data</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_mapping_data</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_mapping_data</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PACE step 3B&quot;</span>
+<span class="n">pcd_ephemeral_pubkey</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="n">picc_ephemeral_pubkey</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PACE step 3C&quot;</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PACE step 3D&quot;</span>
+<span class="n">pcd_token</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="p">)</span>
+<span class="n">picc_token</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="p">)</span>
+
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="n">picc_token</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="no">Eac</span><span class="o">.</span><span class="n">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="n">pcd_token</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s2">&quot;PICC&#39;s EAC_CTX:&quot;</span>
+<span class="nb">puts</span> <span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_print_private</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="nb">puts</span> <span class="s2">&quot;PCD&#39;s EAC_CTX:&quot;</span>
+<span class="nb">puts</span> <span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_print_private</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_clear_free</span><span class="p">(</span><span class="n">pcd_ctx</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">EAC_CTX_clear_free</span><span class="p">(</span><span class="n">picc_ctx</span><span class="p">)</span>
+<span class="no">Eac</span><span class="o">.</span><span class="n">PACE_SEC_clear_free</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span>
+
+<span class="no">Eac</span><span class="o">.</span><span class="n">EAC_cleanup</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="mi">1</span>
+    <span class="nb">exit</span> <span class="mi">1</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.9: </span>Added Ruby bindings.</p>
+</div>
+<div class="section" id="using-openpace-in-go">
+<h2>Using OpenPACE in Go<a class="headerlink" href="#using-openpace-in-go" title="Permalink to this headline">¶</a></h2>
+<p>Go bindings must be configured with <em class="xref std std-option">--enable-go</em>. They depend on SWIG
+and <tt class="docutils literal"><span class="pre">gccgo</span></tt>.</p>
+<p>Here is a sample program that shows how OpenPACE is accessed from Go:</p>
+<div class="highlight-go"><div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;os&quot;</span>
+    <span class="s">&quot;eac&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">EF_CARDACCESS</span> <span class="o">:=</span> <span class="s">&quot;\x31\x81\x82\x30\x0D\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x02\x02\x01\x02\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x02\x02\x01\x02\x02\x01\x41\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x04\x02\x02\x02\x01\x02\x02\x01\x0D\x30\x1C\x06\x09\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x30\x0C\x06\x07\x04\x00\x7F\x00\x07\x01\x02\x02\x01\x0D\x02\x01\x41\x30\x2B\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x06\x16\x1F\x65\x50\x41\x20\x2D\x20\x42\x44\x72\x20\x47\x6D\x62\x48\x20\x2D\x20\x54\x65\x73\x74\x6B\x61\x72\x74\x65\x20\x76\x32\x2E\x30\x04\x49\x17\x15\x41\x19\x28\x80\x0A\x01\xB4\x21\xFA\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\x10\x10\x29\x10\x10&quot;</span>
+    <span class="nx">PIN</span> <span class="o">:=</span> <span class="s">&quot;123456&quot;</span>
+
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_init</span><span class="p">()</span>
+
+    <span class="nx">secret</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_SEC_new</span><span class="p">(</span><span class="nx">PIN</span><span class="p">,</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_PIN</span><span class="p">)</span>
+
+    <span class="nx">buf</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">Get_buf</span><span class="p">(</span><span class="nx">EF_CARDACCESS</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">Hexdump</span><span class="p">(</span><span class="s">&quot;EF.CardAccess&quot;</span><span class="p">,</span> <span class="nx">buf</span><span class="p">)</span>
+
+    <span class="cm">/*fmt.Println(&quot;Secret:&quot;)*/</span>
+    <span class="cm">/*eac.PACE_SEC_print_private(secret, 4)*/</span>
+
+    <span class="nx">picc_ctx</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_CTX_new</span><span class="p">()</span>
+    <span class="nx">pcd_ctx</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_CTX_new</span><span class="p">()</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="nx">EF_CARDACCESS</span><span class="p">,</span> <span class="nx">pcd_ctx</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_CTX_init_ef_cardaccess</span><span class="p">(</span><span class="nx">EF_CARDACCESS</span><span class="p">,</span> <span class="nx">picc_ctx</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;PACE step 1&quot;</span><span class="p">)</span>
+    <span class="nx">enc_nonce</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP1_enc_nonce</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">,</span> <span class="nx">secret</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;PACE step 2&quot;</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP2_dec_nonce</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">,</span> <span class="nx">secret</span><span class="p">,</span> <span class="nx">enc_nonce</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;PACE step 3A&quot;</span><span class="p">)</span>
+    <span class="nx">pcd_mapping_data</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">)</span>
+    <span class="nx">picc_mapping_data</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3A_generate_mapping_data</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">)</span>
+
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">,</span> <span class="nx">picc_mapping_data</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3A_map_generator</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">,</span> <span class="nx">pcd_mapping_data</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;PACE step 3B&quot;</span><span class="p">)</span>
+    <span class="nx">pcd_ephemeral_pubkey</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">)</span>
+    <span class="nx">picc_ephemeral_pubkey</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3B_generate_ephemeral_key</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">)</span>
+
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">,</span> <span class="nx">picc_ephemeral_pubkey</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3B_compute_shared_secret</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">,</span> <span class="nx">pcd_ephemeral_pubkey</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;PACE step 3C&quot;</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3C_derive_keys</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;PACE step 3D&quot;</span><span class="p">)</span>
+    <span class="nx">pcd_token</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">,</span> <span class="nx">picc_ephemeral_pubkey</span><span class="p">)</span>
+    <span class="nx">picc_token</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3D_compute_authentication_token</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">,</span> <span class="nx">pcd_ephemeral_pubkey</span><span class="p">)</span>
+
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">,</span> <span class="nx">picc_token</span><span class="p">)</span>
+    <span class="nx">r</span> <span class="o">:=</span> <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_STEP3D_verify_authentication_token</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">,</span> <span class="nx">pcd_token</span><span class="p">)</span>
+
+    <span class="cm">/*fmt.Println(&quot;PICC&#39;s EAC_CTX:&quot;)*/</span>
+    <span class="cm">/*eac.EAC_CTX_print_private(picc_ctx, 4)*/</span>
+    <span class="cm">/*fmt.Println(&quot;PCD&#39;s EAC_CTX:&quot;)*/</span>
+    <span class="cm">/*eac.EAC_CTX_print_private(pcd_ctx, 4)*/</span>
+
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_CTX_clear_free</span><span class="p">(</span><span class="nx">pcd_ctx</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_CTX_clear_free</span><span class="p">(</span><span class="nx">picc_ctx</span><span class="p">)</span>
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">PACE_SEC_clear_free</span><span class="p">(</span><span class="nx">secret</span><span class="p">)</span>
+
+    <span class="nx">eac</span><span class="p">.</span><span class="nx">EAC_cleanup</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nx">r</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nx">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.9: </span>Added Go bindings.</p>
+</div>
+<div class="section" id="using-openpace-in-java">
+<h2>Using OpenPACE in Java<a class="headerlink" href="#using-openpace-in-java" title="Permalink to this headline">¶</a></h2>
+<p>Ruby bindings must be configured with <em class="xref std std-option">--enable-java</em>. They depend on
+SWIG, a java compiler and the JNI developement headers. You may set the
+<span class="target" id="index-2"></span><tt class="xref std std-envvar docutils literal"><span class="pre">JAVAC</span></tt> environment variable to your preferred Java compiler.</p>
+<p>Here is a sample program that shows how OpenPACE is accessed from Java:</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">java.math.BigInteger</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Example</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="o">{</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">loadLibrary</span><span class="o">(</span><span class="s">&quot;jeac&quot;</span><span class="o">);</span>
+	<span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">argv</span><span class="o">[])</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">EF_CARDACCESS</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BigInteger</span><span class="o">(</span><span class="s">&quot;318182300D060804007F00070202020201023012060A04007F000702020302020201020201413012060A04007F0007020204020202010202010D301C060904007F000702020302300C060704007F0007010202010D020141302B060804007F0007020206161F655041202D2042447220476D6248202D20546573746B617274652076322E3004491715411928800A01B421FA07000000000000000000000000000000000000201010291010&quot;</span><span class="o">,</span> <span class="mi">16</span><span class="o">).</span><span class="na">toByteArray</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">PIN</span> <span class="o">=</span> <span class="s">&quot;123456&quot;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">();</span>
+
+        <span class="n">eac</span><span class="o">.</span><span class="na">EAC_init</span><span class="o">();</span>
+
+        <span class="n">SWIGTYPE_p_PACE_SEC</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_SEC_new</span><span class="o">(</span><span class="n">PIN</span><span class="o">,</span> <span class="n">s_type</span><span class="o">.</span><span class="na">PACE_PIN</span><span class="o">);</span>
+
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">get_buf</span><span class="o">(</span><span class="n">EF_CARDACCESS</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">hexdump</span><span class="o">(</span><span class="s">&quot;EF.CardAccess&quot;</span><span class="o">,</span> <span class="n">buf</span><span class="o">);</span>
+
+        <span class="c1">//System.out.println(&quot;Secret:&quot;);</span>
+        <span class="c1">//System.out.println(eac.PACE_SEC_print_private(secret, 4));</span>
+
+        <span class="n">SWIGTYPE_p_EAC_CTX</span> <span class="n">picc_ctx</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">EAC_CTX_new</span><span class="o">();</span>
+        <span class="n">SWIGTYPE_p_EAC_CTX</span> <span class="n">pcd_ctx</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">EAC_CTX_new</span><span class="o">();</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">EAC_CTX_init_ef_cardaccess</span><span class="o">(</span><span class="n">EF_CARDACCESS</span><span class="o">,</span> <span class="n">pcd_ctx</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">EAC_CTX_init_ef_cardaccess</span><span class="o">(</span><span class="n">EF_CARDACCESS</span><span class="o">,</span> <span class="n">picc_ctx</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;PACE step 1&quot;</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">enc_nonce</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP1_enc_nonce</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">,</span> <span class="n">secret</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;PACE step 2&quot;</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP2_dec_nonce</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">,</span> <span class="n">secret</span><span class="o">,</span> <span class="n">enc_nonce</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;PACE step 3A&quot;</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">pcd_mapping_data</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3A_generate_mapping_data</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">picc_mapping_data</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3A_generate_mapping_data</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">);</span>
+
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3A_map_generator</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">,</span> <span class="n">picc_mapping_data</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3A_map_generator</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">,</span> <span class="n">pcd_mapping_data</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;PACE step 3B&quot;</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">pcd_ephemeral_pubkey</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3B_generate_ephemeral_key</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">picc_ephemeral_pubkey</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3B_generate_ephemeral_key</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">);</span>
+
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3B_compute_shared_secret</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3B_compute_shared_secret</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;PACE step 3C&quot;</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3C_derive_keys</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3C_derive_keys</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;PACE step 3D&quot;</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">pcd_token</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3D_compute_authentication_token</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">,</span> <span class="n">picc_ephemeral_pubkey</span><span class="o">);</span>
+        <span class="n">SWIGTYPE_p_BUF_MEM</span> <span class="n">picc_token</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3D_compute_authentication_token</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">,</span> <span class="n">pcd_ephemeral_pubkey</span><span class="o">);</span>
+
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3D_verify_authentication_token</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">,</span> <span class="n">picc_token</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">eac</span><span class="o">.</span><span class="na">PACE_STEP3D_verify_authentication_token</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">,</span> <span class="n">pcd_token</span><span class="o">);</span>
+
+        <span class="c1">//System.out.println(&quot;PICC&#39;s EAC_CTX:&quot;);</span>
+        <span class="c1">//System.out.println(eac.EAC_CTX_print_private(picc_ctx, 4));</span>
+        <span class="c1">//System.out.println(&quot;PCD&#39;s EAC_CTX:&quot;);</span>
+        <span class="c1">//System.out.println(eac.EAC_CTX_print_private(pcd_ctx, 4));</span>
+
+        <span class="n">eac</span><span class="o">.</span><span class="na">EAC_CTX_clear_free</span><span class="o">(</span><span class="n">pcd_ctx</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">EAC_CTX_clear_free</span><span class="o">(</span><span class="n">picc_ctx</span><span class="o">);</span>
+        <span class="n">eac</span><span class="o">.</span><span class="na">PACE_SEC_clear_free</span><span class="o">(</span><span class="n">secret</span><span class="o">);</span>
+
+        <span class="n">eac</span><span class="o">.</span><span class="na">EAC_cleanup</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">r</span> <span class="o">!=</span> <span class="mi">1</span><span class="o">)</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Result was: &quot;</span> <span class="o">+</span> <span class="n">r</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-openpace-in-javascript">
+<h2>Using OpenPACE in Javascript<a class="headerlink" href="#using-openpace-in-javascript" title="Permalink to this headline">¶</a></h2>
+<p>Technically the process for getting OpenPACE into Javascript is similar to
+cross compiling. It is covered in <a class="reference internal" href="index.html#javascript-api"><em>Compiling for Javascript</em></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://pypace.sourceforge.net">http://pypace.sourceforge.net</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td><a class="reference external" href="http://vsmartcard.sourceforge.net/npa/README.html">http://vsmartcard.sourceforge.net/npa/README.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td><a class="reference external" href="http://vsmartcard.sourceforge.net/virtualsmartcard/README.html">http://vsmartcard.sourceforge.net/virtualsmartcard/README.html</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_132.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Usage of OpenPACE</a><ul>
+<li><a class="reference internal" href="#using-openpace-in-c-c">Using OpenPACE in C/C++</a></li>
+<li><a class="reference internal" href="#using-openpace-in-python">Using OpenPACE in Python</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-openpace-in-ruby">Using OpenPACE in Ruby</a></li>
+<li><a class="reference internal" href="#using-openpace-in-go">Using OpenPACE in Go</a></li>
+<li><a class="reference internal" href="#using-openpace-in-java">Using OpenPACE in Java</a></li>
+<li><a class="reference internal" href="#using-openpace-in-javascript">Using OpenPACE in Javascript</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to OpenPACE&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="python_api.html"
+                        title="next chapter">Python API to OpenPACE</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="python_api.html" title="Python API to OpenPACE"
+             >next</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to OpenPACE’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">OpenPACE 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-2013, Frank Morgner, Dominik Oepen.
+    </div>
+  </body>
+</html>

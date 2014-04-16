@@ -1,0 +1,458 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to OpenPACE’s documentation! &mdash; OpenPACE 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="OpenPACE 0.9 documentation" href="#" />
+    <link rel="next" title="Usage of OpenPACE" href="usage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="usage.html" title="Usage of OpenPACE"
+             accesskey="N">next</a></li>
+        <li><a href="#">OpenPACE 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-openpace-s-documentation">
+<h1>Welcome to OpenPACE&#8217;s documentation!<a class="headerlink" href="#welcome-to-openpace-s-documentation" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://travis-ci.org/frankmorgner/openpace"><img alt="https://travis-ci.org/frankmorgner/openpace.png?branch=master" src="https://travis-ci.org/frankmorgner/openpace.png?branch=master" /></a>
+<div class="sidebar">
+<p class="first sidebar-title">Summary</p>
+<p>Cryptographic library for EAC version 2</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="mailto:morgner&#37;&#52;&#48;informatik&#46;hu-berlin&#46;de">Frank Morgner</a></li>
+<li><a class="reference external" href="mailto:oepen&#37;&#52;&#48;informatik&#46;hu-berlin&#46;de">Dominik Oepen</a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">License:</th><td class="field-body"><p class="first">GPL version 3</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Tested Platforms:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li>Windows</li>
+<li>Linux (Debian, Ubuntu, SUSE, OpenMoko)</li>
+<li>FreeBSD</li>
+<li>Mac OS</li>
+<li>Solaris</li>
+<li>Android</li>
+<li>Javascript</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>OpenPACE implements Extended Access Control (EAC) version 2 as specified in
+<a class="reference external" href="https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html">BSI TR-03110</a> <a class="footnote-reference" href="#id1" id="id2">[1]</a>. OpenPACE comprises support for the following protocols:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Password Authenticated Connection Establishment (PACE):</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Establish a secure channel with a strong key between two parties that only
+share a weak secret.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Terminal Authentication (TA):</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Verify/prove the terminal&#8217;s certificate (or rather certificate chain) and
+secret key.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Chip Authentication (CA):</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Establish a secure channel based on the chip&#8217;s static key pair proving its
+authenticy.</td>
+</tr>
+</tbody>
+</table>
+<p>Furthermore, OpenPACE also supports Card Verifiable Certificates (CV
+Certificates) as well as easy to use wrappers for using the established secure
+channels.</p>
+<p>The handlers for looking up trust anchors during <abbr title="Terminal Authenticatation">TA</abbr> and <abbr title="Chip Authentication">CA</abbr> (i.e. the <abbr title="Country Verifying Certificate Authority">CSCA</abbr>
+and the <abbr title="Country Signing Certificate Authority">CSCA</abbr> certificates) can be customized. By default, the appropriate
+certificates will be looked up in the file system.</p>
+<p>OpenPACE supports all variants of <abbr title="Password Authenticated Connection Establishment">PACE</abbr> (DH/ECDH, GM/IM), <abbr title="Terminal Authenticatation">TA</abbr>
+(RSASSA-PKCS1-v1_5/RSASSA-PSS/ECDSA), <abbr title="Chip Authentication">CA</abbr> (DH/ECDH) and all standardized
+domain parameters (GFP/ECP).</p>
+<p>OpenPACE is implemented as C-library and comes with native language wrappers
+for:</p>
+<ul class="simple">
+<li>Python</li>
+<li>Ruby</li>
+<li>Javascript</li>
+<li>Java</li>
+<li>Go</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">OpenPACE only implements the cryptographic protocols of the <abbr title="Extended Access Control">EAC</abbr>. If you
+actually want to exchange data with a smart card, you need to take care of
+formatting and sending the data in the form of APDUs. If this is what
+you&#8217;re trying to do, you should have a look at the <strong class="command">npa-tool</strong> of
+the <a class="reference external" href="http://vsmartcard.sourceforge.net/npa/README.html">nPA Smart Card Library</a> <a class="footnote-reference" href="#id4" id="id5">[2]</a>.</p>
+</div>
+<div class="section" id="download-openpace">
+<h2>Download OpenPACE<a class="headerlink" href="#download-openpace" title="Permalink to this headline">¶</a></h2>
+<p>You can find the latest release of OpenPACE on <a class="reference external" href="http://sourceforge.net/projects/openpace/">Sourceforge</a>.</p>
+<p>Alternatively, you can clone our git repository:</p>
+<div class="highlight-sh"><div class="highlight"><pre>git clone git://git.code.sf.net/p/openpace/git openpace
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-openpace">
+<h2>Install OpenPACE<a class="headerlink" href="#install-openpace" title="Permalink to this headline">¶</a></h2>
+<p>OpenPACE uses the GNU Build System to compile and install. If you are
+unfamiliar with it, please have a look at <tt class="file docutils literal"><span class="pre">INSTALL</span></tt>. If you can not find
+it, you are probably working bleeding edge in the repository.  Run the
+following command in <tt class="file docutils literal"><span class="pre">openpace</span></tt> to get the missing standard
+auxiliary files:</p>
+<div class="highlight-sh"><div class="highlight"><pre>autoreconf --verbose --install
+</pre></div>
+</div>
+<p>To configure (<strong class="command">configure &#8211;help</strong> lists possible options), build and
+install OpenPACE now do the following:</p>
+<div class="highlight-sh"><div class="highlight"><pre>./configure
+make
+make install
+</pre></div>
+</div>
+<p>OpenPACE depends on the <a class="reference external" href="http://openssl.org">OpenSSL</a> <a class="footnote-reference" href="#id6" id="id7">[3]</a> library. Since <abbr title="Password Authenticated Connection Establishment">PACE</abbr> uses CMAC and the
+Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is required.</p>
+<p>Furthermore, additional object identifiers from <a class="reference external" href="https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html">BSI TR-03110</a> <a class="footnote-reference" href="#id1" id="id3">[1]</a> are required.
+You have two options to get them to work:</p>
+<ol class="arabic simple">
+<li>Let OpenPACE load the object identifiers at runtime</li>
+<li>Patch OpenSSL to include the identifiers</li>
+</ol>
+<p>The first option allows you to install an unchanged version of OpenSSL to your
+system. However, performance will be slightly worse and there are some
+limitations. For example, you won&#8217;t be able to use the new NIDs as labels in a
+switch statement and you need to make sure to call <tt class="docutils literal"><span class="pre">EAC_init()</span></tt> first.  For
+patching OpenSSL we provide <tt class="file docutils literal"><span class="pre">oids.patch</span></tt>. You can configure
+OpenPACE with <em class="xref std std-option">--enable-openssl-install</em>, which will
+automatically download, patch, build and install OpenSSL if needed.</p>
+<div class="section" id="cross-compiling-openpace">
+<h3>Cross compiling OpenPACE<a class="headerlink" href="#cross-compiling-openpace" title="Permalink to this headline">¶</a></h3>
+<p>We have added some scripts for the ease of cross compiling for Windows and
+Android. Both are tested with Debian wheezy. First create a working
+<tt class="file docutils literal"><span class="pre">Makefile</span></tt>:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+./configure
+</pre></div>
+</div>
+<div class="section" id="compiling-for-windows">
+<h4>Compiling for Windows<a class="headerlink" href="#compiling-for-windows" title="Permalink to this headline">¶</a></h4>
+<p>Cross compilation for Windows can be done with:</p>
+<div class="highlight-sh"><div class="highlight"><pre>make win
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="16%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Make Variable</th>
+<th class="head">Default</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">WIN_TOOL</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">i686-w64-mingw32</span></tt></td>
+<td>cross compiler</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">WIN_TOOL_DIR</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">/usr/${WIN_TOOL}</span></tt></td>
+<td>root directory of the cross compiler containing the <tt class="file docutils literal"><span class="pre">lib</span></tt> and <tt class="file docutils literal"><span class="pre">include</span></tt> folders</td>
+</tr>
+</tbody>
+</table>
+<p>On successfull compilation, the Windows binaries can be found in
+<tt class="file docutils literal"><span class="pre">openpace-0.9_win32</span></tt>.</p>
+</div>
+<div class="section" id="compiling-for-android">
+<h4>Compiling for Android<a class="headerlink" href="#compiling-for-android" title="Permalink to this headline">¶</a></h4>
+<p>Cross compilation for Android can be done with:</p>
+<div class="highlight-sh"><div class="highlight"><pre>make android
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="49%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Make Variable</th>
+<th class="head">Default</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">ANDROID_ARCH</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">arm</span></tt></td>
+<td>target Architecture</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">ANDROID_TOOL</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">${ANDROID_ARCH}-linux-androideabi</span></tt></td>
+<td>cross compiler</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">MAKE_STANDALONE_TOOLCHAIN</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">${HOME}/.local/opt/android-ndk-r9/build/tools/make-standalone-toolchain.sh</span></tt></td>
+<td>location of the NDK script for creating the toolchain</td>
+</tr>
+</tbody>
+</table>
+<p>On successfull compilation, the Android binaries can be found in
+<tt class="file docutils literal"><span class="pre">openpace-0.9_$</span><em><span class="pre">ANDROID_ARCH</span></em></tt>.</p>
+</div>
+<div class="section" id="compiling-for-javascript">
+<span id="javascript-api"></span><h4>Compiling for Javascript<a class="headerlink" href="#compiling-for-javascript" title="Permalink to this headline">¶</a></h4>
+<p>Technically the process for getting OpenPACE into Javascript is similar to
+cross compiling. With <a class="reference external" href="https://github.com/kripken/emscripten">Emscripten</a> <a class="footnote-reference" href="#id10" id="id11">[5]</a> the library is compiled into LLVM bytecode
+and then translated into Javascript. Use the following command:</p>
+<div class="highlight-sh"><div class="highlight"><pre>make emscripten
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="24%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Make Variable</th>
+<th class="head">Default</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">EMSCRIPTEN_DIR</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">${HOME}/.local/src/emscripten</span></tt></td>
+<td>root directory of emscripten containing the <tt class="file docutils literal"><span class="pre">system/include/libc</span></tt> folder</td>
+</tr>
+</tbody>
+</table>
+<p>On successfull compilation, the compiled bitcode files can be found in
+<tt class="file docutils literal"><span class="pre">openpace-0.9_bc</span></tt>. You can run our testsuite
+completely in Javascript or <a class="reference external" href="../../_static/eactest.html">in your browser</a>:</p>
+<div class="highlight-sh"><div class="highlight"><pre>nodejs openpace-0.9_bc/eactest.js
+<span class="c"># WARNING: Our tests are very time consuming and might stall your browser for a moment or two...</span>
+firefox openpace-0.9_bc/eactest.html
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><a class="reference external" href="http://www.matasano.com/articles/javascript-cryptography">Javascript cryptography is considered harmful</a> <a class="footnote-reference" href="#id12" id="id13">[6]</a>. You may want to think
+twice before using the Javascript version of OpenPACE.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="how-to-use-openpace">
+<h2>How to use OpenPACE<a class="headerlink" href="#how-to-use-openpace" title="Permalink to this headline">¶</a></h2>
+<p>OpenPACE is a native C library on top of OpenSSL. If you want to know how to
+use OpenPACE from C/C++, have a look at our <a class="reference external" href="../../_static/doxygen/modules.html">API documentation</a>.</p>
+<p>OpenPACE uses <a class="reference external" href="http://swig.org">SWIG</a> <a class="footnote-reference" href="#id8" id="id9">[4]</a> to offer bindings in some more programming languages. The
+bindings are easily portable to lots of different languages. Currently, native
+language bindings need to be explicitly turned on with <tt class="docutils literal"><span class="pre">./configure</span>
+<span class="pre">--enable-...</span></tt></p>
+<p>If you have chosen to install OpenPACE in a non-standard location you have to
+set up the <span class="target" id="index-0"></span><tt class="xref std std-envvar docutils literal"><span class="pre">LD_LIBRARY_PATH</span></tt> environment variable correctly. One way to
+do this is:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/path/to/libeac
+</pre></div>
+</div>
+<p>If OpenPACE is compiled for Javascript, it results in a standalone Javascript
+file that can be used without special requirements.</p>
+<p>More details and a number of examples are covered here:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage of OpenPACE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-openpace-in-c-c">Using OpenPACE in C/C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-openpace-in-python">Using OpenPACE in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-openpace-in-ruby">Using OpenPACE in Ruby</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-openpace-in-go">Using OpenPACE in Go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-openpace-in-java">Using OpenPACE in Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-openpace-in-javascript">Using OpenPACE in Javascript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="where-to-get-help">
+<h2>Where to get help<a class="headerlink" href="#where-to-get-help" title="Permalink to this headline">¶</a></h2>
+<p>Do you have questions, suggestions or contributions? Feedback of any kind is
+more than welcome! You can contact us through our <a class="reference external" href="https://github.com/frankmorgner/openpace/">GitHub</a> <a class="reference external" href="https://github.com/d0/openpace/">repositories</a> or the <a class="reference external" href="http://sourceforge.net/projects/openpace/support">project trackers</a>.</p>
+</div>
+<div class="section" id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Extended Access Control Specification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#password-authenticated-connection-establishment">Password Authenticated Connection Establishment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#protocol-specification">Protocol Specification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#ecdh-mapping">ECDH Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#dh-mapping">DH Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#terminal-authentication">Terminal Authentication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#id3">Protocol Specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#chip-authentication">Chip Authentication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#id4">Protocol Specification</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> <a class="reference external" href="https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html">https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[2]</a></td><td><a class="reference external" href="http://vsmartcard.sourceforge.net/npa/README.html">http://vsmartcard.sourceforge.net/npa/README.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[3]</a></td><td><a class="reference external" href="http://openssl.org">http://openssl.org</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[4]</a></td><td><a class="reference external" href="http://swig.org">http://swig.org</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[5]</a></td><td><a class="reference external" href="https://github.com/kripken/emscripten">https://github.com/kripken/emscripten</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id12" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id13">[6]</a></td><td><a class="reference external" href="http://www.matasano.com/articles/javascript-cryptography">http://www.matasano.com/articles/javascript-cryptography</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/logo_132.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to OpenPACE&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#download-openpace">Download OpenPACE</a></li>
+<li><a class="reference internal" href="#install-openpace">Install OpenPACE</a><ul>
+<li><a class="reference internal" href="#cross-compiling-openpace">Cross compiling OpenPACE</a><ul>
+<li><a class="reference internal" href="#compiling-for-windows">Compiling for Windows</a></li>
+<li><a class="reference internal" href="#compiling-for-android">Compiling for Android</a></li>
+<li><a class="reference internal" href="#compiling-for-javascript">Compiling for Javascript</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-use-openpace">How to use OpenPACE</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#where-to-get-help">Where to get help</a></li>
+<li><a class="reference internal" href="#further-reading">Further Reading</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage of OpenPACE</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="usage.html" title="Usage of OpenPACE"
+             >next</a></li>
+        <li><a href="#">OpenPACE 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-2013, Frank Morgner, Dominik Oepen.
+    </div>
+  </body>
+</html>
