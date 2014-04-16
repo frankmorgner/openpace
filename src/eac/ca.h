@@ -104,7 +104,7 @@ CA_set_key(const EAC_CTX *ctx,
  *
  * @return Encoded public key or NULL in case of an error
  *
- * @see <a href="http://openpace.sourceforge.net/protocols.html#id4">CA's Protocol Specification</a>
+ * @see <a href="http://frankmorgner.github.io/openpace/protocols.html#id4">CA's Protocol Specification</a>
  */
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx);
@@ -115,7 +115,7 @@ CA_STEP1_get_pubkey(const EAC_CTX *ctx);
  *
  * @return Public key or NULL in case of an error
  *
- * @see <a href="http://openpace.sourceforge.net/protocols.html#id4">CA's Protocol Specification</a>
+ * @see <a href="http://frankmorgner.github.io/openpace/protocols.html#id4">CA's Protocol Specification</a>
  */
 BUF_MEM *
 CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
@@ -129,7 +129,7 @@ CA_STEP2_get_eph_pubkey(const EAC_CTX *ctx);
  *
  * @return 1 if the keys match, 0 if they don't or -1 in case of an error
  *
- * @see <a href="http://openpace.sourceforge.net/protocols.html#id4">CA's Protocol Specification</a>
+ * @see <a href="http://frankmorgner.github.io/openpace/protocols.html#id4">CA's Protocol Specification</a>
  */
 int
 CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
@@ -145,7 +145,7 @@ CA_STEP3_check_pcd_pubkey(const EAC_CTX *ctx,
  *
  * @see \c CA_get_pubkey() extracts the PICC's public key from an \c EF.CardSecurity
  *
- * @see <a href="http://openpace.sourceforge.net/protocols.html#id4">CA's Protocol Specification</a>
+ * @see <a href="http://frankmorgner.github.io/openpace/protocols.html#id4">CA's Protocol Specification</a>
  */
 int
 CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
@@ -160,7 +160,7 @@ CA_STEP4_compute_shared_secret(const EAC_CTX *ctx, const BUF_MEM *pubkey);
  *
  * @return 1 on success or 0 in case of an error
  *
- * @see <a href="http://openpace.sourceforge.net/protocols.html#id4">CA's Protocol Specification</a>
+ * @see <a href="http://frankmorgner.github.io/openpace/protocols.html#id4">CA's Protocol Specification</a>
  */
 int
 CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
@@ -175,7 +175,7 @@ CA_STEP5_derive_keys(const EAC_CTX *ctx, const BUF_MEM *pub,
  *
  * @return 1 on success or 0 in case of an error
  *
- * @see <a href="http://openpace.sourceforge.net/protocols.html#id4">CA's Protocol Specification</a>
+ * @see <a href="http://frankmorgner.github.io/openpace/protocols.html#id4">CA's Protocol Specification</a>
  */
 int
 CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);

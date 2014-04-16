@@ -80,11 +80,11 @@ Download @PACKAGE_NAME@
 *******************************************************************************
 
 You can find the latest release of @PACKAGE_NAME@ on `Sourceforge
-<http://sourceforge.net/projects/openpace/>`_.
+<http://sourceforge.net/projects/openpace/files>`_.
 
 Alternatively, you can clone our git repository::
 
-    git clone git://git.code.sf.net/p/openpace/git openpace
+    git clone https://github.com/frankmorgner/openpace.git
 
 
 *******************************************************************************

@@ -34,7 +34,7 @@ for:
 - Java
 - Go
 
-Please refer to [our project's website](http://openpace.sourceforge.net/) for more information.
+Please refer to [our project's website](http://frankmorgner.github.io/openpace/) for more information.
 
 ## License
 

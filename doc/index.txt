@@ -80,11 +80,11 @@ Download OpenPACE
 *******************************************************************************
 
 You can find the latest release of OpenPACE on `Sourceforge
-<http://sourceforge.net/projects/openpace/>`_.
+<http://sourceforge.net/projects/openpace/files>`_.
 
 Alternatively, you can clone our git repository::
 
-    git clone git://git.code.sf.net/p/openpace/git openpace
+    git clone https://github.com/frankmorgner/openpace.git
 
 
 *******************************************************************************
@@ -237,7 +237,7 @@ Do you have questions, suggestions or contributions? Feedback of any kind is
 more than welcome! You can contact us through our `GitHub
 <https://github.com/frankmorgner/openpace/>`_ `repositories
 <https://github.com/d0/openpace/>`_ or the `project trackers
-<http://sourceforge.net/projects/openpace/support>`_.
+<https://github.com/frankmorgner/openpace/issues>`_.
 
 
 *******************************************************************************
