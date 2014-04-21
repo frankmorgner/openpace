@@ -223,8 +223,9 @@ ecdh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     order = BN_CTX_get(bn_ctx);
     cofactor = BN_CTX_get(bn_ctx);
     check(group && cofactor, "internal error");
-    EC_GROUP_get_order(group, order, bn_ctx);
-    EC_GROUP_get_cofactor(group, cofactor, bn_ctx);
+    if (!EC_GROUP_get_order(group, order, bn_ctx)
+            || !EC_GROUP_get_cofactor(group, cofactor, bn_ctx))
+        goto err;
 
     /* Convert nonce to BIGNUM */
     bn_s = BN_bin2bn((unsigned char *) s->data, s->length, bn_s);
