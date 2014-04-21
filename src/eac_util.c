@@ -648,8 +648,6 @@ err:
         DH_free(dh_in);
     if (ec_in)
         EC_KEY_free(ec_in);
-    if (rsa_out)
-        RSA_free(rsa_out);
     if (rsa_in)
         RSA_free(rsa_in);
 
