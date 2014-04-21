@@ -40,7 +40,7 @@
 
 /* TODO: Make sure that ERR_load_crypto_strings() has been called */
 #define ossl_errors() ERR_print_errors_fp(stderr)
-#define log_err(M, ...) {fprintf(stderr, "[ERROR] (%s:%d ) " M "\n", __FILE__, __LINE__, ##__VA_ARGS__); ossl_errors()}
+#define log_err(M, ...) {fprintf(stderr, "[ERROR] (%s:%d ) " M "\n", __FILE__, __LINE__, ##__VA_ARGS__); ossl_errors();}
 #define check(A, M, ...) {if(!(A)) { log_err(M, ##__VA_ARGS__); goto err; }}
 #define check_return(A, M, ...) {if(!(A)) { log_err(M, ##__VA_ARGS__); errno=0; return NULL;}}
 
