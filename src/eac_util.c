@@ -890,9 +890,9 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
     switch (EVP_PKEY_type(evp_pkey->type)) {
         case EVP_PKEY_EC:
             ec_key = EVP_PKEY_get1_EC_KEY(evp_pkey);
-            group = EC_KEY_get0_group(ec_key);
             if (!ec_key)
                 goto err;
+            group = EC_KEY_get0_group(ec_key);
 
             if (pubkey) {
                 ec_point = EC_POINT_new(group);
