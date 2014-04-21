@@ -20,8 +20,8 @@ addons:
   coverity_scan:
     project:
       name: "frankmorgner/openpace"
-      description: "Your project description here"
+      description: "Cryptographic library for EAC version 2"
     notification_email: morgner@informatik.hu-berlin.de
-    build_command_prepend:
-    build_command:
+    build_command_prepend: autoreconf -vsi && ./configure --enable-openssl-install
+    build_command: make
     branch_pattern: master
