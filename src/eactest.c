@@ -3515,6 +3515,7 @@ static_eac_test(struct eac_worked_example *tc)
              * we only compare the signatures in the deterministic case */
             CHECK(0, buf_eq_buf(signature, &tc->ta_pcd_signature),
                     "Signature does match test data");
+           /* fall through */
         case HACK_id_TA_RSA_PSS_SHA_1:
            /* fall through */
         case HACK_id_TA_RSA_PSS_SHA_256:
