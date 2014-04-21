@@ -2830,7 +2830,7 @@ check_generator(EVP_PKEY *evp_pkey, const BUF_MEM generator, BN_CTX *bn_ctx)
         case EVP_PKEY_DH:
             dh = EVP_PKEY_get1_DH(evp_pkey);
             bn = BN_bin2bn((unsigned char *) generator.data, generator.length, bn);
-            if (!bn || BN_cmp(dh->g, bn) != 0)
+            if (!dh || !bn || BN_cmp(dh->g, bn) != 0)
                 goto err;
             break;
         default:
