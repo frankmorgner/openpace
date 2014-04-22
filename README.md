@@ -1,6 +1,6 @@
 # OpenPACE *- Cryptographic library for EAC version 2*
 
-[![Build Status Image](https://travis-ci.org/frankmorgner/openpace.png?branch=master)](https://travis-ci.org/frankmorgner/openpace)
+[![Build Status Image](https://travis-ci.org/frankmorgner/openpace.png?branch=master)](https://travis-ci.org/frankmorgner/openpace) [![Coverity Scan Build Status](https://scan.coverity.com/projects/1789/badge.svg)](https://scan.coverity.com/projects/1789)
 
 OpenPACE implements Extended Access Control (EAC) version 2 as specified in
 BSI TR-03110. OpenPACE comprises support for the following protocols:
@@ -16,8 +16,8 @@ Furthermore, OpenPACE also supports Card Verifiable Certificates (CV
 Certificates) as well as easy to use wrappers for using the established secure
 channels.
 
-The handlers for looking up trust anchors during |TA| and |CA| (i.e. the |CVCA|
-and the |CSCA| certificates) can be customized. By default, the appropriate
+The handlers for looking up trust anchors during TA and CA (i.e. the CVCA
+and the CSCA certificates) can be customized. By default, the appropriate
 certificates will be looked up in the file system.
 
 OpenPACE supports all variants of PACE (DH/ECDH, GM/IM), TA

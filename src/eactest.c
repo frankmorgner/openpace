@@ -2818,7 +2818,11 @@ check_generator(EVP_PKEY *evp_pkey, const BUF_MEM generator, BN_CTX *bn_ctx)
     switch (EVP_PKEY_type(evp_pkey->type)) {
         case EVP_PKEY_EC:
             ec_key = EVP_PKEY_get1_EC_KEY(evp_pkey);
+            if (!ec_key)
+               goto err;
             group = EC_KEY_get0_group(ec_key);
+            if (!group)
+               goto err;
             ec_point = EC_POINT_new(group);
             if (!ec_point
                     || !EC_POINT_oct2point(group, ec_point,
@@ -3479,6 +3483,7 @@ static_eac_test(struct eac_worked_example *tc)
              * we only compare the signatures in the deterministic case */
             CHECK(0, buf_eq_buf(signature, &tc->ta_pcd_signature),
                     "Signature does match test data");
+           /* fall through */
         case HACK_id_TA_RSA_PSS_SHA_1:
            /* fall through */
         case HACK_id_TA_RSA_PSS_SHA_256:

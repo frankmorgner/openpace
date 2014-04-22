@@ -36,6 +36,7 @@
 int
 init_ecdh(EC_KEY ** ecdh, int standardizedDomainParameters)
 {
+    int r = 0;
     EC_KEY * tmp = NULL;
 
     if (!ecdh) {
@@ -91,13 +92,10 @@ init_ecdh(EC_KEY ** ecdh, int standardizedDomainParameters)
     }
     *ecdh = tmp;
 
-    return 1;
+    r = 1;
 
 err:
-    if (!*ecdh && tmp)
-        EC_KEY_free(tmp);
-
-    return 0;
+    return r;
 }
 
 BUF_MEM *
