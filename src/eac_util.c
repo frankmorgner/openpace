@@ -33,6 +33,7 @@
 #include "misc.h"
 #include <eac/eac.h>
 #include <openssl/bio.h>
+#include <openssl/crypto.h>
 #include <openssl/dh.h>
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
@@ -745,8 +746,7 @@ verify_authentication_token(int protocol, const KA_CTX *ka_ctx, BN_CTX *bn_ctx,
     if (!token_verify)
         return -1;
 
-    if (token_verify->length != token->length
-                || consttime_memcmp(token_verify, token) != 0)
+    if (CRYPTO_memcmp(token_verify, token, token_verify->length))
         rv = 0;
     else
         rv = 1;

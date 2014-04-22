@@ -211,23 +211,3 @@ const ECDH_METHOD *ECDH_OpenSSL_Point(void)
     {
     return &openssl_ecdh_meth_point;
     }
-int
-consttime_memcmp(const BUF_MEM *a, const BUF_MEM *b)
-{
-    unsigned int ret = 0x00;
-    int i = 0;
-
-    check((a && b), "Invalid arguments");
-
-    /* Decide whether to compare with given or random data.
-     * This leaks the length of a. */
-    if (a->length != b->length)
-        return 1;
-
-    /* XOR all the Bytes */
-    for (i = 0; i < b->length; i++)
-        ret |= (unsigned char) (a->data[i] ^ b->data[i]);
-
-err:
-    return (1 & ((ret -1) >> 8)) - 1;
-}
