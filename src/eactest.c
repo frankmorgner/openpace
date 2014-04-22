@@ -3280,42 +3280,6 @@ err:
     return ok;
 }
 
-/* Test our consttime_memcmp function */
-static int
-test_consttime_memcmp(void)
-{
-    BUF_MEM *test_a = NULL, *test_b = NULL, *test_c = NULL;
-    int failed = 1;
-
-    printf("consttime_memcmp tests ");
-
-    test_a = BUF_MEM_create_init("Chicken", 7);
-    test_b = BUF_MEM_create_init("Waffles", 7);
-    test_c = BUF_MEM_create_init("Chicken and Waffles", 19);
-    if (!test_a || !test_b || !test_c)
-        goto err;
-
-    CHECK(1, consttime_memcmp(test_a, test_a) == 0, "Comparing equal strings");
-
-    CHECK(1, consttime_memcmp(test_a, test_b) != 0,
-            "Comparing different strings of equal length");
-
-    CHECK(1, consttime_memcmp(test_a, test_c) != 0,
-            "Comparing different strings of different length");
-
-    failed = 0;
-
-err:
-    if (test_a)
-        BUF_MEM_free(test_a);
-    if (test_b)
-        BUF_MEM_free(test_b);
-    if (test_c)
-        BUF_MEM_free(test_c);
-
-    END
-}
-
 /* Perform one EAC protocol run using static test data */
 static int
 static_eac_test(struct eac_worked_example *tc)
@@ -3904,7 +3868,6 @@ main(int argc, char *argv[])
     failed += test_parsing();
     failed += test_worked_examples();
     failed += do_dynamic_eac_tests();
-    failed += test_consttime_memcmp();
     EAC_cleanup();
 
     if (failed)

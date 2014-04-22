@@ -32,6 +32,7 @@
 #include "misc.h"
 #include <eac/eac.h>
 #include <eac/pace.h>
+#include <openssl/crypto.h>
 
 BUF_MEM *
 EAC_add_iso_pad(const EAC_CTX *eac_ctx, const BUF_MEM * m)
@@ -162,7 +163,7 @@ EAC_verify_authentication(const EAC_CTX *ctx, const BUF_MEM *data,
     my_mac = EAC_authenticate(ctx, data);
     check(my_mac, "Failed to compute MAC");
 
-    if (consttime_memcmp(my_mac, mac) == 0)
+    if (CRYPTO_memcmp(my_mac, mac, mac->length) == 0)
         ret = 1;
 
 err:
