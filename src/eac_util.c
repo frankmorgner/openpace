@@ -747,7 +747,7 @@ verify_authentication_token(int protocol, const KA_CTX *ka_ctx, BN_CTX *bn_ctx,
         return -1;
 
     if (token_verify->length != token->length ||
-            CRYPTO_memcmp(token_verify, token, token_verify->length))
+            CRYPTO_memcmp(token_verify->data, token->data, token_verify->length))
         rv = 0;
     else
         rv = 1;

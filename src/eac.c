@@ -164,7 +164,7 @@ EAC_verify_authentication(const EAC_CTX *ctx, const BUF_MEM *data,
     check(my_mac, "Failed to compute MAC");
     check((mac->length == my_mac->length), "Invalid MAC length");
 
-    if (CRYPTO_memcmp(my_mac, mac, mac->length) == 0)
+    if (CRYPTO_memcmp(my_mac->data, mac->data, mac->length) == 0)
         ret = 1;
 
 err:
