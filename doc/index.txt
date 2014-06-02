@@ -14,6 +14,9 @@ Welcome to OpenPACE's documentation!
 .. image:: https://travis-ci.org/frankmorgner/openpace.png?branch=master
   :target: https://travis-ci.org/frankmorgner/openpace
 
+.. image:: https://scan.coverity.com/projects/1789/badge.svg
+  :target: https://scan.coverity.com/projects/1789
+
 .. sidebar:: Summary
 
     Cryptographic library for EAC version 2
