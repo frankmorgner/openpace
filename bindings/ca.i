@@ -40,6 +40,17 @@ CA_disable_passive_authentication(EAC_CTX *ctx);
 
 #if !defined(SWIG_CSTRING_UNIMPL)
 
+%rename(CA_get_pubkey) ca_get_pubkey;
+%inline %{
+    static void ca_get_pubkey (const EAC_CTX *ctx, char **out, size_t *out_len, char *in, size_t
+            in_len) /* typemap applied */ {
+        BUF_MEM *out_buf = CA_get_pubkey(ctx, (unsigned char*) in, in_len);
+        buf2string(out_buf, out, out_len);
+        BUF_MEM_clear_free(out_buf);
+        return;
+    }
+%}
+
 %rename(CA_STEP1_get_pubkey) ca_step1_get_pubkey;
 %inline %{
     static void ca_step1_get_pubkey(char **out, size_t *out_len, const EAC_CTX *ctx) {
@@ -106,6 +117,10 @@ err:
 
 #else
 
+%newobject CA_get_pubkey;
+BUF_MEM*
+CA_get_pubkey(const EAC_CTX *ctx, char *in, size_t in_len);
+
 %newobject CA_STEP1_get_pubkey;
 BUF_MEM *
 CA_STEP1_get_pubkey(const EAC_CTX *ctx);
@@ -128,8 +143,8 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 
 int
 CA_set_key(const EAC_CTX *ctx,
-        const unsigned char *priv, size_t priv_len,
-        const unsigned char *pub, size_t pub_len);
+        char *privkey, size_t privkey_len,
+        char *pubkey, size_t pubkey_len);
 
 #ifdef SWIGPYTHON
 %rename(CA_STEP5_derive_keys) ca_step5_derive_keys;
