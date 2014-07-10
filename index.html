@@ -1,6 +1,5 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -9,9 +8,11 @@
     
     <title>Welcome to OpenPACE’s documentation! &mdash; OpenPACE 0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.1.0/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -26,25 +27,140 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="OpenPACE 0.9 documentation" href="#" />
-    <link rel="next" title="Usage of OpenPACE" href="usage.html" /> 
+    <link rel="next" title="Usage of OpenPACE" href="usage.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
   </head>
   <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="usage.html" title="Usage of OpenPACE"
-             accesskey="N">next</a></li>
-        <li><a href="#">OpenPACE 0.9 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+  
+  <a href="https://github.com/frankmorgner/openpace"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          OpenPACE</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.9</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
             
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage of OpenPACE</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Extended Access Control Specification</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Welcome to OpenPACE&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#download-openpace">Download OpenPACE</a></li>
+<li><a class="reference internal" href="#install-openpace">Install OpenPACE</a><ul>
+<li><a class="reference internal" href="#cross-compiling-openpace">Cross compiling OpenPACE</a><ul>
+<li><a class="reference internal" href="#compiling-for-windows">Compiling for Windows</a></li>
+<li><a class="reference internal" href="#compiling-for-android">Compiling for Android</a></li>
+<li><a class="reference internal" href="#compiling-for-javascript">Compiling for Javascript</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-use-openpace">How to use OpenPACE</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#where-to-get-help">Where to get help</a></li>
+<li><a class="reference internal" href="#further-reading">Further Reading</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="usage.html" title="Next Chapter: Usage of OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Usage of OpenPAC... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
   <div class="section" id="welcome-to-openpace-s-documentation">
 <h1>Welcome to OpenPACE&#8217;s documentation!<a class="headerlink" href="#welcome-to-openpace-s-documentation" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://travis-ci.org/frankmorgner/openpace"><img alt="https://travis-ci.org/frankmorgner/openpace.png?branch=master" src="https://travis-ci.org/frankmorgner/openpace.png?branch=master" /></a>
@@ -390,70 +506,20 @@ more than welcome! You can contact us through our <a class="reference external" 
 </div>
 
 
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="#">
-              <img class="logo" src="_static/logo_132.png" alt="Logo"/>
-            </a></p>
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Welcome to OpenPACE&#8217;s documentation!</a><ul>
-<li><a class="reference internal" href="#download-openpace">Download OpenPACE</a></li>
-<li><a class="reference internal" href="#install-openpace">Install OpenPACE</a><ul>
-<li><a class="reference internal" href="#cross-compiling-openpace">Cross compiling OpenPACE</a><ul>
-<li><a class="reference internal" href="#compiling-for-windows">Compiling for Windows</a></li>
-<li><a class="reference internal" href="#compiling-for-android">Compiling for Android</a></li>
-<li><a class="reference internal" href="#compiling-for-javascript">Compiling for Javascript</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#how-to-use-openpace">How to use OpenPACE</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#where-to-get-help">Where to get help</a></li>
-<li><a class="reference internal" href="#further-reading">Further Reading</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#references">References</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Next topic</h4>
-  <p class="topless"><a href="usage.html"
-                        title="next chapter">Usage of OpenPACE</a></p>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
+      
+  </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="usage.html" title="Usage of OpenPACE"
-             >next</a></li>
-        <li><a href="#">OpenPACE 0.9 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2012-2013, Frank Morgner, Dominik Oepen.
-    </div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2012-2014 by Frank Morgner and Dominik Oepen.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>
