@@ -244,5 +244,5 @@ References
 .. target-notes::
 
 .. _`Federal Office for Information Security (BSI)`: https://www.bsi.bund.de
-.. _`Technical Guideline TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
-.. _`ICAO Machine Readable Travel Documents Doc 9303`: http://www2.icao.int/en/MRTD/Pages/Doc9393.aspx
+.. _`Technical Guideline TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`ICAO Machine Readable Travel Documents Doc 9303`: http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx

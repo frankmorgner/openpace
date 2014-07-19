@@ -119,5 +119,5 @@ References
 
 .. _`SWIG`: http://swig.org
 .. _`pyPACE`: http://pypace.sourceforge.net
-.. _`nPA Smart Card Library`: http://vsmartcard.sourceforge.net/npa/README.html
-.. _`Emulator for the German Identity Card`: http://vsmartcard.sourceforge.net/virtualsmartcard/README.html
+.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/npa/README.html
+.. _`Emulator for the German Identity Card`: https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html
