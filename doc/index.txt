@@ -259,8 +259,8 @@ References
 
 .. target-notes::
 
-.. _`BSI TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
-.. _`nPA Smart Card Library`: http://vsmartcard.sourceforge.net/npa/README.html
+.. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/
 .. _`OpenSSL`: http://openssl.org
 .. _`SWIG`: http://swig.org
 .. _`Emscripten`: https://github.com/kripken/emscripten
