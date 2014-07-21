@@ -191,7 +191,7 @@ Make Variable                 Default                            Meaning
 
 On successfull compilation, the compiled bitcode files can be found in
 :file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_bc`. You can run our testsuite
-completely in Javascript or `in your browser <../../_static/eactest.html>`_::
+completely in Javascript or `in your browser <_static/eactest.html>`_::
 
     nodejs @PACKAGE_TARNAME@-@PACKAGE_VERSION@_bc/eactest.js
     # WARNING: Our tests are very time consuming and might stall your browser for a moment or two...
@@ -259,8 +259,8 @@ References
 
 .. target-notes::
 
-.. _`BSI TR-03110`: https://www.bsi.bund.de/ContentBSI/Publikationen/TechnischeRichtlinien/tr03110/index_htm.html
-.. _`nPA Smart Card Library`: http://vsmartcard.sourceforge.net/npa/README.html
+.. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/
 .. _`OpenSSL`: http://openssl.org
 .. _`SWIG`: http://swig.org
 .. _`Emscripten`: https://github.com/kripken/emscripten
