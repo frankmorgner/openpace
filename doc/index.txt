@@ -208,7 +208,7 @@ How to use OpenPACE
 
 OpenPACE is a native C library on top of OpenSSL. If you want to know how to
 use OpenPACE from C/C++, have a look at our `API documentation
-<../../_static/doxygen/modules.html>`_.
+<_static/doxygen/modules.html>`_.
 
 OpenPACE uses SWIG_ to offer bindings in some more programming languages. The
 bindings are easily portable to lots of different languages. Currently, native
