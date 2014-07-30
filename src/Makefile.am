@@ -33,7 +33,7 @@ libeac_la_LIBADD  += -lws2_32
 endif
 
 
-bin_PROGRAMS         = eactest cvcprint example
+bin_PROGRAMS         = eactest cvc-print example
 
 EAC_LIBS             = libeac.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
@@ -42,9 +42,9 @@ eactest_SOURCES      = eactest.c
 eactest_LDADD        = $(EAC_LIBS)
 eactest_CFLAGS       = $(EAC_CFLAGS)
 
-cvcprint_SOURCES     = cvcprint.c
-cvcprint_LDADD       = $(EAC_LIBS)
-cvcprint_CFLAGS      = $(EAC_CFLAGS)
+cvc_print_SOURCES     = cvc-print.c
+cvc_print_LDADD       = $(EAC_LIBS)
+cvc_print_CFLAGS      = $(EAC_CFLAGS)
 
 example_SOURCES      = example.c
 example_LDADD        = $(EAC_LIBS)
