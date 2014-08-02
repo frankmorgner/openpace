@@ -141,10 +141,18 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 
 #endif
 
-int
-CA_set_key(const EAC_CTX *ctx,
-        char *privkey, size_t privkey_len,
-        char *pubkey, size_t pubkey_len);
+%rename(CA_set_key) ca_set_key;
+%inline %{
+    int
+    ca_set_key(const EAC_CTX *ctx,
+            char *privkey, size_t privkey_len,
+            char *pubkey, size_t pubkey_len)
+    {
+        return CA_set_key(ctx,
+            (unsigned char *) privkey, privkey_len,
+            (unsigned char *) pubkey, pubkey_len);
+    }
+%}
 
 #ifdef SWIGPYTHON
 %rename(CA_STEP5_derive_keys) ca_step5_derive_keys;
