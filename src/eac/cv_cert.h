@@ -66,6 +66,15 @@ enum cvc_terminal_role {
     CVC_CVCA
 };
 
+/* Number of bits and bytes of the relative authorization field in the CHAT.
+ * See TR-03110 pp. 85 */
+#define EAC_AT_CHAT_BYTES 5
+#define EAC_AT_CHAT_BITS 38
+#define EAC_IS_CHAT_BYTES 1
+#define EAC_IS_CHAT_BITS 6
+#define EAC_ST_CHAT_BYTES 1
+#define EAC_ST_CHAT_BITS 6
+
 /** @brief Certificate Holder Authentication Template
  *
  * @see TR-03110 C.1.5. */
@@ -106,6 +115,9 @@ typedef struct cvc_pubkey_st {
     /** @brief Cofactor (EC) */
     ASN1_OCTET_STRING *cofactor;
 } CVC_PUBKEY;
+DECLARE_ASN1_FUNCTIONS(CVC_PUBKEY)
+DECLARE_ASN1_ITEM(CVC_PUBKEY)
+DECLARE_ASN1_PRINT_FUNCTION(CVC_PUBKEY)
 
 /**
  * @brief Discretionary data template, used to encode certificate extensions.
@@ -167,6 +179,8 @@ typedef struct cvc_cert_body_seq_st {
 } CVC_CERT_BODY_SEQ;
 /** @brief Short name for CVC_CERT_BODY_SEQ */
 typedef CVC_CERT_BODY_SEQ CVC_CERT_BODY;
+DECLARE_ASN1_FUNCTIONS(CVC_CERT_BODY)
+DECLARE_ASN1_ITEM(CVC_CERT_BODY)
 
 /**
  * @brief The actual certifcate, consisting of the body and a signature

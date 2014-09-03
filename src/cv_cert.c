@@ -43,15 +43,6 @@
 /** Check whether or not  a specific bit is set */
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
-/* Number of bits and bytes of the relative authorization field in the CHAT.
- * See TR-03110 pp. 85 */
-#define EAC_AT_CHAT_BYTES 5
-#define EAC_AT_CHAT_BITS 38
-#define EAC_IS_CHAT_BYTES 1
-#define EAC_IS_CHAT_BITS 6
-#define EAC_ST_CHAT_BYTES 1
-#define EAC_ST_CHAT_BITS 6
-
 /** Human readable names of the individual bits of the CHAT of an
     authentication terminal*/
 static const char *at_chat_strings[] = {
@@ -207,7 +198,6 @@ ASN1_SEQUENCE(CVC_CERT_BODY_SEQ) = {
 ASN1_ITEM_TEMPLATE(CVC_CERT_BODY) =
         ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x4e, CVC_CERT_BODY, CVC_CERT_BODY_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CERT_BODY)
-DECLARE_ASN1_FUNCTIONS(CVC_CERT_BODY)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT_BODY)
 
 ASN1_SEQUENCE(CVC_CERT_SEQ) = {

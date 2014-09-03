@@ -1,0 +1,213 @@
+package "cvc-create"
+purpose "Create a card verifiable certificate"
+
+option "role"           -
+    "The terminal's role"
+    values="cvca","dv_domestic","dv_foreign","terminal"
+    enum
+option "type"           -
+    "Type of the terminal (Authentication Terminal, Inspection System or Signature Terminal)"
+    default="derived_from_signer"
+    values="at","is","st","derived_from_signer"
+    enum
+    optional
+option "chr"            -
+    "Certificate holder reference (2 characters ISO 3166-1 ALPHA-2 country code, 0-9 characters ISO/IEC 8859-1 holder mnemonic, 5 characters ISO/IEC 8859-1 numeric or alphanumeric sequence number)"
+    string
+    typestr="CCH...HSSSSS"
+option "issued"            -
+    "Date the certificate was issued"
+    default="today"
+    string
+    typestr="YYMMDD"
+    optional
+option "expires"            -
+    "Date until the certicate is valid"
+    string
+    typestr="YYMMDD"
+option "sign-with"            -
+    "Private key for signing the new certificate"
+    string
+    typestr="FILENAME"
+option "sign-as"            -
+    "CV certificate of the entity signing the new certificate"
+    default="self signed"
+    string
+    typestr="FILENAME"
+    optional
+option "key"             -
+    "Private key of the Terminal"
+    default="derived from signer"
+    string
+    typestr="FILENAME"
+    optional
+option "scheme"             -
+    "Signature scheme that the new terminal will use"
+    values="ECDSA_SHA_1","ECDSA_SHA_224","ECDSA_SHA_256","ECDSA_SHA_384","ECDSA_SHA_512","RSA_v1_5_SHA_1","RSA_v1_5_SHA_256","RSA_v1_5_SHA_512","RSA_PSS_SHA_1","RSA_PSS_SHA_256","RSA_PSS_SHA_512"
+    enum
+
+section "Options for an Authentication Terminal (AT)"
+option "cert-desc"      -
+    "Certificate description (as *.txt, *.html or *.pdf)"
+    string
+    typestr="FILENAME"
+    optional
+option "write-dg17"      -
+    "Allow writing DG 17 (Normal Place of Residence)"
+    flag off
+option "write-dg18"      -
+    "Allow writing DG 18 (Community ID)"
+    flag off
+option "write-dg19"      -
+    "Allow writing DG 19 (Residence Permit I)"
+    flag off
+option "write-dg20"      -
+    "Allow writing DG 20 (Residence Permit II)"
+    flag off
+option "write-dg21"      -
+    "Allow writing DG 21 (Optional Data)"
+    flag off
+option "at-rfu32"      -
+    "Allow RFU R/W Access bit 32"
+    flag off
+option "at-rfu31"      -
+    "Allow RFU R/W Access bit 31"
+    flag off
+option "at-rfu30"      -
+    "Allow RFU R/W Access bit 30"
+    flag off
+option "at-rfu29"      -
+    "Allow RFU R/W Access bit 29"
+    flag off
+option "read-dg1"       -
+    "Allow reading DG 1   (Document Type)"
+    flag off
+option "read-dg2"       -
+    "Allow reading DG 2   (Issuing State)"
+    flag off
+option "read-dg3"       -
+    "Allow reading DG 3   (Date of Expiry)"
+    flag off
+option "read-dg4"       -
+    "Allow reading DG 4   (Given Names)"
+    flag off
+option "read-dg5"       -
+    "Allow reading DG 5   (Family Names)"
+    flag off
+option "read-dg6"       -
+    "Allow reading DG 6   (Religious/Artistic Name)"
+    flag off
+option "read-dg7"       -
+    "Allow reading DG 7   (Academic Title)"
+    flag off
+option "read-dg8"       -
+    "Allow reading DG 8   (Date of Birth)"
+    flag off
+option "read-dg9"       -
+    "Allow reading DG 9   (Place of Birth)"
+    flag off
+option "read-dg10"      -
+    "Allow reading DG 10  (Nationality)"
+    flag off
+option "read-dg11"      -
+    "Allow reading DG 11  (Sex)"
+    flag off
+option "read-dg12"      -
+    "Allow reading DG 12  (Optional Data)"
+    flag off
+option "read-dg13"      -
+    "Allow reading DG 13"
+    flag off
+option "read-dg14"      -
+    "Allow reading DG 14"
+    flag off
+option "read-dg15"      -
+    "Allow reading DG 15"
+    flag off
+option "read-dg16"      -
+    "Allow reading DG 16"
+    flag off
+option "read-dg17"      -
+    "Allow reading DG 17  (Normal Place of Residence)"
+    flag off
+option "read-dg18"      -
+    "Allow reading DG 18  (Community ID)"
+    flag off
+option "read-dg19"      -
+    "Allow reading DG 19  (Residence Permit I)"
+    flag off
+option "read-dg20"      -
+    "Allow reading DG 20  (Residence Permit II)"
+    flag off
+option "read-dg21"      -
+    "Allow reading DG 21  (Optional Data)"
+    flag off
+option "install-qual-cert"    -
+    "Allow installing qualified certificate"
+    flag off
+option "install-cert"    -
+    "Allow installing certificate"
+    flag off
+option "pin-management"   -
+    "Allow PIN management"
+    flag off
+option "can-allowed"   -
+    "CAN allowed"
+    flag off
+option "privileged"   -
+    "Privileged terminal"
+    flag off
+option "rid"   -
+    "Allow restricted identification"
+    flag off
+option "verify-community"   -
+    "Allow community ID verification"
+    flag off
+option "verify-age"   -
+    "Allow age verification"
+    flag off
+
+section "Options for a Signature Terminal (ST)"
+option "st-rfu5"      -
+    "Allow RFU bit 5"
+    flag off
+option "st-rfu4"      -
+    "Allow RFU bit 4"
+    flag off
+option "st-rfu3"      -
+    "Allow RFU bit 3"
+    flag off
+option "st-rfu2"      -
+    "Allow RFU bit 2"
+    flag off
+option "gen-qualified-sig"      -
+    "Generate qualified electronic signature"
+    flag off
+option "gen-sig"      -
+    "Generate electronic signature"
+    flag off
+
+section "Options for an Inspection System (IS)"
+option "read-eid"  -
+    "Read access to eID application (Deprecated)"
+    flag off
+option "is-rfu4"      -
+    "Allow RFU bit 4"
+    flag off
+option "is-rfu3"      -
+    "Allow RFU bit 3"
+    flag off
+option "is-rfu2"      -
+    "Allow RFU bit 2"
+    flag off
+option "read-iris"      -
+    "Read access to ePassport application: DG 4 (Iris)"
+    flag off
+option "read-finger"      -
+    "Read access to ePassport application: DG 3 (Fingerprint)"
+    flag off
+
+text "
+Report bugs to @PACKAGE_BUGREPORT@
+
+Written by Frank Morgner <morgner@informatik.hu-berlin.de>"

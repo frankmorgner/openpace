@@ -97,6 +97,7 @@ cvc_check_time(const CVC_CERT *cert)
                 cert->body->certificate_expiration_date->length))
         return -1;
 
+    /* FIXME gmtime is not thread safe */
     time(&loc);
     utc_tm = gmtime(&loc);
     if (!utc_tm)

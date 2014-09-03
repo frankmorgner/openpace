@@ -980,7 +980,8 @@ err:
     return r;
 }
 
-static ASN1_OCTET_STRING *
+/* TODO merge DH_PUBKEY and ECDH_PUBKEY with CVC_PUBKEY */
+ASN1_OCTET_STRING *
 BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in)
 {
     BUF_MEM *bn_buf = NULL;
@@ -1013,6 +1014,7 @@ err:
     return NULL;
 }
 
+/* TODO merge with CVC_set_ec_pubkey */
 BUF_MEM *
 asn1_pubkey(int protocol, EVP_PKEY *key, BN_CTX *bn_ctx, enum eac_tr_version tr_version)
 {

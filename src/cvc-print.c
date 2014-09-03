@@ -25,6 +25,7 @@
  * @author Frank Morgner <morgner@informatik.hu-berlin.de>
  */
 
+#include "read_file.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
 #include <openssl/bio.h>
@@ -86,42 +87,6 @@ err:
         CVC_CERT_free(cvc);
     if (bio_stdout)
         BIO_free_all(bio_stdout);
-
-    return fail;
-}
-
-static int read_file(const char *filename, unsigned char **out, size_t *outlen)
-{
-    FILE *fp = NULL;
-    int fail = 1;
-    int filesize;
-    unsigned char *p;
-
-    fp = fopen(filename, "rb");
-    if (!fp)
-        err("Could not open file");
-
-    if (0 > fseek(fp, 0L, SEEK_END))
-        err("count not seek file");
-    filesize = ftell(fp);
-    if (0 > filesize)
-        err("count not tell file");
-    fseek(fp, 0L, SEEK_SET);
-
-    p = (unsigned char*) realloc(*out, filesize);
-    if (!p)
-        err("Failed to allocate memory");
-    *out = p;
-    *outlen = filesize;
-
-    if (filesize != fread(p, sizeof(unsigned char), filesize, fp))
-        err("Failed to read file");
-
-    fail = 0;
-
-err:
-    if (fp)
-        fclose(fp);
 
     return fail;
 }

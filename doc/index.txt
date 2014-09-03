@@ -206,6 +206,10 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
 How to use OpenPACE
 *******************************************************************************
 
+===============================================================================
+Using ``libeac``
+===============================================================================
+
 OpenPACE is a native C library on top of OpenSSL. If you want to know how to
 use OpenPACE from C/C++, have a look at our `API documentation
 <_static/doxygen/modules.html>`_.
@@ -224,12 +228,51 @@ do this is::
 If OpenPACE is compiled for Javascript, it results in a standalone Javascript
 file that can be used without special requirements.
 
-More details and a number of examples are covered here:
+More details and a number of examples for using the library are covered here:
 
 .. toctree::
     :maxdepth: 2
 
     usage
+
+===============================================================================
+Using ``cvc-create``
+===============================================================================
+
+.. versionadded:: 0.9
+    `cvc-create` is a command line tool for creating a |EAC| PKI of
+    Authentication Terminals, Signature Terminals or Inspection Systems.
+
+.. program-output:: cvc-create --help
+
+Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal::
+
+    # Create CVCA's private key
+    openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey
+    openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
+    # Create self signed CVCA certificate
+    cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_256 --rid
+
+    # Create DVCA certificate signed by CVCA and generate its private key
+    cvc-create --role=dv_domestic --chr=ZZATDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --sign-as=ZZATCVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid
+
+    # Create TERM certificate signed by DVCA and generate its private key
+    cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid
+
+===============================================================================
+Using ``cvc-print``
+===============================================================================
+
+.. versionadded:: 0.8
+    `cvc-print` is a command line tool for printing card verifiable certificates.
+
+.. program-output:: cvc-print --help
+
+Below you see of how to print the certificates created in the example above::
+
+    cvc-print --cvc ZZATCVCA00001.cvcert
+    cvc-print --cvc ZZATDVCA00001.cvcert
+    cvc-print --cvc ZZATTERM00001.cvcert
 
 
 *******************************************************************************

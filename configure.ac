@@ -37,6 +37,21 @@ case "${host}" in
         ;;
 esac
 
+AC_ARG_VAR([HELP2MAN],
+           [absolute path to help2man used for man page generation of cvc-create])
+AC_PATH_PROG(HELP2MAN, help2man, not found)
+if test ! -r src/cvc-create.1 -a "${HELP2MAN}" = "not found"
+then
+    AC_MSG_ERROR([Need help2man to generate man page for cvc-create])
+fi
+AC_ARG_VAR([GENGETOPT],
+           [absolute path to gengetopt used for command line parsing of cvc-create])
+AC_PATH_PROG(GENGETOPT, gengetopt, not found)
+if test ! -r src/cvc-create-cmdline.h -a "${GENGETOPT}" = "not found"
+then
+    AC_MSG_ERROR([Need gengetopt for parsing command line of cvc-create])
+fi
+
 # Checks for libcrypto.
 AC_ARG_ENABLE([openssl-install],
               [AS_HELP_STRING([--enable-openssl-install],[enable installation of a patched version of OpenSSL @<:@default=no@:>@])],
@@ -265,6 +280,9 @@ Libraries:               ${LIBS}
 CRYPTO_CFLAGS:           ${CRYPTO_CFLAGS}
 CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
+HELP2MAN:                ${HELP2MAN}
+GENGETOPT:               ${GENGETOPT}
+
 Install patched OpenSSL: ${INSTALL_OPENSSL}
 GIT:                     ${GIT}
 OPENSSL_CONFIGURE_FLAGS: ${OPENSSL_CONFIGURE_FLAGS}
@@ -281,4 +299,5 @@ Go Bindings:             ${enable_go}
 gccgo:                   ${GCCGO}
 GCCGOFLAGS:              ${GCCGOFLAGS}
 SWIGGOPARAMS:            ${SWIGGOPARAMS}
+
 EOF

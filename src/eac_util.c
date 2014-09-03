@@ -529,8 +529,10 @@ is_bcd(const unsigned char *data, size_t length)
         return 0;
 
     for(i = 0; i < length; i++) {
-        if (data[i] > 0x9)
+        if (data[i] > 0x9) {
+            log_err("Invalid data");
             return 0;
+        }
     }
     return 1;
 }

@@ -1,5 +1,14 @@
 EXTRA_DIST = bsi_objects.txt
 
+do_subst = $(SED) \
+	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g'
+
+BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h
+
+dist_man1_MANS		= cvc-create.1
+
+MAINTAINERCLEANFILES = $(BUILT_SOURCES) cvc-create.ggo $(dist_man1_MANS)
+
 nobase_include_HEADERS = eac/ca.h \
 						 eac/cv_cert.h \
 						 eac/eac.h \
@@ -18,6 +27,7 @@ noinst_HEADERS = ca_lib.h \
 				 misc.h \
 				 pace_lib.h \
 				 pace_mappings.h \
+				 read_file.h \
 				 ta_lib.h
 
 
@@ -33,7 +43,7 @@ libeac_la_LIBADD  += -lws2_32
 endif
 
 
-bin_PROGRAMS         = eactest cvc-print example
+bin_PROGRAMS         = eactest cvc-print cvc-create example
 
 EAC_LIBS             = libeac.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
@@ -42,13 +52,34 @@ eactest_SOURCES      = eactest.c
 eactest_LDADD        = $(EAC_LIBS)
 eactest_CFLAGS       = $(EAC_CFLAGS)
 
-cvc_print_SOURCES     = cvc-print.c
+cvc_print_SOURCES     = cvc-print.c read_file.c
 cvc_print_LDADD       = $(EAC_LIBS)
 cvc_print_CFLAGS      = $(EAC_CFLAGS)
+
+cvc_create_SOURCES     = cvc-create.c read_file.c cvc-create-cmdline.c
+cvc_create_LDADD       = $(EAC_LIBS)
+cvc_create_CFLAGS      = $(EAC_CFLAGS)
 
 example_SOURCES      = example.c
 example_LDADD        = $(EAC_LIBS)
 example_CFLAGS       = $(EAC_CFLAGS)
+
+
+cvc-create-cmdline.c cvc-create-cmdline.h: cvc-create.ggo
+	$(GENGETOPT) --file-name=cvc-create-cmdline --output-dir=$(srcdir) < $<
+
+cvc-create.ggo: cvc-create.ggo.in
+	$(do_subst) < $< > $(srcdir)/$@
+
+
+
+
+cvc-create.1: cvc-create
+	$(HELP2MAN) \
+		--output=$@ \
+		--no-info \
+		--source='$(PACKAGE_STRING)' \
+		$(builddir)/cvc-create
 
 
 if INSTALL_OPENSSL
