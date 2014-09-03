@@ -132,7 +132,7 @@ cvc_check_time(const CVC_CERT *cert)
 
     if (exp_tm.tm_mon < 0 || exp_tm.tm_mon > 12
             || exp_tm.tm_mday > 31
-            || eff_tm.tm_mon < 0 || eff_tm.tm_mon > 12
+            || eff_tm.tm_mon < 0 || eff_tm.tm_mon > 11
             || eff_tm.tm_mday > 31
             || difftime(mktime(utc_tm), mktime(&eff_tm)) < 0
             || difftime(mktime(&exp_tm), mktime(utc_tm)) < 0) {
