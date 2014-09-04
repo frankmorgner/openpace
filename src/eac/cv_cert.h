@@ -505,6 +505,18 @@ int
 CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
         const unsigned int cert_desc_in_len);
 
+/**
+ * @brief Create a hash over a certificate's description
+ *
+ * @param[in] cv CV certificate
+ * @param[in] cert_desc_in ASN1 representation of the CV certificate description
+ * @param[in] cert_desc_in_len Length of \a cvc_desc_in
+ *
+ * @return hashed description or NULL in case of an error.
+ */
+BUF_MEM *CVC_hash_description(const CVC_CERT *cv,
+        const unsigned char *cert_desc, size_t cert_desc_len);
+
 /** @cond */
 /* I stole these from ec_asn1.c */
 typedef struct x9_62_pentanomial_st {

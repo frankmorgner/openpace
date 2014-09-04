@@ -329,19 +329,14 @@ static CVC_CHAT *get_chat(const struct gengetopt_args_info *cmdline, CVC_CERT *s
             err("unhandled type of terminal");
     }
 
-    switch (terminal_type) {
-        case NID_id_AT:
-            chat->relative_authorization = get_at_authorizations(cmdline);
-            break;
-        case NID_id_IS:
+    if        (terminal_type == NID_id_AT) {
+        chat->relative_authorization = get_at_authorizations(cmdline);
+    } else if (terminal_type == NID_id_IS) {
             chat->relative_authorization = get_is_authorizations(cmdline);
-            break;
-        case NID_id_ST:
-            chat->relative_authorization = get_st_authorizations(cmdline);
-            break;
-        default:
-            /* TODO implement the rest */
-            err("unhandled type of terminal");
+    } else if (terminal_type == NID_id_ST) {
+        chat->relative_authorization = get_st_authorizations(cmdline);
+    } else {
+        err("unhandled type of terminal");
     }
     chat->terminal_type = OBJ_nid2obj(terminal_type);
     if (!chat->terminal_type)
@@ -553,23 +548,140 @@ err:
     return ok;
 }
 
+#define TXT_EXT    ".txt"
+#define HTML_EXT    ".html"
+#define PDF_EXT    ".pdf"
+
+CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengetopt_args_info *cmdline)
+{
+    CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
+    const char *ext = NULL;
+    unsigned char *desc_data = NULL;
+    size_t len = 0, ext_len = 0, desc_data_len = 0;
+    int desc_type = NID_undef;
+    void *asn1 = NULL;
+
+    if (cmdline->cert_desc_arg) {
+        len = strlen(cmdline->cert_desc_arg);
+        ext_len = strlen(TXT_EXT);
+        ext = cmdline->cert_desc_arg+len-ext_len;
+        if (len > ext_len && strcmp(ext, TXT_EXT) == 0) {
+            desc_type = NID_id_plainFormat;
+        } else {
+            ext_len = strlen(HTML_EXT);
+            ext = cmdline->cert_desc_arg+len-ext_len;
+            if (len > ext_len && strcmp(ext, HTML_EXT) == 0) {
+                desc_type = NID_id_htmlFormat;
+            } else {
+                ext_len = strlen(PDF_EXT);
+                ext = cmdline->cert_desc_arg+len-ext_len;
+                if (len > ext_len && strcmp(ext, PDF_EXT) == 0) {
+                    desc_type = NID_id_pdfFormat;
+                } else {
+                    err("unknown type of certificate description");
+                }
+            }
+        }
+        desc = CVC_CERTIFICATE_DESCRIPTION_new();
+        if (!desc)
+            goto err;
+        desc->descriptionType = OBJ_nid2obj(desc_type);
+
+        if (0 != read_file(cmdline->cert_desc_arg, &desc_data, &desc_data_len)) {
+            goto err;
+        }
+        if        (desc_type == NID_id_plainFormat) {
+                asn1 = ASN1_UTF8STRING_new();
+        } else if (desc_type == NID_id_htmlFormat) {
+            asn1 = ASN1_IA5STRING_new();
+        } else if (desc_type == NID_id_pdfFormat) {
+            asn1 = ASN1_OCTET_STRING_new();
+        } else {
+            goto err;
+        }
+        if (!asn1 || !M_ASN1_OCTET_STRING_set(asn1, desc_data, desc_data_len))
+            goto err;
+#ifdef HAVE_PATCHED_OPENSSL
+        switch (desc_type) {
+            case NID_id_plainFormat:
+                desc->termsOfUsage.plainTerms = asn1;
+                break;
+            case NID_id_htmlFormat:
+                desc->termsOfUsage.htmlTerms = asn1;
+                break;
+            case NID_id_pdfFormat:
+                desc->termsOfUsage.pdfTerms = asn1;
+                break;
+            default:
+                goto err;
+        }
+#else
+        desc->termsOfUsage.other = ASN1_TYPE_new();
+        if (!desc->termsOfUsage.other)
+            goto err;
+        ASN1_TYPE_set(desc->termsOfUsage.other, V_ASN1_SEQUENCE, asn1);
+#endif
+
+        if (cmdline->issuer_name_arg) {
+            desc->issuerName = ASN1_UTF8STRING_new();
+            if (!desc->issuerName
+                    || !M_ASN1_OCTET_STRING_set(desc->issuerName,
+                        cmdline->issuer_name_arg, strlen(cmdline->issuer_name_arg)))
+                goto err;
+        }
+
+        if (cmdline->issuer_url_arg) {
+            desc->issuerURL = ASN1_PRINTABLESTRING_new();
+            if (!desc->issuerURL
+                    || !M_ASN1_OCTET_STRING_set(desc->issuerURL,
+                        cmdline->issuer_url_arg, strlen(cmdline->issuer_url_arg)))
+                goto err;
+        }
+
+        if (cmdline->subject_name_arg) {
+            desc->subjectName = ASN1_UTF8STRING_new();
+            if (!desc->subjectName
+                    || !M_ASN1_OCTET_STRING_set(desc->subjectName,
+                        cmdline->subject_name_arg, strlen(cmdline->subject_name_arg)))
+                goto err;
+        }
+
+        if (cmdline->subject_url_arg) {
+            desc->subjectURL = ASN1_PRINTABLESTRING_new();
+            if (!desc->subjectURL
+                    || !M_ASN1_OCTET_STRING_set(desc->subjectURL,
+                        cmdline->subject_url_arg, strlen(cmdline->subject_url_arg)))
+                goto err;
+        }
+    }
+
+err:
+    free(desc_data);
+
+    return desc;
+}
+
 #define CVC_CERT_EXT ".cvcert"
 #define PKCS8_EXT    ".pkcs8"
+#define DESC_EXT    ".desc"
 
 int main(int argc, char *argv[])
 {
     CVC_CERT *cert = NULL;
     CVC_CERT *sign_as_cert = NULL;
     CVC_CERT_BODY *body = NULL;
-    int fail = 1;
+    CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
+    CVC_DISCRETIONARY_DATA_TEMPLATE *template = NULL;
+    int fail = 1, body_len = 0, desc_buf_len = 0;
     struct gengetopt_args_info cmdline;
     const unsigned char *car = NULL;
-    unsigned char *body_p = NULL, *cert_buf = NULL, *term_key_buf = NULL;
-    size_t car_len = 0, body_len = 0, cert_len = 0, term_key_len = 0;
+    unsigned char *body_p = NULL, *cert_buf = NULL, *term_key_buf = NULL, *desc_buf = NULL;
+    size_t car_len = 0, cert_len = 0, term_key_len = 0;
     time_t loc;
     const struct tm *utc_tm;
     char string[80];
-    BUF_MEM *body_buf = NULL, *signature = NULL;
+    char basename[70];
+    BUF_MEM *body_buf = NULL, *signature = NULL, *desc_hash = NULL;
     EVP_PKEY *signer_key = NULL, *term_key = NULL;
     EVP_PKEY_CTX *term_key_ctx = NULL;
     int signature_scheme = NID_undef;
@@ -621,6 +733,8 @@ int main(int argc, char *argv[])
             || !M_ASN1_OCTET_STRING_set(body->certificate_holder_reference,
                 (unsigned char *) cmdline.chr_arg, strlen(cmdline.chr_arg)))
         goto err;
+    strncpy(basename, cmdline.chr_arg, sizeof basename);
+    basename[sizeof basename - 1] = '\0';
 
 
     /* read signer key */
@@ -645,15 +759,8 @@ int main(int argc, char *argv[])
         term_key_len = i2d_PrivateKey(term_key, &term_key_buf);
         if (term_key_len <= 0)
             goto err;
-        memset(string, 0, sizeof string);
-        memcpy(string, cert->body->certificate_holder_reference->data,
-                cert->body->certificate_holder_reference->length < sizeof string ?
-                cert->body->certificate_holder_reference->length : sizeof string);
-        if (cert->body->certificate_holder_reference->length + strlen(PKCS8_EXT) > sizeof string) {
-            strcat(string + sizeof string - strlen(PKCS8_EXT) - 1, PKCS8_EXT);
-        } else {
-            strcat(string, PKCS8_EXT);
-        }
+        strcpy(string, basename);
+        strcat(string, PKCS8_EXT);
         if (0 != write_file(string, term_key_buf, term_key_len))
             err("Could not write terminal key");
         printf("Created %s\n", string);
@@ -706,6 +813,33 @@ int main(int argc, char *argv[])
         goto err;
 
 
+    /* write certificate description */
+    desc = create_certificate_description(&cmdline);
+    if (desc) {
+        desc_buf_len = i2d_CVC_CERTIFICATE_DESCRIPTION(desc, &desc_buf);
+        if (desc_buf_len <= 0)
+            goto err;
+        desc_hash = CVC_hash_description(cert, desc_buf, desc_buf_len);
+        if (!cert->body->certificate_extensions)
+            cert->body->certificate_extensions = (void *) sk_new_null();
+        template = CVC_DISCRETIONARY_DATA_TEMPLATE_new();
+        if (!desc_hash || !cert->body->certificate_extensions || !template)
+            goto err;
+        template->type = OBJ_nid2obj(NID_id_description);
+        template->discretionary_data1 = ASN1_OCTET_STRING_new();
+        if (!template->type || !template->discretionary_data1
+                || !M_ASN1_OCTET_STRING_set(template->discretionary_data1,
+                    desc_hash->data, desc_hash->length)
+                || !sk_push((_STACK *) cert->body->certificate_extensions, template))
+            goto err;
+        strcpy(string, basename);
+        strcat(string, DESC_EXT);
+        if (0 != write_file(string, desc_buf, desc_buf_len))
+            err("Could not write certificate description");
+        printf("Created %s\n", string);
+    }
+
+
     /* sign body */
     body_len = i2d_CVC_CERT_BODY(body, &body_p);
     if (body_len <= 0)
@@ -727,15 +861,8 @@ int main(int argc, char *argv[])
     cert_len = i2d_CVC_CERT(cert, &cert_buf);
     if (cert_len <= 0)
         goto err;
-    memset(string, 0, sizeof string);
-    memcpy(string, cert->body->certificate_holder_reference->data,
-            cert->body->certificate_holder_reference->length < sizeof string ?
-            cert->body->certificate_holder_reference->length : sizeof string);
-    if (cert->body->certificate_holder_reference->length + strlen(CVC_CERT_EXT) > sizeof string) {
-        strcat(string + sizeof string - strlen(CVC_CERT_EXT) - 1, CVC_CERT_EXT);
-    } else {
-        strcat(string, CVC_CERT_EXT);
-    }
+    strcpy(string, basename);
+    strcat(string, CVC_CERT_EXT);
     if (0 != write_file(string, cert_buf, cert_len))
         err("Could not write certificate");
     printf("Created %s\n", string);
@@ -765,6 +892,11 @@ err:
         EVP_PKEY_free(term_key);
     if (term_key_ctx)
         EVP_PKEY_CTX_free(term_key_ctx);
+    if (desc)
+        CVC_CERTIFICATE_DESCRIPTION_free(desc);
+    free(desc_buf);
+    if (desc_hash)
+        BUF_MEM_free(desc_hash);
 
     EAC_cleanup();
 

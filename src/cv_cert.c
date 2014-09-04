@@ -901,24 +901,17 @@ cvc_get_chat(const CVC_CERT *cvc)
     return cvc->body->chat;
 }
 
-int
-CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
-        const unsigned int cert_desc_in_len)
+BUF_MEM *CVC_hash_description(const CVC_CERT *cv,
+        const unsigned char *cert_desc, size_t cert_desc_len)
 {
-
-    BUF_MEM *desc_hash = NULL;
+    BUF_MEM *cert_desc_buf = NULL, *desc_hash = NULL;
     const EVP_MD *md;
-    ASN1_OCTET_STRING *hash_check = NULL;
-    BUF_MEM *cert_desc = BUF_MEM_create_init(cert_desc_in, cert_desc_in_len);
-    int i, count;
-    CVC_DISCRETIONARY_DATA_TEMPLATE *p;
-
-    unsigned int ret = -1;
+    int nid;
 
     if (!cv || !cv->body || !cv->body->public_key)
         goto err;
 
-    int nid = OBJ_obj2nid(cv->body->public_key->oid);
+    nid = OBJ_obj2nid(cv->body->public_key->oid);
     /* Choose the correct hash function */
     if (       nid == NID_id_TA_ECDSA_SHA_1
             || nid == NID_id_TA_RSA_v1_5_SHA_1
@@ -940,6 +933,29 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
         goto err;
     }
 
+    /* Hash the certificate description */
+    cert_desc_buf = BUF_MEM_create_init(cert_desc, cert_desc_len);
+    desc_hash = hash(md, NULL, NULL, cert_desc_buf);
+
+err:
+    if (cert_desc_buf)
+        BUF_MEM_free(cert_desc_buf);
+
+    return desc_hash;
+}
+
+int
+CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
+        const unsigned int cert_desc_in_len)
+{
+
+    BUF_MEM *desc_hash = NULL;
+    ASN1_OCTET_STRING *hash_check = NULL;
+    int i, count;
+    CVC_DISCRETIONARY_DATA_TEMPLATE *p;
+
+    unsigned int ret = -1;
+
     count = sk_num((_STACK*) cv->body->certificate_extensions);
     for (i = 0; i < count; i++) {
         p = sk_value((_STACK*) cv->body->certificate_extensions, i);
@@ -950,14 +966,15 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
     }
 
     if (hash_check) {
+        desc_hash = CVC_hash_description(cv, cert_desc_in, cert_desc_in_len);
+        if (!desc_hash)
+            goto err;
+
         /* Check whether or not the hash in the certificate has the correct size */
-        if (hash_check->length != EVP_MD_size(md)) {
+        if (hash_check->length != desc_hash->length) {
             ret = 0;
             goto err;
         }
-
-        /* Hash the certificate description */
-        desc_hash = hash(md, NULL, NULL, cert_desc);
 
         /* Compare it with the hash in the certificate */
         if (!memcmp(desc_hash->data, hash_check->data, desc_hash->length))
@@ -968,8 +985,6 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
 err:
     if (desc_hash)
         BUF_MEM_free(desc_hash);
-    if (cert_desc)
-        BUF_MEM_free(cert_desc);
 
     return ret;
 }

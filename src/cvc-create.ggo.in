@@ -52,6 +52,28 @@ option "cert-desc"      -
     string
     typestr="FILENAME"
     optional
+option "issuer-name"      -
+    "Name of the issuer of this certificate"
+    string
+    dependon="cert-desc"
+    optional
+option "issuer-url"      -
+    "URL that points to informations about the issuer of this certificate"
+    string
+    dependon="cert-desc"
+    typestr="URL"
+    optional
+option "subject-name"      -
+    "Name of the holder of this certificate"
+    string
+    dependon="cert-desc"
+    optional
+option "subject-url"      -
+    "URL that points to informations about the subject of this certificate"
+    string
+    typestr="URL"
+    dependon="cert-desc"
+    optional
 option "write-dg17"      -
     "Allow writing DG 17 (Normal Place of Residence)"
     flag off

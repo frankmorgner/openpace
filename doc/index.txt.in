@@ -256,8 +256,10 @@ Below you see an example of how to create a certificate chain of CVCA, DVCA and 
     # Create DVCA certificate signed by CVCA and generate its private key
     cvc-create --role=dv_domestic --chr=ZZATDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --sign-as=ZZATCVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid
 
-    # Create TERM certificate signed by DVCA and generate its private key
-    cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid
+    # Create plain text description
+    echo "whatever" > ZZATTERM00001.txt
+    # Create TERM certificate signed by DVCA along with the description and generate its private key
+    cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=CVCA --subject-name=TERM
 
 ===============================================================================
 Using ``cvc-print``
@@ -272,7 +274,7 @@ Below you see of how to print the certificates created in the example above::
 
     cvc-print --cvc ZZATCVCA00001.cvcert
     cvc-print --cvc ZZATDVCA00001.cvcert
-    cvc-print --cvc ZZATTERM00001.cvcert
+    cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
 
 
 *******************************************************************************
