@@ -689,8 +689,9 @@ int main(int argc, char *argv[])
     EAC_init();
 
     /* Parse command line */
-    if (cmdline_parser (argc, argv, &cmdline) != 0)
-        goto err;
+    if (cmdline_parser (argc, argv, &cmdline) != 0) {
+        return 1;
+    }
 
     body = CVC_CERT_BODY_new();
     cert = CVC_CERT_new();
@@ -871,6 +872,7 @@ int main(int argc, char *argv[])
     fail = 0;
 
 err:
+    cmdline_parser_free (&cmdline);
     if (cert) {
         CVC_CERT_free(cert);
     } else {
