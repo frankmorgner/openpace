@@ -594,10 +594,9 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
                 asn1 = ASN1_UTF8STRING_new();
         } else if (desc_type == NID_id_htmlFormat) {
             asn1 = ASN1_IA5STRING_new();
-        } else if (desc_type == NID_id_pdfFormat) {
-            asn1 = ASN1_OCTET_STRING_new();
         } else {
-            goto err;
+            /* desc_type == NID_id_pdfFormat */
+            asn1 = ASN1_OCTET_STRING_new();
         }
         if (!asn1 || !M_ASN1_OCTET_STRING_set(asn1, desc_data, desc_data_len))
             goto err;
