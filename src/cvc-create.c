@@ -671,11 +671,11 @@ int main(int argc, char *argv[])
     CVC_CERT_BODY *body = NULL;
     CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
     CVC_DISCRETIONARY_DATA_TEMPLATE *template = NULL;
-    int fail = 1, body_len = 0, desc_buf_len = 0;
+    int fail = 1, body_len = 0, desc_buf_len = 0, term_key_len = 0;
     struct gengetopt_args_info cmdline;
     const unsigned char *car = NULL;
     unsigned char *body_p = NULL, *cert_buf = NULL, *term_key_buf = NULL, *desc_buf = NULL;
-    size_t car_len = 0, cert_len = 0, term_key_len = 0;
+    size_t car_len = 0, cert_len = 0;
     time_t loc;
     const struct tm *utc_tm;
     char string[80];
