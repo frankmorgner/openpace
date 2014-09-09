@@ -237,10 +237,6 @@ To verify the authenticity of the :math:`PK_{\text{PICC}}` the terminal SHALL
 perform Passive Authentication.
 
 
-**********
-References
-**********
-
 .. target-notes::
 
 .. _`Federal Office for Information Security (BSI)`: https://www.bsi.bund.de

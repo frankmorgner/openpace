@@ -59,7 +59,6 @@ certificates will be looked up in the file system.
 OpenPACE supports all variants of |PACE| (DH/ECDH, GM/IM), |TA|
 (RSASSA-PKCS1-v1_5/RSASSA-PSS/ECDSA), |CA| (DH/ECDH) and all standardized
 domain parameters (GFP/ECP).
-   
 
 OpenPACE is implemented as C-library and comes with native language wrappers
 for:
@@ -79,202 +78,15 @@ for:
 
 
 *******************************************************************************
-Download OpenPACE
+Further Reading
 *******************************************************************************
-
-You can find the latest release of OpenPACE on `Sourceforge
-<http://sourceforge.net/projects/openpace/files>`_.
-
-Alternatively, you can clone our git repository::
-
-    git clone https://github.com/frankmorgner/openpace.git
-
-
-*******************************************************************************
-Install OpenPACE
-*******************************************************************************
-
-OpenPACE uses the GNU Build System to compile and install. If you are
-unfamiliar with it, please have a look at :file:`INSTALL`. If you can not find
-it, you are probably working bleeding edge in the repository.  Run the
-following command in :file:`openpace` to get the missing standard
-auxiliary files::
-    
-    autoreconf --verbose --install
-
-To configure (:command:`configure --help` lists possible options), build and
-install OpenPACE now do the following::
-
-    ./configure
-    make
-    make install
-
-OpenPACE depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
-Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is required.
-
-Furthermore, additional object identifiers from `BSI TR-03110`_ are required.
-You have two options to get them to work:
-
-1. Let OpenPACE load the object identifiers at runtime
-2. Patch OpenSSL to include the identifiers
-
-The first option allows you to install an unchanged version of OpenSSL to your
-system. However, performance will be slightly worse and there are some
-limitations. For example, you won't be able to use the new NIDs as labels in a
-switch statement and you need to make sure to call ``EAC_init()`` first.  For
-patching OpenSSL we provide :file:`oids.patch`. You can configure
-OpenPACE with :option:`--enable-openssl-install`, which will
-automatically download, patch, build and install OpenSSL if needed.
-
-===============================================================================
-Cross compiling OpenPACE
-===============================================================================
-
-We have added some scripts for the ease of cross compiling for Windows and
-Android. Both are tested with Debian wheezy. First create a working
-:file:`Makefile`::
-
-    test -x configure || autoreconf --verbose --install
-    ./configure
-
-Compiling for Windows
--------------------------------------------------------------------------------
-
-Cross compilation for Windows can be done with::
-
-    make win
-
-================ ==================== ===========================================================================================
-Make Variable    Default              Meaning
-================ ==================== ===========================================================================================
-``WIN_TOOL``     ``i686-w64-mingw32`` cross compiler
-``WIN_TOOL_DIR`` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
-================ ==================== ===========================================================================================
-
-On successfull compilation, the Windows binaries can be found in
-:file:`openpace-0.9_win32`.
-
-Compiling for Android
--------------------------------------------------------------------------------
-
-Cross compilation for Android can be done with::
-
-    make android
-
-============================= ============================================================================== =====================================================
-Make Variable                 Default                                                                        Meaning
-============================= ============================================================================== =====================================================
-``ANDROID_ARCH``              ``arm``                                                                        target Architecture
-``ANDROID_TOOL``              ``${ANDROID_ARCH}-linux-androideabi``                                          cross compiler
-``MAKE_STANDALONE_TOOLCHAIN`` ``${HOME}/.local/opt/android-ndk-r9/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
-============================= ============================================================================== =====================================================
-
-On successfull compilation, the Android binaries can be found in
-:file:`openpace-0.9_${ANDROID_ARCH}`.
-
-.. _javascript_api:
-
-Compiling for Javascript
--------------------------------------------------------------------------------
-
-Technically the process for getting OpenPACE into Javascript is similar to
-cross compiling. With Emscripten_ the library is compiled into LLVM bytecode
-and then translated into Javascript. Use the following command::
-
-    make emscripten
-
-============================= ================================== ==============================================================================
-Make Variable                 Default                            Meaning
-============================= ================================== ==============================================================================
-``EMSCRIPTEN_DIR``            ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc` folder
-============================= ================================== ==============================================================================
-
-On successfull compilation, the compiled bitcode files can be found in
-:file:`openpace-0.9_bc`. You can run our testsuite
-completely in Javascript or `in your browser <_static/eactest.html>`_::
-
-    nodejs openpace-0.9_bc/eactest.js
-    # WARNING: Our tests are very time consuming and might stall your browser for a moment or two...
-    firefox openpace-0.9_bc/eactest.html
-
-.. warning::
-    `Javascript cryptography is considered harmful`_. You may want to think
-    twice before using the Javascript version of OpenPACE.
-
-
-*******************************************************************************
-How to use OpenPACE
-*******************************************************************************
-
-===============================================================================
-Using ``libeac``
-===============================================================================
-
-OpenPACE is a native C library on top of OpenSSL. If you want to know how to
-use OpenPACE from C/C++, have a look at our `API documentation
-<_static/doxygen/modules.html>`_.
-
-OpenPACE uses SWIG_ to offer bindings in some more programming languages. The
-bindings are easily portable to lots of different languages. Currently, native
-language bindings need to be explicitly turned on with ``./configure
---enable-...``
-
-If you have chosen to install OpenPACE in a non-standard location you have to
-set up the :envvar:`LD_LIBRARY_PATH` environment variable correctly. One way to
-do this is::
-
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/libeac
-
-If OpenPACE is compiled for Javascript, it results in a standalone Javascript
-file that can be used without special requirements.
-
-More details and a number of examples for using the library are covered here:
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
+    install
     usage
-
-===============================================================================
-Using ``cvc-create``
-===============================================================================
-
-.. versionadded:: 0.9
-    `cvc-create` is a command line tool for creating a |EAC| PKI of
-    Authentication Terminals, Signature Terminals or Inspection Systems.
-
-.. program-output:: cvc-create --help
-
-Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal::
-
-    # Create CVCA's private key
-    openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey
-    openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
-    # Create self signed CVCA certificate
-    cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_256 --rid
-
-    # Create DVCA certificate signed by CVCA and generate its private key
-    cvc-create --role=dv_domestic --chr=ZZATDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --sign-as=ZZATCVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid
-
-    # Create plain text description
-    echo "whatever" > ZZATTERM00001.txt
-    # Create TERM certificate signed by DVCA along with the description and generate its private key
-    cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=CVCA --subject-name=TERM
-
-===============================================================================
-Using ``cvc-print``
-===============================================================================
-
-.. versionadded:: 0.8
-    `cvc-print` is a command line tool for printing card verifiable certificates.
-
-.. program-output:: cvc-print --help
-
-Below you see of how to print the certificates created in the example above::
-
-    cvc-print --cvc ZZATCVCA00001.cvcert
-    cvc-print --cvc ZZATDVCA00001.cvcert
-    cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
+    protocols
 
 
 *******************************************************************************
@@ -288,25 +100,7 @@ more than welcome! You can contact us through our `GitHub
 <https://github.com/frankmorgner/openpace/issues>`_.
 
 
-*******************************************************************************
-Further Reading
-*******************************************************************************
-
-.. toctree::
-    :maxdepth: 3
-
-    protocols
-
-
-*******************************************************************************
-References
-*******************************************************************************
-
 .. target-notes::
 
 .. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
 .. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/
-.. _`OpenSSL`: http://openssl.org
-.. _`SWIG`: http://swig.org
-.. _`Emscripten`: https://github.com/kripken/emscripten
-.. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
