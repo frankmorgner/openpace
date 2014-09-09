@@ -514,7 +514,7 @@ static CVC_PUBKEY *get_cvc_pubkey(const struct gengetopt_args_info *cmdline, EVP
             break;
         case EVP_PKEY_RSA:
             rsa = EVP_PKEY_get1_RSA(key);
-            if (!CVC_set_rsa_pubkey(rsa, pubkey))
+            if (!rsa || !CVC_set_rsa_pubkey(rsa, pubkey))
                 goto err;
             break;
         default:
