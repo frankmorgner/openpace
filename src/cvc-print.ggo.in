@@ -1,0 +1,19 @@
+package "cvc-print"
+purpose "Prints card verifiable certificate and its description"
+
+option "cvc"            c
+    "Card Verifiable Certificate"
+    string
+    typestr="FILENAME"
+    optional
+
+option "description"    d
+    "Certificate description"
+    string
+    typestr="FILENAME"
+    optional
+
+text "
+Report bugs to @PACKAGE_BUGREPORT@
+
+Written by Frank Morgner and Dominik Oepen"

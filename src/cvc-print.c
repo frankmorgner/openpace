@@ -25,6 +25,7 @@
  * @author Frank Morgner <morgner@informatik.hu-berlin.de>
  */
 
+#include "cvc-print-cmdline.h"
 #include "read_file.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
@@ -94,75 +95,27 @@ err:
 int main(int argc, char *argv[])
 {
     int fail = 1, i;
-    char *cvc_filename = NULL;
-    char *desc_filename = NULL;
     unsigned char *cvc_data = NULL, *desc_data = NULL;
     size_t cvc_len = 0, desc_len = 0;
+    struct gengetopt_args_info cmdline;
 
-    for (i=1; i<argc; i++)
-    {
-        if ((strcmp(argv[i], "--cvc") == 0)
-                || (strcmp(argv[i], "-c") == 0)) {
-            if (i++>=argc) {
-                fprintf(stderr, "-c,--cvc requires an argument\n");
-                return fail;
-            }
-            cvc_filename = argv[i];
-            continue;
-        }
-        if ((strcmp(argv[i], "--description") == 0)
-                || (strcmp(argv[i], "-d") == 0)) {
-            if (i++>=argc) {
-                fprintf(stderr, "-d,--description requires an argument\n");
-                return fail;
-            }
-            desc_filename = argv[i];
-            continue;
-        }
-        if ((strcmp(argv[i], "--help") == 0)
-                || (strcmp(argv[i], "-h") == 0)) {
-            printf(
-                    "%s Prints card verifiable certificate and its description\n"
-                    "\n"
-                    "Usage: %s [Options]\n"
-                    "\n"
-                    "Options:\n"
-                    "  -c,--cvc          file with card Verifiable certificate\n"
-                    "  -d,--description  file with certificate description\n"
-                    "  -h,--help         show this help message and exit\n"
-                    "     --version      print version information and exit\n"
-                    , argv[0], argv[0]
-            );
-            fail = 0;
-            goto err;
-        }
-        if (strcmp(argv[i], "--version") == 0) {
-            fprintf(stderr,
-                    "%s 0.1\n"
-                    "\n"
-                    "Written by Frank Morgner and Dominik Oepen.\n"
-                    , argv[0]
-            );
-            fail = 0;
-            goto err;
-        }
-
-        fprintf(stderr, "unrecognized option \"%s\"\n", argv[i]);
-        goto err;
+    /* Parse command line */
+    if (cmdline_parser (argc, argv, &cmdline) != 0) {
+        return fail;
     }
 
-    if (cvc_filename) {
-        fail = read_file(cvc_filename, &cvc_data, &cvc_len);
+    if (cmdline.cvc_arg) {
+        fail = read_file(cmdline.cvc_arg, &cvc_data, &cvc_len);
         if (fail) {
-            fprintf(stderr, "failed to read %s\n", cvc_filename);
+            fprintf(stderr, "failed to read %s\n", cmdline.cvc_arg);
             goto err;
         }
     }
 
-    if (desc_filename) {
-        fail = read_file(desc_filename, &desc_data, &desc_len);
+    if (cmdline.description_arg) {
+        fail = read_file(cmdline.description_arg, &desc_data, &desc_len);
         if (fail) {
-            fprintf(stderr, "failed to read %s\n", desc_filename);
+            fprintf(stderr, "failed to read %s\n", cmdline.description_arg);
             goto err;
         }
     }
@@ -171,6 +124,7 @@ int main(int argc, char *argv[])
     fail = print_cvc(cvc_data, cvc_len, desc_data, desc_len);
 
 err:
+    cmdline_parser_free (&cmdline);
     free(cvc_data);
     free(desc_data);
     EAC_cleanup();

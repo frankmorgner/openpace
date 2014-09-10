@@ -40,14 +40,14 @@ esac
 AC_ARG_VAR([HELP2MAN],
            [absolute path to help2man used for man page generation of cvc-create])
 AC_PATH_PROG(HELP2MAN, help2man, not found)
-if test ! -r src/cvc-create.1 -a "${HELP2MAN}" = "not found"
+if test ! -r src/cvc-create.1 -o ! -r src/cvc-print.1 -a "${HELP2MAN}" = "not found"
 then
     AC_MSG_ERROR([Need help2man to generate man page for cvc-create])
 fi
 AC_ARG_VAR([GENGETOPT],
            [absolute path to gengetopt used for command line parsing of cvc-create])
 AC_PATH_PROG(GENGETOPT, gengetopt, not found)
-if test ! -r src/cvc-create-cmdline.h -a "${GENGETOPT}" = "not found"
+if test ! -r src/cvc-create-cmdline.h -o ! -r src/cvc-print-cmdline.h -a "${GENGETOPT}" = "not found"
 then
     AC_MSG_ERROR([Need gengetopt for parsing command line of cvc-create])
 fi

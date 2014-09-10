@@ -3,11 +3,11 @@ EXTRA_DIST = bsi_objects.txt
 do_subst = $(SED) \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g'
 
-BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h
+BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h cvc-print-cmdline.c cvc-print-cmdline.h
 
-dist_man1_MANS		= cvc-create.1
+dist_man1_MANS		= cvc-create.1 cvc-print.1
 
-MAINTAINERCLEANFILES = $(BUILT_SOURCES) cvc-create.ggo $(dist_man1_MANS)
+MAINTAINERCLEANFILES = $(BUILT_SOURCES) cvc-create.ggo cvc-print.ggo $(dist_man1_MANS)
 
 nobase_include_HEADERS = eac/ca.h \
 						 eac/cv_cert.h \
@@ -52,7 +52,7 @@ eactest_SOURCES      = eactest.c
 eactest_LDADD        = $(EAC_LIBS)
 eactest_CFLAGS       = $(EAC_CFLAGS)
 
-cvc_print_SOURCES     = cvc-print.c read_file.c
+cvc_print_SOURCES     = cvc-print.c read_file.c cvc-print-cmdline.c
 cvc_print_LDADD       = $(EAC_LIBS)
 cvc_print_CFLAGS      = $(EAC_CFLAGS)
 
@@ -68,7 +68,13 @@ example_CFLAGS       = $(EAC_CFLAGS)
 cvc-create-cmdline.c cvc-create-cmdline.h: cvc-create.ggo
 	$(GENGETOPT) --file-name=cvc-create-cmdline --output-dir=$(srcdir) < $<
 
+cvc-print-cmdline.c cvc-print-cmdline.h: cvc-print.ggo
+	$(GENGETOPT) --file-name=cvc-print-cmdline --output-dir=$(srcdir) < $<
+
 cvc-create.ggo: cvc-create.ggo.in
+	$(do_subst) < $< > $(srcdir)/$@
+
+cvc-print.ggo: cvc-print.ggo.in
 	$(do_subst) < $< > $(srcdir)/$@
 
 
@@ -80,6 +86,13 @@ cvc-create.1: cvc-create
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-create
+
+cvc-print.1: cvc-print
+	$(HELP2MAN) \
+		--output=$@ \
+		--no-info \
+		--source='$(PACKAGE_STRING)' \
+		$(builddir)/cvc-print
 
 
 if INSTALL_OPENSSL
