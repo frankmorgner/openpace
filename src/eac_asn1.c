@@ -56,14 +56,7 @@ typedef struct pace_info_st {
 typedef struct algorithm_identifier_st {
     /** OID of the algorithm */
     ASN1_OBJECT *algorithm;
-    union {
-        DH *dh;
-#ifdef HAVE_PATCHED_OPENSSL
-        PACE_ECPARAMETERS *ec;
-        ASN1_INTEGER *standardizedDomainParameters;
-#endif
-        ASN1_TYPE *other;
-    } parameters;
+    ASN1_TYPE *parameters;
 } ALGORITHM_IDENTIFIER;
 
 /** Subject Public Key Info structure */
@@ -207,65 +200,6 @@ typedef struct ecdh_pubkey_st {
 } ECDH_PUBKEY_BODY;
 typedef ECDH_PUBKEY_BODY ECDH_PUBKEY;
 
-static int
-dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg);
-
-/* the OpenSSL ASN.1 definitions */
-ASN1_SEQUENCE(PACE_X9_62_PENTANOMIAL) = {
-    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k1, LONG),
-    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k2, LONG),
-    ASN1_SIMPLE(PACE_X9_62_PENTANOMIAL, k3, LONG)
-} ASN1_SEQUENCE_END(PACE_X9_62_PENTANOMIAL)
-
-ASN1_ADB_TEMPLATE(char_two_def) = ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.other, ASN1_ANY);
-
-ASN1_ADB(PACE_X9_62_CHARACTERISTIC_TWO) = {
-    ADB_ENTRY(NID_X9_62_onBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.onBasis, ASN1_NULL)),
-    ADB_ENTRY(NID_X9_62_tpBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.tpBasis, ASN1_INTEGER)),
-    ADB_ENTRY(NID_X9_62_ppBasis, ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, p.ppBasis, PACE_X9_62_PENTANOMIAL))
-} ASN1_ADB_END(PACE_X9_62_CHARACTERISTIC_TWO, 0, type, 0, &char_two_def_tt, NULL);
-
-ASN1_SEQUENCE(PACE_X9_62_CHARACTERISTIC_TWO) = {
-    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, m, LONG),
-    ASN1_SIMPLE(PACE_X9_62_CHARACTERISTIC_TWO, type, ASN1_OBJECT),
-    ASN1_ADB_OBJECT(PACE_X9_62_CHARACTERISTIC_TWO)
-} ASN1_SEQUENCE_END(PACE_X9_62_CHARACTERISTIC_TWO)
-
-ASN1_ADB_TEMPLATE(fieldID_def) = ASN1_SIMPLE(PACE_X9_62_FIELDID, p.other, ASN1_ANY);
-
-ASN1_ADB(PACE_X9_62_FIELDID) = {
-    ADB_ENTRY(NID_X9_62_prime_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.prime, ASN1_INTEGER)),
-    ADB_ENTRY(NID_X9_62_characteristic_two_field, ASN1_SIMPLE(PACE_X9_62_FIELDID, p.char_two, PACE_X9_62_CHARACTERISTIC_TWO))
-} ASN1_ADB_END(PACE_X9_62_FIELDID, 0, fieldType, 0, &fieldID_def_tt, NULL);
-
-ASN1_SEQUENCE(PACE_X9_62_FIELDID) = {
-    ASN1_SIMPLE(PACE_X9_62_FIELDID, fieldType, ASN1_OBJECT),
-    ASN1_ADB_OBJECT(PACE_X9_62_FIELDID)
-} ASN1_SEQUENCE_END(PACE_X9_62_FIELDID)
-
-ASN1_SEQUENCE(PACE_X9_62_CURVE) = {
-    ASN1_SIMPLE(PACE_X9_62_CURVE, a, ASN1_OCTET_STRING),
-    ASN1_SIMPLE(PACE_X9_62_CURVE, b, ASN1_OCTET_STRING),
-    ASN1_OPT(PACE_X9_62_CURVE, seed, ASN1_BIT_STRING)
-} ASN1_SEQUENCE_END(PACE_X9_62_CURVE)
-
-ASN1_SEQUENCE(PACE_ECPARAMETERS) = {
-    ASN1_SIMPLE(PACE_ECPARAMETERS, version, ASN1_INTEGER),
-    ASN1_SIMPLE(PACE_ECPARAMETERS, fieldID, PACE_X9_62_FIELDID),
-    ASN1_SIMPLE(PACE_ECPARAMETERS, curve, PACE_X9_62_CURVE),
-    ASN1_SIMPLE(PACE_ECPARAMETERS, base, ASN1_OCTET_STRING),
-    ASN1_SIMPLE(PACE_ECPARAMETERS, order, ASN1_INTEGER),
-    ASN1_OPT(PACE_ECPARAMETERS, cofactor, ASN1_INTEGER)
-} ASN1_SEQUENCE_END(PACE_ECPARAMETERS)
-IMPLEMENT_ASN1_FUNCTIONS(PACE_ECPARAMETERS)
-
-/* I stole this from dh_asn1.c */
-ASN1_SEQUENCE_cb(PACE_DHparams, dh_cb) = {
-    ASN1_SIMPLE(DH, p, BIGNUM),
-    ASN1_SIMPLE(DH, g, BIGNUM),
-    ASN1_OPT(DH, length, ZLONG),
-} ASN1_SEQUENCE_END_cb(DH, PACE_DHparams)
-
 ASN1_SEQUENCE(PACE_INFO) = {
     ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
     ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
@@ -274,19 +208,9 @@ ASN1_SEQUENCE(PACE_INFO) = {
 
 IMPLEMENT_ASN1_FUNCTIONS(PACE_INFO)
 
-ASN1_ADB_TEMPLATE(aid_def) = ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.other, ASN1_ANY);
-
-ASN1_ADB(ALGORITHM_IDENTIFIER) = {
-    ADB_ENTRY(NID_dhpublicnumber, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.dh, PACE_DHparams)),
-#ifdef HAVE_PATCHED_OPENSSL
-    ADB_ENTRY(NID_ecka_dh_SessionKDF_AES128, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.ec, PACE_ECPARAMETERS)),
-    ADB_ENTRY(NID_standardizedDomainParameters, ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters.standardizedDomainParameters, ASN1_INTEGER))
-#endif
-} ASN1_ADB_END(ALGORITHM_IDENTIFIER, 0, algorithm, 0, &aid_def_tt, NULL);
-
 ASN1_SEQUENCE(ALGORITHM_IDENTIFIER) = {
     ASN1_SIMPLE(ALGORITHM_IDENTIFIER, algorithm, ASN1_OBJECT),
-    ASN1_ADB_OBJECT(ALGORITHM_IDENTIFIER)
+    ASN1_SIMPLE(ALGORITHM_IDENTIFIER, parameters, ASN1_ANY)
 } ASN1_SEQUENCE_END(ALGORITHM_IDENTIFIER)
 
 ASN1_SEQUENCE(SUBJECT_PUBLIC_KEY_INFO) = {
@@ -530,34 +454,72 @@ err:
 }
 
 static EC_KEY *
-ec_key_from_PACE_ECPARAMETERS(const PACE_ECPARAMETERS *ec_params, BN_CTX *bn_ctx)
+ec_key_from_ecpkparameters(ASN1_TYPE *ec_params)
 {
+    EC_GROUP *group = NULL;
     EC_KEY *ec = NULL;
+    int length, fail = 1;
+    unsigned char *encoded = NULL;
+    const unsigned char *p;
 
-    check((ec_params && ec_params->fieldID  && ec_params->curve), "Invalid arguments");
+    check(ec_params && ec_params->type == V_ASN1_SEQUENCE,
+            "Invalid arguments");
+
+    /* unfortunately we need to re-pack and re-parse the ECPKPARAMETERS,
+     * because there is no official API for using it directly (see
+     * openssl/crypto/ec/ec.h) */
+    length = i2d_ASN1_TYPE(ec_params, &encoded);
+    p = encoded;
+    check(length > 0 && d2i_ECPKParameters(&group, &p, length),
+            "Could not decode EC parameters");
 
     ec = EC_KEY_new();
-    if (!ec)
-        goto err;
+    check(ec && EC_KEY_set_group(ec, group),
+            "Could not initialize key object");
 
-    if (!EAC_ec_key_from_asn1(&ec, ec_params->fieldID->p.prime, ec_params->curve->a,
-            ec_params->curve->b, ec_params->base, ec_params->order, NULL,
-            ec_params->cofactor, bn_ctx))
-            goto err;
-
-    return ec;
+    fail = 0;
 
 err:
-    if (ec)
-        EC_KEY_free(ec);
-    return NULL;
+    if (group)
+        EC_GROUP_free(group);
+    free(encoded);
+    if (fail) {
+        if (ec)
+            EC_KEY_free(ec);
+        ec = NULL;
+    }
+    return ec;
+}
+
+static DH *
+dh_from_dhparams(ASN1_TYPE *dh_params)
+{
+    DH *dh = NULL;
+    int length, fail = 1;
+    unsigned char *encoded = NULL;
+    const unsigned char *p;
+
+    check(dh_params && dh_params->type == V_ASN1_SEQUENCE,
+            "Invalid arguments");
+
+    /* unfortunately we need to re-pack and re-parse the DHparams,
+     * because there is no official API for using it directly (see
+     * openssl/crypto/dh/dh.h) */
+    length = i2d_ASN1_TYPE(dh_params, &encoded);
+    p = encoded;
+    check(length > 0 && d2i_DHparams(&dh, &p, length),
+            "Could not decode DH parameters");
+
+err:
+    free(encoded);
+    return dh;
 }
 
 static EVP_PKEY *
 aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
 {
-    ASN1_INTEGER *i;
-    EC_KEY *tmp_ec = NULL;
+    EC_KEY *tmp_ec;
+    DH *tmp_dh;
     EVP_PKEY *tmp_key = NULL, *ret = NULL;
     char obj_txt[32];
     int nid;
@@ -574,38 +536,27 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
     /* Extract actual parameters */
     nid = OBJ_obj2nid(aid->algorithm);
     if (       nid == NID_dhpublicnumber) {
-        EVP_PKEY_set1_DH(tmp_key, aid->parameters.dh);
+        tmp_dh = dh_from_dhparams(aid->parameters);
+        check(tmp_dh, "Could not decode DH key");
+        EVP_PKEY_set1_DH(tmp_key, tmp_dh);
+        DH_free(tmp_dh);
 
     } else if (nid == NID_X9_62_id_ecPublicKey
             || nid == NID_ecka_dh_SessionKDF_DES3
             || nid == NID_ecka_dh_SessionKDF_AES128
             || nid == NID_ecka_dh_SessionKDF_AES192
             || nid == NID_ecka_dh_SessionKDF_AES256) {
-#ifndef HAVE_PATCHED_OPENSSL
-        const unsigned char *p;
-        p = aid->parameters.other->value.sequence->data;
-        check(aid->parameters.other->type == V_ASN1_SEQUENCE
-                && d2i_PACE_ECPARAMETERS(&ec, &p,
-                    aid->parameters.other->value.sequence->length),
-                "Invalid data");
-#else
-        ec = aid->parameters.ec;
-#endif
-        tmp_ec = ec_key_from_PACE_ECPARAMETERS(ec, bn_ctx);
+        tmp_ec = ec_key_from_ecpkparameters(aid->parameters);
         check(tmp_ec, "Could not decode EC key");
-
         EVP_PKEY_set1_EC_KEY(tmp_key, tmp_ec);
+        EC_KEY_free(tmp_ec);
 
     } else if (nid == NID_standardizedDomainParameters) {
-#ifndef HAVE_PATCHED_OPENSSL
-        check(aid->parameters.other->type == V_ASN1_INTEGER,
+        check(aid->parameters->type == V_ASN1_INTEGER,
                 "Invalid data");
-        i = aid->parameters.other->value.integer;
-#else
-        i = aid->parameters.standardizedDomainParameters;
-#endif
-        if (!EVP_PKEY_set_std_dp(tmp_key, ASN1_INTEGER_get(i)))
-            goto err;
+        check(EVP_PKEY_set_std_dp(tmp_key,
+                    ASN1_INTEGER_get(aid->parameters->value.integer)),
+                "Could not decode standardized domain parameter")
 
     } else {
         OBJ_obj2txt(obj_txt, sizeof obj_txt, aid->algorithm, 0);
@@ -617,13 +568,6 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
     ret = tmp_key;
 
 err:
-    if (tmp_ec)
-        EC_KEY_free(tmp_ec);
-#ifndef HAVE_PATCHED_OPENSSL
-    if (ec)
-        PACE_ECPARAMETERS_free(ec);
-#endif
-
     if (ret) {
         /* success */
         if (key)
