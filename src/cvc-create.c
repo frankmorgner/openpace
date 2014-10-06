@@ -785,8 +785,8 @@ int main(int argc, char *argv[])
             goto err;
         string[0] = (char) (utc_tm->tm_year-100)/10;
         string[1] = (char) utc_tm->tm_year%10;
-        string[2] = (char) utc_tm->tm_mon/10;
-        string[3] = (char) utc_tm->tm_mon%10+1;
+        string[2] = (char) (utc_tm->tm_mon+1)/10;
+        string[3] = (char) (utc_tm->tm_mon+1)%10;
         string[4] = (char) utc_tm->tm_mday/10;
         string[5] = (char) utc_tm->tm_mday%10;
     } else {
