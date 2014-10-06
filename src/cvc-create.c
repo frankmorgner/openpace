@@ -746,21 +746,26 @@ int main(int argc, char *argv[])
         if (!term_key)
             goto err;
     } else {
-        term_key_ctx = EVP_PKEY_CTX_new(signer_key, NULL);
-        if (!term_key_ctx
-                || !EVP_PKEY_keygen_init(term_key_ctx)
-                || !EVP_PKEY_keygen(term_key_ctx, &term_key))
-            goto err;
+        if (cmdline.sign_as_given) {
+            term_key_ctx = EVP_PKEY_CTX_new(signer_key, NULL);
+            if (!term_key_ctx
+                    || !EVP_PKEY_keygen_init(term_key_ctx)
+                    || !EVP_PKEY_keygen(term_key_ctx, &term_key))
+                goto err;
 
-        /* export key */
-        term_key_len = i2d_PrivateKey(term_key, &term_key_buf);
-        if (term_key_len <= 0)
-            goto err;
-        strcpy(string, basename);
-        strcat(string, PKCS8_EXT);
-        if (0 != write_file(string, term_key_buf, term_key_len))
-            err("Could not write terminal key");
-        printf("Created %s\n", string);
+            /* export key */
+            term_key_len = i2d_PrivateKey(term_key, &term_key_buf);
+            if (term_key_len <= 0)
+                goto err;
+            strcpy(string, basename);
+            strcat(string, PKCS8_EXT);
+            if (0 != write_file(string, term_key_buf, term_key_len))
+                err("Could not write terminal key");
+            printf("Created %s\n", string);
+        } else {
+            /* self signed certificate */
+            term_key = EVP_PKEY_dup(signer_key);
+        }
     }
 
 
