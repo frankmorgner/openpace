@@ -683,7 +683,6 @@ int main(int argc, char *argv[])
     BUF_MEM *body_buf = NULL, *signature = NULL, *desc_hash = NULL;
     EVP_PKEY *signer_key = NULL, *term_key = NULL;
     EVP_PKEY_CTX *term_key_ctx = NULL;
-    int signature_scheme = NID_undef;
 
     EAC_init();
 
@@ -714,12 +713,10 @@ int main(int argc, char *argv[])
             goto err;
         car = sign_as_cert->body->certificate_holder_reference->data;
         car_len = sign_as_cert->body->certificate_holder_reference->length;
-        signature_scheme = OBJ_obj2nid(sign_as_cert->body->public_key->oid);
     } else {
         /* self signed certificate */
         car = (unsigned char *) cmdline.chr_arg;
         car_len = strlen(cmdline.chr_arg);
-        signature_scheme = OBJ_obj2nid(cert->body->public_key->oid);
     }
     body->certificate_authority_reference = ASN1_UTF8STRING_new();
     if (!body->certificate_authority_reference
@@ -845,7 +842,13 @@ int main(int argc, char *argv[])
     if (body_len <= 0)
         goto err;
     body_buf = BUF_MEM_create_init(body_p, (size_t) body_len);
-    signature = EAC_sign(signature_scheme, signer_key, body_buf);
+    if (cmdline.sign_as_given) {
+        signature = EAC_sign(OBJ_obj2nid(sign_as_cert->body->public_key->oid),
+                signer_key, body_buf);
+    } else {
+        signature = EAC_sign(OBJ_obj2nid(cert->body->public_key->oid),
+                signer_key, body_buf);
+    }
     if (!signature)
         goto err;
 
