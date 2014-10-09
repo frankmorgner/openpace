@@ -517,59 +517,6 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
 BUF_MEM *CVC_hash_description(const CVC_CERT *cv,
         const unsigned char *cert_desc, size_t cert_desc_len);
 
-/** @cond */
-/* I stole these from ec_asn1.c */
-typedef struct x9_62_pentanomial_st {
-    long k1;
-    long k2;
-    long k3;
-    } PACE_X9_62_PENTANOMIAL;
-
-typedef struct pace_x9_62_characteristic_two_st {
-    long m;
-    ASN1_OBJECT  *type;
-    union   {
-        char *ptr;
-        /* NID_X9_62_onBasis */
-        ASN1_NULL    *onBasis;
-        /* NID_X9_62_tpBasis */
-        ASN1_INTEGER *tpBasis;
-        /* NID_X9_62_ppBasis */
-        PACE_X9_62_PENTANOMIAL *ppBasis;
-        /* anything else */
-        ASN1_TYPE *other;
-        } p;
-    } PACE_X9_62_CHARACTERISTIC_TWO;
-
-typedef struct pace_x9_62_fieldid_st {
-        ASN1_OBJECT *fieldType;
-    union   {
-        char *ptr;
-        /* NID_X9_62_prime_field */
-        ASN1_INTEGER *prime;
-        /* NID_X9_62_characteristic_two_field */
-        PACE_X9_62_CHARACTERISTIC_TWO *char_two;
-        /* anything else */
-        ASN1_TYPE *other;
-        } p;
-    } PACE_X9_62_FIELDID;
-
-typedef struct pace_x9_62_curve_st {
-        ASN1_OCTET_STRING *a;
-        ASN1_OCTET_STRING *b;
-        ASN1_BIT_STRING   *seed;
-        } PACE_X9_62_CURVE;
-
-typedef struct pace_ec_parameters_st {
-    ASN1_INTEGER           *version;
-    PACE_X9_62_FIELDID     *fieldID;
-    PACE_X9_62_CURVE       *curve;
-    ASN1_OCTET_STRING *base;
-    ASN1_INTEGER      *order;
-    ASN1_INTEGER      *cofactor;
-    } PACE_ECPARAMETERS;
-/** @endcond */
-
 #ifdef __cplusplus
 }
 #endif

@@ -523,7 +523,6 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
     EVP_PKEY *tmp_key = NULL, *ret = NULL;
     char obj_txt[32];
     int nid;
-    PACE_ECPARAMETERS *ec = NULL;
 
     /* If there is no key, allocate memory */
     if (!key || !*key) {
