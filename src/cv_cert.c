@@ -249,6 +249,26 @@ IMPLEMENT_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 /** @} ***********************************************************************/
 
+/**
+ * @brief Generate an EC Key from the ASN1 encoded parameters. This function is
+ * needed because asn1.h does not export a d2i_asn1 function
+ *
+ * @param[out] key where to write the new EC key
+ * @param[in] p prime modulus of the field
+ * @param[in] a first coefficient of the curve
+ * @param[in] b second coefficient of the curve
+ * @param[in] base generator of the curve
+ * @param[in] base_order order of the generator
+ * @param[in] pub public point of the key
+ * @param[in] cofactor
+ * @param[in] bn_ctx (optional)
+ */
+static int
+EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
+        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING *base_order,
+        ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor, BN_CTX *bn_ctx);
+static ASN1_OCTET_STRING *
+BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in);
 /** Check and convert the CAR or CHR to a human readable string */
 static char *
 cvc_get_reference_string(ASN1_OCTET_STRING *ref);
@@ -1203,4 +1223,145 @@ err:
         CVC_PUBKEY_free(pubkey);
 
     return out;
+}
+
+static int
+EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
+        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING *base_order,
+        ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor, BN_CTX *bn_ctx)
+{
+    int ret = 0;
+    BIGNUM *p_bn = NULL, *cofactor_bn = NULL, *order_bn = NULL, *a_bn = NULL,
+            *b_bn = NULL;
+    EC_GROUP *group = NULL;
+    EC_POINT *generator = NULL, *pub_point = NULL;
+    EC_KEY *tmp = NULL;
+    BN_CTX *lcl_bn_ctx = NULL;
+
+    check((key && p && a && b  && base  && base_order  && cofactor),
+            "Invalid arguments");
+
+    if (bn_ctx)
+        lcl_bn_ctx = bn_ctx;
+    else {
+        lcl_bn_ctx = BN_CTX_new();
+        check(lcl_bn_ctx, "Failed to create BN context");
+    }
+
+    BN_CTX_start(lcl_bn_ctx);
+    p_bn = BN_CTX_get(lcl_bn_ctx);
+    a_bn = BN_CTX_get(lcl_bn_ctx);
+    b_bn = BN_CTX_get(lcl_bn_ctx);
+    order_bn = BN_CTX_get(lcl_bn_ctx);
+    cofactor_bn = BN_CTX_get(lcl_bn_ctx);
+
+    if (!cofactor_bn)
+        goto err;
+
+    /* Copy field and curve */
+    if (!BN_bin2bn(ASN1_STRING_data(p), ASN1_STRING_length(p), p_bn) ||
+        !BN_bin2bn(ASN1_STRING_data(a), ASN1_STRING_length(a), a_bn) ||
+        !BN_bin2bn(ASN1_STRING_data(b), ASN1_STRING_length(b), b_bn))
+            goto err;
+    else
+        group = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, lcl_bn_ctx);
+
+    if (!group)
+        goto err;
+
+    /* Set generator, order and cofactor */
+    if (!ASN1_INTEGER_to_BN(cofactor, cofactor_bn) ||
+        !ASN1_INTEGER_to_BN(base_order, order_bn))
+            goto err;
+
+    generator = EC_POINT_new(group);
+    if (!generator)
+        goto err;
+
+    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(base),
+            ASN1_STRING_length(base), lcl_bn_ctx))
+        goto err;
+
+    if (!EC_GROUP_set_generator(group, generator, order_bn, cofactor_bn))
+        goto err;
+
+    if (!*key) {
+        tmp = EC_KEY_new();
+        if(!tmp)
+            goto err;
+    } else
+        tmp = *key;
+
+    /* Set the group for the key*/
+    if(!EC_KEY_set_group(tmp, group))
+        goto err;
+
+    /* Set the public point if available */
+    if (pub) {
+        pub_point = EC_POINT_new(group);
+        if (!pub_point)
+            goto err;
+
+        if (!EC_POINT_oct2point(group, pub_point, ASN1_STRING_data(pub),
+                ASN1_STRING_length(pub), lcl_bn_ctx))
+            goto err;
+
+        if (!EC_KEY_set_public_key(tmp, pub_point))
+            goto err;
+    }
+
+    if (!*key)
+        *key = tmp;
+
+    ret = 1;
+
+err:
+    if (!ret && tmp && key && !*key)
+        EC_KEY_free(tmp);
+    if (group)
+        EC_GROUP_clear_free(group);
+    if (generator)
+        EC_POINT_clear_free(generator);
+    if (pub_point)
+        EC_POINT_clear_free(pub_point);
+    if (lcl_bn_ctx)
+        BN_CTX_end(lcl_bn_ctx);
+    if (!bn_ctx && lcl_bn_ctx) {
+        BN_CTX_free(lcl_bn_ctx);
+    }
+
+    return ret;
+}
+
+static ASN1_OCTET_STRING *
+BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in)
+{
+    BUF_MEM *bn_buf = NULL;
+    ASN1_OCTET_STRING *out;
+
+    if (!in) {
+        out = ASN1_OCTET_STRING_new();
+    } else {
+        out = in;
+    }
+
+    bn_buf = BN_bn2buf(bn);
+
+    if (!bn_buf || !out
+            /* BIGNUMs converted to binary don't have a sign,
+             * so we copy everything to the octet string */
+            || !M_ASN1_OCTET_STRING_set(out, bn_buf->data, bn_buf->length))
+        goto err;
+
+    BUF_MEM_free(bn_buf);
+
+    return out;
+
+err:
+    if (bn_buf)
+        BUF_MEM_free(bn_buf);
+    if (out && !in)
+        ASN1_OCTET_STRING_free(out);
+
+    return NULL;
 }

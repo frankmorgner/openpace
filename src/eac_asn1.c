@@ -258,132 +258,10 @@ ASN1_SEQUENCE(CARD_INFO_LOCATOR) = {
     ASN1_OPT(CARD_INFO_LOCATOR, efCardInfo, FILE_ID)
 } ASN1_SEQUENCE_END(CARD_INFO_LOCATOR)
 
-static int
-dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
-{
-    if(operation == ASN1_OP_NEW_PRE) {
-        *pval = (ASN1_VALUE *)DH_new();
-        if(*pval) return 2;
-        return 0;
-    } else if(operation == ASN1_OP_FREE_PRE) {
-        DH_free((DH *)*pval);
-        *pval = NULL;
-        return 2;
-    }
-    return 1;
-}
 
-
-int
-EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
-        ASN1_OCTET_STRING *b, ASN1_OCTET_STRING *base, ASN1_OCTET_STRING *base_order,
-        ASN1_OCTET_STRING *pub, ASN1_OCTET_STRING *cofactor, BN_CTX *bn_ctx)
-{
-    int ret = 0;
-    BIGNUM *p_bn = NULL, *cofactor_bn = NULL, *order_bn = NULL, *a_bn = NULL,
-            *b_bn = NULL;
-    EC_GROUP *group = NULL;
-    EC_POINT *generator = NULL, *pub_point = NULL;
-    EC_KEY *tmp = NULL;
-    BN_CTX *lcl_bn_ctx = NULL;
-
-    check((key && p && a && b  && base  && base_order  && cofactor),
-            "Invalid arguments");
-
-    if (bn_ctx)
-        lcl_bn_ctx = bn_ctx;
-    else {
-        lcl_bn_ctx = BN_CTX_new();
-        check(lcl_bn_ctx, "Failed to create BN context");
-    }
-
-    BN_CTX_start(lcl_bn_ctx);
-    p_bn = BN_CTX_get(lcl_bn_ctx);
-    a_bn = BN_CTX_get(lcl_bn_ctx);
-    b_bn = BN_CTX_get(lcl_bn_ctx);
-    order_bn = BN_CTX_get(lcl_bn_ctx);
-    cofactor_bn = BN_CTX_get(lcl_bn_ctx);
-
-    if (!cofactor_bn)
-        goto err;
-
-    /* Copy field and curve */
-    if (!BN_bin2bn(ASN1_STRING_data(p), ASN1_STRING_length(p), p_bn) ||
-        !BN_bin2bn(ASN1_STRING_data(a), ASN1_STRING_length(a), a_bn) ||
-        !BN_bin2bn(ASN1_STRING_data(b), ASN1_STRING_length(b), b_bn))
-            goto err;
-    else
-        group = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, lcl_bn_ctx);
-
-    if (!group)
-        goto err;
-
-    /* Set generator, order and cofactor */
-    if (!ASN1_INTEGER_to_BN(cofactor, cofactor_bn) ||
-        !ASN1_INTEGER_to_BN(base_order, order_bn))
-            goto err;
-
-    generator = EC_POINT_new(group);
-    if (!generator)
-        goto err;
-
-    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(base),
-            ASN1_STRING_length(base), lcl_bn_ctx))
-        goto err;
-
-    if (!EC_GROUP_set_generator(group, generator, order_bn, cofactor_bn))
-        goto err;
-
-    if (!*key) {
-        tmp = EC_KEY_new();
-        if(!tmp)
-            goto err;
-    } else
-        tmp = *key;
-
-    /* Set the group for the key*/
-    if(!EC_KEY_set_group(tmp, group))
-        goto err;
-
-    /* Set the public point if available */
-    if (pub) {
-        pub_point = EC_POINT_new(group);
-        if (!pub_point)
-            goto err;
-
-        if (!EC_POINT_oct2point(group, pub_point, ASN1_STRING_data(pub),
-                ASN1_STRING_length(pub), lcl_bn_ctx))
-            goto err;
-
-        if (!EC_KEY_set_public_key(tmp, pub_point))
-            goto err;
-    }
-
-    if (!*key)
-        *key = tmp;
-
-    ret = 1;
-
-err:
-    if (!ret && tmp && key && !*key)
-        EC_KEY_free(tmp);
-    if (group)
-        EC_GROUP_clear_free(group);
-    if (generator)
-        EC_POINT_clear_free(generator);
-    if (pub_point)
-        EC_POINT_clear_free(pub_point);
-    if (lcl_bn_ctx)
-        BN_CTX_end(lcl_bn_ctx);
-    if (!bn_ctx && lcl_bn_ctx) {
-        BN_CTX_free(lcl_bn_ctx);
-    }
-
-    return ret;
-}
 
 static EC_KEY *
-ec_key_from_ecpkparameters(ASN1_TYPE *ec_params)
+ecpkparameters2eckey(ASN1_TYPE *ec_params)
 {
     EC_GROUP *group = NULL;
     EC_KEY *ec = NULL;
@@ -421,7 +299,7 @@ err:
 }
 
 static DH *
-dh_from_dhparams(ASN1_TYPE *dh_params)
+dhparams2dh(ASN1_TYPE *dh_params)
 {
     DH *dh = NULL;
     int length, fail = 1;
@@ -445,7 +323,7 @@ err:
 }
 
 static EVP_PKEY *
-aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
+aid2pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
 {
     EC_KEY *tmp_ec;
     DH *tmp_dh;
@@ -464,7 +342,7 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
     /* Extract actual parameters */
     nid = OBJ_obj2nid(aid->algorithm);
     if (       nid == NID_dhpublicnumber) {
-        tmp_dh = dh_from_dhparams(aid->parameters);
+        tmp_dh = dhparams2dh(aid->parameters);
         check(tmp_dh, "Could not decode DH key");
         EVP_PKEY_set1_DH(tmp_key, tmp_dh);
         DH_free(tmp_dh);
@@ -474,7 +352,7 @@ aid2evp_pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
             || nid == NID_ecka_dh_SessionKDF_AES128
             || nid == NID_ecka_dh_SessionKDF_AES192
             || nid == NID_ecka_dh_SessionKDF_AES256) {
-        tmp_ec = ec_key_from_ecpkparameters(aid->parameters);
+        tmp_ec = ecpkparameters2eckey(aid->parameters);
         check(tmp_ec, "Could not decode EC key");
         EVP_PKEY_set1_EC_KEY(tmp_key, tmp_ec);
         EC_KEY_free(tmp_ec);
@@ -665,7 +543,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 goto err;
             }
 
-            if (!aid2evp_pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
+            if (!aid2pkey(&ctx->pace_ctx->static_key, tmp_dp_info->aid, ctx->bn_ctx))
                 goto err;
 
         } else if (nid == NID_id_TA) {
@@ -715,7 +593,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 goto err;
             }
 
-            if (!aid2evp_pkey(&ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
+            if (!aid2pkey(&ca_ctx->ka_ctx->key, tmp_ca_dp_info->aid, ctx->bn_ctx))
                 goto err;
 
         } else if (nid == NID_id_PK_DH
@@ -730,7 +608,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 goto err;
             }
 
-            if (!aid2evp_pkey(&ca_ctx->ka_ctx->key,
+            if (!aid2pkey(&ca_ctx->ka_ctx->key,
                         ca_public_key_info->chipAuthenticationPublicKeyInfo->algorithmIdentifier,
                         ctx->bn_ctx))
                 goto err;
@@ -793,7 +671,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 ri_ctx = sk_value((_STACK*) ctx->ri_ctxs, _i);
                 if (!ri_ctx)
                     goto err;
-                if (!aid2evp_pkey(&ri_ctx->static_key, tmp_ri_dp_info->aid, ctx->bn_ctx))
+                if (!aid2pkey(&ri_ctx->static_key, tmp_ri_dp_info->aid, ctx->bn_ctx))
                     goto err;
             }
 
@@ -850,39 +728,6 @@ err:
         CA_PUBLIC_KEY_INFO_free(ca_public_key_info);
 
     return r;
-}
-
-ASN1_OCTET_STRING *
-BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in)
-{
-    BUF_MEM *bn_buf = NULL;
-    ASN1_OCTET_STRING *out;
-
-    if (!in) {
-        out = ASN1_OCTET_STRING_new();
-    } else {
-        out = in;
-    }
-
-    bn_buf = BN_bn2buf(bn);
-
-    if (!bn_buf || !out
-            /* BIGNUMs converted to binary don't have a sign,
-             * so we copy everything to the octet string */
-            || !M_ASN1_OCTET_STRING_set(out, bn_buf->data, bn_buf->length))
-        goto err;
-
-    BUF_MEM_free(bn_buf);
-
-    return out;
-
-err:
-    if (bn_buf)
-        BUF_MEM_free(bn_buf);
-    if (out && !in)
-        ASN1_OCTET_STRING_free(out);
-
-    return NULL;
 }
 
 BUF_MEM *
