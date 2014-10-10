@@ -164,42 +164,6 @@ typedef struct card_info_locator_st {
     FILE_ID *efCardInfo;
 } CARD_INFO_LOCATOR;
 
-typedef struct dh_pubkey_st {
-    /** Object Identifier */
-    ASN1_OBJECT *oid;
-    /** Prime modulus */
-    ASN1_OCTET_STRING *p;
-    /** Order of the subgroup */
-    ASN1_OCTET_STRING *q;
-    /** Generator */
-    ASN1_OCTET_STRING *g;
-    /** Public value */
-    ASN1_OCTET_STRING *y;
-} DH_PUBKEY_BODY;
-typedef DH_PUBKEY_BODY DH_PUBKEY;
-
-typedef struct ecdh_pubkey_st {
-    /** Object Identifier */
-    ASN1_OBJECT *oid;
-    /** Prime modulus */
-    ASN1_OCTET_STRING *p;
-    /** First coefficient */
-    ASN1_OCTET_STRING *a;
-    /** Second coefficient */
-    ASN1_OCTET_STRING *b;
-    /** Base point
-     * Note: This is an Elliptic Curve Point */
-    ASN1_OCTET_STRING *G;
-    /** Order of the base point */
-    ASN1_OCTET_STRING *r;
-    /** Public point
-     * Note: This is an Elliptic Curve Point */
-    ASN1_OCTET_STRING *Y;
-    /** Cofactor */
-    ASN1_OCTET_STRING *f;
-} ECDH_PUBKEY_BODY;
-typedef ECDH_PUBKEY_BODY ECDH_PUBKEY;
-
 ASN1_SEQUENCE(PACE_INFO) = {
     ASN1_SIMPLE(PACE_INFO, protocol, ASN1_OBJECT),
     ASN1_SIMPLE(PACE_INFO, version, ASN1_INTEGER),
@@ -293,41 +257,6 @@ ASN1_SEQUENCE(CARD_INFO_LOCATOR) = {
     ASN1_SIMPLE(CARD_INFO_LOCATOR, url, ASN1_IA5STRING),
     ASN1_OPT(CARD_INFO_LOCATOR, efCardInfo, FILE_ID)
 } ASN1_SEQUENCE_END(CARD_INFO_LOCATOR)
-
-ASN1_SEQUENCE(DH_PUBKEY_BODY) = {
-    ASN1_SIMPLE(DH_PUBKEY_BODY, oid, ASN1_OBJECT),
-    ASN1_IMP_OPT(DH_PUBKEY_BODY, p, ASN1_OCTET_STRING, 1),
-    ASN1_IMP_OPT(DH_PUBKEY_BODY, q, ASN1_OCTET_STRING, 2),
-    ASN1_IMP_OPT(DH_PUBKEY_BODY, g, ASN1_OCTET_STRING, 3),
-    ASN1_IMP(DH_PUBKEY_BODY, y, ASN1_OCTET_STRING, 4),
-} ASN1_SEQUENCE_END(DH_PUBKEY_BODY)
-IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY_BODY)
-
-ASN1_ITEM_TEMPLATE(DH_PUBKEY) =
-    ASN1_EX_TEMPLATE_TYPE(
-            ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION,
-            0x49, DH_PUBKEY, DH_PUBKEY_BODY)
-ASN1_ITEM_TEMPLATE_END(DH_PUBKEY)
-IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY)
-
-ASN1_SEQUENCE(ECDH_PUBKEY_BODY) = {
-    ASN1_SIMPLE(ECDH_PUBKEY_BODY, oid, ASN1_OBJECT),
-    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, p, ASN1_OCTET_STRING, 1),
-    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, a, ASN1_OCTET_STRING, 2),
-    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, b, ASN1_OCTET_STRING, 3),
-    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, G, ASN1_OCTET_STRING, 4),
-    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, r, ASN1_OCTET_STRING, 5),
-    ASN1_IMP(ECDH_PUBKEY_BODY, Y, ASN1_OCTET_STRING, 6),
-    ASN1_IMP_OPT(ECDH_PUBKEY_BODY, f, ASN1_OCTET_STRING, 7),
-} ASN1_SEQUENCE_END(ECDH_PUBKEY_BODY)
-IMPLEMENT_ASN1_FUNCTIONS(ECDH_PUBKEY_BODY)
-
-ASN1_ITEM_TEMPLATE(ECDH_PUBKEY) =
-    ASN1_EX_TEMPLATE_TYPE(
-            ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION,
-            0x49, ECDH_PUBKEY, ECDH_PUBKEY_BODY)
-ASN1_ITEM_TEMPLATE_END(ECDH_PUBKEY)
-IMPLEMENT_ASN1_FUNCTIONS(ECDH_PUBKEY)
 
 static int
 dh_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
@@ -923,7 +852,6 @@ err:
     return r;
 }
 
-/* TODO merge DH_PUBKEY and ECDH_PUBKEY with CVC_PUBKEY */
 ASN1_OCTET_STRING *
 BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in)
 {
@@ -957,185 +885,33 @@ err:
     return NULL;
 }
 
-/* TODO merge with CVC_set_ec_pubkey */
 BUF_MEM *
 asn1_pubkey(int protocol, EVP_PKEY *key, BN_CTX *bn_ctx, enum eac_tr_version tr_version)
 {
-    EC_KEY *ec = NULL;
-    ECDH_PUBKEY *ecdhpub = NULL;
-    DH *dh = NULL;
-    DH_PUBKEY *dhpub = NULL;
-    BIGNUM *bn = NULL, *a_bn = NULL, *b_bn = NULL;
-    const EC_GROUP *group;
-    BUF_MEM *pubkey = NULL, *Y_buf = NULL, *G_buf = NULL;
+    CVC_PUBKEY *eac_pubkey = NULL;
+    BUF_MEM *pubkey = NULL;
     int l;
 
-    BN_CTX_start(bn_ctx);
-
-    check(key, "Invalid arguments");
+    eac_pubkey = CVC_pkey2pubkey(tr_version == EAC_TR_VERSION_2_01 ? 1 : 0, protocol, key, bn_ctx, NULL);
+    if (!eac_pubkey)
+        goto err;
 
     pubkey = BUF_MEM_new();
     if (!pubkey)
         goto err;
 
-    switch (EVP_PKEY_type(key->type)) {
-        case EVP_PKEY_DH:
-            dh = EVP_PKEY_get1_DH(key);
-            if (!dh)
-                goto err;
-
-            dhpub = DH_PUBKEY_new();
-            if (!dhpub) {
-                goto err;
-            }
-
-            /* Object Identifier */
-            dhpub->oid = OBJ_nid2obj(protocol);
-
-            /* Public value */
-            dhpub->y = BN_to_ASN1_UNSIGNED_INTEGER(dh->pub_key, dhpub->y);
-
-            if (!dhpub->oid || !dhpub->y)
-                goto err;
-
-            if (tr_version == EAC_TR_VERSION_2_01) {
-                /* Prime modulus */
-                dhpub->p = BN_to_ASN1_UNSIGNED_INTEGER(dh->p, dhpub->p);
-
-                /* Order of the subgroup */
-                bn = DH_get_order(dh, bn_ctx);
-                if (!bn)
-                    goto err;
-                dhpub->q = BN_to_ASN1_UNSIGNED_INTEGER(bn, dhpub->q);
-
-                /* Generator */
-                dhpub->g = BN_to_ASN1_UNSIGNED_INTEGER(dh->g, dhpub->g);
-
-                if (!dhpub->p|| !dhpub->q || !dhpub->g)
-                    goto err;
-
-                BN_clear_free(bn);
-            }
-
-            l = i2d_DH_PUBKEY(dhpub, (unsigned char **) &pubkey->data);
-            if (l < 0)
-                goto err;
-            pubkey->length = l;
-            pubkey->max = l;
-
-            DH_PUBKEY_free(dhpub);
-
-            break;
-
-        case EVP_PKEY_EC:
-            ec = EVP_PKEY_get1_EC_KEY(key);
-            if (!ec)
-                goto err;
-            group = EC_KEY_get0_group(ec);
-
-            ecdhpub = ECDH_PUBKEY_new();
-            if (!ecdhpub) {
-                goto err;
-            }
-
-            /* Object Identifier */
-            ecdhpub->oid = OBJ_nid2obj(protocol);
-            if (!ecdhpub->oid)
-                goto err;
-
-            /* Public point */
-            Y_buf = EC_POINT_point2buf(ec, bn_ctx, EC_KEY_get0_public_key(
-                        ec));
-
-            if (!Y_buf || !M_ASN1_OCTET_STRING_set(ecdhpub->Y, Y_buf->data,
-                        Y_buf->length))
-                goto err;
-
-            if (tr_version == EAC_TR_VERSION_2_01) {
-                bn = BN_CTX_get(bn_ctx);
-                a_bn = BN_CTX_get(bn_ctx);
-                b_bn = BN_CTX_get(bn_ctx);
-                if (!b_bn
-                        || !EC_GROUP_get_curve_GFp(group, bn, a_bn, b_bn, bn_ctx))
-                    goto err;
-
-                /* Prime modulus */
-                ecdhpub->p = BN_to_ASN1_UNSIGNED_INTEGER(bn, ecdhpub->p);
-
-                /* First coefficient */
-                ecdhpub->a = BN_to_ASN1_UNSIGNED_INTEGER(a_bn, ecdhpub->a);
-
-                /* Second coefficient */
-                ecdhpub->b = BN_to_ASN1_UNSIGNED_INTEGER(b_bn, ecdhpub->b);
-
-                /* Base Point */
-                G_buf = EC_POINT_point2buf(ec, bn_ctx,
-                        EC_GROUP_get0_generator(group));
-                ecdhpub->G = ASN1_OCTET_STRING_new();
-                if (!ecdhpub->G
-                        || !M_ASN1_OCTET_STRING_set(
-                            ecdhpub->G, G_buf->data, G_buf->length))
-                    goto err;
-
-                /* Order of the base point */
-                if (!EC_GROUP_get_order(group, bn, bn_ctx))
-                    goto err;
-                ecdhpub->r = BN_to_ASN1_UNSIGNED_INTEGER(bn, ecdhpub->r);
-
-                /* Cofactor */
-                if (!EC_GROUP_get_cofactor(group, bn, bn_ctx))
-                    goto err;
-                ecdhpub->f = BN_to_ASN1_UNSIGNED_INTEGER(bn, ecdhpub->f);
-
-                if (!ecdhpub->p || !ecdhpub->a || !ecdhpub->b || !ecdhpub->r ||
-                        !ecdhpub->f)
-                    goto err;
-
-                BUF_MEM_free(G_buf);
-            }
-
-            BUF_MEM_free(Y_buf);
-
-            l = i2d_ECDH_PUBKEY(ecdhpub, (unsigned char **) &pubkey->data);
-            if (l < 0)
-                goto err;
-            pubkey->length = l;
-            pubkey->max = l;
-
-            ECDH_PUBKEY_free(ecdhpub);
-
-            break;
-
-        default:
-            goto err;
+    l = i2d_CVC_PUBKEY(eac_pubkey, (unsigned char **) &pubkey->data);
+    if (l < 0) {
+        BUF_MEM_free(pubkey);
+        pubkey = NULL;
+        goto err;
     }
-
-    /* Decrease reference count, keys are still available in EVP_PKEY structure */
-    if (dh)
-        DH_free(dh);
-    if (ec)
-        EC_KEY_free(ec);
-    BN_CTX_end(bn_ctx);
-
-    return pubkey;
+    pubkey->length = l;
+    pubkey->max = l;
 
 err:
-    BN_CTX_end(bn_ctx);
-    if (Y_buf)
-        BUF_MEM_free(Y_buf);
-    if (G_buf)
-        BUF_MEM_free(G_buf);
-    if (pubkey)
-        BUF_MEM_free(pubkey);
-    if (ecdhpub)
-        ECDH_PUBKEY_free(ecdhpub);
-    if (dhpub)
-        DH_PUBKEY_free(dhpub);
-    /* Decrease reference count, keys are still available in EVP_PKEY structure */
-    if (dh)
-        DH_free(dh);
-    if (ec)
-        EC_KEY_free(ec);
+    if (eac_pubkey)
+        CVC_PUBKEY_free(eac_pubkey);
 
-    return NULL;
+    return pubkey;
 }

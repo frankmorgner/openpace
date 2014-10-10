@@ -327,7 +327,7 @@ DH_get_order(const DH *dh, BN_CTX *ctx)
 {
     BIGNUM *order = NULL, *bn = NULL;
 
-    check(dh, "Invalid argument");
+    check(dh && ctx, "Invalid argument");
 
     BN_CTX_start(ctx);
 

@@ -33,7 +33,6 @@
 #include <eac/cv_cert.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
-#include <openssl/rsa.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -346,187 +345,56 @@ err:
     return chat;
 }
 
-/* TODO merge with asn1_pubkey */
-static int CVC_set_ec_pubkey(const struct gengetopt_args_info *cmdline,
-        EC_KEY *ec, CVC_PUBKEY *out)
-{
-    const EC_GROUP *group;
-    int ok = 0;
-    BN_CTX *bn_ctx = NULL;
-    BIGNUM *a_bn = NULL, *b_bn = NULL, *bn = NULL;
-    BUF_MEM *Y_buf = NULL, *G_buf = NULL;
-
-    if (!cmdline || !out || !ec)
-        goto err;
-
-    bn_ctx = BN_CTX_new();
-    group = EC_KEY_get0_group(ec);
-    if (!bn_ctx || !group)
-        goto err;
-    BN_CTX_start(bn_ctx);
-
-    /* Public point */
-    Y_buf = EC_POINT_point2buf(ec, bn_ctx, EC_KEY_get0_public_key(ec));
-    out->public_point = ASN1_OCTET_STRING_new();
-    if (!Y_buf || !out->public_point ||
-            !M_ASN1_OCTET_STRING_set(out->public_point, Y_buf->data,
-                Y_buf->length))
-        goto err;
-
-    /* If cert is not a CVCA certificate it MUST NOT contain any domain
-     * parameters. It only carries the public key. */
-    if (cmdline->role_arg == role_arg_cvca) {
-        /* If cert is a CVCA certificate it MUST contain all domain parameters. */
-        bn = BN_CTX_get(bn_ctx);
-        a_bn = BN_CTX_get(bn_ctx);
-        b_bn = BN_CTX_get(bn_ctx);
-        if (!EC_GROUP_get_curve_GFp(group, bn, a_bn, b_bn, bn_ctx))
-            goto err;
-
-        /* Prime modulus */
-        out->modulus = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->modulus);
-
-        /* First coefficient */
-        out->a = BN_to_ASN1_UNSIGNED_INTEGER(a_bn, out->a);
-
-        /* Second coefficient */
-        out->b = BN_to_ASN1_UNSIGNED_INTEGER(b_bn, out->b);
-
-        /* Base Point */
-        G_buf = EC_POINT_point2buf(ec, bn_ctx,
-                EC_GROUP_get0_generator(group));
-        out->base = ASN1_OCTET_STRING_new();
-        if (!out->base
-                || !M_ASN1_OCTET_STRING_set(
-                    out->base, G_buf->data, G_buf->length))
-            goto err;
-
-        /* Order of the base point */
-        if (!EC_GROUP_get_order(group, bn, bn_ctx))
-            goto err;
-        out->base_order = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->base_order);
-
-        /* Cofactor */
-        if (!EC_GROUP_get_cofactor(group, bn, bn_ctx))
-            goto err;
-        out->cofactor = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->cofactor);
-
-        if (!out->modulus || !out->a || !out->b || !out->base_order || !out->cofactor)
-            goto err;
-    }
-
-    ok = 1;
-
-err:
-    if (bn)
-        BN_free(bn);
-    if (a_bn)
-        BN_free(a_bn);
-    if (b_bn)
-        BN_free(b_bn);
-    if (Y_buf)
-        BUF_MEM_free(Y_buf);
-    if (G_buf)
-        BUF_MEM_free(G_buf);
-    if (bn_ctx)
-        BN_CTX_free(bn_ctx);
-
-    return ok;
-}
-
-/* TODO merge with asn1_pubkey */
-static int CVC_set_rsa_pubkey(RSA *rsa, CVC_PUBKEY *out)
-{
-    int ok = 0;
-
-    if (!out) {
-        goto err;
-    }
-
-    out->modulus = BN_to_ASN1_UNSIGNED_INTEGER(rsa->n, out->modulus);
-    out->a = BN_to_ASN1_UNSIGNED_INTEGER(rsa->e, out->a);
-    /* FIXME what about the public_point ??? */
-    if (!out->modulus || !out->a)
-        goto err;
-
-    ok = 1;
-
-err:
-    return ok;
-}
-
-static CVC_PUBKEY *get_cvc_pubkey(const struct gengetopt_args_info *cmdline, EVP_PKEY *key)
+static CVC_PUBKEY *get_cvc_pubkey(const struct gengetopt_args_info *cmdline,
+        EVP_PKEY *key)
 {
     CVC_PUBKEY *pubkey = NULL;
-    EC_KEY *ec = NULL;
-    RSA *rsa = NULL;
+    int protocol;
 
-    if (!cmdline || !key)
-        goto err;
-
-    pubkey = CVC_PUBKEY_new();
-    if (!pubkey)
+    if (!cmdline)
         goto err;
 
     switch (cmdline->scheme_arg) {
         case scheme_arg_ECDSA_SHA_1:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_ECDSA_SHA_1);
+            protocol = NID_id_TA_ECDSA_SHA_1;
             break;
         case scheme_arg_ECDSA_SHA_224:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_ECDSA_SHA_224);
+            protocol = NID_id_TA_ECDSA_SHA_224;
             break;
         case scheme_arg_ECDSA_SHA_256:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_ECDSA_SHA_256);
+            protocol = NID_id_TA_ECDSA_SHA_256;
             break;
         case scheme_arg_ECDSA_SHA_384:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_ECDSA_SHA_384);
+            protocol = NID_id_TA_ECDSA_SHA_384;
             break;
         case scheme_arg_ECDSA_SHA_512:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_ECDSA_SHA_512);
+            protocol = NID_id_TA_ECDSA_SHA_512;
             break;
         case scheme_arg_RSA_v1_5_SHA_1:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_RSA_v1_5_SHA_1);
+            protocol = NID_id_TA_RSA_v1_5_SHA_1;
             break;
         case scheme_arg_RSA_v1_5_SHA_256:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_RSA_v1_5_SHA_256);
+            protocol = NID_id_TA_RSA_v1_5_SHA_256;
             break;
         case scheme_arg_RSA_v1_5_SHA_512:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_RSA_v1_5_SHA_512);
+            protocol = NID_id_TA_RSA_v1_5_SHA_512;
             break;
         case scheme_arg_RSA_PSS_SHA_1:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_RSA_PSS_SHA_1);
+            protocol = NID_id_TA_RSA_PSS_SHA_1;
             break;
         case scheme_arg_RSA_PSS_SHA_256:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_RSA_PSS_SHA_256);
+            protocol = NID_id_TA_RSA_PSS_SHA_256;
             break;
         case scheme_arg_RSA_PSS_SHA_512:
-            pubkey->oid = OBJ_nid2obj(NID_id_TA_RSA_PSS_SHA_512);
+            protocol = NID_id_TA_RSA_PSS_SHA_512;
             break;
         default:
             err("unhandled signature scheme");
     }
-
-    switch (EVP_PKEY_type(key->type)) {
-        case EVP_PKEY_EC:
-            ec = EVP_PKEY_get1_EC_KEY(key);
-            if (!CVC_set_ec_pubkey(cmdline, ec, pubkey))
-                goto err;
-            break;
-        case EVP_PKEY_RSA:
-            rsa = EVP_PKEY_get1_RSA(key);
-            if (!rsa || !CVC_set_rsa_pubkey(rsa, pubkey))
-                goto err;
-            break;
-        default:
-            err("unhandled type of key");
-    }
+    pubkey = CVC_pkey2pubkey(cmdline->role_arg == role_arg_cvca ? 1 : 0,
+            protocol, key, NULL, NULL);
 
 err:
-    if (rsa)
-        RSA_free(rsa);
-    if (ec)
-        EC_KEY_free(ec);
-
     return pubkey;
 }
 

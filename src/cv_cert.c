@@ -28,6 +28,7 @@
 #include "eac_asn1.h"
 #include "eac_err.h"
 #include "eac_util.h"
+#include "eac_dh.h"
 #include "misc.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
@@ -37,6 +38,7 @@
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/rsa.h>
+#include <openssl/dh.h>
 #include <openssl/stack.h>
 #include <string.h>
 
@@ -138,26 +140,31 @@ IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CHAT)
 /* Actually we would need two types of public keys: one for ECDSA and one for
  * RSA. Since I did not find a suitable solution using the OpenSSL ASN.1 macros,
  * I used an ugly hack. The same type is used for both kind of keys. The optional
- * members modulus and a can are used to hold the modulus and the public exponent
+ * members cont1 and cont2 can are used to hold the modulus and the public exponent
  * in the RSA case. In this case these members actually are not optional, so we
  * need additional sanity checks in the corresponding d2i functions */
-ASN1_SEQUENCE(CVC_PUBKEY) = {
-    ASN1_SIMPLE(CVC_PUBKEY, oid, ASN1_OBJECT),
+ASN1_SEQUENCE(CVC_PUBKEY_BODY) = {
+    ASN1_SIMPLE(CVC_PUBKEY_BODY, oid, ASN1_OBJECT),
     /* tag: 0x81 */
-    ASN1_IMP_OPT(CVC_PUBKEY, modulus, ASN1_OCTET_STRING, 0x1),
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont1, ASN1_OCTET_STRING, 0x1),
     /* tag: 0x82 */
-    ASN1_IMP_OPT(CVC_PUBKEY, a, ASN1_OCTET_STRING, 0x2),
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont2, ASN1_OCTET_STRING, 0x2),
     /* tag: 0x83 */
-    ASN1_IMP_OPT(CVC_PUBKEY, b, ASN1_OCTET_STRING, 0x3),
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont3, ASN1_OCTET_STRING, 0x3),
     /* tag: 0x84 */
-    ASN1_IMP_OPT(CVC_PUBKEY, base, ASN1_OCTET_STRING, 0x4),
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont4, ASN1_OCTET_STRING, 0x4),
     /* tag: 0x85 */
-    ASN1_IMP_OPT(CVC_PUBKEY, base_order, ASN1_OCTET_STRING, 0x5),
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont5, ASN1_OCTET_STRING, 0x5),
     /* tag: 0x86 */
-    ASN1_IMP_OPT(CVC_PUBKEY, public_point, ASN1_OCTET_STRING, 0x6),
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont6, ASN1_OCTET_STRING, 0x6),
     /* tag: 0x87 */
-    ASN1_IMP_OPT(CVC_PUBKEY, cofactor, ASN1_OCTET_STRING, 0x7)
-} ASN1_SEQUENCE_END(CVC_PUBKEY)
+    ASN1_IMP_OPT(CVC_PUBKEY_BODY, cont7, ASN1_OCTET_STRING, 0x7)
+} ASN1_SEQUENCE_END(CVC_PUBKEY_BODY)
+ASN1_ITEM_TEMPLATE(CVC_PUBKEY) =
+    ASN1_EX_TEMPLATE_TYPE(
+            ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION,
+            0x49, CVC_PUBKEY, CVC_PUBKEY_BODY)
+ASN1_ITEM_TEMPLATE_END(CVC_PUBKEY)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_PUBKEY)
 IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_PUBKEY)
 
@@ -182,7 +189,7 @@ ASN1_SEQUENCE(CVC_CERT_BODY_SEQ) = {
         /* tag: 0x42 */
         ASN1_APP_IMP(CVC_CERT_BODY_SEQ, certificate_authority_reference, ASN1_OCTET_STRING, 0x2),
         /* public key: tag:0x7f49 */
-        ASN1_APP_IMP(CVC_CERT_BODY_SEQ, public_key, CVC_PUBKEY, 0x49),
+        ASN1_SIMPLE(CVC_CERT_BODY_SEQ, public_key, CVC_PUBKEY),
         /* tag: 0x5f20 */
         ASN1_APP_IMP(CVC_CERT_BODY_SEQ, certificate_holder_reference, ASN1_OCTET_STRING, 0x20),
         /* tag: 0x7f4c */
@@ -296,7 +303,7 @@ CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
             || nid == NID_id_TA_ECDSA_SHA_256
             || nid == NID_id_TA_ECDSA_SHA_384
             || nid == NID_id_TA_ECDSA_SHA_512) {
-        check(ret->body->public_key->public_point,
+        check(ret->body->public_key->cont6,
                 "public key missing");
     } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
             || nid == NID_id_TA_RSA_v1_5_SHA_256
@@ -304,7 +311,7 @@ CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
             || nid == NID_id_TA_RSA_PSS_SHA_1
             || nid == NID_id_TA_RSA_PSS_SHA_256
             || nid == NID_id_TA_RSA_PSS_SHA_512) {
-        check(ret->body->public_key->modulus && ret->body->public_key->a,
+        check(ret->body->public_key->cont1 && ret->body->public_key->cont2,
                 "public key missing");
     } else {
         log_err("unknown credentials in certificate");
@@ -462,7 +469,7 @@ RSA *CVC_get_rsa_pubkey(const CVC_CERT *cert) {
 
     /* The RSA parameters are contained in the EC parameters (see the comment in
      * line 128 */
-    check((cert->body->public_key->modulus && cert->body->public_key->a),
+    check((cert->body->public_key->cont1 && cert->body->public_key->cont2),
             "Invalid key format");
 
     key = RSA_new();
@@ -471,10 +478,10 @@ RSA *CVC_get_rsa_pubkey(const CVC_CERT *cert) {
 
     /* There are no setter functions in rsa.h so we need to modify the
      * struct directly */
-    key->n = BN_bin2bn(cert->body->public_key->modulus->data,
-            cert->body->public_key->modulus->length, key->n);
-    key->e = BN_bin2bn(cert->body->public_key->a->data,
-            cert->body->public_key->a->length, key->e);
+    key->n = BN_bin2bn(cert->body->public_key->cont1->data,
+            cert->body->public_key->cont1->length, key->n);
+    key->e = BN_bin2bn(cert->body->public_key->cont2->data,
+            cert->body->public_key->cont2->length, key->e);
 
     if (!key->n || !key->e)
         goto err;
@@ -500,39 +507,39 @@ CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_c
     /* If cert is a CVCA certificate it MUST contain all domain parameters (and
      * we can ignore the domainParameters parameter). */
     if (CVC_get_role(cert->body->chat) == CVC_CVCA) {
-        check((cert->body->public_key->public_point
-                && cert->body->public_key->modulus
-                && cert->body->public_key->a
-                && cert->body->public_key->b
-                && cert->body->public_key->base
-                && cert->body->public_key->base_order
-                && cert->body->public_key->cofactor),
+        check((cert->body->public_key->cont6
+                && cert->body->public_key->cont1
+                && cert->body->public_key->cont2
+                && cert->body->public_key->cont3
+                && cert->body->public_key->cont4
+                && cert->body->public_key->cont5
+                && cert->body->public_key->cont7),
             "Invalid key format");
 
         key = EC_KEY_new();
         if (!key)
             goto err;
 
-        if (!EAC_ec_key_from_asn1(&key, cert->body->public_key->modulus,
-                    cert->body->public_key->a,
-                    cert->body->public_key->b,
-                    cert->body->public_key->base,
-                    cert->body->public_key->base_order,
-                    cert->body->public_key->public_point,
-                    cert->body->public_key->cofactor,
+        if (!EAC_ec_key_from_asn1(&key, cert->body->public_key->cont1,
+                    cert->body->public_key->cont2,
+                    cert->body->public_key->cont3,
+                    cert->body->public_key->cont4,
+                    cert->body->public_key->cont5,
+                    cert->body->public_key->cont6,
+                    cert->body->public_key->cont7,
                     bn_ctx))
                 goto err;
     } else {
         /* If cert is not a CVCA certificate it MUST NOT contain any domain
          * parameters. We take the domain parameters from the domainParameters
          * parameter and the public point from the certificate. */
-        check((cert->body->public_key->public_point
-                && !cert->body->public_key->modulus
-                && !cert->body->public_key->a
-                && !cert->body->public_key->b
-                && !cert->body->public_key->base
-                && !cert->body->public_key->base_order
-                && !cert->body->public_key->cofactor),
+        check((cert->body->public_key->cont6
+                && !cert->body->public_key->cont1
+                && !cert->body->public_key->cont2
+                && !cert->body->public_key->cont3
+                && !cert->body->public_key->cont4
+                && !cert->body->public_key->cont5
+                && !cert->body->public_key->cont7),
             "Invalid key format");
 
         check((domainParameters && (EVP_PKEY_type(domainParameters->type) == EVP_PKEY_EC)),
@@ -545,8 +552,8 @@ CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_c
         point = EC_POINT_new(group);
         if (!point
                 || !EC_POINT_oct2point(group, point,
-                    cert->body->public_key->public_point->data,
-                    cert->body->public_key->public_point->length,
+                    cert->body->public_key->cont6->data,
+                    cert->body->public_key->cont6->length,
                     bn_ctx)
                 || !EC_KEY_set_public_key(key, point)
                 || !EC_KEY_check_key(key))
@@ -987,4 +994,213 @@ err:
         BUF_MEM_free(desc_hash);
 
     return ret;
+}
+
+static int CVC_eckey2pubkey(int all_parameters,
+        EVP_PKEY *key, BN_CTX *bn_ctx, CVC_PUBKEY *out)
+{
+    EC_KEY *ec = NULL;
+    const EC_GROUP *group;
+    int ok = 0;
+    BIGNUM *a_bn = NULL, *b_bn = NULL, *bn = NULL;
+    BUF_MEM *Y_buf = NULL, *G_buf = NULL;
+
+    check(out && key && bn_ctx, "Invalid Arguments");
+
+    ec = EVP_PKEY_get1_EC_KEY(key);
+    check(ec, "Could not get EC key");
+
+    group = EC_KEY_get0_group(ec);
+    if (!group)
+        goto err;
+
+    /* Public point */
+    Y_buf = EC_POINT_point2buf(ec, bn_ctx, EC_KEY_get0_public_key(ec));
+    out->cont6 = ASN1_OCTET_STRING_new();
+    if (!Y_buf || !out->cont6 ||
+            !M_ASN1_OCTET_STRING_set(out->cont6, Y_buf->data,
+                Y_buf->length))
+        goto err;
+
+    /* If cert is not a CVCA certificate it MUST NOT contain any domain
+     * parameters. It only carries the public key. */
+    if (all_parameters) {
+        /* If cert is a CVCA certificate it MUST contain all domain parameters. */
+        bn = BN_CTX_get(bn_ctx);
+        a_bn = BN_CTX_get(bn_ctx);
+        b_bn = BN_CTX_get(bn_ctx);
+        if (!EC_GROUP_get_curve_GFp(group, bn, a_bn, b_bn, bn_ctx))
+            goto err;
+
+        /* Prime modulus */
+        out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->cont1);
+
+        /* First coefficient */
+        out->cont2 = BN_to_ASN1_UNSIGNED_INTEGER(a_bn, out->cont2);
+
+        /* Second coefficient */
+        out->cont3 = BN_to_ASN1_UNSIGNED_INTEGER(b_bn, out->cont3);
+
+        /* Base Point */
+        G_buf = EC_POINT_point2buf(ec, bn_ctx,
+                EC_GROUP_get0_generator(group));
+        out->cont4 = ASN1_OCTET_STRING_new();
+        if (!out->cont4
+                || !M_ASN1_OCTET_STRING_set(
+                    out->cont4, G_buf->data, G_buf->length))
+            goto err;
+
+        /* Order of the base point */
+        if (!EC_GROUP_get_order(group, bn, bn_ctx))
+            goto err;
+        out->cont5 = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->cont5);
+
+        /* Cofactor */
+        if (!EC_GROUP_get_cofactor(group, bn, bn_ctx))
+            goto err;
+        out->cont7 = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->cont7);
+
+        if (!out->cont1 || !out->cont2 || !out->cont3 || !out->cont4
+                || !out->cont5 || !out->cont7)
+            goto err;
+    }
+
+    ok = 1;
+
+err:
+    if (ec)
+        EC_KEY_free(ec);
+    if (bn)
+        BN_free(bn);
+    if (a_bn)
+        BN_free(a_bn);
+    if (b_bn)
+        BN_free(b_bn);
+    if (Y_buf)
+        BUF_MEM_free(Y_buf);
+    if (G_buf)
+        BUF_MEM_free(G_buf);
+
+    return ok;
+}
+
+static int CVC_rsa2pubkey(EVP_PKEY *key, CVC_PUBKEY *out)
+{
+    RSA *rsa = NULL;
+    int ok = 0;
+
+    check(key && out, "Invalid Arguments");
+
+    rsa = EVP_PKEY_get1_RSA(key);
+    check(rsa, "Could not get RSA key");
+
+    out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(rsa->n, out->cont1);
+    out->cont2 = BN_to_ASN1_UNSIGNED_INTEGER(rsa->e, out->cont2);
+    if (!out->cont1 || !out->cont2)
+        goto err;
+
+    ok = 1;
+
+err:
+    if (rsa)
+        RSA_free(rsa);
+
+    return ok;
+}
+
+static int CVC_dh2pubkey(int all_parameters, EVP_PKEY *key, BN_CTX *bn_ctx,
+        CVC_PUBKEY *out)
+{
+    DH *dh = NULL;
+    BIGNUM *bn = NULL;
+    int ok = 0;
+
+    check(out, "Invalid argument");
+
+    dh = EVP_PKEY_get1_DH(key);
+    check(dh, "Could not get DH key");
+
+    /* Public value */
+    out->cont4 = BN_to_ASN1_UNSIGNED_INTEGER(dh->pub_key, out->cont4);
+    if (!out->cont4)
+        goto err;
+
+    if (all_parameters) {
+        /* Prime modulus */
+        out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(dh->p, out->cont1);
+
+        /* Order of the subgroup */
+        bn = DH_get_order(dh, bn_ctx);
+        if (!bn)
+            goto err;
+        out->cont2 = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->cont2);
+
+        /* Generator */
+        out->cont3 = BN_to_ASN1_UNSIGNED_INTEGER(dh->g, out->cont3);
+
+        if (!out->cont1|| !out->cont2 || !out->cont3)
+            goto err;
+    }
+
+    ok = 1;
+
+err:
+    if (bn)
+        BN_free(bn);
+    if (dh)
+        DH_free(dh);
+
+    return ok;
+}
+
+CVC_PUBKEY *CVC_pkey2pubkey(int all_parameters, int protocol, 
+        EVP_PKEY *key, BN_CTX *bn_ctx, CVC_PUBKEY *in)
+{
+    CVC_PUBKEY *pubkey = NULL, *out = NULL;
+    BN_CTX *tmp_ctx = NULL;
+
+    check(key, "Invalid argument");
+
+    if (!bn_ctx) {
+        tmp_ctx = BN_CTX_new();
+        bn_ctx = tmp_ctx;
+    }
+
+    if (in) {
+        pubkey = in;
+    } else {
+        pubkey = CVC_PUBKEY_new();
+        if (!pubkey)
+            goto err;
+    }
+
+    pubkey->oid = OBJ_nid2obj(protocol);
+    check(pubkey->oid, "Could not encode oid");
+
+    switch (EVP_PKEY_type(key->type)) {
+        case EVP_PKEY_EC:
+            if (!CVC_eckey2pubkey(all_parameters, key, bn_ctx, pubkey))
+                goto err;
+            break;
+        case EVP_PKEY_DH:
+            if (!CVC_dh2pubkey(all_parameters, key, bn_ctx, pubkey))
+                goto err;
+            break;
+        case EVP_PKEY_RSA:
+            if (!CVC_rsa2pubkey(key, pubkey))
+                goto err;
+            break;
+        default:
+            check(0, "unhandled type of key");
+    }
+
+    out = pubkey;
+
+err:
+    if (!tmp_ctx)
+        BN_CTX_free(tmp_ctx);
+    if (!out && !in && pubkey)
+        CVC_PUBKEY_free(pubkey);
+
+    return out;
 }

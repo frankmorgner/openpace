@@ -101,20 +101,21 @@ typedef struct cvc_pubkey_st {
     /** @brief Object Identifier which specifies the exact protocol to be used during TA */
     ASN1_OBJECT *oid;
     /** @brief Composite modulus (RSA)/prime modulus (DH, EC) */
-    ASN1_OCTET_STRING *modulus;
+    ASN1_OCTET_STRING *cont1;
     /** @brief Public exponent (RSA)/order of the Subgroup (DH)/first coefficient (EC) */
-    ASN1_OCTET_STRING *a;
+    ASN1_OCTET_STRING *cont2;
     /** @brief Order of the subgroup (DH)/second coefficient (EC) */
-    ASN1_OCTET_STRING *b;
+    ASN1_OCTET_STRING *cont3;
     /** @brief Generator (DH)/base point (EC) */
-    ASN1_OCTET_STRING *base;
+    ASN1_OCTET_STRING *cont4;
     /** @brief Public value (DH)/order of the base point (EC) */
-    ASN1_OCTET_STRING *base_order;
+    ASN1_OCTET_STRING *cont5;
     /** @brief Public point (EC) */
-    ASN1_OCTET_STRING *public_point;
+    ASN1_OCTET_STRING *cont6;
     /** @brief Cofactor (EC) */
-    ASN1_OCTET_STRING *cofactor;
-} CVC_PUBKEY;
+    ASN1_OCTET_STRING *cont7;
+} CVC_PUBKEY_BODY;
+typedef CVC_PUBKEY_BODY CVC_PUBKEY;
 DECLARE_ASN1_FUNCTIONS(CVC_PUBKEY)
 DECLARE_ASN1_ITEM(CVC_PUBKEY)
 DECLARE_ASN1_PRINT_FUNCTION(CVC_PUBKEY)
@@ -321,6 +322,9 @@ void CVC_CERT_free(CVC_CERT *a);
  * @return CV certificate read or NULL in case of an error
  */
 CVC_CERT *d2i_CVC_CERT_bio(BIO *bp, CVC_CERT **cvc);
+
+CVC_PUBKEY *CVC_pkey2pubkey(int all_parameters, int protocol, 
+        EVP_PKEY *key, BN_CTX *bn_ctx, CVC_PUBKEY *in);
 
 
 
