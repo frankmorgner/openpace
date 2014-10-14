@@ -80,19 +80,21 @@ cvc-print.ggo: cvc-print.ggo.in
 
 
 
-cvc-create.1: cvc-create
+cvc-create.1: cvc-create.ggo.in
+	make -C $(builddir) cvc-create$(EXEEXT)
 	$(HELP2MAN) \
 		--output=$@ \
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
-		$(builddir)/cvc-create
+		$(builddir)/cvc-create$(EXEEXT)
 
-cvc-print.1: cvc-print
+cvc-print.1: cvc-print.ggo.in
+	make -C $(builddir) cvc-print$(EXEEXT)
 	$(HELP2MAN) \
 		--output=$@ \
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
-		$(builddir)/cvc-print
+		$(builddir)/cvc-print$(EXEEXT)
 
 
 if INSTALL_OPENSSL

@@ -30,7 +30,7 @@ WIN_TOOL_DIR ?= /usr/$(WIN_TOOL)
 WIN_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_win32
 
 win:
-	$(MAKE) cross \
+	env ac_cv_func_malloc_0_nonnull=yes $(MAKE) cross \
 		TOOL=$(WIN_TOOL) \
 		TOOL_DIR=$(WIN_TOOL_DIR) \
 		TARGETDIR=$(WIN_TARGETDIR) \
@@ -74,5 +74,6 @@ $(LIBEAC):
 		$(ENABLE_PYTHON) \
 		CFLAGS="-I$(TOOL_DIR)/include -I$(TOOL_DIR)/include/python2.7" \
 		LDFLAGS=-L$(TOOL_DIR)/lib
+	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
 	env CROSS_COMPILE=$(CROSS_COMPILE) \
 		$(MAKE) -C $(top_builddir) install DESTDIR=$(TARGETDIR)
