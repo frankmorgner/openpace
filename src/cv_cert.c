@@ -166,7 +166,8 @@ ASN1_ITEM_TEMPLATE(CVC_PUBKEY) =
             0x49, CVC_PUBKEY, CVC_PUBKEY_BODY)
 ASN1_ITEM_TEMPLATE_END(CVC_PUBKEY)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_PUBKEY)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_PUBKEY)
+/* FIXME */
+/* IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_PUBKEY) */
 
 ASN1_SEQUENCE(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ) = {
     ASN1_SIMPLE(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ, type, ASN1_OBJECT),
@@ -614,7 +615,7 @@ CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
             || !BIO_printf(bio, "Profile identifier: %d\n", CVC_get_profile_identifier(cv))
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CAR: %s\n", car)
-            || !CVC_PUBKEY_print_ctx(bio, cv->body->public_key, indent, NULL)
+            /*|| !CVC_PUBKEY_print_ctx(bio, cv->body->public_key, indent, NULL)*/
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CHR: %s\n", chr)
             || !BIO_indent(bio, indent, 80)

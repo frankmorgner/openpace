@@ -118,7 +118,8 @@ typedef struct cvc_pubkey_st {
 typedef CVC_PUBKEY_BODY CVC_PUBKEY;
 DECLARE_ASN1_FUNCTIONS(CVC_PUBKEY)
 DECLARE_ASN1_ITEM(CVC_PUBKEY)
-DECLARE_ASN1_PRINT_FUNCTION(CVC_PUBKEY)
+/* FIXME */
+/* DECLARE_ASN1_PRINT_FUNCTION(CVC_PUBKEY) */
 
 /**
  * @brief Discretionary data template, used to encode certificate extensions.
