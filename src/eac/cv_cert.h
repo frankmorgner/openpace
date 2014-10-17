@@ -324,8 +324,23 @@ void CVC_CERT_free(CVC_CERT *a);
  */
 CVC_CERT *d2i_CVC_CERT_bio(BIO *bp, CVC_CERT **cvc);
 
-CVC_PUBKEY *CVC_pkey2pubkey(int all_parameters, int protocol, 
-        EVP_PKEY *key, BN_CTX *bn_ctx, CVC_PUBKEY *in);
+/**
+ * @brief Extract the public key from a CV certificate. Since EC domain parameters
+ * are only included in CVCA certificates, they must be passed as parameters
+ * for DV and terminal certificates
+ *
+ * @param[in] cert the certificate containing the public key
+ * @param[in] bn_ctx
+ * @param[in,out] out (optional) where to save the extracted key. May contain domain parameters.
+ *
+ * @return An EVP_PKEY container with the public key or NULL in case of an error
+ */
+EVP_PKEY *
+CVC_pubkey2pkey(const CVC_CERT *cert, BN_CTX *bn_ctx, EVP_PKEY *out);
+
+CVC_PUBKEY *
+CVC_pkey2pubkey(int all_parameters, int protocol, EVP_PKEY *key,
+        BN_CTX *bn_ctx, CVC_PUBKEY *out);
 
 
 
@@ -395,22 +410,6 @@ const CVC_CHAT *
 cvc_get_chat(const CVC_CERT *cvc);
 
 /** @} ***********************************************************************/
-
-/**
- * @brief Extract the public key from a CV certificate. Since EC domain parameters
- * are only included in CVCA certificates, they must be passed as parameters
- * for DV and terminal certificates
- *
- * @param[in] domainParameters domain parameters for DV and terminal certificates (optional)
- * @param[in] cert the certificate containing the public key
- * @param[in] bn_ctx
- *
- * @return An EVP_PKEY container with the public key or NULL in case of an error
- *
- * @note Result should be freed with \c EVP_PKEY_free()
- */
-EVP_PKEY *
-CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx);
 
 /**
  * @brief Extract the terminal-type (terminal, DV, CVCA) from the CHAT

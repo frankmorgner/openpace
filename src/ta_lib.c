@@ -147,7 +147,7 @@ static int
 TA_CTX_set_parameters(TA_CTX *ctx, const CVC_CERT *cert,
         BN_CTX *bn_ctx)
 {
-    EVP_PKEY *pub = NULL;
+    EVP_PKEY *pub;
     int ok = 0, oid;
 
     check(ctx && cert && cert->body && cert->body->public_key,
@@ -155,13 +155,14 @@ TA_CTX_set_parameters(TA_CTX *ctx, const CVC_CERT *cert,
 
     /* Extract the public key of the terminal and overwrite the current key. */
     if (ctx->priv_key) {
-        pub = CVC_get_pubkey(ctx->priv_key, cert, bn_ctx);
-    } else { /* ctx->pub might be NULL (in case of a CVCA certificate). */
-        pub = CVC_get_pubkey(ctx->pub_key, cert, bn_ctx);
+        pub = EVP_PKEY_dup(ctx->priv_key);
+        check(CVC_pubkey2pkey(cert, bn_ctx, pub),
+                "Failed to extract public key");
+    } else {
+        /* ctx->pub might be NULL (in case of a CVCA certificate). */
+        pub = CVC_pubkey2pkey(cert, bn_ctx, ctx->pub_key);
+        check(pub, "Failed to extract public key");
     }
-    check(pub, "Failed to extract public key");
-
-    EVP_PKEY_free(ctx->pub_key);
     ctx->pub_key = pub;
 
     /* Extract OID from the terminal certificate */

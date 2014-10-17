@@ -283,21 +283,11 @@ cvc_get_reference_string(ASN1_OCTET_STRING *ref);
  */
 char *
 cvc_get_date_string(ASN1_OCTET_STRING *date);
-/**
- * @brief Extract the rsa public key from a CV certificate
- * @param cert CV certificate
- * @return the rsa public key or NULL in case of an error
- */
-static RSA *
-CVC_get_rsa_pubkey(const CVC_CERT *cert);
-/**
- * @brief Extract the ECC public key from a CV certificate
- * @param cert CV certificate
- * @param domainParameters used in case of a DV or terminal certificate
- * @return the ECC public key or NULL in case of an error
- */
-static EC_KEY *
-CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx);
+static int
+CVC_pubkey2rsa(const CVC_PUBKEY *public_key, EVP_PKEY *key);
+int
+CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
+        BN_CTX *bn_ctx, EVP_PKEY *key);
 
 CVC_CERT *d2i_CVC_CERT_bio(BIO *bp, CVC_CERT **cvc)
 {
@@ -432,18 +422,30 @@ CVC_get_role(const CVC_CHAT *chat)
 }
 
 EVP_PKEY *
-CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx) {
-    EVP_PKEY *key = NULL;
-    EC_KEY *ec = NULL;
-    RSA *rsa = NULL;
+CVC_pubkey2pkey(const CVC_CERT *cert, BN_CTX *bn_ctx,
+        EVP_PKEY *key)
+{
     int nid;
+    int all_parameters;
+    EVP_PKEY *out = NULL, *tmp_key;
 
     if (!cert || !cert->body || !cert->body->public_key)
         goto err;
 
-    key = EVP_PKEY_new();
-    if (!key)
-        goto err;
+    if (key)
+        tmp_key = key;
+    else {
+        tmp_key = EVP_PKEY_new();
+        if (!tmp_key)
+            goto err;
+    }
+
+    /* If cert is a CVCA certificate it MUST contain all domain parameters (and
+     * we can ignore the domainParameters parameter). */
+    if (CVC_get_role(cert->body->chat) == CVC_CVCA)
+        all_parameters = 1;
+    else
+        all_parameters = 0;
 
     nid = OBJ_obj2nid(cert->body->public_key->oid);
     if (nid == NID_id_TA_ECDSA_SHA_1
@@ -451,145 +453,133 @@ CVC_get_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
             || nid == NID_id_TA_ECDSA_SHA_256
             || nid == NID_id_TA_ECDSA_SHA_384
             || nid == NID_id_TA_ECDSA_SHA_512) {
-        ec = CVC_get_ec_pubkey(domainParameters, cert, bn_ctx);
-        if (!ec)
+        if (!CVC_pubkey2eckey(all_parameters, cert->body->public_key, bn_ctx, tmp_key))
             goto err;
-        EVP_PKEY_set1_EC_KEY(key, ec);
     } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
             || nid == NID_id_TA_RSA_v1_5_SHA_256
             || nid == NID_id_TA_RSA_v1_5_SHA_512
             || nid == NID_id_TA_RSA_PSS_SHA_1
             || nid == NID_id_TA_RSA_PSS_SHA_256
             || nid == NID_id_TA_RSA_PSS_SHA_512) {
-        rsa = CVC_get_rsa_pubkey(cert);
-        if (!rsa)
+        if (!CVC_pubkey2rsa(cert->body->public_key, tmp_key))
             goto err;
-        EVP_PKEY_set1_RSA(key, rsa);
     } else {
         log_err("Unknown protocol");
         goto err;
     }
 
-    if (ec)
-        EC_KEY_free(ec);
-    if (rsa)
-        RSA_free(rsa);
-    return key;
+    out = tmp_key;
 
 err:
-    if (key)
-        EVP_PKEY_free(key);
-    return NULL;
+    if (!out && !key && tmp_key)
+        EVP_PKEY_free(tmp_key);
+
+    return out;
 }
 
-RSA *CVC_get_rsa_pubkey(const CVC_CERT *cert) {
-    RSA *key = NULL;
+static int
+CVC_pubkey2rsa(const CVC_PUBKEY *public_key, EVP_PKEY *out)
+{
+    int ok = 0;
+    RSA *rsa;
 
-    if (!cert || !cert->body || !cert->body->public_key)
+    if (!out || !public_key)
         goto err;
 
-    /* The RSA parameters are contained in the EC parameters (see the comment in
-     * line 128 */
-    check((cert->body->public_key->cont1 && cert->body->public_key->cont2),
-            "Invalid key format");
+    /* for RSA all parameters must always be present */
+    check(public_key->cont1 && public_key->cont2, "Invalid key format");
 
-    key = RSA_new();
-    if (!key)
+    rsa = RSA_new();
+    if (!rsa)
         goto err;
 
     /* There are no setter functions in rsa.h so we need to modify the
      * struct directly */
-    key->n = BN_bin2bn(cert->body->public_key->cont1->data,
-            cert->body->public_key->cont1->length, key->n);
-    key->e = BN_bin2bn(cert->body->public_key->cont2->data,
-            cert->body->public_key->cont2->length, key->e);
+    rsa->n = BN_bin2bn(public_key->cont1->data,
+            public_key->cont1->length, rsa->n);
+    rsa->e = BN_bin2bn(public_key->cont2->data,
+            public_key->cont2->length, rsa->e);
+    check(rsa->n && rsa->e, "Internal error");
 
-    if (!key->n || !key->e)
-        goto err;
-
-    return key;
+    ok = EVP_PKEY_set1_RSA(out, rsa);
 
 err:
-    if (key)
-        RSA_free(key);
-    return NULL;
+    if (rsa)
+        RSA_free(rsa);
+
+    return ok;
 }
 
-EC_KEY *
-CVC_get_ec_pubkey(EVP_PKEY *domainParameters, const CVC_CERT *cert, BN_CTX *bn_ctx)
+int
+CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
+        BN_CTX *bn_ctx, EVP_PKEY *key)
 {
-    EC_KEY *key = NULL;
+    EC_KEY *ec = NULL;
     const EC_GROUP *group;
     EC_POINT *point = NULL;
+    int ok = 0;
 
-    if (!cert || !cert->body || !cert->body->public_key || !cert->body->chat)
+    if (!public_key || !key)
         goto err;
 
-    /* If cert is a CVCA certificate it MUST contain all domain parameters (and
-     * we can ignore the domainParameters parameter). */
-    if (CVC_get_role(cert->body->chat) == CVC_CVCA) {
-        check((cert->body->public_key->cont6
-                && cert->body->public_key->cont1
-                && cert->body->public_key->cont2
-                && cert->body->public_key->cont3
-                && cert->body->public_key->cont4
-                && cert->body->public_key->cont5
-                && cert->body->public_key->cont7),
-            "Invalid key format");
-
-        key = EC_KEY_new();
-        if (!key)
+    if (all_parameters) {
+        ec = EC_KEY_new();
+        if (!ec)
             goto err;
 
-        if (!EAC_ec_key_from_asn1(&key, cert->body->public_key->cont1,
-                    cert->body->public_key->cont2,
-                    cert->body->public_key->cont3,
-                    cert->body->public_key->cont4,
-                    cert->body->public_key->cont5,
-                    cert->body->public_key->cont6,
-                    cert->body->public_key->cont7,
-                    bn_ctx))
-                goto err;
+        if (!EAC_ec_key_from_asn1(&ec, public_key->cont1,
+                    public_key->cont2,
+                    public_key->cont3,
+                    public_key->cont4,
+                    public_key->cont5,
+                    public_key->cont6,
+                    public_key->cont7,
+                    bn_ctx)) {
+            EC_KEY_free(ec);
+            log_err("Internal error");
+            goto err;
+        }
+
+        ok = EVP_PKEY_set1_EC_KEY(key, ec);
+        EC_KEY_free(ec);
     } else {
         /* If cert is not a CVCA certificate it MUST NOT contain any domain
          * parameters. We take the domain parameters from the domainParameters
          * parameter and the public point from the certificate. */
-        check((cert->body->public_key->cont6
-                && !cert->body->public_key->cont1
-                && !cert->body->public_key->cont2
-                && !cert->body->public_key->cont3
-                && !cert->body->public_key->cont4
-                && !cert->body->public_key->cont5
-                && !cert->body->public_key->cont7),
+        check((public_key->cont6
+                && !public_key->cont1
+                && !public_key->cont2
+                && !public_key->cont3
+                && !public_key->cont4
+                && !public_key->cont5
+                && !public_key->cont7),
             "Invalid key format");
 
-        check((domainParameters && (EVP_PKEY_type(domainParameters->type) == EVP_PKEY_EC)),
+        check(EVP_PKEY_type(key->type) == EVP_PKEY_EC,
                "Incorrect domain parameters");
 
-        key = EC_KEY_dup((EC_KEY *)EVP_PKEY_get0(domainParameters));
-        check(key, "Failed to extract domain parameters");
+        ec = (EC_KEY *) EVP_PKEY_get0(key);
+        check(ec, "Failed to extract domain parameters");
 
-        group = EC_KEY_get0_group(key);
+        group = EC_KEY_get0_group(ec);
         point = EC_POINT_new(group);
-        if (!point
-                || !EC_POINT_oct2point(group, point,
-                    cert->body->public_key->cont6->data,
-                    cert->body->public_key->cont6->length,
+        check(point
+                && EC_POINT_oct2point(group, point,
+                    public_key->cont6->data,
+                    public_key->cont6->length,
                     bn_ctx)
-                || !EC_KEY_set_public_key(key, point)
-                || !EC_KEY_check_key(key))
-            goto err;
+                && EC_KEY_set_public_key(ec, point)
+                && EC_KEY_check_key(ec),
+                "Internal error");
+
+        ok = 1;
     }
 
-    EC_POINT_free(point);
-    return key;
-
 err:
-    if (key)
-        EC_KEY_free(key);
     if (point)
         EC_POINT_free(point);
-    return NULL;
+
+    return ok;
 }
 
 int
@@ -1174,8 +1164,9 @@ err:
     return ok;
 }
 
-CVC_PUBKEY *CVC_pkey2pubkey(int all_parameters, int protocol, 
-        EVP_PKEY *key, BN_CTX *bn_ctx, CVC_PUBKEY *in)
+CVC_PUBKEY *
+CVC_pkey2pubkey(int all_parameters, int protocol, EVP_PKEY *key,
+        BN_CTX *bn_ctx, CVC_PUBKEY *in)
 {
     CVC_PUBKEY *pubkey = NULL, *out = NULL;
     BN_CTX *tmp_ctx = NULL;
