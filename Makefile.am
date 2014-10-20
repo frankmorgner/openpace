@@ -42,7 +42,7 @@ doc:
 clean-local:
 	rm -f libeac.pc
 
-LOCAL_TESTS = test-eactest
+LOCAL_TESTS = test-eactest test-cvcutils
 if PYTHON_ENABLED
 LOCAL_TESTS += test-python
 endif
@@ -67,6 +67,19 @@ ENV = env \
 
 test-eactest:
 	$(ENV) $(builddir)/src/eactest
+
+test-cvcutils:
+	echo "whatever" > ZZATTERM00001.txt
+	openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey \
+		&& openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8 \
+		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_256 --rid \
+		&& $(ENV) $(builddir)/src/cvc-create --role=dv_domestic --chr=ZZATDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --sign-as=ZZATCVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid \
+		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=CVCA --subject-name=TERM \
+		&& $(ENV) $(builddir)/src/cvc-print --cvc ZZATCVCA00001.cvcert \
+		&& $(ENV) $(builddir)/src/cvc-print --cvc ZZATDVCA00001.cvcert \
+		&& $(ENV) $(builddir)/src/cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc \
+		|| (rm -f ZZATTERM00001.txt ZZATCVCA00001.pem ZZATCVCA00001.pkcs8 ZZATCVCA00001.cvcert ZZATDVCA00001.cvcert ZZATDVCA00001.pkcs8 ZZATTERM00001.cvcert ZZATTERM00001.pkcs8 ZZATTERM00001.desc && false)
+	rm -f ZZATTERM00001.txt ZZATCVCA00001.pem ZZATCVCA00001.pkcs8 ZZATCVCA00001.cvcert ZZATDVCA00001.cvcert ZZATDVCA00001.pkcs8 ZZATTERM00001.cvcert ZZATTERM00001.pkcs8 ZZATTERM00001.desc
 
 test-python:
 	cp $(builddir)/bindings/python/build/*/_eac.*so $(builddir)/bindings/python
