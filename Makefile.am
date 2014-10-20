@@ -74,7 +74,7 @@ test-cvcutils:
 		&& openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8 \
 		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_256 --rid \
 		&& $(ENV) $(builddir)/src/cvc-create --role=dv_domestic --chr=ZZATDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --sign-as=ZZATCVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid \
-		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=CVCA --subject-name=TERM \
+		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=DVCA --subject-name=TERM \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc ZZATCVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc ZZATDVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc \
