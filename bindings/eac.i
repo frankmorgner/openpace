@@ -202,7 +202,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
         *out_len = BIO_get_mem_data(bio, NULL);
         if (*out_len <= 0)
             goto err;
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
         if (BIO_read(bio, (void*) *out, *out_len) <= 0)

@@ -65,7 +65,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
         *out_len = BIO_get_mem_data(bio, NULL);
         if (*out_len <= 0)
             goto err;
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
         if (BIO_read(bio, (void*) *out, *out_len) <= 0)

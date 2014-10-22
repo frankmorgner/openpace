@@ -146,7 +146,7 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
         l = desc->termsOfUsage.plainTerms->length;
 #endif
 
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
         *out_len = l;
@@ -293,7 +293,7 @@ err:
         }
 
         *out_len = chat->relative_authorization->length;
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         memcpy(*out, chat->relative_authorization->data, *out_len);
         return;
 
@@ -311,28 +311,28 @@ err:
         switch(role) {
             case CVC_Terminal:
                 *out_len = 21;
-                *out = malloc(*out_len);
+                *out = (char *) malloc(*out_len);
                 if (!*out)
                     goto err;
                 strncpy(*out, "Terminal certificate", *out_len);
                 break;
             case CVC_DV:
                 *out_len = 15;
-                *out = malloc(*out_len);
+                *out = (char *) malloc(*out_len);
                 if (!*out)
                     goto err;
                 strncpy(*out, "DV certificate", *out_len);
                 break;
             case CVC_DocVer:
                 *out_len = 15;
-                *out = malloc(*out_len);
+                *out = (char *) malloc(*out_len);
                 if (!*out)
                     goto err;
                 strncpy(*out, "DV certificate", *out_len);
                 break;
             case CVC_CVCA:
                 *out_len = 17;
-                *out = malloc(*out_len);
+                *out = (char *) malloc(*out_len);
                 if (!*out)
                     goto err;
                 strncpy(*out, "CVCA certificate", *out_len);
@@ -366,7 +366,7 @@ err:
             goto err;
 
         *out_len = strlen(terminal_type) + 1;
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
 
@@ -401,7 +401,7 @@ err:
         cvc_chat_print_authorizations(bio, chat, 0);
 
         *out_len = BIO_ctrl_pending(bio);
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
 
@@ -441,7 +441,7 @@ err:
         cvc_chat_print(bio, chat, 0);
 
         *out_len = BIO_ctrl_pending(bio);
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
 
@@ -481,7 +481,7 @@ err:
         CVC_print(bio, chat, 0);
 
         *out_len = BIO_ctrl_pending(bio);
-        *out = malloc(*out_len);
+        *out = (char *) malloc(*out_len);
         if (!*out)
             goto err;
 

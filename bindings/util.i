@@ -63,7 +63,17 @@ void EAC_cleanup(void);
 
 %inline %{
     static void set_tr_version(EAC_CTX *ctx, int version) {
-        ctx->tr_version = version;
+        switch (version) {
+            case 1:
+                ctx->tr_version = EAC_TR_VERSION_2_01;
+                break;
+            case 2:
+                ctx->tr_version = EAC_TR_VERSION_2_02;
+                break;
+            default:
+                ctx->tr_version = EAC_TR_VERSION;
+                break;
+        }
         return;
     }
 %}
@@ -99,7 +109,7 @@ void EAC_cleanup(void);
             return;
         } else {
             *out_len = buf->length;
-            *out = malloc(*out_len);
+            *out = (char *) malloc(*out_len);
 
             if (!*out) {
                 *out_len = 0;
