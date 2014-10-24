@@ -30,7 +30,6 @@
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 
-char *x509_default_dir = X509DIR;
 static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
 {
     static X509_STORE *store = NULL;
