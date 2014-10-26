@@ -35,6 +35,7 @@ win:
 		TOOL_DIR=$(WIN_TOOL_DIR) \
 		TARGETDIR=$(WIN_TARGETDIR) \
 		ENABLE_PYTHON="" \
+		LDFLAGS="-static-libgcc" \
 		LIBEAC=$(WIN_TARGETDIR)/bin/libeac-0.dll
 
 
@@ -73,7 +74,7 @@ $(LIBEAC):
 		--enable-openssl-install \
 		$(ENABLE_PYTHON) \
 		CFLAGS="-I$(TOOL_DIR)/include -I$(TOOL_DIR)/include/python2.7" \
-		LDFLAGS=-L$(TOOL_DIR)/lib
+		LDFLAGS="$${LDFLAGS} -L$(TOOL_DIR)/lib"
 	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
 	env CROSS_COMPILE=$(CROSS_COMPILE) \
 		$(MAKE) -C $(top_builddir) install DESTDIR=$(TARGETDIR)
