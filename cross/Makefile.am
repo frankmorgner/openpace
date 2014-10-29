@@ -37,6 +37,7 @@ win:
 		ENABLE_PYTHON="" \
 		LDFLAGS="-static-libgcc" \
 		LIBEAC=$(WIN_TARGETDIR)/bin/libeac-0.dll
+	cd $(WIN_TARGETDIR)/lib && gendef $(WIN_TARGETDIR)/bin/*.dll
 
 
 
