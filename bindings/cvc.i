@@ -239,10 +239,12 @@ err:
 %inline %{
     static void print_binary_chat(char *in, size_t in_len) {
         CVC_CHAT *chat = NULL;
+        const unsigned char **p;
+
         if (!in || (in_len <= 0))
             return;
 
-        const unsigned char **p = (const unsigned char**)&in;
+        p = (const unsigned char**)&in;
 
         /* Convert string to CHAT structure */
         chat = d2i_CVC_CHAT(NULL, p, in_len);
