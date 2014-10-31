@@ -80,7 +80,7 @@ swig -python -outdir $(Outdir) %(Identity)</Command>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>..\..\openpace-0.9_win32\bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\openpace-0.9_win32\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(PYTHON_LIB);libeac-0.lib;libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>libeac-0.dll;libeay32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -97,7 +97,7 @@ swig -python -outdir $(Outdir) %(Identity)</Command>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>NotSet</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\openpace-0.9_win32\bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\openpace-0.9_win32\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(PYTHON_LIB);libeac-0.lib;libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>libeac-0.dll;libeay32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>

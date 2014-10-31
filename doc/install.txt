@@ -55,6 +55,11 @@ patching OpenSSL we provide :file:`oids.patch`. You can configure
 OpenPACE with :option:`--enable-openssl-install`, which will
 automatically download, patch, build and install OpenSSL if needed.
 
+The language bindings for Python, Java, ... are currently disabled by default.
+You need to explicitely configure OpenPACE to install them by using
+:option:`--enable-python`, :option:`--enable-java`, ... This requires Swig to
+be installed along with the language's toolchain to build the bindings.
+
 ===============================================================================
 Cross compiling OpenPACE
 ===============================================================================
@@ -82,6 +87,31 @@ Make Variable    Default              Meaning
 
 On successfull compilation, the Windows binaries can be found in
 :file:`openpace-0.9_win32`.
+
+With these binaries you may now compile the native Python bindings. For this
+you need to setup your Windows as following:
+
+1. Check out the git repository to the directory :file:`openpace`
+
+2. Install `Swig`_ and modify the :envvar:`PATH` so that :command:`swig.exe` can be found.
+
+3. Install `Python` and set :envvar:`PYTHON_INCLUDE` and :envvar:`PYTHON_LIB` accordingly (e.g., to ``"C:\Python27\include"`` or ``"C:\Python27\python278.lib"`` respectively)
+
+4. Copy the cross compiled OpenPACE libraries from above to the OpenPACE root directory (i.e., to :file:`openpace\\openpace-0.9_win32`).
+
+5. Install `Visual Studio 2013`_
+
+Start Visual Studio by opening :file:`openpace\\bindings\\win32\\eac.sln`. If
+you can successfully :guilabel:`Build the solution`, you can find the compiled
+binaries in :file:`openpace\\bindings\\win32\\Release`. It contains
+:file:`eac.py` and :file:`_eac.pyd`. Copy these two files to
+:file:`openpace\\openpace-0.9_win32\\bin` and you're done. Now for testing, you
+may try::
+
+    cd openpace\\openpace-0.9_win32\\bin
+    python.exe
+    >>> import eac
+    >>> eac.EAC_init()
 
 Compiling for Android
 -------------------------------------------------------------------------------
@@ -134,6 +164,8 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
 .. target-notes::
 
 .. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
-.. _`OpenSSL`: http://openssl.org
 .. _`Emscripten`: https://github.com/kripken/emscripten
 .. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
+.. _`OpenSSL`: http://openssl.org
+.. _`Swig`: http://www.swig.org/download.html
+.. _`Visual Studio 2013`: http://msdn.microsoft.com/library/dd831853.aspx
