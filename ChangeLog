@@ -1,3 +1,712 @@
+2014-11-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: use an OpenSSL commit that's known to work
+
+2014-10-31  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/win32/eac.vcxproj, doc/install.txt, doc/install.txt.in: 
+	documented language bindings
+
+2014-10-30  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* cross/Makefile.am: generate .def files for .dll's
+
+2014-10-30  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .gitignore, bindings/cvc.i, bindings/win32/eac.sln,
+	bindings/win32/eac.vcxproj, bindings/win32/eac.vcxproj.filters: 
+	build python bindings for Windows swig.exe needs to be in PATH PYTHON_LIB and PYTHON_INCLUDE must be
+	set correctly cross compiled binaries of OpenPACE are expected in
+	openpace/openpace-0.9_win32
+
+2014-10-26  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* cross/Makefile.am: statically link against libgcc with mingw
+
+2014-10-24  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc_lookup.c, src/eac/eac.h, src/eac_lib.c, src/x509_lookup.c: 
+	removed `extern` from cvc_default_dir/x509_default_dir
+
+2014-10-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/cvc.i, bindings/eac.i, bindings/pace.i, bindings/util.i: 
+	silence visual studio
+
+2014-10-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, doc/usage.txt, doc/usage.txt.in: use DVCA as issuer
+	names in examples
+
+2014-10-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: added tests for cvc-create and cvc-print use with `make check` or `make distcheck`
+
+2014-10-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h, src/ta_lib.c: changed
+	CVC_get_pubkey into CVC_pubkey2pkey
+
+2014-10-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h: workaround for segfaulting
+	CVC_PUBKEY_print_ctx
+
+2014-10-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* cross/Makefile.am, src/Makefile.am: workaround for generating
+	cross compiled man pages
+
+2014-10-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac_asn1.c, src/eac_asn1.h: some cleanup
+
+2014-10-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/cvc-create.c, src/eac/cv_cert.h,
+	src/eac_asn1.c, src/eac_dh.c: squashed DH_PUBKEY and ECDH_PUBKEY
+	into CVC_PUBKEY
+
+2014-10-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac/cv_cert.h, src/eac_asn1.c: removed obsolete type
+	definition
+
+2014-10-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: fixed calculation of bcd date from struct tm
+
+2014-10-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: dont generate new key for self signed
+	certificate
+
+2014-10-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: fixed signature scheme for self signed
+	certificate
+
+2014-09-19  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: don't duplicate OpenSSL structures Use OpenSSL to parse DHParams/ECPKPARAMS even if it means slightly
+	more runtime overhead.
+
+2014-09-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: fixed testing for gengetopt
+
+2014-09-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: fixed configure check for gengetopt and help2man
+
+2014-09-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac, src/Makefile.am, src/cvc-print.c,
+	src/cvc-print.ggo.in: use a generated command line parser and man
+	page
+
+2014-09-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/Makefile.am, doc/index.txt, doc/index.txt.in,
+	doc/install.txt, doc/install.txt.in, doc/programming.txt.in,
+	doc/protocols.txt, doc/usage.txt, doc/usage.txt.in: splitted front
+	page into multiple sub-pages
+
+2014-09-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: fixed NULL dereferencing
+
+2014-09-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: fixed bad integer conversion
+
+2014-09-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: fixed dead code
+
+2014-09-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvc-create.c: fixed memory leak
+
+2014-09-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in, src/cv_cert.c, src/cvc-create.c,
+	src/cvc-create.ggo.in, src/eac/cv_cert.h: cvc-create: added support
+	for certificate description
+
+2014-09-04  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/read_file.c: added missing file read_file.c
+
+2014-09-04  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/read_file.h: added missing read_file.h
+
+2014-09-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .travis.yml: travis: install help2man and gengetopt
+
+2014-09-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac, doc/conf.py.in, doc/index.txt, doc/index.txt.in,
+	src/Makefile.am, src/cv_cert.c, src/cvc-create.c,
+	src/cvc-create.ggo.in, src/cvc-print.c, src/eac/cv_cert.h,
+	src/eac_asn1.c, src/eac_asn1.h, src/eac_util.c, src/ta_lib.c: added
+	cvc-create
+
+2014-09-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/ta_lib.c: fixed check for tm_mon
+
+2014-08-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i: fixed warning about signed/unsigned mismatch
+
+2014-07-30  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am, src/cvc-print.c, src/cvcprint.c: renamed cvcprint
+	to cvc-print
+
+2014-07-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #14 from d0/master Fix link to the doxygen documentation
+
+2014-07-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : Merge remote-tracking branch 'upstream/master'
+
+2014-07-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in, doc/protocols.txt, doc/usage.txt: 
+	Fixed some dead links in the documentation closes #12
+
+2014-07-19  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/protocols.txt, doc/usage.txt: Fixed some dead
+	links in the documentation
+
+2014-07-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/objects.i: fixed NIDs for (non-) patched OpenSSL (again)
+
+2014-07-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/objects.i: fixed NIDs in swig for a non patched OpenSSL
+
+2014-07-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/_templates/layout.html: added github ribbon
+
+2014-07-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/conf.py.in: use current year for date of copyright
+
+2014-07-10  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/conf.py.in: use bootswatch theme for better mobile viewing
+
+2014-06-19  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i: fixed import of CA keys fixes regression from a05933a6521aede7424f6353b9d5570d78801049
+
+2014-06-02  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac_util.c: fixed wrong usage of CRYPTO_memcmp
+
+2014-06-02  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt: added coverty scan badge
+
+2014-04-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #10 from d0/master Perform a length check before CRYPTO_memcmp to avoid out-of-bounds
+	reads
+
+2014-04-26  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac_util.c: Perform a length check before
+	CRYPTO_memcmp to avoid out-of-bounds reads
+
+2014-04-22  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eac.c, src/eac_util.c, src/eactest.c, src/misc.c, src/misc.h: 
+	Replace our consttime_memcmp with OpenSSLs builtin CRYPTO_memcmp CRYPTO_memcmp is also constant time (as opposed to OPENSSL_memcmp).
+	Furthermore our consttime_memcmp was buggy.
+
+2014-04-22  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : Merge remote-tracking branch 'upstream/master'
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: Dereference null return value: fixed
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_err.h: fixed missing semi colon regression from e4849bf77a9e6fa633a6546e0bf8a37e70462f0b
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README.md, doc/index.txt.in: added Coverity Scan Badge
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .travis.yml: use dedicated coverity_scan branch
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/pace_mappings.c: Unchecked return value: fixed
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_err.h: surround macros with braces fixes unintended use in special cases
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: Missing break in switch: commented
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_ecdh.c, src/eac_util.c: Logically dead code: fixed
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_util.c: Dereference before null check: fixed
+
+2014-04-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eactest.c: Minor bugfix: Add a NULL check for dh
+
+2014-04-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* src/eactest.c: Minor bugfix: Add a NULL check for dh
+
+2014-04-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .travis.yml: filled out coverty's ci configuration
+
+2014-04-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README.md, configure.ac, doc/index.txt, doc/index.txt.in,
+	src/eac/ca.h, src/eac/pace.h, src/eac/ta.h: moved project home to
+	github
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac_print.c: Unchecked return value: fixed
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac.c, src/eac_ca.c, src/eac_ecdh.c,
+	src/eac_kdf.c, src/eac_util.c, src/eactest.c, src/misc.c,
+	src/pace.c: Logically dead code: fixed
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: Explicit null dereferenced: fixed
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvcprint.c: Argument cannot be negative: fixed
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_dh.c: Nesting level does not match indentation: fixed
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: Big parameter passed: fixed
+
+2014-04-15  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README.md: added more information in README.md
+
+2014-04-14  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README, README.md, README.rst, doc/Makefile.am: gave up on
+	generating github compliant rst use a link to our projects website instead
+
+2014-04-14  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* README, README.rst, doc/Makefile.am, doc/conf.py.in: generate a
+	real rst file from our sphinx' docs
+
+2014-04-12  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .travis.yml: integrate coverty scan to travis-ci
+
+2014-03-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* cross/Makefile.am: build cvcprint with emscripten
+
+2014-03-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: don't install openssl for distcheck avoid complaints about OpenSSL's files that are left for
+	uninstalling
+
+2014-02-25  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #7 from d0/master Fix Travis-CI Status icon
+
+2014-02-24  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #6 from d0/master Automated tests for additional bindings
+
+2014-02-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in: added reference to our github
+	repositories
+
+2014-02-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/index.txt: Add the Travis CI build icon to the readme
+
+2014-02-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* Makefile.in, README.rst: Add a symlink README.rst to the
+	documentation A README with the .rst extension enables github to correctly render
+	the README and therefor makes the github repository look prettier.
+
+2014-02-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* .travis.yml: Add a test for the ruby bindings
+
+2014-02-23  Dominik <oepen@informatik.hu-berlin.de>
+
+	* : Merge remote-tracking branch 'upstream/master'
+
+2014-02-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: fixed checks for Java bindings
+
+2014-02-16  Dominik <oepen@informatik.hu-berlin.de>
+
+	* .travis.yml: Add a test for the java bindings
+
+2014-02-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #5 from d0/master Add two Parameters to the autoconf and automake scripts for building
+	the go bindings
+
+2014-02-02  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #4 from d0/master Include Python bindings in .travis.yml
+
+2014-01-28  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: propagate MAKE, CC, AR, RANLIB to OpenSSL's
+	Configure fixes cross compiling via `make win` and `make android`
+
+2014-01-28  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* : commit 12b396a96b5765b9dd4dfa82dfd0e0557272c2c7 Author: Frank
+	Morgner <morgner@informatik.hu-berlin.de> Date:   Mon Jan 27
+	05:46:05 2014 +0100
+
+2014-01-26  frankmorgner <morgner@informatik.hu-berlin.de>
+
+	* : Merge pull request #2 from ebfe/speedup-openssl-co speed up '--enable-openssl-install'
+
+2014-01-14  Michael Gehring <mg@ebfe.org>
+
+	* doc/index.txt, src/Makefile.am: set CC when executing
+	openssl/config
+
+2014-01-14  Michael Gehring <mg@ebfe.org>
+
+	* src/Makefile.am: speed up '--enable-openssl-install' no need to download the whole repo history.
+
+2014-01-09  Dominik <oepen@informatik.hu-berlin.de>
+
+	* .travis.yml: Build and test the Python bindings as well
+
+2014-01-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .travis.yml: let travis use `make test-eactest`
+
+2014-01-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* .travis.yml: let travis use `make test`
+
+2014-01-03  Dominik <oepen@informatik.hu-berlin.de>
+
+	* .travis.yml: Add file .travis.yml for continuous integration using
+	travis-ci.org
+
+2013-11-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/go/Makefile.am, bindings/java/Makefile.am,
+	bindings/python/Makefile.am, bindings/ruby/Makefile.am: fixed
+	bindings' distcheck
+
+2013-11-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in: added a warning about using
+	Javascript
+
+2013-11-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* oids.patch: updated patch
+
+2013-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am: added tests for language bindings
+
+2013-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/test.py: fixed check
+
+2013-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/_static/eactest.html: updated eactest.html
+
+2013-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: fixed definition of function
+
+2013-11-20  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/java/Example.java, bindings/java/Makefile.am,
+	doc/usage.txt: added java example
+
+2013-11-19  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/bindings.txt, doc/index.txt, doc/index.txt.in, doc/usage.txt: 
+	re-organisation of documentation
+
+2013-11-19  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, cross/Makefile.am, doc/_static/eactest.html,
+	doc/bindings.txt, doc/index.txt, doc/index.txt.in, src/eactest.c: 
+	added Javascript bindings
+
+2013-11-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in: added documentation for cross
+	compiling
+
+2013-11-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eactest.c: fixed include
+
+2013-11-17  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: we don't need a c++ compiler
+
+2013-11-17  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i, bindings/cvc.i, bindings/eac.i,
+	bindings/java/Makefile.am, bindings/pace.i, bindings/ta.i,
+	bindings/util.i, src/eac/eac.h: added support for native garbage
+	collection
+
+2013-11-13  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i, bindings/cvc.i, bindings/eac.i,
+	bindings/go/example.go, bindings/pace.i, bindings/ta.i,
+	bindings/util.i: use size_t for input length to be applied for Go
+
+2013-11-13  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/eac.i, bindings/go/Makefile.am, bindings/go/example.go,
+	bindings/java/JPace.java, bindings/java/Makefile.am,
+	bindings/pace.i, bindings/python/Makefile.am,
+	bindings/python/chat.py, bindings/python/example.py,
+	bindings/python/pace_entity.py, bindings/python/setup.py.in,
+	bindings/python/test.py, bindings/ruby/Makefile.am,
+	bindings/ruby/example.rb, bindings/ruby/extconf.rb.in: rename pace
+	module to eac module
+
+2013-11-12  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/Makefile.am, bindings/ca.i, bindings/cvc.i,
+	bindings/eac.i, bindings/go/Makefile.am, bindings/go/example.go,
+	bindings/pace.i, bindings/util.i, configure.ac, doc/bindings.txt,
+	doc/index.txt, doc/index.txt.in: added language binding for Go
+
+2013-11-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: fixed check for ruby
+
+2013-11-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: better formatted output of configuration
+
+2013-11-07  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in, src/Makefile.am, src/example.c: 
+	added example in C
+
+2013-11-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/example.py, bindings/ruby/Makefile.am,
+	bindings/ruby/example.rb, bindings/ruby/test.rb, doc/bindings.txt,
+	doc/index.txt, doc/index.txt.in: added more documentation for ruby
+	and python
+
+2013-11-06  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/python/Makefile.am: use $(PYTHON) instead of python
+
+2013-11-01  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/Makefile.am, bindings/ruby/Makefile.am,
+	bindings/ruby/extconf.rb.in, bindings/ruby/test.rb, configure.ac: 
+	added Ruby bindings and example
+
+2013-10-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/pace.i, bindings/python/Makefile.am,
+	bindings/python/chat.py, bindings/python/test.py, src/eac/pace.h,
+	src/eac_print.c: added python wrappers for internal context types - adds PACE_SEC_print_private - use the more generic check for SWIG_CSTRING_UNIMPL in interface
+	  files instead of checking for SWIGPYTHON
+
+2013-10-25  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i, bindings/eac.i, src/eac/ca.h, src/eac/eac.h,
+	src/eac_asn1.c, src/eac_ca.c, src/eac_lib.c, src/eac_util.c,
+	src/eac_util.h, src/eactest.c: do CA key management only in
+	CA_set_key Previously EAC_CTX_init_ca created a new CA context and initialized
+	it with keys. So it was not possible to initialize an already given
+	CA context with keys.  Key initialization is now done in CA_set_key
+	only.  - EVP_PKEY_set_keys takes over the functionality of
+	EVP_PKEY_set_pubkey - fixes bug from EVP_PKEY_set_keys when used with uninitialized DH
+	key - some cleanups in eactest - some more error messages
+
+2013-10-24  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/eac.i, src/eac/ca.h, src/eac/eac.h, src/eac_ca.c,
+	src/eactest.c: added EAC_CTX_init_ef_cardsecurity
+
+2013-10-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i, bindings/cvc.i, bindings/eac.i, bindings/pace.i,
+	bindings/ta.i, bindings/util.i, src/eac/pace.h, src/eactest.c,
+	src/pace.c: generic string wrapping for more languages - string wrappers are now available in all languages that implement
+	cstring.i - fixes compilation for languages that don't implement cstring.i - changes signature of PACE_STEP1_enc_nonce
+
+2013-10-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/pace.i, bindings/ta.i: added convenience wrappers for TA
+	step 4-6
+
+2013-10-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/Makefile.am, bindings/ca.i, bindings/java/Makefile.am,
+	bindings/objects.i, bindings/pace.i, bindings/python/Makefile.am: 
+	added generic wrappers to OpenPACE's NIDs
+
+2013-10-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c: fixed wrong free on error of CVC_d2i_CVC_CERT
+
+2013-10-21  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cvcprint.c: use EAC_init() and EAC_cleanup()
+
+2013-10-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ca.i, bindings/cvc.i, bindings/eac.i, bindings/pace.i,
+	bindings/ta.i, bindings/util.i: simplifications in swig bindings - use string2buf where possible - take into account that OpenPACE does check inputs
+
+2013-10-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/pace.i, bindings/ta.i: fixed memory leaks
+
+2013-10-18  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/util.i: fixed check for error
+
+2013-10-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/cvc.i: fixed CVC wrappers for non patched OpenSSL
+
+2013-10-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/eac.i: eac_ctx is not const in eac_ctx_init_ca
+
+2013-10-16  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* bindings/ta.i: added missing wrappers
+
+2013-09-22  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: fixed wrong memory access
+
+2013-09-12  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_lib.c: fixed uninitialized variable
+
+2013-09-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, bindings/python/Makefile.am, configure.ac,
+	cross/Makefile.am, cross/gentoo.config-1.0.0, src/Makefile.am,
+	win32/Makefile.am, win32/gentoo.config-1.0.0: added target to build
+	for Android cross compiles the python bindings on Android, too
+
+2013-09-05  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac/eac.h, src/eac_asn1.c, src/eac_lib.c, src/eac_print.c,
+	src/eactest.c, src/pace_lib.c, src/pace_mappings.c: added support
+	for mulitple PACE/CA/RI contexts
+
+2013-08-30  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: added required version of OpenSSL
+
+2013-08-30  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h, src/eactest.c: implemented
+	commCertificates as SEQ of SET of OCTET STRING
+
+2013-08-29  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/Makefile.am: install cvcprint
+
+2013-08-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* Makefile.am, configure.ac, doc/index.txt, doc/index.txt.in,
+	libeac.pc.in, src/Makefile.am, src/cv_cert.c, src/eac/cv_cert.h,
+	src/eac/eac.h, src/eac/objects.h, src/eac_asn1.c, src/eac_lib.c,
+	src/eac_util.c, src/eactest.c, src/misc.h, src/objects.c,
+	src/pace_lib.c, src/ri_lib.c: allow using a non-patched version of
+	OpenSSL
+
+2013-08-27  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: correct definition of ALGORITHM_IDENTIFIER
+
+2013-08-25  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_asn1.c: use OpenSSL to manually parse security all infos
+
+2013-08-23  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_util.c: fixed parsing of sequence number
+
+2013-08-19  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/cv_cert.c, src/eac/cv_cert.h: use a STACK for certificate
+	extensions
+
+2013-08-08  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* doc/index.txt, doc/index.txt.in: fixed references to sf's git
+	repositories
+
+2013-07-09  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* src/eac_util.c, src/eac_util.h: holder mnemonic must be in ISO/IEC
+	8859­1 character set
+
+2013-07-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* configure.ac: version bump
+
+2013-07-03  Frank Morgner <morgner@informatik.hu-berlin.de>
+
+	* ChangeLog: updated ChangeLog
+
 2013-07-02  Frank Morgner <morgner@informatik.hu-berlin.de>
 
 	* Makefile.am: only generate ChangeLog when .git/.svn available
