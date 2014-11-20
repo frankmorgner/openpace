@@ -380,7 +380,7 @@ err:
             *key = tmp_key;
     } else {
         /* error */
-        if (tmp_key && !key && !*key)
+        if (tmp_key && !key)
             EVP_PKEY_free(tmp_key);
     }
 
