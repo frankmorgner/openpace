@@ -427,7 +427,7 @@ CVC_pubkey2pkey(const CVC_CERT *cert, BN_CTX *bn_ctx,
 {
     int nid;
     int all_parameters;
-    EVP_PKEY *out = NULL, *tmp_key;
+    EVP_PKEY *out = NULL, *tmp_key = NULL;
 
     if (!cert || !cert->body || !cert->body->public_key)
         goto err;
@@ -481,7 +481,7 @@ static int
 CVC_pubkey2rsa(const CVC_PUBKEY *public_key, EVP_PKEY *out)
 {
     int ok = 0;
-    RSA *rsa;
+    RSA *rsa = NULL;
 
     if (!out || !public_key)
         goto err;
