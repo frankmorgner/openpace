@@ -11,8 +11,9 @@
 Download @PACKAGE_NAME@
 *******************************************************************************
 
-You can find the latest release of @PACKAGE_NAME@ on `Sourceforge
-<http://sourceforge.net/projects/openpace/files>`_.
+You can find the latest release of @PACKAGE_NAME@ on `Github
+<https://github.com/frankmorgner/openpace/releases>`_. Older releases are still
+available on `Sourceforge <http://sourceforge.net/projects/openpace/files>`_.
 
 Alternatively, you can clone our git repository::
 
@@ -22,6 +23,10 @@ Alternatively, you can clone our git repository::
 *******************************************************************************
 Install @PACKAGE_NAME@
 *******************************************************************************
+
+=======================================
+Installation on Linux, Unix and similar
+=======================================
 
 @PACKAGE_NAME@ uses the GNU Build System to compile and install. If you are
 unfamiliar with it, please have a look at :file:`INSTALL`. If you can not find
