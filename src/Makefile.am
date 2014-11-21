@@ -80,7 +80,7 @@ cvc-print.ggo: cvc-print.ggo.in
 
 
 
-cvc-create.1: cvc-create.ggo.in
+$(abs_builddir)/cvc-create.1: cvc-create.ggo.in
 	make -C $(builddir) cvc-create$(EXEEXT)
 	$(HELP2MAN) \
 		--output=$@ \
@@ -88,7 +88,7 @@ cvc-create.1: cvc-create.ggo.in
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-create$(EXEEXT)
 
-cvc-print.1: cvc-print.ggo.in
+$(abs_builddir)/cvc-print.1: cvc-print.ggo.in
 	make -C $(builddir) cvc-print$(EXEEXT)
 	$(HELP2MAN) \
 		--output=$@ \
