@@ -4,7 +4,7 @@
 .. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
 .. |CA| replace:: :abbr:`CA (Chip Authentication)`
 .. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
-.. |CVCA| replace:: :abbr:`CSCA (Country Verifying Certificate Authority)`
+.. |CVCA| replace:: :abbr:`CVCA (Country Verifying Certificate Authority)`
 .. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
 
 ###############################################################################

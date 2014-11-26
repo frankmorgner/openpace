@@ -4,7 +4,7 @@
 .. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
 .. |CA| replace:: :abbr:`CA (Chip Authentication)`
 .. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
-.. |CVCA| replace:: :abbr:`CSCA (Country Verifying Certificate Authority)`
+.. |CVCA| replace:: :abbr:`CVCA (Country Verifying Certificate Authority)`
 .. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
 
 
@@ -20,10 +20,10 @@ OpenPACE is a native C library on top of OpenSSL. If you want to know how to
 use OpenPACE from C/C++, have a look at our `API documentation
 <_static/doxygen/modules.html>`_.
 
-OpenPACE uses SWIG_ to offer bindings in some more programming languages. The
-bindings are easily portable to lots of different languages. Currently, native
-language bindings need to be explicitly turned on with ``./configure
---enable-...``
+OpenPACE uses `SWIG <http://swig.org>`_ to offer bindings in some more
+programming languages. The bindings are easily portable to lots of different
+languages. Currently, native language bindings need to be explicitly turned on
+with ``./configure --enable-...``
 
 If you have chosen to install OpenPACE in a non-standard location you have to
 set up the :envvar:`LD_LIBRARY_PATH` environment variable correctly. One way to
@@ -42,7 +42,7 @@ More details and a number of examples for using the library are covered here:
     programming
 
 ===============================================================================
-Using ``cvc-create``
+Using ``cvc-create`` to Create the EAC PKI
 ===============================================================================
 
 .. versionadded:: 0.9
@@ -53,10 +53,10 @@ Using ``cvc-create``
 
 Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal::
 
-    # Create CVCA's private key
+    # Create country verifying CA's private key
     openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey
     openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
-    # Create self signed CVCA certificate
+    # Create self signed country verifying CA certificate
     cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_256 --rid
 
     # Create DVCA certificate signed by CVCA and generate its private key
@@ -82,7 +82,55 @@ Below you see of how to print the certificates created in the example above::
     cvc-print --cvc ZZATDVCA00001.cvcert
     cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
 
+===============================================================================
+Creating the Document PKI and EF.CardAccess/EF.CardSecurity
+===============================================================================
 
-.. target-notes::
+The card's key agreement capabilities can be read by the terminal from
+EF.CardAccess.  The standardized domain parameter for |CA| (e.g.
+brainpoolP256r1/``0x0D``) need to match the key agreement scheme for |CA| (e.g.
+ECDH):
 
-.. _`SWIG`: http://swig.org
+
+.. literalinclude:: efcardaccess_asn1.conf
+    :emphasize-lines: 15,20,27
+
+
+The above example can be found in :file:`doc/efcardaccess_asn1.conf`. OpenSSL
+can translate this into its ASN.1 represantation, which gives us
+EF.CardAccess::
+
+    openssl asn1parse -genconf efcardaccess_asn1.conf -out efcardaccess.dump
+
+In EF.CardSecurity the data of EF.CardAccess including the |CA| public key of
+the chip is signed by the document signer. First we create the |CSCA| and the
+document signer::
+
+    # Create the country signing CA's private key
+    openssl ecparam -out csca_key.pem -name brainpoolP256r1 -genkey
+    # Create the country verifying CA's self signed certificate
+    openssl req -new -x509 -days 5000 -key csca_key.pem -out csca_cert.pem
+
+    # Create the document signer's private key
+    openssl ecparam -out docsigner_key.pem -name brainpoolP256r1 -genkey
+    # Create the document signer's certificate (signing request)
+    openssl req -new -key docsigner_key.pem -out docsigner.csr
+    openssl x509 -req -in docsigner.csr -CA csca_cert.pem -CAkey csca_key.pem -CAcreateserial -out docsigner_cert.pem
+
+Now generate the chip's private key for |CA| and print its (public) key::
+
+    # Create chip's key
+    openssl ecparam -out card_key.pem -name brainpoolP256r1 -genkey
+    # Print the public key and copy it to the clipboard
+    openssl ec -in card_key.pem -text
+
+Finally we can create EF.CardSecurity by adding the card's public key to the
+last line of our template and signing the content with the document signer's
+key::
+
+    # Add the public key (without ':' and ' ') to the template for EF.CardSecurity
+    cp doc/efcardsecurity_templ_asn1.conf efcardsecurity_asn1.conf && vi efcardsecurity_asn1.conf
+
+    # Create and sign EF.CardSecurity
+    openssl asn1parse -genconf efcardsecurity_asn1.conf -out efcardsecurity_content.dump
+    openssl cms -sign -nodetach -binary -in efcardsecurity_content.dump -inform DER -signer docsigner_cert.pem -inkey docsigner_key.pem -econtent_type 0.4.0.127.0.7.3.2.1 -noattr -outform DER -out efcardsecurity.dump

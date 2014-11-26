@@ -4,7 +4,7 @@
 .. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
 .. |CA| replace:: :abbr:`CA (Chip Authentication)`
 .. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
-.. |CVCA| replace:: :abbr:`CSCA (Country Verifying Certificate Authority)`
+.. |CVCA| replace:: :abbr:`CVCA (Country Verifying Certificate Authority)`
 .. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
 
 *******************************************************************************
@@ -91,7 +91,7 @@ Make Variable    Default              Meaning
 ================ ==================== ===========================================================================================
 
 On successfull compilation, the Windows binaries can be found in
-:file:`openpace-0.9_win32`.
+:file:`openpace-1.0.0_win32`.
 
 With these binaries you may now compile the native Python bindings. For this
 you need to setup your Windows as following:
@@ -134,7 +134,7 @@ Make Variable                 Default                                           
 ============================= ============================================================================== =====================================================
 
 On successfull compilation, the Android binaries can be found in
-:file:`openpace-0.9_${ANDROID_ARCH}`.
+:file:`openpace-1.0.0_${ANDROID_ARCH}`.
 
 .. _javascript_api:
 
@@ -154,12 +154,12 @@ Make Variable                 Default                            Meaning
 ============================= ================================== ==============================================================================
 
 On successfull compilation, the compiled bitcode files can be found in
-:file:`openpace-0.9_bc`. You can run our testsuite
+:file:`openpace-1.0.0_bc`. You can run our testsuite
 completely in Javascript or `in your browser <_static/eactest.html>`_::
 
-    nodejs openpace-0.9_bc/eactest.js
+    nodejs openpace-1.0.0_bc/eactest.js
     # WARNING: Our tests are very time consuming and might stall your browser for a moment or two...
-    firefox openpace-0.9_bc/eactest.html
+    firefox openpace-1.0.0_bc/eactest.html
 
 .. warning::
     `Javascript cryptography is considered harmful`_. You may want to think
