@@ -46,7 +46,7 @@ $(BUILT_SOURCES): $(INTERFACES) setup.py
 
 # Androids implementation does not honour --root=$(DESTDIR) so we change the prefix
 install-exec-local:
-	env CC="$(CC)" LDSHARED="$(LD) -shared $(LDFLAGS)" $(PYTHON) setup.py install --prefix=$(DESTDIR)$(prefix) --exec-prefix=$(DESTDIR)$(exec_prefix) --record installed_files.txt
+	env CC="$(CC)" $(PYTHON) setup.py install --prefix=$(DESTDIR)$(prefix) --exec-prefix=$(DESTDIR)$(exec_prefix) --record installed_files.txt
 
 uninstall-local:
 	cat installed_files.txt | xargs rm -rf
