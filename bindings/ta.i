@@ -88,9 +88,9 @@ TA_disable_checks(EAC_CTX *ctx);
 %rename(TA_STEP5_sign) ta_step5_sign;
 %inline %{
     static void ta_step5_sign(char **out, size_t *out_len, const EAC_CTX *ctx,
-            char *my_ta_eph_pubkey, int my_ta_eph_pubkey_len,
-            char *opp_pace_eph_pubkey, int opp_pace_eph_pubkey_len,
-            char *auxdata, int auxdata_len) {
+            char *my_ta_eph_pubkey, size_t my_ta_eph_pubkey_len,
+            char *opp_pace_eph_pubkey, size_t opp_pace_eph_pubkey_len,
+            char *auxdata, size_t auxdata_len) {
         BUF_MEM *my_ta_eph_pubkey_buf = NULL, *opp_pace_eph_pubkey_buf = NULL, *auxdata_buf = NULL, *out_buf = NULL;
 
         my_ta_eph_pubkey_buf = get_buf(my_ta_eph_pubkey, my_ta_eph_pubkey_len);
@@ -117,10 +117,10 @@ err:
 %rename(TA_STEP6_verify) ta_step6_verify;
 %inline %{
     static int ta_step6_verify(const EAC_CTX *ctx,
-            char *opp_ta_comp_pubkey, int opp_ta_comp_pubkey_len,
-            char *my_pace_comp_eph_pubkey, int my_pace_comp_eph_pubkey_len,
-            char *auxdata, int auxdata_len,
-            char *signature, int signature_len) {
+            char *opp_ta_comp_pubkey, size_t opp_ta_comp_pubkey_len,
+            char *my_pace_comp_eph_pubkey, size_t my_pace_comp_eph_pubkey_len,
+            char *auxdata, size_t auxdata_len,
+            char *signature, size_t signature_len) {
         BUF_MEM *opp_ta_comp_pubkey_buf = NULL, *my_pace_comp_eph_pubkey_buf = NULL, *auxdata_buf = NULL, *signature_buf = NULL;
         int r = 0;
 
