@@ -158,8 +158,9 @@ The following steps are performed by the terminal and the MRTD chip.
    a. The terminal generates an ephemeral Diffie-Hellman key pair
       :math:`(\widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PCD}}} ,
       D_{\text{PICC}} )`, and sends the compressed ephemeral public key
-      :math:`\operatorname{Comp}( PK_{\text{PCD}})` to the MRTD chip. 
-   b. The terminal may send auxiliary data A PCD to the MRTD chip.
+      :math:`\operatorname{Comp}( \widetilde{PK_{\text{PCD}}})` to the MRTD chip. 
+   b. The terminal may send auxiliary data :math:`A_{\text{PCD}}` to the MRTD
+      chip.
 
 4. The MRTD chip randomly chooses a challenge :math:`r_{\text{PICC}}` and sends
    it to the terminal.
@@ -177,7 +178,7 @@ The following steps are performed by the terminal and the MRTD chip.
     .. math::
 
         \operatorname{Verify} ( PK_{\text{PCD}} , s_{\text{PCD}} ,
-        ID_{\text{PICC}}\parallel r_PICC\parallel
+        ID_{\text{PICC}}\parallel r_{\text{PICC}}\parallel
         \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
         A_{\text{PCD}} ) = \operatorname{true}
 
@@ -225,7 +226,7 @@ Authentication, as the terminal's ephemeral key pair
    \operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}} )` for Secure
    Messaging from :math:`K` and :math:`r_{\text{PICC}}`, computes the
    authentication token :math:`T_{\text{PICC}} =\operatorname{\text{MAC}}(
-   K_{\text{MAC}} , \widetilde{SK_{\text{PCD}}})` and sends
+   K_{\text{MAC}} , \widetilde{PK_{\text{PCD}}})` and sends
    :math:`r_{\text{PICC}}` and :math:`T_{\text{PICC}}` to the terminal.
 6. The terminal derives session keys :math:`K_{\text{MAC}}
    =\operatorname{KDF}_{\text{MAC}} ( K , r_{\text{PICC}})` and
