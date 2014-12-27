@@ -547,6 +547,7 @@ int main(int argc, char *argv[])
     time_t loc;
     const struct tm *utc_tm;
     char string[80];
+    const char *out = NULL;
     char basename[70];
     BUF_MEM *body_buf = NULL, *signature = NULL, *desc_hash = NULL;
     EVP_PKEY *signer_key = NULL, *term_key = NULL;
@@ -737,11 +738,16 @@ int main(int argc, char *argv[])
     cert_len = i2d_CVC_CERT(cert, &cert_buf);
     if (cert_len <= 0)
         goto err;
-    strcpy(string, basename);
-    strcat(string, CVC_CERT_EXT);
-    if (0 != write_file(string, cert_buf, cert_len))
+    if (!cmdline.out_given) {
+        strcpy(string, basename);
+        strcat(string, CVC_CERT_EXT);
+        out = string;
+    } else {
+        out = cmdline.out_arg;
+    }
+    if (0 != write_file(out, cert_buf, cert_len))
         err("Could not write certificate");
-    printf("Created %s\n", string);
+    printf("Created %s\n", out);
 
 
     fail = 0;

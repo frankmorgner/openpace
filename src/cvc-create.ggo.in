@@ -1,6 +1,11 @@
 package "cvc-create"
 purpose "Create a card verifiable certificate"
 
+option "out"            -
+    "Where to save the certificate"
+    default="CHR.cvcert"
+    string
+    typestr="FILENAME"
 option "role"           -
     "The terminal's role"
     values="cvca","dv_domestic","dv_foreign","terminal"

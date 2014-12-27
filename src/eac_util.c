@@ -678,6 +678,24 @@ err:
     return out;
 }
 
+static void hexdump(const char *title, const BUF_MEM *s)
+{
+    size_t n=0;
+
+    fprintf(stdout,"%s",title);
+
+    if (!s) {
+        fprintf(stdout,"(null)\n");
+    } else {
+        for(; n < s->length; ++n)
+        {
+            if((n%16) == 0)
+                fprintf(stdout,"\n    ");
+            fprintf(stdout,"%02x:",(unsigned char) s->data[n]);
+        }
+        fprintf(stdout,"\n");
+    }
+}
 BUF_MEM *
 get_authentication_token(int protocol, const KA_CTX *ka_ctx, BN_CTX *bn_ctx,
                    enum eac_tr_version tr_version, const BUF_MEM *pub_opp)
@@ -711,6 +729,7 @@ compute_authentication_token(int protocol, const KA_CTX *ka_ctx, EVP_PKEY *opp_k
     check(ka_ctx, "Invalid arguments");
 
     asn1 = asn1_pubkey(protocol, opp_key, bn_ctx, tr_version);
+    hexdump("data to be authenticated", asn1);
 
     /* ISO 9797-1 algorithm 3 retail MAC now needs extra padding (padding method 2) */
     if (EVP_CIPHER_nid(ka_ctx->cipher) == NID_des_ede_cbc) {
