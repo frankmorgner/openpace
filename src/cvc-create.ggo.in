@@ -1,7 +1,7 @@
 package "cvc-create"
 purpose "Create a card verifiable certificate"
 
-option "out"            -
+option "out-cert"       -
     "Where to save the certificate"
     default="CHR.cvcert"
     string
@@ -46,6 +46,11 @@ option "key"             -
     string
     typestr="FILENAME"
     optional
+option "out-key"        -
+    "Where to save the derived private key"
+    default="CHR.pkcs8"
+    string
+    typestr="FILENAME"
 option "scheme"             -
     "Signature scheme that the new terminal will use"
     values="ECDSA_SHA_1","ECDSA_SHA_224","ECDSA_SHA_256","ECDSA_SHA_384","ECDSA_SHA_512","RSA_v1_5_SHA_1","RSA_v1_5_SHA_256","RSA_v1_5_SHA_512","RSA_PSS_SHA_1","RSA_PSS_SHA_256","RSA_PSS_SHA_512"
@@ -57,6 +62,11 @@ option "cert-desc"      -
     string
     typestr="FILENAME"
     optional
+option "out-desc"        -
+    "Where to save the encoded certificate description"
+    default="CHR.desc"
+    string
+    typestr="FILENAME"
 option "issuer-name"      -
     "Name of the issuer of this certificate"
     string

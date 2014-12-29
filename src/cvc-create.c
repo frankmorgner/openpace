@@ -626,11 +626,16 @@ int main(int argc, char *argv[])
             term_key_len = i2d_PrivateKey(term_key, &term_key_buf);
             if (term_key_len <= 0)
                 goto err;
-            strcpy(string, basename);
-            strcat(string, PKCS8_EXT);
-            if (0 != write_file(string, term_key_buf, term_key_len))
+            if (!cmdline.out_key_given) {
+                strcpy(string, basename);
+                strcat(string, PKCS8_EXT);
+                out = string;
+            } else {
+                out = cmdline.out_key_arg;
+            }
+            if (0 != write_file(out, term_key_buf, term_key_len))
                 err("Could not write terminal key");
-            printf("Created %s\n", string);
+            printf("Created %s\n", out);
         } else {
             /* self signed certificate */
             term_key = EVP_PKEY_dup(signer_key);
@@ -703,11 +708,16 @@ int main(int argc, char *argv[])
                     desc_hash->data, desc_hash->length)
                 || !sk_push((_STACK *) cert->body->certificate_extensions, template))
             goto err;
-        strcpy(string, basename);
-        strcat(string, DESC_EXT);
-        if (0 != write_file(string, desc_buf, desc_buf_len))
+        if (!cmdline.out_desc_given) {
+            strcpy(string, basename);
+            strcat(string, DESC_EXT);
+            out = string;
+        } else {
+            out = cmdline.out_desc_arg;
+        }
+        if (0 != write_file(out, desc_buf, desc_buf_len))
             err("Could not write certificate description");
-        printf("Created %s\n", string);
+        printf("Created %s\n", out);
     }
 
 
@@ -738,12 +748,12 @@ int main(int argc, char *argv[])
     cert_len = i2d_CVC_CERT(cert, &cert_buf);
     if (cert_len <= 0)
         goto err;
-    if (!cmdline.out_given) {
+    if (!cmdline.out_cert_given) {
         strcpy(string, basename);
         strcat(string, CVC_CERT_EXT);
         out = string;
     } else {
-        out = cmdline.out_arg;
+        out = cmdline.out_cert_arg;
     }
     if (0 != write_file(out, cert_buf, cert_len))
         err("Could not write certificate");
