@@ -6,6 +6,7 @@ option "out-cert"       -
     default="CHR.cvcert"
     string
     typestr="FILENAME"
+    optional
 option "role"           -
     "The terminal's role"
     values="cvca","dv_domestic","dv_foreign","terminal"
@@ -51,6 +52,7 @@ option "out-key"        -
     default="CHR.pkcs8"
     string
     typestr="FILENAME"
+    optional
 option "scheme"             -
     "Signature scheme that the new terminal will use"
     values="ECDSA_SHA_1","ECDSA_SHA_224","ECDSA_SHA_256","ECDSA_SHA_384","ECDSA_SHA_512","RSA_v1_5_SHA_1","RSA_v1_5_SHA_256","RSA_v1_5_SHA_512","RSA_PSS_SHA_1","RSA_PSS_SHA_256","RSA_PSS_SHA_512"
@@ -67,6 +69,7 @@ option "out-desc"        -
     default="CHR.desc"
     string
     typestr="FILENAME"
+    optional
 option "issuer-name"      -
     "Name of the issuer of this certificate"
     string
