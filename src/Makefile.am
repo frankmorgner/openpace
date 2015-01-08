@@ -110,7 +110,7 @@ OPENSSL_LIBS_PRIVATE  = `grep Libs.private $(OPENSSL_DIR)/libcrypto.pc | $(SED) 
 # Fetch OpenSSL
 $(OPENSSL_CONFIGURE):
 	$(GIT) clone --depth=100 git://openssl.net/openssl -b OpenSSL_1_0_2-stable $(OPENSSL_DIR)
-	$(GIT) -C $(OPENSSL_DIR) checkout 82182413a417fabd35a0a8eb9b6a76606eeb3502
+	$(GIT) -C $(OPENSSL_DIR) checkout 5cee72382c5e79d4c7c021fac1aeeb244c5c19fa
 
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
 $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIGURE)
