@@ -42,7 +42,7 @@ cvc_rehash: cvc_rehash.in
 	$(do_subst) < $(srcdir)/cvc_rehash.in > cvc_rehash
 
 $(BUILT_SOURCES): $(INTERFACES) setup.py
-	env CC="$(CC)" LDSHARED="$(LD) -shared $(LDFLAGS)" $(PYTHON) setup.py build_ext --swig=$(SWIG)
+	env CC="$(CC)" $(PYTHON) setup.py build_ext --swig=$(SWIG)
 
 # Androids implementation does not honour --root=$(DESTDIR) so we change the prefix
 install-exec-local:
