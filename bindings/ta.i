@@ -128,7 +128,7 @@ err:
         my_pace_comp_eph_pubkey_buf = get_buf(my_pace_comp_eph_pubkey, my_pace_comp_eph_pubkey_len);
         auxdata_buf = get_buf(auxdata, auxdata_len);
         signature_buf = get_buf(signature, signature_len);
-        if (!opp_ta_comp_pubkey_buf || !my_pace_comp_eph_pubkey_buf || !auxdata_buf || !signature_buf)
+        if (!opp_ta_comp_pubkey_buf || !my_pace_comp_eph_pubkey_buf || !signature_buf)
             goto err;
 
         r = TA_STEP6_verify(ctx, opp_ta_comp_pubkey_buf, my_pace_comp_eph_pubkey_buf, auxdata_buf, signature_buf);
