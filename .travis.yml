@@ -1,20 +1,41 @@
 language: C
-compiler: gcc
-before_install: sudo apt-get update
-install: sudo apt-get install swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev gengetopt help2man
+
 env:
   global:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "KOfJHBqx3I7GsY6OIiqBMN5iFkTpeGlj+WwXF/ZaGmG7bYtIx1641mH43ECoaxGH6I4Tkdf2VBX3xTSVaCeT8OO0K3Zr84MRqmfjfzTo1uGkwiZD3e/pahPVjOTb+IGPForskeooix6KgCJQfW6skh8EEy7EPnZTNXJw2XLujj4="
-  matrix:
-    - CONF="--enable-openssl-install"
-    - CONF="--enable-openssl-install --enable-python"
-    - CONF="--enable-openssl-install --enable-java"
-    - CONF="--enable-openssl-install --enable-ruby"
-    - CONF="--enable-openssl-install --enable-go" GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" "
 
-script: autoreconf -vsi && ./configure $CONF && make && make check
+matrix:
+  include:
+    - compiler: clang
+      env: LDFLAGS=-static
+    - compiler: gcc
+    - compiler: gcc
+      env: HOST=i686-w64-mingw32
+
+before_install:
+  - if [ $TRAVIS_OS_NAME == linux ]; then
+      sudo apt-get update;
+    fi
+
+install:
+  - if [ $TRAVIS_OS_NAME == linux ]; then
+      if [ -z "$HOST" ]; then
+        sudo apt-get install gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev;
+      else
+        sudo apt-get install gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
+      fi
+    fi
+
+before_script:
+  - autoreconf -vis
+  - if [ -z "$HOST" ]; then
+      ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby --enable-go GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" " || cat config.log;
+    else
+      unset CC;
+      ./configure --enable-openssl-install --host=$HOST --enable-openssl-install;
+    fi
 
 addons:
   coverity_scan:
@@ -22,6 +43,13 @@ addons:
       name: "frankmorgner/openpace"
       description: "Cryptographic library for EAC version 2"
     notification_email: morgner@informatik.hu-berlin.de
-    build_command_prepend: autoreconf -vsi && ./configure --enable-openssl-install
     build_command: make
     branch_pattern: coverity_scan
+
+script:
+  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+      make;
+    fi
+  - if [ -z "$HOST" -a "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+      make check;
+    fi
