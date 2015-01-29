@@ -8,11 +8,13 @@ env:
 
 matrix:
   include:
-    - compiler: clang
-      env: LDFLAGS=-static
+    #- compiler: clang
+    #  env:
+    #   - CFLAGS="`llvm-config --cflags`"
+    #   - LDFLAGS="`llvm-config --ldflags` -L/lib/x86_64-linux-gnu/"
     - compiler: gcc
-    - compiler: gcc
-      env: HOST=i686-w64-mingw32
+    #- compiler: gcc
+    #  env: HOST=i686-w64-mingw32
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
@@ -22,10 +24,11 @@ before_install:
 install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
       if [ -z "$HOST" ]; then
-        sudo apt-get install gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev;
+        sudo apt-get install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev;
       else
-        sudo apt-get install gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
-      fi
+        sudo apt-get install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
+      fi &&
+      sudo ldconfig;
     fi
 
 before_script:
