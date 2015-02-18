@@ -54,7 +54,7 @@ Using ``cvc-create`` to Create the EAC PKI
 Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal::
 
     # Create country verifying CA's private key
-    openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey
+    openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey -param_enc explicit
     openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
     # Create self signed country verifying CA certificate
     cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_256 --rid
@@ -107,12 +107,12 @@ the chip is signed by the document signer. First we create the |CSCA| and the
 document signer::
 
     # Create the country signing CA's private key
-    openssl ecparam -out csca_key.pem -name brainpoolP256r1 -genkey
+    openssl ecparam -out csca_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
     # Create the country verifying CA's self signed certificate
     openssl req -new -x509 -days 5000 -key csca_key.pem -out csca_cert.pem
 
     # Create the document signer's private key
-    openssl ecparam -out docsigner_key.pem -name brainpoolP256r1 -genkey
+    openssl ecparam -out docsigner_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
     # Create the document signer's certificate (signing request)
     openssl req -new -key docsigner_key.pem -out docsigner.csr
     openssl x509 -req -in docsigner.csr -CA csca_cert.pem -CAkey csca_key.pem -CAcreateserial -out docsigner_cert.pem
@@ -120,7 +120,7 @@ document signer::
 Now generate the chip's private key for |CA| and print its (public) key::
 
     # Create chip's key
-    openssl ecparam -out card_key.pem -name brainpoolP256r1 -genkey
+    openssl ecparam -out card_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
     # Print the public key and copy it to the clipboard
     openssl ec -in card_key.pem -text
 
