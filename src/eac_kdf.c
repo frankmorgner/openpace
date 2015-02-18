@@ -36,24 +36,6 @@
 #endif
 #include <openssl/crypto.h>
 #include <string.h>
-static void hexdump(const char *title, const BUF_MEM *s)
-{
-    size_t n=0;
-
-    fprintf(stdout,"%s",title);
-
-    if (!s) {
-        fprintf(stdout,"(null)\n");
-    } else {
-        for(; n < s->length; ++n)
-        {
-            if((n%16) == 0)
-                fprintf(stdout,"\n    ");
-            fprintf(stdout,"%02x:",(unsigned char) s->data[n]);
-        }
-        fprintf(stdout,"\n");
-    }
-}
 
 BUF_MEM *
 kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
@@ -89,7 +71,6 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
         /* Flawfinder: ignore */
         memcpy(in->data + key->length, &counter, sizeof counter);
     }
-    hexdump("kdf input", in);
 
     digest = hash(ka_ctx->md, md_ctx, ka_ctx->md_engine, in);
     check(digest, "Failed to compute hash");
@@ -120,8 +101,6 @@ kdf_pi(const PACE_SEC *pi, const BUF_MEM *nonce, const KA_CTX *ctx, EVP_MD_CTX *
 
     out = kdf(pi->encoded, nonce, htonl(KDF_PI_COUNTER), ctx, md_ctx);
 
-    hexdump("nonce", nonce);
-
     return out;
 }
 
@@ -130,10 +109,7 @@ kdf_enc(const BUF_MEM *nonce, const KA_CTX *ctx, EVP_MD_CTX *md_ctx)
 {
     check_return(ctx, "Invalid arguments");
 
-    BUF_MEM *out = kdf(ctx->shared_secret, nonce, htonl(KDF_ENC_COUNTER), ctx, md_ctx);
-
-    hexdump("kdf_enc", out);
-    return out;
+    return kdf(ctx->shared_secret, nonce, htonl(KDF_ENC_COUNTER), ctx, md_ctx);
 }
 
 BUF_MEM *
@@ -141,8 +117,5 @@ kdf_mac(const BUF_MEM *nonce, const KA_CTX *ctx, EVP_MD_CTX *md_ctx)
 {
     check_return(ctx, "Invalid arguments");
 
-    BUF_MEM *out = kdf(ctx->shared_secret, nonce, htonl(KDF_MAC_COUNTER), ctx, md_ctx);
-
-    hexdump("kdf_mac", out);
-    return out;
+    return kdf(ctx->shared_secret, nonce, htonl(KDF_MAC_COUNTER), ctx, md_ctx);
 }
