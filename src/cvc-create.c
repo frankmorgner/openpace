@@ -611,7 +611,7 @@ int main(int argc, char *argv[])
 
     /* get terminal's key */
     if (cmdline.key_given) {
-        term_key = read_evp_pkey(cmdline.sign_with_arg);
+        term_key = read_evp_pkey(cmdline.key_arg);
         if (!term_key)
             goto err;
     } else {
