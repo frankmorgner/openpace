@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src cross bindings doc
 
-EXTRA_DIST = libeac.pc.in bootstrap
+EXTRA_DIST = libeac.pc.in bootstrap generate-eac-pki.sh
 DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-go --enable-ruby --enable-python --disable-openssl-install
 
 if WIN32
