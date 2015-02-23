@@ -67,6 +67,10 @@ Below you see an example of how to create a certificate chain of CVCA, DVCA and 
     # Create TERM certificate signed by DVCA along with the description and generate its private key
     cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=DVCA --subject-name=TERM
 
+The script :file:`example-data/generate-eac-pki.sh` generates a set of
+authentication terminals and signature terminals for all signature schemes in
+all standardized elliptic curves.
+
 ===============================================================================
 Using ``cvc-print``
 ===============================================================================
