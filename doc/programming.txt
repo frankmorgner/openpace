@@ -1,0 +1,119 @@
+.. highlight:: sh
+
+.. _bindings:
+
+
+###############################################################################
+Programming with OpenPACE
+###############################################################################
+
+
+*******************************************************************************
+Using OpenPACE in C/C++
+*******************************************************************************
+
+.. seealso::
+
+    See the `OpenPACE API documentation <_static/doxygen/modules.html>`_
+    for the native C/C++ interface
+
+Here we have a small example in C:
+
+.. literalinclude:: ../src/example.c
+    :language: c
+
+.. seealso::
+    Have a look at the `nPA Smart Card Library`_ for a more complex project
+    that uses the C Interface from OpenPACE.
+
+
+*******************************************************************************
+Using OpenPACE in Python
+*******************************************************************************
+
+Python bindings must be configured with :option:`--enable-python`. They depend
+on SWIG and Python.
+
+In case of a non-standard installation of OpenPACE you might -- in addition to
+:envvar:`LD_LIBRARY_PATH` -- also need to setup the :envvar:`PYTHONPATH`
+environment variable.
+
+Here is a sample script that shows how OpenPACE is accessed from Python:
+
+.. literalinclude:: ../bindings/python/example.py
+    :language: python
+
+.. seealso::
+    Have a look at the `Emulator for the German Identity Card`_ for a more
+    complex project that uses the Python Interface from OpenPACE.
+
+Unfortunately, OpenPACE's Python bindings are currently poorly documented:
+
+.. toctree::
+
+    python_api.txt
+
+.. versionadded:: 0.8
+    The SWIG bindings from `pyPACE`_ have been integrated into OpenPACE.
+
+
+*******************************************************************************
+Using OpenPACE in Ruby
+*******************************************************************************
+
+Ruby bindings must be configured with :option:`--enable-ruby`. They depend on
+SWIG and Ruby.
+
+Here is a sample script that shows how OpenPACE is accessed from Ruby:
+
+.. literalinclude:: ../bindings/ruby/example.rb
+    :language: ruby
+
+.. versionadded:: 0.9
+    Added Ruby bindings.
+
+
+*******************************************************************************
+Using OpenPACE in Go
+*******************************************************************************
+
+Go bindings must be configured with :option:`--enable-go`. They depend on SWIG
+and ``gccgo``.
+
+Here is a sample program that shows how OpenPACE is accessed from Go:
+
+.. literalinclude:: ../bindings/go/example.go
+    :language: go
+
+.. versionadded:: 0.9
+    Added Go bindings.
+
+
+*******************************************************************************
+Using OpenPACE in Java
+*******************************************************************************
+
+Ruby bindings must be configured with :option:`--enable-java`. They depend on
+SWIG, a java compiler and the JNI developement headers. You may set the
+:envvar:`JAVAC` environment variable to your preferred Java compiler.
+
+Here is a sample program that shows how OpenPACE is accessed from Java:
+
+.. literalinclude:: ../bindings/java/Example.java
+    :language: java
+
+
+*******************************************************************************
+Using OpenPACE in Javascript
+*******************************************************************************
+
+Technically the process for getting OpenPACE into Javascript is similar to
+cross compiling. It is covered in :ref:`javascript_api`
+
+
+.. target-notes::
+
+.. _`SWIG`: http://swig.org
+.. _`pyPACE`: http://pypace.sourceforge.net
+.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/npa/README.html
+.. _`Emulator for the German Identity Card`: https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html
