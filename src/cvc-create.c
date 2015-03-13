@@ -618,13 +618,16 @@ int main(int argc, char *argv[])
         if (cmdline.sign_as_given) {
             term_key_ctx = EVP_PKEY_CTX_new(signer_key, NULL);
             if (!term_key_ctx
-                    || !EVP_PKEY_keygen_init(term_key_ctx)
-                    || !(EVP_PKEY_type(signer_key->type) == EVP_PKEY_RSA
-                        /* RSA keys set the key length during key generation
-                         * rather than parameter generation! */
-                        && EVP_PKEY_CTX_set_rsa_keygen_bits(term_key_ctx,
+                    || !EVP_PKEY_keygen_init(term_key_ctx))
+                goto err;
+            if (EVP_PKEY_type(signer_key->type) == EVP_PKEY_RSA) {
+                /* RSA keys set the key length during key generation
+                 * rather than parameter generation! */
+                if (!EVP_PKEY_CTX_set_rsa_keygen_bits(term_key_ctx,
                             EVP_PKEY_bits(signer_key)))
-                    || !EVP_PKEY_keygen(term_key_ctx, &term_key))
+                    goto err;
+            }
+            if (!EVP_PKEY_keygen(term_key_ctx, &term_key))
                 goto err;
 
             /* export key */
