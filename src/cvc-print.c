@@ -94,7 +94,7 @@ err:
 
 int main(int argc, char *argv[])
 {
-    int fail = 1, i;
+    int fail = 1;
     unsigned char *cvc_data = NULL, *desc_data = NULL;
     size_t cvc_len = 0, desc_len = 0;
     struct gengetopt_args_info cmdline;

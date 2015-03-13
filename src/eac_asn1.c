@@ -302,7 +302,7 @@ static DH *
 dhparams2dh(ASN1_TYPE *dh_params)
 {
     DH *dh = NULL;
-    int length, fail = 1;
+    int length = 1;
     unsigned char *encoded = NULL;
     const unsigned char *p;
 

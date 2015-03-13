@@ -126,7 +126,6 @@ PACE_STEP3B_generate_ephemeral_key(EAC_CTX * ctx)
 int
 PACE_STEP3B_compute_shared_secret(const EAC_CTX * ctx, const BUF_MEM * in)
 {
-    BUF_MEM *my_pub = NULL;
     int r = 0;
 
     check((ctx  && ctx->pace_ctx  && ctx->pace_ctx->ka_ctx

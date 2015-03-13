@@ -43,7 +43,6 @@ static int write_file(const char *filename, unsigned char *data, size_t length)
 {
     FILE *fp = NULL;
     int fail = 1;
-    unsigned char *p;
 
     fp = fopen(filename, "wb");
     if (!fp) {
