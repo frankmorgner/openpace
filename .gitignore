@@ -224,6 +224,7 @@ SWIGTYPE_p_*
 eac.go
 eac.java
 eac.py
+*.pyc
 installed_files.txt
 setup.py
 libeac.pc
@@ -238,3 +239,6 @@ doc/doxygen/
 openpace-*.tar.gz
 openpace-*_win32.zip
 doc/doc
+
+openpace-*.*/
+eac-pki_*/
