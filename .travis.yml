@@ -13,8 +13,8 @@ matrix:
     #   - CFLAGS="`llvm-config --cflags`"
     #   - LDFLAGS="`llvm-config --ldflags` -L/lib/x86_64-linux-gnu/"
     - compiler: gcc
-    #- compiler: gcc
-    #  env: HOST=i686-w64-mingw32
+    - compiler: gcc
+      env: HOST=i686-w64-mingw32
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
@@ -27,8 +27,7 @@ install:
         sudo apt-get install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev;
       else
         sudo apt-get install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
-      fi &&
-      sudo ldconfig;
+      fi
     fi
 
 before_script:
@@ -36,8 +35,11 @@ before_script:
   - if [ -z "$HOST" ]; then
       ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby --enable-go GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" " || cat config.log;
     else
+      export CROSS_COMPILE=$HOST-;
+      export ac_cv_func_malloc_0_nonnull=yes;
       unset CC;
       ./configure --enable-openssl-install --host=$HOST --enable-openssl-install;
+      touch src/cvc-create.1 src/cvc-print.1;
     fi
 
 addons:
