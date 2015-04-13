@@ -44,6 +44,9 @@
 #include <openssl/crypto.h>
 #include <string.h>
 
+char *cvc_default_dir;
+char *x509_default_dir;
+
 void EAC_init(void)
 {
     OpenSSL_add_all_algorithms();
