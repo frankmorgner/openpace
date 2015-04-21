@@ -119,7 +119,7 @@ err:
 
 %newobject CA_get_pubkey;
 BUF_MEM*
-CA_get_pubkey(const EAC_CTX *ctx, char *in, size_t in_len);
+CA_get_pubkey(const EAC_CTX *ctx, const unsigned char *in, size_t in_len);
 
 %newobject CA_STEP1_get_pubkey;
 BUF_MEM *
