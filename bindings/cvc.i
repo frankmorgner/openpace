@@ -402,9 +402,9 @@ err:
 
         cvc_chat_print_authorizations(bio, chat, 0);
 
-        *out_len = BIO_ctrl_pending(bio);
+        *out_len = (size_t) BIO_ctrl_pending(bio);
         *out = (char *) malloc(*out_len);
-        if (!*out)
+        if (!*out || (long) *out_len < 0)
             goto err;
 
         if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
@@ -442,9 +442,9 @@ err:
 
         cvc_chat_print(bio, chat, 0);
 
-        *out_len = BIO_ctrl_pending(bio);
+        *out_len = (size_t) BIO_ctrl_pending(bio);
         *out = (char *) malloc(*out_len);
-        if (!*out)
+        if (!*out || (long) *out_len < 0)
             goto err;
 
         if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
@@ -482,9 +482,9 @@ err:
 
         CVC_print(bio, chat, 0);
 
-        *out_len = BIO_ctrl_pending(bio);
+        *out_len = (size_t) BIO_ctrl_pending(bio);
         *out = (char *) malloc(*out_len);
-        if (!*out)
+        if (!*out || (long) *out_len < 0)
             goto err;
 
         if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
