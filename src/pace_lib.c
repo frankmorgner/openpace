@@ -131,7 +131,7 @@ encoded_secret(const PACE_SEC * pi)
         case PACE_PIN:
             if (!is_char_str((unsigned char*) pi->mem->data, (size_t) pi->mem->length))
                 return NULL;
-
+            /* fall through */
         case PACE_RAW:
             out = BUF_MEM_create_init(pi->mem->data, pi->mem->length);
             break;
