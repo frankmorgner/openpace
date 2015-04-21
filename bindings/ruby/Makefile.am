@@ -25,7 +25,7 @@ $(BUILT_SOURCES): $(INTERFACES)
 
 ext/extconf.rb: $(srcdir)/extconf.rb.in
 	mkdir -p ext
-	$(do_subst) < $(srcdir)/extconf.rb.in > ext/extconf.rb
+	@$(do_subst) < $(srcdir)/extconf.rb.in > ext/extconf.rb
 
 eac_wrap.c:
 	$(SWIG) -ruby -outdir $(builddir) -I$(srcdir)/.. eac.i

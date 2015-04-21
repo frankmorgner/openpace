@@ -72,10 +72,10 @@ cvc-print-cmdline.c cvc-print-cmdline.h: cvc-print.ggo
 	$(GENGETOPT) --file-name=cvc-print-cmdline --output-dir=$(srcdir) < $<
 
 cvc-create.ggo: cvc-create.ggo.in
-	$(do_subst) < $< > $(srcdir)/$@
+	@$(do_subst) < $< > $(srcdir)/$@
 
 cvc-print.ggo: cvc-print.ggo.in
-	$(do_subst) < $< > $(srcdir)/$@
+	@$(do_subst) < $< > $(srcdir)/$@
 
 
 

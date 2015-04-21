@@ -24,7 +24,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libeac.pc
 
 libeac.pc: libeac.pc.in
-	$(do_subst) < $(srcdir)/libeac.pc.in > libeac.pc
+	@$(do_subst) < $(srcdir)/libeac.pc.in > libeac.pc
 
 win:
 	$(MAKE) -C cross $@

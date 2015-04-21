@@ -36,10 +36,10 @@ $(top_builddir)/src/libeac.la:
 	$(MAKE) -C $(top_builddir)/src libeac.la
 
 setup.py: setup.py.in $(top_builddir)/src/libeac.la
-	$(do_subst) < $(srcdir)/setup.py.in > setup.py
+	@$(do_subst) < $(srcdir)/setup.py.in > setup.py
 
 cvc_rehash: cvc_rehash.in
-	$(do_subst) < $(srcdir)/cvc_rehash.in > cvc_rehash
+	@$(do_subst) < $(srcdir)/cvc_rehash.in > cvc_rehash
 
 $(BUILT_SOURCES): $(INTERFACES) setup.py
 	env CC="$(CC)" $(PYTHON) setup.py build_ext --swig=$(SWIG)
