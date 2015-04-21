@@ -346,12 +346,12 @@ err:
         return;
 
     err:
-        if (*out) {
+        if (out) {
             free(*out);
             *out = NULL;
         }
-        out = NULL;
-        *out_len = 0;
+        if (out_len)
+            *out_len = 0;
         return;
     }
 %}
@@ -376,12 +376,12 @@ err:
         return;
 
     err:
-        if (*out) {
+        if (out) {
             free(*out);
             *out = NULL;
         }
-        out = NULL;
-        *out_len = 0;
+        if (out_len)
+            *out_len = 0;
         return;
     }
 %}
@@ -398,7 +398,7 @@ err:
 
         bio = BIO_new(BIO_s_mem());
         if (!bio)
-            return;
+            goto err;
 
         cvc_chat_print_authorizations(bio, chat, 0);
 
@@ -416,12 +416,12 @@ err:
     err:
         if (bio)
             BIO_free_all(bio);
-        if (*out) {
+        if (out) {
             free(*out);
             *out = NULL;
         }
-        out = NULL;
-        *out_len = 0;
+        if (out_len)
+            *out_len = 0;
         return;
     }
 %}
@@ -456,12 +456,12 @@ err:
     err:
         if (bio)
             BIO_free_all(bio);
-        if (*out) {
+        if (out) {
             free(*out);
             *out = NULL;
         }
-        out = NULL;
-        *out_len = 0;
+        if (out_len)
+            *out_len = 0;
         return;
     }
 %}
@@ -496,12 +496,12 @@ err:
     err:
         if (bio)
             BIO_free_all(bio);
-        if (*out) {
+        if (out) {
             free(*out);
             *out = NULL;
         }
-        out = NULL;
-        *out_len = 0;
+        if (out_len)
+            *out_len = 0;
         return;
     }
 %}
