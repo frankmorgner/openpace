@@ -35,6 +35,9 @@ android:
 emscripten:
 	$(MAKE) -C cross $@
 
+osx:
+	$(MAKE) -C cross $@
+
 .PHONY: doc
 doc:
 	$(MAKE) -C doc $@

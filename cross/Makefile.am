@@ -1,11 +1,38 @@
 EXTRA_DIST = gentoo.config-1.0.0
-
-
 all-local:
 	@echo Use \`$(MAKE) win\` to cross compile for Windows
 	@echo Use \`$(MAKE) android\` to cross compile for Android
 	@echo Use \`$(MAKE) emscripten\` to cross compile for Javascript
+	@echo Use \`$(MAKE) osx\` to compile a mulit arch package on Mac OS X
 
+
+
+OSX_TOOLS_DIR = "$(shell xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+OSX_TOOL_DIR ?= "$(OSX_TOOLS_DIR)/$(shell ls -1 $(OSX_TOOLS_DIR) | sort -n -k2 -t. -r | head -1)/usr"
+OSX_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx
+osx:
+	cd $(top_builddir)/src/openssl && git clean -xfd && git reset --hard HEAD
+	cd $(top_builddir) && ./configure --enable-openssl-install
+	$(MAKE) -C $(top_builddir)/src patch_openssl
+	cd $(top_builddir)/src/openssl && KERNEL_BITS=32 ./config --prefix=/usr/local
+	$(MAKE) -C $(top_builddir)/src/openssl
+	$(MAKE) -C $(top_builddir)/src/openssl INSTALL_PREFIX=$(OSX_TARGETDIR)_32 install_sw clean
+	cd $(top_builddir)/src/openssl && KERNEL_BITS=64 ./config --prefix=/
+	$(MAKE) -C $(top_builddir)/src/openssl
+	$(MAKE) -C $(top_builddir)/src/openssl INSTALL_PREFIX=$(OSX_TARGETDIR)_64 install_sw
+	rm -rf $(OSX_TARGETDIR)
+	cp -r $(OSX_TARGETDIR)_64 $(OSX_TARGETDIR)
+	rm -f $(OSX_TARGETDIR)/lib/libcrypto.a $(OSX_TARGETDIR)/lib/libssl.a $(OSX_TARGETDIR)/bin/openssl
+	lipo -create $(OSX_TARGETDIR)_64/lib/libcrypto.a $(OSX_TARGETDIR)_32/lib/libcrypto.a -output $(OSX_TARGETDIR)/lib/libcrypto.a
+	lipo -create $(OSX_TARGETDIR)_64/lib/libssl.a $(OSX_TARGETDIR)_32/lib/libssl.a -output $(OSX_TARGETDIR)/lib/libssl.a
+	lipo -create $(OSX_TARGETDIR)_64/bin/openssl $(OSX_TARGETDIR)_32/bin/openssl -output $(OSX_TARGETDIR)/bin/openssl
+	cd $(top_builddir) && ./configure --prefix=/usr/local \
+		PKG_CONFIG_SYSROOT_DIR=$(OSX_TARGETDIR) \
+		PKG_CONFIG_LIBDIR=$(OSX_TARGETDIR)/lib/pkgconfig \
+		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/lib/pkgconfig \
+		CFLAGS="-arch i386 -arch x86_64"
+	make -C $(top_builddir) install DESTDIR=$(OSX_TARGETDIR)
+	hdiutil create -srcfolder $(OSX_TARGETDIR) -volname "$(PACKAGE_STRING) for Mac OS X" $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 
 
 EMSCRIPTEN_DIR ?= ${HOME}/.local/src/emscripten
@@ -60,7 +87,7 @@ android:
 
 
 clean-local:
-	rm -rf $(TARGETDIR)
+	rm -rf $(TARGETDIR) $(OSX_TARGETDIR)_64 $(OSX_TARGETDIR)_32 $(OSX_TARGETDIR)
 
 
 
