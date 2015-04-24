@@ -200,7 +200,7 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
         EAC_CTX_print_private(bio, eac_ctx, indent);
 
         *out_len = (size_t) BIO_get_mem_data(bio, NULL);
-        if ((long) *out_len < 0)
+        if (((long) *out_len) < 0)
             goto err;
         *out = (char *) malloc(*out_len);
         if (!*out)

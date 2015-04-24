@@ -63,7 +63,7 @@ PACE_SEC_clear_free(PACE_SEC *s);
         PACE_SEC_print_private(bio, sec, indent);
 
         *out_len = (size_t) BIO_get_mem_data(bio, NULL);
-        if ((long) *out_len < 0)
+        if (((long) *out_len) < 0)
             goto err;
         *out = (char *) malloc(*out_len);
         if (!*out)

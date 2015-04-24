@@ -404,7 +404,7 @@ err:
 
         *out_len = (size_t) BIO_ctrl_pending(bio);
         *out = (char *) malloc(*out_len);
-        if (!*out || (long) *out_len < 0)
+        if (!*out || ((long) *out_len) < 0)
             goto err;
 
         if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
@@ -444,7 +444,7 @@ err:
 
         *out_len = (size_t) BIO_ctrl_pending(bio);
         *out = (char *) malloc(*out_len);
-        if (!*out || (long) *out_len < 0)
+        if (!*out || ((long) *out_len) < 0)
             goto err;
 
         if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
@@ -484,7 +484,7 @@ err:
 
         *out_len = (size_t) BIO_ctrl_pending(bio);
         *out = (char *) malloc(*out_len);
-        if (!*out || (long) *out_len < 0)
+        if (!*out || ((long) *out_len) < 0)
             goto err;
 
         if (BIO_read(bio, (void *) *out, *out_len) != *out_len)
