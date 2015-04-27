@@ -17,22 +17,23 @@ osx:
 	cd $(top_builddir)/src/openssl && KERNEL_BITS=32 ./config --prefix=/usr/local
 	$(MAKE) -C $(top_builddir)/src/openssl
 	$(MAKE) -C $(top_builddir)/src/openssl INSTALL_PREFIX=$(OSX_TARGETDIR)_32 install_sw clean
-	cd $(top_builddir)/src/openssl && KERNEL_BITS=64 ./config --prefix=/
+	cd $(top_builddir)/src/openssl && KERNEL_BITS=64 ./config --prefix=/usr/local
 	$(MAKE) -C $(top_builddir)/src/openssl
 	$(MAKE) -C $(top_builddir)/src/openssl INSTALL_PREFIX=$(OSX_TARGETDIR)_64 install_sw
 	rm -rf $(OSX_TARGETDIR)
 	cp -r $(OSX_TARGETDIR)_64 $(OSX_TARGETDIR)
-	rm -f $(OSX_TARGETDIR)/lib/libcrypto.a $(OSX_TARGETDIR)/lib/libssl.a $(OSX_TARGETDIR)/bin/openssl
-	lipo -create $(OSX_TARGETDIR)_64/lib/libcrypto.a $(OSX_TARGETDIR)_32/lib/libcrypto.a -output $(OSX_TARGETDIR)/lib/libcrypto.a
-	lipo -create $(OSX_TARGETDIR)_64/lib/libssl.a $(OSX_TARGETDIR)_32/lib/libssl.a -output $(OSX_TARGETDIR)/lib/libssl.a
-	lipo -create $(OSX_TARGETDIR)_64/bin/openssl $(OSX_TARGETDIR)_32/bin/openssl -output $(OSX_TARGETDIR)/bin/openssl
+	rm -f $(OSX_TARGETDIR)/usr/local/lib/libcrypto.a $(OSX_TARGETDIR)/usr/local/lib/libssl.a $(OSX_TARGETDIR)/usr/local/bin/openssl
+	lipo -create $(OSX_TARGETDIR)_64/usr/local/lib/libcrypto.a $(OSX_TARGETDIR)_32/usr/local/lib/libcrypto.a -output $(OSX_TARGETDIR)/usr/local/lib/libcrypto.a
+	lipo -create $(OSX_TARGETDIR)_64/usr/local/lib/libssl.a $(OSX_TARGETDIR)_32/usr/local/lib/libssl.a -output $(OSX_TARGETDIR)/usr/local/lib/libssl.a
+	lipo -create $(OSX_TARGETDIR)_64/usr/local/bin/openssl $(OSX_TARGETDIR)_32/usr/local/bin/openssl -output $(OSX_TARGETDIR)/usr/local/bin/openssl
 	cd $(top_builddir) && ./configure --prefix=/usr/local \
 		PKG_CONFIG_SYSROOT_DIR=$(OSX_TARGETDIR) \
-		PKG_CONFIG_LIBDIR=$(OSX_TARGETDIR)/lib/pkgconfig \
-		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/lib/pkgconfig \
+		PKG_CONFIG_LIBDIR=$(OSX_TARGETDIR)/usr/local/lib/pkgconfig \
+		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/usr/local/lib/pkgconfig \
 		CFLAGS="-arch i386 -arch x86_64"
 	make -C $(top_builddir) install DESTDIR=$(OSX_TARGETDIR)
 	hdiutil create -srcfolder $(OSX_TARGETDIR) -volname "$(PACKAGE_STRING) for Mac OS X" $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
+
 
 
 EMSCRIPTEN_DIR ?= ${HOME}/.local/src/emscripten
