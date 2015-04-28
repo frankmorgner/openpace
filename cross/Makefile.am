@@ -32,6 +32,7 @@ osx:
 		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/usr/local/lib/pkgconfig \
 		CFLAGS="-arch i386 -arch x86_64"
 	make -C $(top_builddir) install DESTDIR=$(OSX_TARGETDIR)
+	rm -f $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 	hdiutil create -srcfolder $(OSX_TARGETDIR) -volname "$(PACKAGE_STRING) for Mac OS X" $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 
 
