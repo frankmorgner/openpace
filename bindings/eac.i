@@ -193,18 +193,21 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 %rename (EAC_CTX_print_private) eac_ctx_print_private;
 %inline %{
     static void eac_ctx_print_private(char **out, size_t *out_len, EAC_CTX *eac_ctx, int indent) {
+        long tmp;
         BIO *bio = BIO_new(BIO_s_mem());
         if (!bio)
             goto err;
 
         EAC_CTX_print_private(bio, eac_ctx, indent);
 
-        *out_len = (size_t) BIO_get_mem_data(bio, NULL);
-        if (((long) *out_len) < 0)
+        tmp = BIO_get_mem_data(bio, NULL);
+        if (tmp < 0)
             goto err;
-        *out = (char *) malloc(*out_len);
+        *out = (char *) malloc(tmp);
         if (!*out)
             goto err;
+        *out_len = tmp;
+
         if (BIO_read(bio, (void*) *out, *out_len) <= 0)
             goto err;
 

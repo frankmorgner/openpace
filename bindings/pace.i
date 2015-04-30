@@ -56,18 +56,21 @@ PACE_SEC_clear_free(PACE_SEC *s);
 %rename (PACE_SEC_print_private) pace_sec_print_private;
 %inline %{
     static void pace_sec_print_private(char **out, size_t *out_len, PACE_SEC *sec, int indent) {
+        long tmp;
         BIO *bio = BIO_new(BIO_s_mem());
         if (!bio)
             goto err;
 
         PACE_SEC_print_private(bio, sec, indent);
 
-        *out_len = (size_t) BIO_get_mem_data(bio, NULL);
-        if (((long) *out_len) < 0)
+        tmp = BIO_get_mem_data(bio, NULL);
+        if (tmp < 0)
             goto err;
-        *out = (char *) malloc(*out_len);
+        *out = (char *) malloc(tmp);
         if (!*out)
             goto err;
+        *out_len = tmp;
+
         if (BIO_read(bio, (void*) *out, *out_len) <= 0)
             goto err;
 
