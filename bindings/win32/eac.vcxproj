@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -13,14 +13,36 @@
   <ItemGroup>
     <CustomBuild Include="..\eac.i">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">swig -c++ -modern -python -outdir $(Outdir) %(Identity)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)_wrap.cxx;$(Outdir)%(Filename).py</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo In order to function correctly, please ensure the following environment variables are correctly set:
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">echo Please ensure the following environment variables are correctly set:
 echo PYTHON_INCLUDE: %PYTHON_INCLUDE%
 echo PYTHON_LIB: %PYTHON_LIB%
 echo on
-swig -python -outdir $(Outdir) %(Identity)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_wrap.c;$(Outdir)%(Filename).py</Outputs>
+swig -python -outdir $(Outdir) %(Identity)
+echo Please ensure the following cross compiled files are available:
+echo $(ProjectDir)..\..\openpace-0.9_win32\bin\libeac-0.dll
+echo $(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.def
+echo $(ProjectDir)..\..\openpace-0.9_win32\bin\libeay32.dll
+echo $(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.def
+echo on
+lib /def:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.def /OUT:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.lib
+lib /def:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.def /OUT:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.lib</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\%(Filename)_wrap.c;$(Outdir)%(Filename).py;$(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.lib;$(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.lib;</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo Please ensure the following environment variables are correctly set:
+echo PYTHON_INCLUDE: %PYTHON_INCLUDE%
+echo PYTHON_LIB: %PYTHON_LIB%
+echo on
+swig -python -outdir $(Outdir) %(Identity)
+echo Please ensure the following cross compiled files are available:
+echo $(ProjectDir)..\..\openpace-0.9_win32\bin\libeac-0.dll
+echo $(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.def
+echo $(ProjectDir)..\..\openpace-0.9_win32\bin\libeay32.dll
+echo $(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.def
+echo on
+lib /def:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.def /OUT:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.lib
+lib /def:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.def /OUT:$(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.lib</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\%(Filename)_wrap.c;$(Outdir)%(Filename).py;$(ProjectDir)..\..\openpace-0.9_win32\lib\libeac-0.lib;$(ProjectDir)..\..\openpace-0.9_win32\lib\libeay32.lib</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
