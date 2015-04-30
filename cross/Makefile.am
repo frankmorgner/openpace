@@ -11,7 +11,7 @@ OSX_TOOLS_DIR = "$(shell xcode-select -p)/Platforms/MacOSX.platform/Developer/SD
 OSX_TOOL_DIR ?= "$(OSX_TOOLS_DIR)/$(shell ls -1 $(OSX_TOOLS_DIR) | sort -n -k2 -t. -r | head -1)/usr"
 OSX_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx
 osx:
-	cd $(top_builddir)/src/openssl && git clean -xfd && git reset --hard HEAD
+	(cd $(top_builddir)/src/openssl && git clean -xfd && git reset --hard HEAD) || true
 	cd $(top_builddir) && ./configure --enable-openssl-install
 	$(MAKE) -C $(top_builddir)/src patch_openssl
 	cd $(top_builddir)/src/openssl && KERNEL_BITS=32 ./config --prefix=/usr/local
