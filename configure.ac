@@ -83,7 +83,7 @@ then
     if test -z "$OPENSSL_CONFIGURE_FLAGS"
     then
         my_prefix=`test "$prefix" = NONE && echo \"$ac_default_prefix\" || echo \"${prefix}\"`
-        OPENSSL_CONFIGURE_FLAGS="enable-ssl-trace no-asm shared --prefix=${my_prefix} `${srcdir}/cross/gentoo.config-1.0.0 ${host}` ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+        OPENSSL_CONFIGURE_FLAGS="enable-ssl-trace no-asm shared --prefix=${my_prefix} `${srcdir}/cross/gentoo.config-1.0.0 ${host}` -DPURIFY ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
     fi
 
     builddir=`pwd`
