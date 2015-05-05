@@ -64,6 +64,10 @@ AC_ARG_ENABLE([openssl-install],
               ,
               [enable_openssl_install="no"])
 
+AC_ARG_WITH([openssl],
+            [AS_HELP_STRING([--with-openssl=/compiled/openssl/source], [provide precompiled openssl sources @<:@default=system@:>@])],
+            [with_openssl=$withval])
+
 if test "${enable_openssl_install}" = "yes"
 then
     INSTALL_OPENSSL=yes
@@ -93,9 +97,17 @@ then
 else
     INSTALL_OPENSSL=no
 
-    PKG_CHECK_EXISTS([libcrypto],
-                     [PKG_CHECK_MODULES([CRYPTO], [libcrypto >= 1.0.2])],
-                     [AC_MSG_WARN([libcrypto >= 1.0.2 not found by pkg-config])])
+    AS_IF(
+        [ test -z "$with_openssl" ],
+        [
+            PKG_CHECK_EXISTS([libcrypto],
+                         [PKG_CHECK_MODULES([CRYPTO], [libcrypto >= 1.0.2])],
+                         [AC_MSG_WARN([libcrypto >= 1.0.2 not found by pkg-config])])
+        ],
+        [ test -f "$with_openssl/include/openssl/engine.h" -a  -f "$with_openssl/libcrypto.a" ],
+        [ CRYPTO_CFLAGS="-I$with_openssl/include" CRYPTO_LIBS="-L$with_openssl -lcrypto" ],
+        [ AC_MSG_ERROR([specified wrong ssl directory: $with_openssl]) ]
+    )
 
     if test -z "$CRYPTO_LIBS"
     then
