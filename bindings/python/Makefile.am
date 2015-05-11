@@ -19,7 +19,7 @@ do_subst=$(SED)\
 	-e's,[@]CRYPTO_LIBS[@],'"$(CRYPTO_LIBS)"',g'\
 	-e's,[@]LIBS[@],$(LIBS),g'\
 	-e's,[@]OPENPACE_CFLAGS[@],-I$(top_srcdir)/src,g'\
-	-e's,[@]OPENPACE_LIBS[@],$(top_builddir)/src/.libs/libeac.so,g'\
+	-e's,[@]OPENPACE_LIBS[@],$(top_builddir)/src/.libs/libeac.$(DYN_LIB_EXT),g'\
 	-e's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g'\
 	-e's,[@]PACKAGE_NAME[@],$(PACKAGE_NAME),g'\
 	-e's,[@]PACKAGE_URL[@],$(PACKAGE_URL),g'\

@@ -31,11 +31,22 @@ dnl Check for windows build
 case "${host}" in
     *-mingw*|*-winnt*)
         WIN32="yes"
+        DYN_LIB_EXT="dll"
         ;;
     *-cygwin*)
         WIN32="yes"
+        DYN_LIB_EXT="dll"
         ;;
+    *-*-openbsd*)
+        DYN_LIB_EXT="so.0.0"
+        ;;
+    *-*-darwin*)
+        DYN_LIB_EXT="dylib"
+        ;;
+    *)
+        DYN_LIB_EXT="so"
 esac
+AC_SUBST(DYN_LIB_EXT)
 
 AC_ARG_VAR([HELP2MAN],
            [absolute path to help2man used for man page generation of cvc-create])

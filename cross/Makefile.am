@@ -29,7 +29,8 @@ osx:
 	cd $(top_builddir) && ./configure --prefix=/Library/OpenPACE \
 		PKG_CONFIG_SYSROOT_DIR=$(OSX_TARGETDIR) \
 		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/Library/OpenPACE/lib/pkgconfig \
-		CFLAGS="-arch i386 -arch x86_64"
+		--enable-python \
+		CFLAGS="-arch i386 -arch x86_64" LIBS="-arch i386 -arch x86_64"
 	make -C $(top_builddir) install DESTDIR=$(OSX_TARGETDIR)
 	pkgbuild --root $(OSX_TARGETDIR) --scripts MacOSX_install --identifier com.openpace.mac --version $(PACKAGE_VERSION) --install-location / OpenPACE-$(PACKAGE_VERSION)_install.pkg
 	pkgbuild --nopayload --identifier com.openpace.mac.uninstall --scripts MacOSX_uninstall Uninstall_OpenPACE.pkg
