@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for f in /Library/OpenPACE/bin/*
+do
+	ln -sf $f /usr/local/bin
+done

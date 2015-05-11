@@ -38,7 +38,7 @@ emscripten:
 osx:
 	$(MAKE) -C cross $@
 
-.PHONY: doc
+.PHONY: doc libeac.pc
 doc:
 	$(MAKE) -C doc $@
 

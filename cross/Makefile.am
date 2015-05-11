@@ -1,4 +1,4 @@
-EXTRA_DIST = gentoo.config-1.0.0
+EXTRA_DIST = gentoo.config-1.0.0 MacOSX_install/postinstall MacOSX_uninstall/postinstall
 all-local:
 	@echo Use \`$(MAKE) win\` to cross compile for Windows
 	@echo Use \`$(MAKE) android\` to cross compile for Android
@@ -14,26 +14,29 @@ osx:
 	(cd $(top_builddir)/src/openssl && git clean -xfd && git reset --hard HEAD) || true
 	cd $(top_builddir) && ./configure --enable-openssl-install
 	$(MAKE) -C $(top_builddir)/src patch_openssl
-	cd $(top_builddir)/src/openssl && KERNEL_BITS=32 ./config --prefix=/usr/local
+	cd $(top_builddir)/src/openssl && KERNEL_BITS=32 ./config --prefix=/Library/OpenPACE
 	$(MAKE) -C $(top_builddir)/src/openssl
 	$(MAKE) -C $(top_builddir)/src/openssl INSTALL_PREFIX=$(OSX_TARGETDIR)_32 install_sw clean
-	cd $(top_builddir)/src/openssl && KERNEL_BITS=64 ./config --prefix=/usr/local
+	cd $(top_builddir)/src/openssl && KERNEL_BITS=64 ./config --prefix=/Library/OpenPACE
 	$(MAKE) -C $(top_builddir)/src/openssl
 	$(MAKE) -C $(top_builddir)/src/openssl INSTALL_PREFIX=$(OSX_TARGETDIR)_64 install_sw
-	rm -rf $(OSX_TARGETDIR)
+	rm -rf $(OSX_TARGETDIR) OpenPACE-install.pkg dmg $(top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 	cp -r $(OSX_TARGETDIR)_64 $(OSX_TARGETDIR)
-	rm -f $(OSX_TARGETDIR)/usr/local/lib/libcrypto.a $(OSX_TARGETDIR)/usr/local/lib/libssl.a $(OSX_TARGETDIR)/usr/local/bin/openssl
-	lipo -create $(OSX_TARGETDIR)_64/usr/local/lib/libcrypto.a $(OSX_TARGETDIR)_32/usr/local/lib/libcrypto.a -output $(OSX_TARGETDIR)/usr/local/lib/libcrypto.a
-	lipo -create $(OSX_TARGETDIR)_64/usr/local/lib/libssl.a $(OSX_TARGETDIR)_32/usr/local/lib/libssl.a -output $(OSX_TARGETDIR)/usr/local/lib/libssl.a
-	lipo -create $(OSX_TARGETDIR)_64/usr/local/bin/openssl $(OSX_TARGETDIR)_32/usr/local/bin/openssl -output $(OSX_TARGETDIR)/usr/local/bin/openssl
-	cd $(top_builddir) && ./configure --prefix=/usr/local \
+	rm -f $(OSX_TARGETDIR)/Library/OpenPACE/lib/libcrypto.a $(OSX_TARGETDIR)/Library/OpenPACE/lib/libssl.a $(OSX_TARGETDIR)/Library/OpenPACE/bin/openssl
+	lipo -create $(OSX_TARGETDIR)_64/Library/OpenPACE/lib/libcrypto.a $(OSX_TARGETDIR)_32/Library/OpenPACE/lib/libcrypto.a -output $(OSX_TARGETDIR)/Library/OpenPACE/lib/libcrypto.a
+	lipo -create $(OSX_TARGETDIR)_64/Library/OpenPACE/lib/libssl.a $(OSX_TARGETDIR)_32/Library/OpenPACE/lib/libssl.a -output $(OSX_TARGETDIR)/Library/OpenPACE/lib/libssl.a
+	lipo -create $(OSX_TARGETDIR)_64/Library/OpenPACE/bin/openssl $(OSX_TARGETDIR)_32/Library/OpenPACE/bin/openssl -output $(OSX_TARGETDIR)/Library/OpenPACE/bin/openssl
+	cd $(top_builddir) && ./configure --prefix=/Library/OpenPACE \
 		PKG_CONFIG_SYSROOT_DIR=$(OSX_TARGETDIR) \
-		PKG_CONFIG_LIBDIR=$(OSX_TARGETDIR)/usr/local/lib/pkgconfig \
-		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/usr/local/lib/pkgconfig \
+		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/Library/OpenPACE/lib/pkgconfig \
 		CFLAGS="-arch i386 -arch x86_64"
 	make -C $(top_builddir) install DESTDIR=$(OSX_TARGETDIR)
-	rm -f $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
-	hdiutil create -srcfolder $(OSX_TARGETDIR) -volname "$(PACKAGE_STRING) for Mac OS X" $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
+	pkgbuild --root $(OSX_TARGETDIR) --scripts MacOSX_install --identifier com.openpace.mac --version $(PACKAGE_VERSION) --install-location / OpenPACE-$(PACKAGE_VERSION)_install.pkg
+	pkgbuild --nopayload --identifier com.openpace.mac.uninstall --scripts MacOSX_uninstall Uninstall_OpenPACE.pkg
+	mkdir dmg
+	cp Uninstall_OpenPACE.pkg dmg
+	cp OpenPACE-$(PACKAGE_VERSION)_install.pkg dmg
+	hdiutil create -srcfolder dmg -volname "$(PACKAGE_STRING) for Mac OS X" $(top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 
 
 
