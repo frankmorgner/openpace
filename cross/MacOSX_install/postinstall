@@ -1,6 +1,13 @@
 #!/bin/bash
 
+mkdir -p /usr/local/bin
 for f in /Library/OpenPACE/bin/*
 do
 	ln -sf $f /usr/local/bin
+done
+
+mkdir -p /usr/local/lib/python2.7/site-packages
+for f in /Library/OpenPACE/lib/python2.7/site-packages/*
+do
+	ln -sf $f /usr/local/lib/python2.7/site-packages
 done
