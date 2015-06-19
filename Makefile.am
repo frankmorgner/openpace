@@ -61,12 +61,12 @@ endif
 check-local: $(LOCAL_TESTS)
 
 ENV = env \
-	  LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$(abs_builddir)/bindings/ruby/ext:$(abs_builddir)/bindings/java/.libs:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
-	  DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$(abs_builddir)/bindings/ruby/ext:$(abs_builddir)/bindings/java/.libs:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
-	  SHLIB_PATH=$${SHLIB_PATH}:$(abs_builddir)/bindings/ruby/ext:$(abs_builddir)/bindings/java/.libs:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
-	  LIBPATH=$${LIBPATH}:$(abs_builddir)/bindings/ruby/ext:$(abs_builddir)/bindings/java/.libs:$(abs_builddir)/bindings/python:$(abs_builddir)/src/.libs:$(abs_builddir)/src/openssl \
-	  PYTHONPATH=$(abs_builddir)/bindings/python \
-	  RUBYLIB=$(abs_builddir)/bindings/ruby/ext
+	  LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  SHLIB_PATH=$${SHLIB_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  LIBPATH=$${LIBPATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  PYTHONPATH=$(abs_top_builddir)/bindings/python \
+	  RUBYLIB=$(abs_top_builddir)/bindings/ruby/ext
 
 test-eactest:
 	$(ENV) $(builddir)/src/eactest

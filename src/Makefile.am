@@ -79,10 +79,21 @@ cvc-print.ggo: cvc-print.ggo.in
 
 
 
+if INSTALL_OPENSSL
+
+ENV = env \
+	  LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  SHLIB_PATH=$${SHLIB_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  LIBPATH=$${LIBPATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
+	  PYTHONPATH=$(abs_top_builddir)/bindings/python \
+	  RUBYLIB=$(abs_top_builddir)/bindings/ruby/ext
+
+endif
 
 $(abs_builddir)/cvc-create.1: cvc-create.ggo.in
 	make -C $(builddir) cvc-create$(EXEEXT)
-	$(HELP2MAN) \
+	$(ENV) $(HELP2MAN) \
 		--output=$@ \
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
@@ -90,7 +101,7 @@ $(abs_builddir)/cvc-create.1: cvc-create.ggo.in
 
 $(abs_builddir)/cvc-print.1: cvc-print.ggo.in
 	make -C $(builddir) cvc-print$(EXEEXT)
-	$(HELP2MAN) \
+	$(ENV) $(HELP2MAN) \
 		--output=$@ \
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
