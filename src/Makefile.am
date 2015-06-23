@@ -165,5 +165,5 @@ install-exec-local: install-openssl
 
 else
 install-openssl:
-	@echo Nothing to install. OpenSSL was not built together with OpenPACE. Use \`./configure --enable-openssl-build\` if this is what you want.
+	@echo Nothing to install. OpenSSL was not built together with OpenPACE. Use \`./configure --enable-openssl-install\` if this is what you want.
 endif
