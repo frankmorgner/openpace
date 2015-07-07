@@ -55,7 +55,7 @@ EAC_remove_iso_pad(const BUF_MEM *padded)
     while (m_len >= 1) {
         if (padded->data[m_len] == (char) 0x80)
             break;
-        check(padded->data != 0x00, "Invalid padding");
+        check(padded->data[m_len] == 0x00, "Invalid padding");
         m_len--;
     }
     check(m_len != 0, "Invalid padding");
