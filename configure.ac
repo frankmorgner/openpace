@@ -49,17 +49,20 @@ esac
 AC_SUBST(DYN_LIB_EXT)
 
 AC_ARG_VAR([HELP2MAN],
-           [absolute path to help2man used for man page generation of cvc-create])
+           [absolute path to help2man used for man page generation of the command line tools])
 AC_PATH_PROG(HELP2MAN, help2man, not found)
 if test ! -r src/cvc-create.1 -o ! -r src/cvc-print.1
 then
     if test "${HELP2MAN}" = "not found"
     then
-        AC_MSG_ERROR([Need help2man to generate man page for cvc-create])
+        AC_MSG_ERROR([Need help2man to generate man page of the command line tools])
     fi
+else
+    # make sure these files are the most recent
+    touch src/cvc-create.1 src/cvc-print.1
 fi
 AC_ARG_VAR([GENGETOPT],
-           [absolute path to gengetopt used for command line parsing of cvc-create])
+           [absolute path to gengetopt used for command line parsing of the command line tools])
 AC_PATH_PROG(GENGETOPT, gengetopt, not found)
 if test ! -r src/cvc-create-cmdline.h -o ! -r src/cvc-print-cmdline.h 
 then 
@@ -67,6 +70,11 @@ then
     then
         AC_MSG_ERROR([Need gengetopt for parsing command line of cvc-create])
     fi
+else
+    # make sure these files are the most recent
+    touch scr/cvc-create.ggo scr/cvc-print.ggo
+    touch src/cvc-create-cmdline.h src/cvc-print-cmdline.h 
+    touch src/cvc-create-cmdline.c src/cvc-print-cmdline.c 
 fi
 
 # Checks for libcrypto.
