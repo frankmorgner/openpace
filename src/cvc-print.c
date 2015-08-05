@@ -96,7 +96,7 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
                 err("could not parse certificate request");
 
             puts("Certificate Authentication Request:");
-            if (!CVC_CERT_AUTHENTICATION_REQUEST_print_ctx(bio_stdout, authentication, 1, NULL))
+            if (!certificate_authentication_request_print(bio_stdout, authentication, 2))
                 err("could not print certificate authentication request");
         }
     }
