@@ -31,6 +31,7 @@
 #include "read_file.h"
 #include <eac/eac.h>
 #include <eac/cv_cert.h>
+#include <openssl/asn1.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/rsa.h>
@@ -106,6 +107,48 @@ err:
     free(cert);
 
     return cvc;
+}
+
+static CVC_CERT_REQUEST *read_request(const char *filename)
+{
+    unsigned char *request = NULL;
+    const unsigned char *p;
+    size_t request_len = 0;
+    CVC_CERT_REQUEST *cvc_request = NULL;
+
+    if (0 != read_file(filename, &request, &request_len)) {
+        goto err;
+    }
+
+    p = request;
+    if (!d2i_CVC_CERT_REQUEST(&cvc_request, &p, request_len))
+        goto err;
+
+err:
+    free(request);
+
+    return cvc_request;
+}
+
+static CVC_CERT_AUTHENTICATION_REQUEST *read_authentication(const char *filename)
+{
+    unsigned char *authentication = NULL;
+    const unsigned char *p;
+    size_t authentication_len = 0;
+    CVC_CERT_AUTHENTICATION_REQUEST *cvc_authentication = NULL;
+
+    if (0 != read_file(filename, &authentication, &authentication_len)) {
+        goto err;
+    }
+
+    p = authentication;
+    if (!d2i_CVC_CERT_AUTHENTICATION_REQUEST(&cvc_authentication, &p, authentication_len))
+        goto err;
+
+err:
+    free(authentication);
+
+    return cvc_authentication;
 }
 
 int cvc_role_set(const struct gengetopt_args_info *cmdline, unsigned char *out)
@@ -538,6 +581,8 @@ int main(int argc, char *argv[])
     CVC_CERT *sign_as_cert = NULL;
     CVC_CERT_BODY *body = NULL;
     CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
+    CVC_CERT_REQUEST *request = NULL;
+    CVC_CERT_AUTHENTICATION_REQUEST *authentication = NULL;
     CVC_DISCRETIONARY_DATA_TEMPLATE *template = NULL;
     int fail = 1, body_len = 0, desc_buf_len = 0, term_key_len = 0;
     struct gengetopt_args_info cmdline;
@@ -567,6 +612,18 @@ int main(int argc, char *argv[])
     cert->body = body;
 
 
+    /* read certificate signing request */
+    if (cmdline.csr_given) {
+        request = read_request(cmdline.csr_arg);
+        if (!request) {
+            authentication = read_authentication(cmdline.csr_arg);
+            if (!authentication)
+                err("could not parse certificate request");
+            request = authentication->request;
+        }
+    }
+
+
     /* write profile identifier fixed to 0 ("version 1") */
     body->certificate_profile_identifier = ASN1_INTEGER_new();
     if (!body->certificate_profile_identifier
@@ -574,33 +631,57 @@ int main(int argc, char *argv[])
         goto err;
 
 
-    /* write CAR */
-    if (cmdline.sign_as_given) {
-        /* sign as with a different cv certificate */
-        sign_as_cert = read_cvc_cert(cmdline.sign_as_arg);
-        if (!sign_as_cert)
+    if (cmdline.manual_mode_counter
+            || !request->body->certificate_authority_reference) {
+        /* write CAR */
+        if (cmdline.sign_as_given) {
+            /* sign as with a different cv certificate */
+            sign_as_cert = read_cvc_cert(cmdline.sign_as_arg);
+            if (!sign_as_cert)
+                goto err;
+            car = sign_as_cert->body->certificate_holder_reference->data;
+            car_len = sign_as_cert->body->certificate_holder_reference->length;
+        } else {
+            /* self signed certificate */
+            if (cmdline.manual_mode_counter) {
+                car = (unsigned char *) cmdline.chr_arg;
+                car_len = strlen(cmdline.chr_arg);
+            } else {
+                car = request->body->certificate_holder_reference->data;
+                car_len = request->body->certificate_holder_reference->length;
+            }
+        }
+        body->certificate_authority_reference = ASN1_UTF8STRING_new();
+        if (!body->certificate_authority_reference
+                || !M_ASN1_OCTET_STRING_set(body->certificate_authority_reference, car, car_len))
             goto err;
-        car = sign_as_cert->body->certificate_holder_reference->data;
-        car_len = sign_as_cert->body->certificate_holder_reference->length;
     } else {
-        /* self signed certificate */
-        car = (unsigned char *) cmdline.chr_arg;
-        car_len = strlen(cmdline.chr_arg);
+        body->certificate_authority_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_authority_reference);
+        if (!body->certificate_authority_reference)
+            goto err;
     }
-    body->certificate_authority_reference = ASN1_UTF8STRING_new();
-    if (!body->certificate_authority_reference
-            || !M_ASN1_OCTET_STRING_set(body->certificate_authority_reference, car, car_len))
-        goto err;
 
 
     /* write CHR */
-    body->certificate_holder_reference = ASN1_UTF8STRING_new();
-    if (!body->certificate_holder_reference
-            || !M_ASN1_OCTET_STRING_set(body->certificate_holder_reference,
-                (unsigned char *) cmdline.chr_arg, strlen(cmdline.chr_arg)))
-        goto err;
-    strncpy(basename, cmdline.chr_arg, sizeof basename);
-    basename[sizeof basename - 1] = '\0';
+    if (cmdline.manual_mode_counter) {
+        body->certificate_holder_reference = ASN1_UTF8STRING_new();
+        if (!body->certificate_holder_reference
+                || !M_ASN1_OCTET_STRING_set(body->certificate_holder_reference,
+                    (unsigned char *) cmdline.chr_arg, strlen(cmdline.chr_arg)))
+            goto err;
+        strncpy(basename, cmdline.chr_arg, sizeof basename);
+        basename[sizeof basename - 1] = '\0';
+    } else {
+        body->certificate_holder_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_holder_reference);
+        if (!body->certificate_holder_reference)
+            goto err;
+        memcpy(basename, (char *) request->body->certificate_holder_reference->data,
+                sizeof basename < request->body->certificate_holder_reference->length ?
+                sizeof basename : request->body->certificate_holder_reference->length);
+        basename[
+            sizeof basename - 1 < request->body->certificate_holder_reference->length ?
+            sizeof basename - 1 : request->body->certificate_holder_reference->length] = '\0';
+    }
 
 
     /* read signer key */
@@ -610,49 +691,54 @@ int main(int argc, char *argv[])
 
 
     /* get terminal's key */
-    if (cmdline.key_given) {
-        term_key = read_evp_pkey(cmdline.key_arg);
-        if (!term_key)
-            goto err;
-    } else {
-        if (cmdline.sign_as_given) {
-            term_key_ctx = EVP_PKEY_CTX_new(signer_key, NULL);
-            if (!term_key_ctx
-                    || !EVP_PKEY_keygen_init(term_key_ctx))
+    if (cmdline.manual_mode_counter) {
+        if (cmdline.key_given) {
+            term_key = read_evp_pkey(cmdline.key_arg);
+            if (!term_key)
                 goto err;
-            if (EVP_PKEY_type(signer_key->type) == EVP_PKEY_RSA) {
-                /* RSA keys set the key length during key generation
-                 * rather than parameter generation! */
-                if (!EVP_PKEY_CTX_set_rsa_keygen_bits(term_key_ctx,
-                            EVP_PKEY_bits(signer_key)))
-                    goto err;
-            }
-            if (!EVP_PKEY_keygen(term_key_ctx, &term_key))
-                goto err;
-
-            /* export key */
-            term_key_len = i2d_PrivateKey(term_key, &term_key_buf);
-            if (term_key_len <= 0)
-                goto err;
-            if (!cmdline.out_key_given) {
-                strcpy(string, basename);
-                strcat(string, PKCS8_EXT);
-                out = string;
-            } else {
-                out = cmdline.out_key_arg;
-            }
-            if (0 != write_file(out, term_key_buf, term_key_len))
-                err("Could not write terminal key");
-            printf("Created %s\n", out);
         } else {
-            /* self signed certificate */
-            term_key = EVP_PKEY_dup(signer_key);
+            if (cmdline.sign_as_given) {
+                term_key_ctx = EVP_PKEY_CTX_new(signer_key, NULL);
+                if (!term_key_ctx
+                        || !EVP_PKEY_keygen_init(term_key_ctx))
+                    goto err;
+                if (EVP_PKEY_type(signer_key->type) == EVP_PKEY_RSA) {
+                    /* RSA keys set the key length during key generation
+                     * rather than parameter generation! */
+                    if (!EVP_PKEY_CTX_set_rsa_keygen_bits(term_key_ctx,
+                                EVP_PKEY_bits(signer_key)))
+                        goto err;
+                }
+                if (!EVP_PKEY_keygen(term_key_ctx, &term_key))
+                    goto err;
+
+                /* export key */
+                term_key_len = i2d_PrivateKey(term_key, &term_key_buf);
+                if (term_key_len <= 0)
+                    goto err;
+                if (!cmdline.out_key_given) {
+                    strcpy(string, basename);
+                    strcat(string, PKCS8_EXT);
+                    out = string;
+                } else {
+                    out = cmdline.out_key_arg;
+                }
+                if (0 != write_file(out, term_key_buf, term_key_len))
+                    err("Could not write terminal key");
+                printf("Created %s\n", out);
+            } else {
+                /* self signed certificate */
+                term_key = EVP_PKEY_dup(signer_key);
+            }
         }
+
+
+        /* write public key */
+        body->public_key = get_cvc_pubkey(&cmdline, term_key);
+    } else {
+        /* write public key */
+        body->public_key = CVC_PUBKEY_dup(request->body->public_key);
     }
-
-
-    /* write public key */
-    body->public_key = get_cvc_pubkey(&cmdline, term_key);
     if (!body->public_key)
         goto err;
 
@@ -795,6 +881,12 @@ err:
         EVP_PKEY_CTX_free(term_key_ctx);
     if (desc)
         CVC_CERTIFICATE_DESCRIPTION_free(desc);
+    if (authentication) {
+        CVC_CERT_AUTHENTICATION_REQUEST_free(authentication);
+        request = NULL;
+    }
+    if (request)
+        CVC_CERT_REQUEST_free(request);
     free(desc_buf);
     if (desc_hash)
         BUF_MEM_free(desc_hash);

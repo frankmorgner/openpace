@@ -17,10 +17,6 @@ option "type"           -
     values="at","is","st","derived_from_signer"
     enum
     optional
-option "chr"            -
-    "Certificate holder reference (2 characters ISO 3166-1 ALPHA-2 country code, 0-9 characters ISO/IEC 8859-1 holder mnemonic, 5 characters ISO/IEC 8859-1 numeric or alphanumeric sequence number)"
-    string
-    typestr="CCH...HSSSSS"
 option "issued"            -
     "Date the certificate was issued"
     default="today"
@@ -35,28 +31,48 @@ option "sign-with"            -
     "Private key for signing the new certificate"
     string
     typestr="FILENAME"
-option "sign-as"            -
-    "CV certificate of the entity signing the new certificate"
-    default="self signed"
-    string
-    typestr="FILENAME"
-    optional
-option "key"             -
-    "Private key of the Terminal"
-    default="derived from signer"
-    string
-    typestr="FILENAME"
-    optional
-option "out-key"        -
-    "Where to save the derived private key"
-    default="CHR.pkcs8"
-    string
-    typestr="FILENAME"
-    optional
 option "scheme"             -
     "Signature scheme that the new terminal will use"
     values="ECDSA_SHA_1","ECDSA_SHA_224","ECDSA_SHA_256","ECDSA_SHA_384","ECDSA_SHA_512","RSA_v1_5_SHA_1","RSA_v1_5_SHA_256","RSA_v1_5_SHA_512","RSA_PSS_SHA_1","RSA_PSS_SHA_256","RSA_PSS_SHA_512"
     enum
+
+defmode "csr"
+    modedesc="The properties of the certificate are derived from the given signing request."
+defmode "manual"
+    modedesc="The properties of the certificate are derived from the command line switches."
+
+modeoption "csr"            -
+    "Certificate signing request with the attributes"
+    string
+    mode="csr"
+    typestr="FILENAME"
+    optional
+modeoption "chr"            -
+    "Certificate holder reference (2 characters ISO 3166-1 ALPHA-2 country code, 0-9 characters ISO/IEC 8859-1 holder mnemonic, 5 characters ISO/IEC 8859-1 numeric or alphanumeric sequence number)"
+    string
+    mode="manual"
+    typestr="CCH...HSSSSS"
+modeoption "sign-as"            -
+    "CV certificate of the entity signing the new certificate"
+    default="self signed"
+    string
+    mode="manual"
+    typestr="FILENAME"
+    optional
+modeoption "key"             -
+    "Private key of the Terminal"
+    default="derived from signer"
+    string
+    mode="manual"
+    typestr="FILENAME"
+    optional
+modeoption "out-key"        -
+    "Where to save the derived private key"
+    default="CHR.pkcs8"
+    string
+    mode="manual"
+    typestr="FILENAME"
+    optional
 
 section "Options for an Authentication Terminal (AT)"
 option "cert-desc"      -
