@@ -470,6 +470,32 @@ int
 CVC_print(BIO *bio, const CVC_CERT *cv, int indent);
 
 /**
+ * @brief Print CV certificate request in human readable form
+ *
+ * @param[in] bio Where to print the data
+ * @param[in] request CV certificate request to print
+ * @param[in] indent Number of spaces to prepend
+ *
+ * @return 1 on success or 0 in case of an error
+ */
+int certificate_request_print(BIO *bio,
+        const CVC_CERT_REQUEST *request, int indent);
+
+/**
+ * @brief Print CV certificate authentication request in human readable form
+ *
+ * @param[in] bio Where to print the data
+ * @param[in] request CV certificate authentication request to print
+ * @param[in] indent Number of spaces to prepend
+ *
+ * @return 1 on success or 0 in case of an error
+ */
+int certificate_authentication_request_print(BIO *bio,
+        const CVC_CERT_AUTHENTICATION_REQUEST *authentication, int indent);
+
+/** @} ***********************************************************************/
+
+/**
  *  @brief Get the CHAT contained in a CV certifcate.
  *
  *  @param[in] cvc CV certificate
@@ -478,8 +504,6 @@ CVC_print(BIO *bio, const CVC_CERT *cv, int indent);
  */
 const CVC_CHAT *
 cvc_get_chat(const CVC_CERT *cvc);
-
-/** @} ***********************************************************************/
 
 /**
  * @brief Extract the terminal-type (terminal, DV, CVCA) from the CHAT

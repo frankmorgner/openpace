@@ -700,6 +700,95 @@ err:
     return r;
 }
 
+int certificate_request_print(BIO *bio,
+        const CVC_CERT_REQUEST *request, int indent)
+{
+    int r = 0, i, count;
+    char *car = NULL, *chr = NULL;
+    CVC_DISCRETIONARY_DATA_TEMPLATE *p;
+
+    if (!bio || !request || !request->body || !request->body->public_key)
+        goto err;
+
+    if (request->body->certificate_authority_reference) {
+        car = cvc_get_reference_string(request->body->certificate_authority_reference);
+        if (!car)
+            goto err;
+    }
+
+    chr = cvc_get_reference_string(request->body->certificate_holder_reference);
+    if (!chr)
+        goto err;
+
+    if (!BIO_indent(bio, indent, 80)
+            || !BIO_printf(bio, "Profile identifier: %d\n", ASN1_INTEGER_get(request->body->certificate_profile_identifier))
+            || !BIO_indent(bio, indent, 80)
+            || !BIO_printf(bio, "CAR: %s\n", car)
+            /*|| !CVC_PUBKEY_print_ctx(bio, request->body->public_key, indent, NULL)*/
+            || !BIO_indent(bio, indent, 80)
+            || !BIO_printf(bio, "CHR: %s\n", chr)
+            || !BIO_indent(bio, indent, 80))
+        goto err;
+
+    count = sk_num((_STACK*) request->body->certificate_extensions);
+    if (count > 0) {
+        if (!BIO_indent(bio, indent, 80)
+                || !BIO_printf(bio, "Certificate Extensions:\n"))
+            goto err;
+    }
+    for (i = 0; i < count; i++) {
+        p = sk_value((_STACK*) request->body->certificate_extensions, i);
+#if 0
+        if (!CVC_DISCRETIONARY_DATA_TEMPLATE_print_ctx(bio, p, indent+2, NULL))
+            goto err;
+#else
+        if (!BIO_indent(bio, indent+2, 80)
+                || !BIO_printf(bio, "%s\n", OBJ_nid2sn(OBJ_obj2nid(p->type))))
+                goto err;
+#endif
+    }
+
+    r = 1;
+
+err:
+    if (car)
+        OPENSSL_free(car);
+    if (chr)
+        OPENSSL_free(chr);
+
+    return r;
+}
+
+int certificate_authentication_request_print(BIO *bio,
+        const CVC_CERT_AUTHENTICATION_REQUEST *authentication, int indent)
+{
+    int r = 0, i;
+    char *car = NULL;
+
+    if (!bio || !authentication)
+        goto err;
+
+    car = cvc_get_reference_string(authentication->certificate_authority_reference);
+    if (!car)
+        goto err;
+
+    if (!BIO_indent(bio, indent, 80)
+            || !BIO_printf(bio, "Certificate request:\n")
+            || !certificate_request_print(bio, authentication->request,
+                indent+2)
+            || !BIO_indent(bio, indent, 80)
+            || !BIO_printf(bio, "CAR: %s\n", car))
+        goto err;
+
+    r = 1;
+
+err:
+    if (car)
+        OPENSSL_free(car);
+
+    return r;
+}
+
 int
 cvc_chat_print_authorizations(BIO *bio, const CVC_CHAT *chat, int indent)
 {

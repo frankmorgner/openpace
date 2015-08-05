@@ -37,10 +37,14 @@
 #define err(s) { puts(s); ERR_print_errors_fp(stdout); goto err; }
 
 static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
-        const unsigned char *desc_data, const size_t desc_len) {
+        const unsigned char *desc_data, const size_t desc_len,
+        const unsigned char *csr_data, const size_t csr_len)
+{
     BIO *bio_stdout = NULL;
     CVC_CERT *cvc = NULL;
     CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
+    CVC_CERT_REQUEST *request = NULL;
+    CVC_CERT_AUTHENTICATION_REQUEST *authentication = NULL;
     const unsigned char *p;
     int fail = 1;
 
@@ -79,6 +83,24 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
         }
     }
 
+    if (csr_data && csr_len) {
+        p = csr_data;
+        if (d2i_CVC_CERT_REQUEST(&request, &p, csr_len)) {
+            puts("Certificate Request:");
+            if (!certificate_request_print(bio_stdout, request, 2))
+                err("could not print certificate request");
+        } else {
+            /* try using an authentication request */
+            p = csr_data;
+            if (!d2i_CVC_CERT_AUTHENTICATION_REQUEST(&authentication, &p, desc_len))
+                err("could not parse certificate request");
+
+            puts("Certificate Authentication Request:");
+            if (!CVC_CERT_AUTHENTICATION_REQUEST_print_ctx(bio_stdout, authentication, 1, NULL))
+                err("could not print certificate authentication request");
+        }
+    }
+
     fail = 0;
 
 err:
@@ -86,6 +108,10 @@ err:
         CVC_CERTIFICATE_DESCRIPTION_free(desc);
     if (cvc)
         CVC_CERT_free(cvc);
+    if (authentication)
+        CVC_CERT_AUTHENTICATION_REQUEST_free(authentication);
+    if (request)
+        CVC_CERT_REQUEST_free(request);
     if (bio_stdout)
         BIO_free_all(bio_stdout);
 
@@ -95,8 +121,8 @@ err:
 int main(int argc, char *argv[])
 {
     int fail = 1;
-    unsigned char *cvc_data = NULL, *desc_data = NULL;
-    size_t cvc_len = 0, desc_len = 0;
+    unsigned char *cvc_data = NULL, *desc_data = NULL, *csr_data = NULL;
+    size_t cvc_len = 0, desc_len = 0, csr_len = 0;
     struct gengetopt_args_info cmdline;
 
     /* Parse command line */
@@ -120,8 +146,16 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (cmdline.csr_arg) {
+        fail = read_file(cmdline.csr_arg, &csr_data, &csr_len);
+        if (fail) {
+            fprintf(stderr, "failed to read %s\n", cmdline.csr_arg);
+            goto err;
+        }
+    }
+
     EAC_init();
-    fail = print_cvc(cvc_data, cvc_len, desc_data, desc_len);
+    fail = print_cvc(cvc_data, cvc_len, desc_data, desc_len, csr_data, csr_len);
 
 err:
     cmdline_parser_free (&cmdline);
