@@ -360,6 +360,15 @@ int i2d_CVC_CERT(CVC_CERT *a, unsigned char **out);
 #define CVC_CERT_dup(x) ASN1_dup_of(CVC_CERT, i2d_CVC_CERT, CVC_d2i_CVC_CERT, x)
 
 /**
+ * @brief Duplicate a CVC public key
+ *
+ * @param[in] x CVC public key to duplicate
+ *
+ * @return Duplicated CVC public or NULL in case of an error
+ */
+#define CVC_PUBKEY_dup(x) ASN1_dup_of(CVC_PUBKEY, i2d_CVC_PUBKEY, d2i_CVC_PUBKEY, x)
+
+/**
  * @brief Duplicate a CHAT 
  *
  * @param[in] x CHAT to duplicate
