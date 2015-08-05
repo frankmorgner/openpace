@@ -254,6 +254,76 @@ typedef struct cvc_commcert_seq_st {
 DECLARE_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
 DECLARE_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 
+
+/**
+ * @brief The body of the CV certificate request (without signature)
+ *
+ * @see TR-03110 C.2. */
+typedef struct cvc_cert_request_body_seq_st {
+    /** @brief Certificate Profile of this certificate request (must be 0).
+     *
+     * @see TR-03110 C.2.1. */
+    ASN1_INTEGER *certificate_profile_identifier;
+    /** @brief Reference to certificate authority that issued this certificate request (in Latin1)
+     *
+     * @see TR-03110 C.2.2. */
+    ASN1_UTF8STRING *certificate_authority_reference;
+    /** @brief Public key associated with this certificate request
+     *
+     * @see TR-03110 C.2.3. */
+    CVC_PUBKEY *public_key;
+    /** @brief Reference to the holder of this certificate request (in Latin1)
+     *
+     * @see TR-03110 C.2.4. */
+    ASN1_UTF8STRING *certificate_holder_reference;
+    /** @brief Optional extensions
+     *
+     * @see TR-03110 C.2.5. */
+	STACK_OF(CVC_DISCRETIONARY_DATA_TEMPLATE) *certificate_extensions;
+} CVC_CERT_REQUEST_BODY_SEQ;
+/** @brief Short name for CVC_CERT_REQUEST_BODY_SEQ */
+typedef CVC_CERT_REQUEST_BODY_SEQ CVC_CERT_REQUEST_BODY;
+
+/**
+ * @brief The actual certifcate request, consisting of the body and inner signature
+ *
+ *  @see TR-03110 C.2. */
+typedef struct cvc_cert_request_seq_st {
+    /** @brief Body of the certificate request */
+    CVC_CERT_REQUEST_BODY *body;
+    /** @brief Signature calculated over the hash of the certificate request body */
+    ASN1_OCTET_STRING *inner_signature;
+} CVC_CERT_REQUEST_SEQ;
+/** @brief Short name for CVC_CERT_REQUEST_SEQ */
+typedef CVC_CERT_REQUEST_SEQ CVC_CERT_REQUEST;
+DECLARE_ASN1_FUNCTIONS(CVC_CERT_REQUEST)
+/*void CVC_CERT_REQUEST_print_ctx(BIO *bio, CVC_CERT_REQUEST *cert, int indent, const ASN1_PCTX *pctx);*/
+/* FIXME the default printing functions currently crash
+DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT_REQUEST)
+*/
+
+/**
+ * @brief The authentication request, consisting of the certificate request, certificate authority reference and outer signature
+ *
+ *  @see TR-03110 C.2. */
+typedef struct cvc_cert_authentication_request_seq_st {
+    /** @brief certificate request */
+    CVC_CERT_REQUEST *request;
+    /** @brief Reference to certificate authority that issued this authentication request (in Latin1)
+     *
+     * @see TR-03110 C.2.2. */
+    ASN1_UTF8STRING *certificate_authority_reference;
+    /** @brief Signature calculated over the hash of the certificate request */
+    ASN1_OCTET_STRING *outer_signature;
+} CVC_CERT_AUTHENTICATION_REQUEST_SEQ;
+/** @brief Short name for CVC_CERT_AUTHENTICATION_REQUEST_SEQ */
+typedef CVC_CERT_AUTHENTICATION_REQUEST_SEQ CVC_CERT_AUTHENTICATION_REQUEST;
+DECLARE_ASN1_FUNCTIONS(CVC_CERT_AUTHENTICATION_REQUEST)
+/*void CVC_CERT_REQUEST_print_ctx(BIO *bio, CVC_CERT_AUTHENTICATION_REQUEST *cert, int indent, const ASN1_PCTX *pctx);*/
+/* FIXME the default printing functions currently crash
+DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT_AUTHENTICATION_REQUEST)
+*/
+
 /**
  * @addtogroup management
  * @{ ************************************************************************/
