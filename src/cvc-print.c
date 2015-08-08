@@ -99,6 +99,12 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
             if (!certificate_authentication_request_print(bio_stdout, authentication, 2))
                 err("could not print certificate authentication request");
         }
+        if (1 == CVC_verify_request_signature(request ? request :
+                    authentication->request)) {
+            puts("certificate request verified");
+        } else {
+            puts("certificate request not verified");
+        }
     }
 
     fail = 0;

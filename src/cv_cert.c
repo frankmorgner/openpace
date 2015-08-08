@@ -266,6 +266,7 @@ ASN1_SEQUENCE(CVC_CERT_REQUEST_BODY_SEQ) = {
 ASN1_ITEM_TEMPLATE(CVC_CERT_REQUEST_BODY) =
         ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x4e, CVC_CERT_REQUEST_BODY, CVC_CERT_REQUEST_BODY_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CERT_REQUEST_BODY)
+IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT_REQUEST_BODY)
 
 ASN1_SEQUENCE(CVC_CERT_REQUEST_SEQ) = {
         /* tag: 0x7F4E */
@@ -696,6 +697,44 @@ err:
         OPENSSL_free(car);
     if (chr)
         OPENSSL_free(chr);
+
+    return r;
+}
+
+int
+CVC_verify_request_signature(const CVC_CERT_REQUEST *request)
+{
+    int r = -1;
+    unsigned char *body = NULL;
+    int body_len;
+    BUF_MEM *inner_signature = NULL, *body_buf = NULL;
+    EVP_PKEY *key = NULL;
+
+    if (!request||!request->body||!request->inner_signature||!request->body->public_key)
+        goto err;
+
+    key = EVP_PKEY_new();
+    if (!key||!CVC_pubkey2eckey(1, request->body->public_key, NULL, key))
+            goto err;
+
+    body_len = i2d_CVC_CERT_REQUEST_BODY(request->body, &body);
+    if (body_len <= 0)
+        goto err;
+    body_buf = BUF_MEM_create_init(body, (size_t) body_len);
+
+    /* Get signature from certificate and convert it to a X9.62 representation */
+    inner_signature = BUF_MEM_create_init(request->inner_signature->data, request->inner_signature->length);
+
+    r = EAC_verify(OBJ_obj2nid(request->body->public_key->oid),
+            key, inner_signature, body_buf);
+
+err:
+    if (body)
+        OPENSSL_free(body);
+    if (body_buf)
+        BUF_MEM_free(body_buf);
+    if (inner_signature)
+        BUF_MEM_free(inner_signature);
 
     return r;
 }

@@ -283,6 +283,7 @@ typedef struct cvc_cert_request_body_seq_st {
 } CVC_CERT_REQUEST_BODY_SEQ;
 /** @brief Short name for CVC_CERT_REQUEST_BODY_SEQ */
 typedef CVC_CERT_REQUEST_BODY_SEQ CVC_CERT_REQUEST_BODY;
+DECLARE_ASN1_FUNCTIONS(CVC_CERT_REQUEST_BODY)
 
 /**
  * @brief The actual certifcate request, consisting of the body and inner signature
@@ -596,6 +597,17 @@ CVC_get_expiration_date(const CVC_CERT *cert);
  */
 int
 CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key);
+
+/**
+ * @brief Verify the inner signature of a CV certificate request
+ *
+ * @param[in] request CV certificate request to verify
+ *
+ * @return 1 if the signature was verified, 0 if not and a negative value in
+ * case of an error.
+ */
+int
+CVC_verify_request_signature(const CVC_CERT_REQUEST *request);
 
 /**
  * @brief Check whether or not the certificate contains the correct hash of the

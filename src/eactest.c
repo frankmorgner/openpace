@@ -3780,6 +3780,8 @@ test_cv_cert_parsing(const struct cv_cert tc)
         request = d2i_CVC_CERT_REQUEST(NULL, &p, tc.cv_cert_request_len);
         CHECK(1, request,
                 "Parsed Certificate Request");
+        CHECK(1, 1 == CVC_verify_request_signature(request),
+                "certificate request verified");
     }
 
     failed = 0;
