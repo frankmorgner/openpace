@@ -37,6 +37,8 @@ extern "C" {
 #include <openssl/asn1t.h>
 #include <openssl/bio.h>
 
+struct eac_ctx;
+
 #ifndef ASN1_APP_IMP
 /** Application specific, IMPLICIT tagged ASN1 type */
 #define ASN1_APP_IMP(stname, field, type, tag) ASN1_EX_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, tag, stname, field, type)
@@ -608,6 +610,19 @@ CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key);
  */
 int
 CVC_verify_request_signature(const CVC_CERT_REQUEST *request);
+
+/**
+ * @brief Verify the inner and outer signature of a CV certificate request
+ *
+ * @param[in,out] ctx EAC context
+ * @param[in] authentication CV certificate request to verify
+ *
+ * @return 1 if the signatures were verified, 0 if not and a negative value in
+ * case of an error.
+ */
+int
+CVC_verify_authentication_request_signatures(struct eac_ctx *ctx,
+        const CVC_CERT_AUTHENTICATION_REQUEST *authentication);
 
 /**
  * @brief Check whether or not the certificate contains the correct hash of the

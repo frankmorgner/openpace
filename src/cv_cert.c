@@ -26,10 +26,11 @@
  */
 
 #include "eac_asn1.h"
+#include "eac_dh.h"
 #include "eac_err.h"
 #include "eac_util.h"
-#include "eac_dh.h"
 #include "misc.h"
+#include "ta_lib.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
 #include <openssl/asn1t.h>
@@ -735,6 +736,69 @@ err:
         BUF_MEM_free(body_buf);
     if (inner_signature)
         BUF_MEM_free(inner_signature);
+
+    return r;
+}
+
+int
+CVC_verify_authentication_request_signatures(EAC_CTX *ctx,
+        const CVC_CERT_AUTHENTICATION_REQUEST *authentication)
+{
+    int r = -1;
+    unsigned char *request = NULL;
+    int request_len;
+    BUF_MEM *outer_signature = NULL, *data = NULL;
+    const CVC_CERT *trust_anchor = NULL;
+
+    if (!ctx || !ctx->ta_ctx || !ctx->ta_ctx->lookup_cvca_cert || !authentication
+            || !authentication->request || !authentication->outer_signature
+            || !authentication->certificate_authority_reference)
+        goto err;
+
+    /* find the original certificate for verification of the outer signature */
+    trust_anchor = ctx->ta_ctx->lookup_cvca_cert(
+            authentication->certificate_authority_reference->data,
+            authentication->certificate_authority_reference->length);
+    if (!trust_anchor)
+            goto err;
+
+    /* import this certificate to set up ctx->ta_ctx->pub_key with the original
+     * certificate's public key */
+    r = TA_CTX_import_certificate(ctx->ta_ctx, trust_anchor, ctx->bn_ctx);
+    if (r != 1)
+        goto err;
+    r = -1;
+
+    /* Data to be signed: request || car */
+    request_len = i2d_CVC_CERT_REQUEST(authentication->request, &request);
+    if (request_len <= 0)
+        goto err;
+    data = BUF_MEM_create(
+            authentication->certificate_authority_reference->length
+            + (size_t) request_len);
+    memcpy(data->data, request, request_len);
+    memcpy(data->data + request_len,
+            authentication->certificate_authority_reference->data,
+            authentication->certificate_authority_reference->length);
+
+    outer_signature = BUF_MEM_create_init(
+            authentication->outer_signature->data,
+            authentication->outer_signature->length);
+
+    r = EAC_verify(ctx->ta_ctx->protocol, ctx->ta_ctx->pub_key,
+            outer_signature, data);
+    if (r != 1)
+        goto err;
+
+    r = CVC_verify_request_signature(authentication->request);
+
+err:
+    if (request)
+        OPENSSL_free(request);
+    if (data)
+        BUF_MEM_free(data);
+    if (outer_signature)
+        BUF_MEM_free(outer_signature);
 
     return r;
 }
