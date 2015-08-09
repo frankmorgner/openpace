@@ -51,8 +51,8 @@ OpenPACE implements Extended Access Control (EAC) version 2 as specified in
     authenticy.
 
 Furthermore, OpenPACE also supports Card Verifiable Certificates (CV
-Certificates) as well as easy to use wrappers for using the established secure
-channels.
+Certificates) and signing requests as well as easy to use wrappers for using
+the established secure channels.
 
 The handlers for looking up trust anchors during |TA| and |CA| (i.e. the |CVCA|
 and the |CSCA| certificates) can be customized. By default, the appropriate
