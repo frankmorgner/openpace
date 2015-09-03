@@ -44,15 +44,12 @@
 #include <openssl/crypto.h>
 #include <string.h>
 
-char *cvc_default_dir;
-char *x509_default_dir;
-
 void EAC_init(void)
 {
     OpenSSL_add_all_algorithms();
     EAC_add_all_objects();
-    x509_default_dir = X509DIR;
-    cvc_default_dir = CVCDIR;
+    EAC_set_x509_default_dir(X509DIR);
+    EAC_set_cvc_default_dir(CVCDIR);
 }
 
 void EAC_cleanup(void)

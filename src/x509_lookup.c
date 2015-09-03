@@ -30,6 +30,19 @@
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 
+#ifndef PATH_MAX
+#define PATH_MAX 1024 /* # chars in a path name including nul */
+#endif
+
+/** @brief Directory for \c EAC_get_default_csca_lookup() */
+static char x509_default_dir[PATH_MAX];
+
+void EAC_set_x509_default_dir(const char *default_dir)
+{
+    strncpy(x509_default_dir, default_dir, sizeof x509_default_dir);
+    x509_default_dir[(sizeof x509_default_dir) - 1] = '\0';
+}
+
 static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
 {
     static X509_STORE *store = NULL;

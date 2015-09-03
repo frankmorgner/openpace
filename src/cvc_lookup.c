@@ -31,6 +31,19 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 
+#ifndef PATH_MAX
+#define PATH_MAX 1024 /* # chars in a path name including nul */
+#endif
+
+/** @brief Directory for \c EAC_get_default_cvca_lookup() */
+static char cvc_default_dir[PATH_MAX];
+
+void EAC_set_cvc_default_dir(const char *default_dir)
+{
+    strncpy(cvc_default_dir, default_dir, sizeof cvc_default_dir);
+    cvc_default_dir[(sizeof cvc_default_dir) - 1] = '\0';
+}
+
 static int CVC_find_chr_in_file(const unsigned char *chr, size_t chr_len,
         const char *file, CVC_CERT **cv_certificate)
 {

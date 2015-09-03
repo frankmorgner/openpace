@@ -509,8 +509,13 @@ int EAC_CTX_set_cvca_lookup_cert(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_
  * @see `openssl x509 -in CERTIFICATE.cer -inform DER -hash -noout` to obtain the hash value.
  */
 CVC_lookup_cvca_cert EAC_get_default_cvca_lookup(void);
-/** @brief Directory for \c EAC_get_default_cvca_lookup() */
-extern char *cvc_default_dir;
+
+/**
+ * @brief Set directory for \c EAC_get_default_cvca_lookup()
+ *
+ * @param cvc_default_dir
+ */
+void EAC_set_cvc_default_dir(const char *default_dir);
 
 /**
  * @brief Get the CSCA lookup callback
@@ -539,8 +544,13 @@ int EAC_CTX_set_csca_lookup_cert(EAC_CTX *ctx, X509_lookup_csca_cert lookup_cvca
  * @return default lookup of the country verifying CA
  */
 X509_lookup_csca_cert EAC_get_default_csca_lookup(void);
-/** @brief Directory for \c EAC_get_default_csca_lookup() */
-extern char *x509_default_dir;
+
+/**
+ * @brief Set directory for \c EAC_get_default_csca_lookup()
+ *
+ * @param x509_default_dir
+ */
+void EAC_set_x509_default_dir(const char *default_dir);
 
 /** @} ***********************************************************************/
 
