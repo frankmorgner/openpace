@@ -33,12 +33,15 @@ before_script:
   - autoreconf -vis
   - if [ -z "$HOST" ]; then
       ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby --enable-go GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" ";
-    else
+    elif [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
       export CROSS_COMPILE=$HOST-;
       unset CC;
       unset CXX;
-      ./configure --enable-openssl-install --host=$HOST --enable-openssl-install;
+      ./configure --enable-openssl-install --host=$HOST;
       touch src/cvc-create.1 src/cvc-print.1;
+    else
+      unset HOST;
+      ./configure --enable-openssl-install;
     fi
 
 addons:
