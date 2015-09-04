@@ -27,7 +27,7 @@ with ``./configure --enable-...``
 
 If you have chosen to install OpenPACE in a non-standard location you have to
 set up the :envvar:`LD_LIBRARY_PATH` environment variable correctly. One way to
-do this is::
+do this on Linux is::
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/libeac
 

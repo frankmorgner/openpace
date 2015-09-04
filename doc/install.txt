@@ -36,7 +36,7 @@ auxiliary files::
     
     autoreconf --verbose --install
 
-To configure (:command:`configure --help` lists possible options), build and
+To configure (:command:`./configure --help` lists possible options), build and
 install OpenPACE now do the following::
 
     ./configure
@@ -44,7 +44,7 @@ install OpenPACE now do the following::
     make install
 
 OpenPACE depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
-Brainpool curves, the currently unreleased version 1.0.2 of OpenSSL is required.
+Brainpool curves, OpenSSL is required with version 1.0.2 or later.
 
 Furthermore, additional object identifiers from `BSI TR-03110`_ are required.
 You have two options to get them to work:
@@ -62,7 +62,7 @@ automatically download, patch, build and install OpenSSL if needed.
 
 The language bindings for Python, Java, ... are currently disabled by default.
 You need to explicitely configure OpenPACE to install them by using
-:option:`--enable-python`, :option:`--enable-java`, ... This requires Swig to
+:option:`--enable-python`, :option:`--enable-java`, ... This requires SWIG to
 be installed along with the language's toolchain to build the bindings.
 
 ===============================================================================
@@ -98,7 +98,7 @@ you need to setup your Windows as following:
 
 1. Check out the git repository to the directory :file:`openpace`
 
-2. Install `Swig`_ and modify the :envvar:`PATH` so that :command:`swig.exe` can be found.
+2. Install `SWIG`_ and modify the :envvar:`PATH` so that :command:`swig.exe` can be found.
 
 3. Install `Python` and set :envvar:`PYTHON_INCLUDE` and :envvar:`PYTHON_LIB` accordingly (e.g., to ``"C:\Python27\include"`` or ``"C:\Python27\python278.lib"`` respectively)
 
@@ -172,5 +172,5 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
 .. _`Emscripten`: https://github.com/kripken/emscripten
 .. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
 .. _`OpenSSL`: http://openssl.org
-.. _`Swig`: http://www.swig.org/download.html
+.. _`SWIG`: http://www.swig.org/download.html
 .. _`Visual Studio 2013`: http://msdn.microsoft.com/library/dd831853.aspx
