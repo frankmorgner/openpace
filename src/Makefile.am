@@ -126,7 +126,8 @@ $(OPENSSL_CONFIGURE):
 # Configure OpenSSL (and create $(OPENSSL_OBJ_MAC))
 $(OPENSSL_MAKEFILE): $(OPENSSL_CONFIGURE)
 	cd $(OPENSSL_DIR) \
-		&& CROSS_COMPILE="" MAKE=$(MAKE) CC=$(CC) AR=$(AR) RANLIB=$(RANLIB) $(OPENSSL_CONFIGURE) $(OPENSSL_CONFIGURE_FLAGS) >> /tmp/sslout 2>&1
+		&& CROSS_COMPILE="" MAKE=$(MAKE) CC=$(CC) AR=$(AR) RANLIB=$(RANLIB) $(OPENSSL_CONFIGURE) $(OPENSSL_CONFIGURE_FLAGS) >> /tmp/sslout 2>&1 \
+		|| cat /tmp/sslout
 
 # Patch OpenSSL with OpenPACE object identifiers
 .PHONY: patch_openssl
@@ -134,16 +135,17 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 	grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 $(OPENSSL_OBJ_MAC) > /dev/null \
 		|| (cd $(OPENSSL_DIR) \
 			&& cat $(abs_srcdir)/bsi_objects.txt >> crypto/objects/objects.txt \
-			&& $(MAKE) update depend -C $(OPENSSL_DIR) >> /tmp/sslout 2>&1)
+			&& $(MAKE) update depend -C $(OPENSSL_DIR) >> /tmp/sslout 2>&1 \
+			|| cat /tmp/sslout)
 
 # Build OpenSSL
 $(OPENSSL_LIBCRYPTO_A):
 	$(MAKE) patch_openssl
-	$(MAKE) -C $(OPENSSL_DIR) >> /tmp/sslout 2>&1
+	$(MAKE) -C $(OPENSSL_DIR) >> /tmp/sslout 2>&1 || cat /tmp/sslout
 
 # Install OpenSSL
 install-openssl: $(OPENSSL_LIBCRYPTO_A)
-	$(MAKE) -C $(OPENSSL_DIR) INSTALL_PREFIX=$(DESTDIR) install_sw >> /tmp/sslout 2>&1
+	$(MAKE) -C $(OPENSSL_DIR) INSTALL_PREFIX=$(DESTDIR) install_sw >> /tmp/sslout 2>&1 || cat /tmp/sslout
 
 
 # We require the patched headers of OpenSSL
