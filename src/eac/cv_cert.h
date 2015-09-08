@@ -242,6 +242,9 @@ typedef struct cvc_commcert_seq_st {
         ASN1_IA5STRING *htmlTerms;
         /** @brief PDF formatted Terms of Usage */
         ASN1_OCTET_STRING *pdfTerms;
+#else
+        /** @brief just a placeholder */
+        ASN1_OCTET_STRING *unused;
 #endif
         /** @brief Otherwise formatted Terms of Usage (not specified) */
         ASN1_TYPE *other;
