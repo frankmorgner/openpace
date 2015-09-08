@@ -11,9 +11,13 @@
 Welcome to OpenPACE's documentation!
 ###############################################################################
 
-.. image:: https://travis-ci.org/frankmorgner/openpace.png?branch=master
+.. image:: https://travis-ci.org/frankmorgner/openpace.svg?branch=master
   :target: https://travis-ci.org/frankmorgner/openpace
-  :alt: Build Status Image
+  :alt: Travis CI Build Status Image
+
+.. image:: https://ci.appveyor.com/api/projects/status/ehqcdn3tqgsd29db/branch/master?svg=true
+  :target: https://ci.appveyor.com/project/frankmorgner/openpace/branch/master
+  :alt: AppVeyor Build Status Image
 
 .. image:: https://scan.coverity.com/projects/1789/badge.svg
   :target: https://scan.coverity.com/projects/1789

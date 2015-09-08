@@ -1,6 +1,6 @@
 # OpenPACE *- Cryptographic library for EAC version 2*
 
-[![Build Status Image](https://travis-ci.org/frankmorgner/openpace.png?branch=master)](https://travis-ci.org/frankmorgner/openpace) [![Coverity Scan Build Status](https://scan.coverity.com/projects/1789/badge.svg)](https://scan.coverity.com/projects/1789)
+[![Travis CI Build Status Image](https://travis-ci.org/frankmorgner/openpace.svg?branch=master)](https://travis-ci.org/frankmorgner/openpace) [![AppVeyor Build Status Image](https://ci.appveyor.com/api/projects/status/ehqcdn3tqgsd29db/branch/master?svg=true)](https://ci.appveyor.com/project/frankmorgner/openpace/branch/master) [![Coverity Scan Build Status](https://scan.coverity.com/projects/1789/badge.svg)](https://scan.coverity.com/projects/1789)
 
 OpenPACE implements Extended Access Control (EAC) version 2 as specified in
 BSI TR-03110. OpenPACE comprises support for the following protocols:
