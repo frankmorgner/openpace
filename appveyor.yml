@@ -1,0 +1,69 @@
+platform:
+  - x86
+  - x64
+
+environment:
+  matrix:
+    - VSVER: 14
+    - VSVER: 12
+    - VSVER: 10
+
+install:
+  - date /T & time /T
+  - set PATH=C:\cygwin\bin;%PATH%
+  - set CYGWIN=nodosfilewarning
+  - ps: >-
+      If(!(Test-Path -Path "C:\cccl-1.0" )) {
+        git clone -q --depth=1 git://github.com/swig/cccl.git "C:\cccl-1.0"
+      }
+  - bash -c "cp C:/cccl-1.0/cccl /usr/bin"
+  - ps: >-
+      If ($env:Platform -Match "x86") {
+        $env:JAVA_HOME="C:/Program Files (x86)/Java/jdk1.8.0"
+        $env:VCVARS_PLATFORM="x86"
+        $env:LANG_PLATFORM=""
+        $env:OPENSSL="https://slproweb.com/download/Win32OpenSSL-1_0_2d.exe"
+      } Else {
+        $env:JAVA_HOME="C:/Program Files/Java/jdk1.8.0"
+        $env:VCVARS_PLATFORM="amd64"
+        $env:LANG_PLATFORM="-x64"
+        $env:OPENSSL="https://slproweb.com/download/Win64OpenSSL-1_0_2d.exe"
+      }
+  - ps: $env:VSCOMNTOOLS=(Get-Content ("env:VS" + "$env:VSVER" + "0COMNTOOLS"))
+  - echo "Using Visual Studio %VSVER%.0 at %VSCOMNTOOLS%"
+  - call "%VSCOMNTOOLS%\..\..\VC\vcvarsall.bat" %VCVARS_PLATFORM%
+  - ps: >-
+      If(!(Test-Path -Path "C:\OpenSSL" )) {
+        Start-FileDownload $env:OPENSSL -FileName C:\WinOpenSSL.exe
+        C:\WinOpenSSL.exe /SILENT /VERYSILENT /SP- /SUPPRESSMSGBOXES /NORESTART /DIR="C:\OpenSSL"
+      }
+  - ps: >-
+      If(!(Test-Path -Path "C:\gengetopt" )) {
+        git clone -q --depth=1 git://git.savannah.gnu.org/gengetopt.git "C:\gengetopt"
+        bash -c "exec 0</dev/null && cd C:/gengetopt && autoreconf -i >> /tmp/ggout 2>&1 && ./configure --prefix=/usr >> /tmp/ggout 2>&1 && make >> /tmp/ggout 2>&1"
+      }
+      #appveyor DownloadFile "https://prdownloads.sourceforge.net/swig/swigwin-2.0.12.zip"
+  - bash -c "exec 0</dev/null && make -C C:/gengetopt install"
+  - bash -c "which cl.exe"
+  - bash -c "cl.exe /? 2>&1 | head -n 2"
+  - bash -c "which csc.exe"
+  - bash -c "csc.exe /? | head -n 2"
+  - bash -c "which cccl"
+  - bash -c "cccl --version"
+  - make --version
+  - uname -a
+
+build_script:
+  - set CCCL_OPTIONS=--cccl-muffle /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN
+  - set CC=cccl
+  - set CXX=cccl
+  - set LD=cccl
+  - bash -c "autoreconf -i"
+  - bash -c "touch src/cvc-create.1 src/cvc-print.1"
+    # Open dummy file descriptor to fix error on cygwin: Bad file descriptor
+  - bash -c "exec 0</dev/null && ./configure GENGETOPT='/usr/bin/gengetopt --include-getopt' CRYPTO_LIBS='-LC:/OpenSSL/lib -llibeay32' CRYPTO_CFLAGS='-IC:/OpenSSL/include' LDFLAGS=-LC:/OpenSSL/bin || cat config.log"
+  - bash -c "exec 0</dev/null && make"
+
+cache:
+  - C:\OpenSSL
+  - C:\cccl-1.0
