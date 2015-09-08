@@ -1,5 +1,7 @@
 language: C
 
+sudo: true
+
 env:
   global:
     - ac_cv_func_malloc_0_nonnull=yes;
@@ -23,11 +25,16 @@ install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
       if [ -z "$HOST" ]; then
         sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/libgcc_s.so;
-        sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev;
+        sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev ccache;
+        export PATH=/usr/lib/ccache:${PATH};
+        ccache -s;
       else
         sudo apt-get -qq install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
       fi
     fi
+
+cache:
+  - ccache
 
 before_script:
   - autoreconf -vis
