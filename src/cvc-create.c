@@ -443,7 +443,8 @@ err:
 
 int to_bcd(char *ascii, unsigned char *out, size_t out_len)
 {
-    int ok = 0, i;
+    int ok = 0;
+    size_t i;
 
     if (out_len != strlen(ascii)) {
         err("invalid data given");

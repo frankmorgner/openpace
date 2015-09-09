@@ -826,7 +826,7 @@ int certificate_request_print(BIO *bio,
         goto err;
 
     if (!BIO_indent(bio, indent, 80)
-            || !BIO_printf(bio, "Profile identifier: %d\n", ASN1_INTEGER_get(request->body->certificate_profile_identifier))
+            || !BIO_printf(bio, "Profile identifier: %ld\n", ASN1_INTEGER_get(request->body->certificate_profile_identifier))
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CAR: %s\n", car)
             /*|| !CVC_PUBKEY_print_ctx(bio, request->body->public_key, indent, NULL)*/
@@ -867,7 +867,7 @@ err:
 int certificate_authentication_request_print(BIO *bio,
         const CVC_CERT_AUTHENTICATION_REQUEST *authentication, int indent)
 {
-    int r = 0, i;
+    int r = 0;
     char *car = NULL;
 
     if (!bio || !authentication)
