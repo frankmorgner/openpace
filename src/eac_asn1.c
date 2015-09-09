@@ -520,7 +520,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 goto err;
             }
 
-            pace_ctx->version = ASN1_INTEGER_get(tmp_info->version);
+            pace_ctx->version = (unsigned char) ASN1_INTEGER_get(tmp_info->version);
             if (pace_ctx->version <= 0 || pace_ctx->version > 2)
                 goto err;
 
@@ -551,7 +551,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
             check(d2i_TA_INFO(&tmp_ta_info, &in, info_len),
                     "Could not decode TA info");
 
-            ctx->ta_ctx->version = ASN1_INTEGER_get(tmp_ta_info->version);
+            ctx->ta_ctx->version = (unsigned char) ASN1_INTEGER_get(tmp_ta_info->version);
             if (ctx->ta_ctx->version <= 0 || ctx->ta_ctx->version > 2)
                 goto err;
             /* OID in TAInfo is less specific than the one in the certificate
@@ -576,7 +576,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 goto err;
             }
 
-            ca_ctx->version = ASN1_INTEGER_get(tmp_ca_info->version);
+            ca_ctx->version = (unsigned char) ASN1_INTEGER_get(tmp_ca_info->version);
             if (ca_ctx->version <= 0 || ca_ctx->version > 2
                     || !CA_CTX_set_protocol(ca_ctx, nid))
                 goto err;
