@@ -67,7 +67,11 @@ build_script:
   - bash -c "touch src/cvc-create.1 src/cvc-print.1"
     # Open dummy file descriptor to fix error on cygwin: Bad file descriptor
   - bash -c "exec 0</dev/null && ./configure GENGETOPT='/usr/bin/gengetopt --include-getopt' CRYPTO_LIBS='-LC:/OpenSSL/lib -llibeay32' CRYPTO_CFLAGS='-IC:/OpenSSL/include' --prefix=/ || cat config.log"
-  - bash -c "exec 0</dev/null && make install DESTDIR=/tmp/target"
+  - bash -c "exec 0</dev/null && make install DESTDIR=C:/OpenPACE"
+  - bash -c "cp -r C:/OpenSSL/bin/* C:/OpenPACE/bin"
+  - bash -c "cp -r C:/OpenSSL/lib/* C:/OpenPACE/lib"
+  - bash -c "cp -r C:/OpenSSL/include/* C:/OpenPACE/include"
+  - bash -c "C:/OpenPACE/bin/eactest.exe || true"
 
 cache:
   - C:\OpenSSL
