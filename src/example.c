@@ -8,38 +8,47 @@ const char PIN[] = "123456";
 
 int main(int argc, char *argv[])
 {
+    int r;
+    BIO *bio = NULL;
+    PACE_SEC *secret = NULL;
+    EAC_CTX *picc_ctx = NULL, *pcd_ctx = NULL;
+    BUF_MEM *enc_nonce = NULL, *pcd_mapping_data = NULL,
+            *picc_mapping_data = NULL, *pcd_ephemeral_pubkey = NULL,
+            *picc_ephemeral_pubkey = NULL, *pcd_token = NULL,
+            *picc_token = NULL;
+
     EAC_init();
 
     puts("EF.CardAccess:");
-    BIO *bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
+    bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
     BIO_dump_indent(bio, (char *) EF_CARDACCESS, sizeof EF_CARDACCESS, 4);
 
-    PACE_SEC *secret = PACE_SEC_new(PIN, strlen(PIN), PACE_PIN);
+    secret = PACE_SEC_new(PIN, strlen(PIN), PACE_PIN);
 
     puts("Secret:");
     PACE_SEC_print_private(bio, secret, 4);
 
-    EAC_CTX *picc_ctx = EAC_CTX_new();
-    EAC_CTX *pcd_ctx = EAC_CTX_new();
+    picc_ctx = EAC_CTX_new();
+    pcd_ctx = EAC_CTX_new();
     EAC_CTX_init_ef_cardaccess(EF_CARDACCESS, sizeof EF_CARDACCESS, pcd_ctx);
     EAC_CTX_init_ef_cardaccess(EF_CARDACCESS, sizeof EF_CARDACCESS, picc_ctx);
 
     puts("PACE step 1");
-    BUF_MEM *enc_nonce = PACE_STEP1_enc_nonce(picc_ctx, secret);
+    enc_nonce = PACE_STEP1_enc_nonce(picc_ctx, secret);
 
     puts("PACE step 2");
     PACE_STEP2_dec_nonce(pcd_ctx, secret, enc_nonce);
 
     puts("PACE step 3A");
-    BUF_MEM *pcd_mapping_data = PACE_STEP3A_generate_mapping_data(pcd_ctx);
-    BUF_MEM *picc_mapping_data = PACE_STEP3A_generate_mapping_data(picc_ctx);
+    pcd_mapping_data = PACE_STEP3A_generate_mapping_data(pcd_ctx);
+    picc_mapping_data = PACE_STEP3A_generate_mapping_data(picc_ctx);
 
     PACE_STEP3A_map_generator(pcd_ctx, picc_mapping_data);
     PACE_STEP3A_map_generator(picc_ctx, pcd_mapping_data);
 
     puts("PACE step 3B");
-    BUF_MEM *pcd_ephemeral_pubkey = PACE_STEP3B_generate_ephemeral_key(pcd_ctx);
-    BUF_MEM *picc_ephemeral_pubkey = PACE_STEP3B_generate_ephemeral_key(picc_ctx);
+    pcd_ephemeral_pubkey = PACE_STEP3B_generate_ephemeral_key(pcd_ctx);
+    picc_ephemeral_pubkey = PACE_STEP3B_generate_ephemeral_key(picc_ctx);
 
     PACE_STEP3B_compute_shared_secret(pcd_ctx, picc_ephemeral_pubkey);
     PACE_STEP3B_compute_shared_secret(picc_ctx, pcd_ephemeral_pubkey);
@@ -49,11 +58,12 @@ int main(int argc, char *argv[])
     PACE_STEP3C_derive_keys(picc_ctx);
 
     puts("PACE step 3D");
-    BUF_MEM *pcd_token = PACE_STEP3D_compute_authentication_token(pcd_ctx, picc_ephemeral_pubkey);
-    BUF_MEM *picc_token = PACE_STEP3D_compute_authentication_token(picc_ctx, pcd_ephemeral_pubkey);
+    pcd_token = PACE_STEP3D_compute_authentication_token(pcd_ctx, picc_ephemeral_pubkey);
+    picc_token = PACE_STEP3D_compute_authentication_token(picc_ctx, pcd_ephemeral_pubkey);
 
-    PACE_STEP3D_verify_authentication_token(pcd_ctx, picc_token);
-    int r = PACE_STEP3D_verify_authentication_token(picc_ctx, pcd_token);
+    r = PACE_STEP3D_verify_authentication_token(pcd_ctx, picc_token);
+    if (r == 1)
+        r = PACE_STEP3D_verify_authentication_token(picc_ctx, pcd_token);
 
     puts("PICC's EAC_CTX:");
     EAC_CTX_print_private(bio, picc_ctx, 4);
@@ -66,16 +76,28 @@ int main(int argc, char *argv[])
 
     EAC_cleanup();
 
-    BIO_free_all(bio);
-    BUF_MEM_free(enc_nonce);
-    BUF_MEM_free(pcd_mapping_data);
-    BUF_MEM_free(picc_mapping_data);
-    BUF_MEM_free(pcd_ephemeral_pubkey);
-    BUF_MEM_free(picc_ephemeral_pubkey);
-    BUF_MEM_free(pcd_token);
-    BUF_MEM_free(picc_token);
+    EAC_CTX_clear_free(pcd_ctx);
+    EAC_CTX_clear_free(picc_ctx);
+    PACE_SEC_clear_free(secret);
+    if (bio)
+        BIO_free_all(bio);
+    if (enc_nonce)
+        BUF_MEM_free(enc_nonce);
+    if (pcd_mapping_data)
+        BUF_MEM_free(pcd_mapping_data);
+    if (picc_mapping_data)
+        BUF_MEM_free(picc_mapping_data);
+    if (pcd_ephemeral_pubkey)
+        BUF_MEM_free(pcd_ephemeral_pubkey);
+    if (picc_ephemeral_pubkey)
+        BUF_MEM_free(picc_ephemeral_pubkey);
+    if (pcd_token)
+        BUF_MEM_free(pcd_token);
+    if (picc_token)
+        BUF_MEM_free(picc_token);
 
     if (r != 1)
         return 1;
+
     return 0;
 }

@@ -1122,9 +1122,9 @@ certificate_description_print(BIO *bio,
     nid = OBJ_obj2nid(desc->descriptionType);
     if (nid == NID_id_plainFormat) {
 #ifndef HAVE_PATCHED_OPENSSL
+            ASN1_UTF8STRING *s = NULL;
             if (desc->termsOfUsage.other->type != V_ASN1_SEQUENCE)
                 return 0;
-            ASN1_UTF8STRING *s = NULL;
             p = desc->termsOfUsage.other->value.sequence->data;
             if (!d2i_ASN1_UTF8STRING(&s, &p,
                         desc->termsOfUsage.other->value.sequence->length))

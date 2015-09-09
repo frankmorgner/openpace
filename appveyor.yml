@@ -6,10 +6,17 @@ environment:
   matrix:
     - VSVER: 14
     - VSVER: 12
+    - VSVER: 10
+
+matrix:
+  allow_failures:
+    # not included in AppVeyor right now
+    - platform: x64
+      VSVER: 10
 
 install:
   - date /T & time /T
-  - set PATH=C:\cygwin\bin;C:\cccl-1.0;%PATH%
+  - set PATH=C:\cygwin\bin;C:\cccl-1.0;C:\Program Files (x86)\Microsoft visual Studio 10.0\VC\bin\amd64\;%PATH%
   - set CYGWIN=nodosfilewarning
   - ps: >-
       If(!(Test-Path -Path "C:\cccl-1.0" )) {
@@ -59,8 +66,8 @@ build_script:
   - bash -c "autoreconf -i"
   - bash -c "touch src/cvc-create.1 src/cvc-print.1"
     # Open dummy file descriptor to fix error on cygwin: Bad file descriptor
-  - bash -c "exec 0</dev/null && ./configure GENGETOPT='/usr/bin/gengetopt --include-getopt' CRYPTO_LIBS='-LC:/OpenSSL/lib -llibeay32' CRYPTO_CFLAGS='-IC:/OpenSSL/include' LDFLAGS=-LC:/OpenSSL/bin || cat config.log"
-  - bash -c "exec 0</dev/null && make"
+  - bash -c "exec 0</dev/null && ./configure GENGETOPT='/usr/bin/gengetopt --include-getopt' CRYPTO_LIBS='-LC:/OpenSSL/lib -llibeay32' CRYPTO_CFLAGS='-IC:/OpenSSL/include' --prefix=/ || cat config.log"
+  - bash -c "exec 0</dev/null && make install DESTDIR=/tmp/target"
 
 cache:
   - C:\OpenSSL
