@@ -9,13 +9,12 @@ environment:
 
 install:
   - date /T & time /T
-  - set PATH=C:\cygwin\bin;%PATH%
+  - set PATH=C:\cygwin\bin;C:\cccl-1.0;%PATH%
   - set CYGWIN=nodosfilewarning
   - ps: >-
       If(!(Test-Path -Path "C:\cccl-1.0" )) {
         git clone -q --depth=1 git://github.com/swig/cccl.git "C:\cccl-1.0"
       }
-  - bash -c "cp C:/cccl-1.0/cccl /usr/bin"
   - ps: >-
       If ($env:Platform -Match "x86") {
         $env:JAVA_HOME="C:/Program Files (x86)/Java/jdk1.8.0"
