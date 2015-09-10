@@ -102,7 +102,7 @@ CROSS_COMPILE = $(TOOL)-
 cross: $(LIBEAC)
 
 $(LIBEAC):
-	cd $(top_builddir) && ./configure \
+	cd $(top_builddir) && unset CC && ./configure \
 		--prefix=/ \
 		--host=$(TOOL) --target=$(TOOL) \
 		--enable-openssl-install \

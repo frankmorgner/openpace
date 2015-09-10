@@ -13,8 +13,10 @@ matrix:
   include:
     - compiler: clang
     - compiler: gcc
-    - env: HOST=i686-w64-mingw32
-    - env: HOST=x86_64-w64-mingw32
+    - env: TARGET=win WIN_TOOL=i686-w64-mingw32
+    - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
+  exclude:
+    - env: COVERITY_SCAN_BRANCH=1 TARGET=win
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
@@ -24,15 +26,14 @@ before_install:
 install:
   - date
   - if [ $TRAVIS_OS_NAME == linux ]; then
-      if [ "${HOST}" == i686-w64-mingw32 ]; then
-        sudo apt-get -qq install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
-      elif [ "${HOST}" == x86_64-w64-mingw32 ]; then
-        sudo apt-get -qq install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64;
-      else
-        sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/libgcc_s.so;
-        sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev ccache;
-        export PATH=/usr/lib/ccache:${PATH};
-        ccache -s;
+      sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/libgcc_s.so;
+      sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev ccache;
+      export PATH=/usr/lib/ccache:${PATH};
+      ccache -s;
+      if   [ "${WIN_TOOL}" == i686-w64-mingw32 ]; then
+        sudo apt-get -qq install mingw-w64 mingw-w64-tools binutils-mingw-w64-i686 gcc-mingw-w64-i686;
+      elif [ "${WIN_TOOL}" == x86_64-w64-mingw32 ]; then
+        sudo apt-get -qq install mingw-w64 mingw-w64-tools binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64;
       fi
     fi
   - make --version
@@ -43,18 +44,7 @@ cache:
 
 before_script:
   - autoreconf -vis
-  - if [ -z "$HOST" ]; then
-      ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby --enable-go GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" ";
-    elif [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
-      export CROSS_COMPILE=$HOST-;
-      unset CC;
-      unset CXX;
-      ./configure --enable-openssl-install --host=$HOST;
-      touch src/cvc-create.1 src/cvc-print.1;
-    else
-      unset HOST;
-      ./configure --enable-openssl-install;
-    fi
+  - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby --enable-go GCCGOFLAGS="-static-libgcc" SWIGGOPARAMS=" ";
 
 addons:
   coverity_scan:
@@ -67,8 +57,9 @@ addons:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
-      make;
-    fi
-  - if [ -z "$HOST" -a "${COVERITY_SCAN_BRANCH}" != 1 ]; then
-      make check;
+      if [ -z "$TARGET" ]; then
+        make check;
+      else
+        make $TARGET;
+      fi
     fi

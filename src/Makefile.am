@@ -135,7 +135,7 @@ patch_openssl: $(OPENSSL_MAKEFILE)
 	grep NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 $(OPENSSL_OBJ_MAC) > /dev/null \
 		|| (cd $(OPENSSL_DIR) \
 			&& cat $(abs_srcdir)/bsi_objects.txt >> crypto/objects/objects.txt \
-			&& $(MAKE) update depend -C $(OPENSSL_DIR) >> /tmp/sslout 2>&1 \
+			&& $(MAKE) update -C $(OPENSSL_DIR) >> /tmp/sslout 2>&1 \
 			|| cat /tmp/sslout)
 
 # Build OpenSSL
