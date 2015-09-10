@@ -13,8 +13,8 @@ matrix:
   include:
     - compiler: clang
     - compiler: gcc
-    - compiler: gcc
-      env: HOST=i686-w64-mingw32
+    - env: HOST=i686-w64-mingw32
+    - env: HOST=x86_64-w64-mingw32
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
@@ -22,16 +22,21 @@ before_install:
     fi
 
 install:
+  - date
   - if [ $TRAVIS_OS_NAME == linux ]; then
-      if [ -z "$HOST" ]; then
+      if [ "${HOST}" == i686-w64-mingw32 ]; then
+        sudo apt-get -qq install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
+      elif [ "${HOST}" == x86_64-w64-mingw32 ]; then
+        sudo apt-get -qq install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64;
+      else
         sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/libgcc_s.so;
         sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev ccache;
         export PATH=/usr/lib/ccache:${PATH};
         ccache -s;
-      else
-        sudo apt-get -qq install xutils-dev gengetopt help2man mingw-w64 binutils-mingw-w64-i686 gcc-mingw-w64-i686;
       fi
     fi
+  - make --version
+  - uname -a
 
 cache:
   - ccache
