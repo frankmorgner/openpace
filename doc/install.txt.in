@@ -150,7 +150,7 @@ and then translated into Javascript. Use the following command::
 ============================= ================================== ==============================================================================
 Make Variable                 Default                            Meaning
 ============================= ================================== ==============================================================================
-``EMSCRIPTEN_DIR``            ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc` folder
+``EMSCRIPTEN_ROOT``           ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc` folder
 ============================= ================================== ==============================================================================
 
 On successfull compilation, the compiled bitcode files can be found in

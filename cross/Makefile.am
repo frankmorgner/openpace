@@ -41,20 +41,25 @@ osx:
 
 
 
-EMSCRIPTEN_DIR ?= ${HOME}/.local/src/emscripten
+EMSCRIPTEN ?= ${HOME}/.local/src/emscripten
 EMSCRIPTEN_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_bc
 
 emscripten:
+	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
 	cd $(top_builddir) && emconfigure ./configure \
 		--prefix=/ \
 		--enable-openssl-install \
 		CFLAGS="-O2 -Wno-warn-absolute-paths" \
-		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN_DIR)/system/include/libc -O2 -Wno-warn-absolute-paths"
+		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN)/system/include/libc -O2 -Wno-warn-absolute-paths"
 	emmake $(MAKE) -C $(top_builddir) install DESTDIR=$(EMSCRIPTEN_TARGETDIR)
 	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.html
 	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.js
-	emcc -O2 $(top_builddir)/src/cvcprint-cvcprint.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvcprint.html
-	emcc -O2 $(top_builddir)/src/cvcprint-cvcprint.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvcprint.js
+	emcc -O2 $(top_builddir)/src/example-example.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/example.html
+	emcc -O2 $(top_builddir)/src/example-example.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/example.js
+	emcc -O2 $(top_builddir)/src/cvc_print-cvc-print.o $(top_builddir)/src/cvc_print-read_file.o $(top_builddir)/src/cvc_print-cvc-print-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-print.html
+	emcc -O2 $(top_builddir)/src/cvc_print-cvc-print.o $(top_builddir)/src/cvc_print-read_file.o $(top_builddir)/src/cvc_print-cvc-print-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-print.js
+	emcc -O2 $(top_builddir)/src/cvc_create-cvc-create.o $(top_builddir)/src/cvc_create-read_file.o $(top_builddir)/src/cvc_create-cvc-create-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-create.html
+	emcc -O2 $(top_builddir)/src/cvc_create-cvc-create.o $(top_builddir)/src/cvc_create-read_file.o $(top_builddir)/src/cvc_create-cvc-create-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-create.js
 
 
 
@@ -102,6 +107,7 @@ CROSS_COMPILE = $(TOOL)-
 cross: $(LIBEAC)
 
 $(LIBEAC):
+	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
 	cd $(top_builddir) && unset CC && ./configure \
 		--prefix=/ \
 		--host=$(TOOL) --target=$(TOOL) \
@@ -109,6 +115,5 @@ $(LIBEAC):
 		$(ENABLE_PYTHON) \
 		CFLAGS="-I$(TOOL_DIR)/include -I$(TOOL_DIR)/include/python2.7" \
 		LDFLAGS="$${LDFLAGS} -L$(TOOL_DIR)/lib"
-	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
 	env CROSS_COMPILE=$(CROSS_COMPILE) \
 		$(MAKE) -C $(top_builddir) install DESTDIR=$(TARGETDIR)

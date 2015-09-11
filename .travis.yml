@@ -4,7 +4,9 @@ sudo: true
 
 env:
   global:
-    - ac_cv_func_malloc_0_nonnull=yes;
+    - ac_cv_func_malloc_0_nonnull=yes
+    - PATH=$PATH:/tmp/js
+    - EMSCRIPTEN_ROOT=$TRAVIS_BUILD_DIR/emscripten-sdk/emscripten/master
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "KOfJHBqx3I7GsY6OIiqBMN5iFkTpeGlj+WwXF/ZaGmG7bYtIx1641mH43ECoaxGH6I4Tkdf2VBX3xTSVaCeT8OO0K3Zr84MRqmfjfzTo1uGkwiZD3e/pahPVjOTb+IGPForskeooix6KgCJQfW6skh8EEy7EPnZTNXJw2XLujj4="
@@ -15,11 +17,13 @@ matrix:
     - compiler: gcc
     - env: TARGET=win WIN_TOOL=i686-w64-mingw32
     - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
+    - env: TARGET=emscripten
   exclude:
-    - env: COVERITY_SCAN_BRANCH=1 TARGET=win
+    - env: COVERITY_SCAN_BRANCH=1 TARGET!=""
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
+      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get -qq update;
     fi
 
@@ -28,19 +32,30 @@ install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
       sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/libgcc_s.so;
       sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev ccache;
-      export PATH=/usr/lib/ccache:${PATH};
       ccache -s;
       if   [ "${WIN_TOOL}" == i686-w64-mingw32 ]; then
         sudo apt-get -qq install mingw-w64 mingw-w64-tools binutils-mingw-w64-i686 gcc-mingw-w64-i686;
       elif [ "${WIN_TOOL}" == x86_64-w64-mingw32 ]; then
         sudo apt-get -qq install mingw-w64 mingw-w64-tools binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64;
+      elif [ "${TARGET}" == emscripten ]; then
+        sudo apt-get -qq install g++-4.9;
+        wget -P /tmp/j2me.js -N https://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/38.1.0esr-candidates/build1/jsshell-linux-x86_64.zip;
+        unzip -d /tmp/js /tmp/j2me.js/jsshell-linux-x86_64.zip;
+        export PATH=$PATH;
+        git clone --recursive https://github.com/marco-c/emscripten-sdk.git;
+        cd emscripten-sdk && ./emsdk activate latest && cd ..;
+        source emscripten-sdk/emsdk_env.sh;
       fi
     fi
   - make --version
   - uname -a
 
 cache:
+  - apt
   - ccache
+  - directories:
+    - emscripten-sdk
+    - src/openssl
 
 before_script:
   - autoreconf -vis
@@ -57,9 +72,12 @@ addons:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+      make $TARGET;
+    fi
+  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
       if [ -z "$TARGET" ]; then
         make check;
-      else
-        make $TARGET;
+      elif [ "${TARGET}" == emscripten ]; then
+        cd openpace-*_bc && js eactest.js && cd -;
       fi
     fi
