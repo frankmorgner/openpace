@@ -3,6 +3,13 @@ platform:
   - x64
 
 environment:
+  PATH: C:\cygwin\bin;C:\cccl;%PATH%
+  CYGWIN: nodosfilewarning
+  CCCL_OPTIONS: --cccl-muffle /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN
+  CC: cccl
+  CXX: cccl
+  LD: cccl
+
   matrix:
     - VSVER: 14
     - VSVER: 12
@@ -16,11 +23,9 @@ matrix:
 
 install:
   - date /T & time /T
-  - set PATH=C:\cygwin\bin;C:\cccl-1.0;%PATH%
-  - set CYGWIN=nodosfilewarning
   - ps: >-
-      If(!(Test-Path -Path "C:\cccl-1.0" )) {
-        git clone -q --depth=1 git://github.com/swig/cccl.git "C:\cccl-1.0"
+      If(!(Test-Path -Path "C:\cccl" )) {
+        git clone -q --depth=1 git://github.com/swig/cccl.git "C:\cccl"
       }
   - ps: >-
       If ($env:Platform -Match "x86") {
@@ -42,11 +47,10 @@ install:
       }
   - ps: >-
       If(!(Test-Path -Path "C:\gengetopt" )) {
-        git clone -q --depth=1 git://git.savannah.gnu.org/gengetopt.git "C:\gengetopt"
-        bash -c "exec 0</dev/null && cd C:/gengetopt && autoreconf -i >> /tmp/ggout 2>&1 && ./configure --prefix=/usr >> /tmp/ggout 2>&1 && make >> /tmp/ggout 2>&1"
+        git clone -q --depth=1 git://git.savannah.gnu.org/gengetopt.git
+        bash -c "exec 0</dev/null && unset CC CXX LD && cd gengetopt && autoreconf -i >> /tmp/ggout 2>&1 && ./configure --prefix=C:/gengetopt >> /tmp/ggout 2>&1 && make install >> /tmp/ggout 2>&1 || cat /tmp/ggout"
       }
-      #appveyor DownloadFile "https://prdownloads.sourceforge.net/swig/swigwin-2.0.12.zip"
-  - bash -c "exec 0</dev/null && make -C C:/gengetopt install"
+    #appveyor DownloadFile "https://prdownloads.sourceforge.net/swig/swigwin-2.0.12.zip"
   - bash -c "which cl.exe"
   - bash -c "cl.exe /? 2>&1 | head -n 2"
   - bash -c "which csc.exe"
@@ -57,22 +61,17 @@ install:
   - uname -a
 
 build_script:
-  - set CCCL_OPTIONS=--cccl-muffle /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN
-  - set CC=cccl
-  - set CXX=cccl
-  - set LD=cccl
   - bash -c "autoreconf -i"
   - bash -c "touch src/cvc-create.1 src/cvc-print.1"
     # Open dummy file descriptor to fix error on cygwin: Bad file descriptor
-  - bash -c "exec 0</dev/null && ./configure GENGETOPT='/usr/bin/gengetopt --include-getopt' CRYPTO_LIBS='-LC:/OpenSSL/lib -llibeay32' CRYPTO_CFLAGS='-IC:/OpenSSL/include' --prefix=/ || cat config.log"
+  - bash -c "exec 0</dev/null && ./configure GENGETOPT='C:/gengetopt/bin/gengetopt --include-getopt' CRYPTO_LIBS='-LC:/OpenSSL/lib -llibeay32' CRYPTO_CFLAGS='-IC:/OpenSSL/include' --prefix=/ || cat config.log"
   - bash -c "exec 0</dev/null && make install DESTDIR=C:/$ARTIFACT"
-  - bash -c "cp -r C:/OpenSSL/bin/* C:/$ARTIFACT/bin"
-  - bash -c "cp -r C:/OpenSSL/lib/* C:/$ARTIFACT/lib"
-  - bash -c "cp -r C:/OpenSSL/include/* C:/$ARTIFACT/include"
-  - bash -c "C:/$ARTIFACT/bin/eactest.exe || true"
+  - bash -c "cp -r C:/OpenSSL/* C:/$ARTIFACT"
+  #- cmd: cd C:\%ARTIFACT%\bin && eactest.exe
   - 7z a %ARTIFACT%.zip C:\%ARTIFACT%
   - appveyor PushArtifact %ARTIFACT%.zip
 
 cache:
   - C:\OpenSSL
-  - C:\cccl-1.0
+  - C:\cccl
+  - C:\gengetopt
