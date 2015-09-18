@@ -19,6 +19,8 @@ environment:
 
 matrix:
   allow_failures:
+    # currently broken, see https://github.com/appveyor/ci/issues/414
+    - VSVER: 14
     # not included in AppVeyor right now
     - platform: x64
       VSVER: 10
