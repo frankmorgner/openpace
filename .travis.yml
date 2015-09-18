@@ -30,9 +30,7 @@ before_install:
 install:
   - date
   - if [ $TRAVIS_OS_NAME == linux ]; then
-      sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/libgcc_s.so;
-      sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev ccache;
-      ccache -s;
+      sudo apt-get -qq install xutils-dev gengetopt help2man swig python-dev openjdk-7-jdk openjdk-7-jre-headless golang-go gccgo ruby-dev;
       if   [ "${WIN_TOOL}" == i686-w64-mingw32 ]; then
         sudo apt-get -qq install mingw-w64 mingw-w64-tools binutils-mingw-w64-i686 gcc-mingw-w64-i686;
       elif [ "${WIN_TOOL}" == x86_64-w64-mingw32 ]; then
@@ -51,9 +49,7 @@ install:
   - uname -a
 
 cache:
-  - apt
-  - ccache
-  - directories:
+  directories:
     - emscripten-sdk
     - src/openssl
 
@@ -81,3 +77,8 @@ script:
         cd openpace-*_bc && js eactest.js && cd -;
       fi
     fi
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
