@@ -1,7 +1,5 @@
 # OpenPACE *- Cryptographic library for EAC version 2*
 
-[![Travis CI Build Status Image](https://travis-ci.org/frankmorgner/openpace.svg?branch=master)](https://travis-ci.org/frankmorgner/openpace) [![AppVeyor Build Status Image](https://ci.appveyor.com/api/projects/status/ehqcdn3tqgsd29db/branch/master?svg=true)](https://ci.appveyor.com/project/frankmorgner/openpace/branch/master) [![Coverity Scan Build Status](https://scan.coverity.com/projects/1789/badge.svg)](https://scan.coverity.com/projects/1789)
-
 OpenPACE implements Extended Access Control (EAC) version 2 as specified in
 BSI TR-03110. OpenPACE comprises support for the following protocols:
 
@@ -33,6 +31,8 @@ for:
 - Javascript
 - Java
 - Go
+
+[![Travis CI Build Status Image](https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build)](https://travis-ci.org/frankmorgner/openpace) [![AppVeyor CI Build Status Image](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan Status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan)](https://scan.coverity.com/projects/1789)
 
 Please refer to [our project's website](http://frankmorgner.github.io/openpace/) for more information.
 

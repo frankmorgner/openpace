@@ -11,18 +11,6 @@
 Welcome to @PACKAGE_NAME@'s documentation!
 ###############################################################################
 
-.. image:: https://travis-ci.org/frankmorgner/openpace.svg?branch=master
-  :target: https://travis-ci.org/frankmorgner/openpace
-  :alt: Travis CI Build Status Image
-
-.. image:: https://ci.appveyor.com/api/projects/status/ehqcdn3tqgsd29db/branch/master?svg=true
-  :target: https://ci.appveyor.com/project/frankmorgner/openpace/branch/master
-  :alt: AppVeyor Build Status Image
-
-.. image:: https://scan.coverity.com/projects/1789/badge.svg
-  :target: https://scan.coverity.com/projects/1789
-  :alt: Coverity Scan Build Status
-
 .. sidebar:: Summary
 
     @PACKAGE_SUMMARY@
@@ -74,6 +62,18 @@ for:
 - Javascript
 - Java
 - Go
+
+.. image:: https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build
+    :target: https://travis-ci.org/frankmorgner/openpace
+    :alt: Travis CI Build Status Image
+
+.. image:: https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build
+    :target: https://ci.appveyor.com/project/frankmorgner/openpace
+    :alt: AppVeyor CI Build Status Image
+
+.. image:: https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan
+    :target: https://scan.coverity.com/projects/1789
+    :alt: Coverity Scan Status
 
 .. note::
     OpenPACE only implements the cryptographic protocols of the |EAC|. If you
