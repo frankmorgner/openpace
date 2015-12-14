@@ -34,12 +34,12 @@ install:
   - ps: >-
       If ($env:Platform -Match "x86") {
         $env:VCVARS_PLATFORM="x86"
-        $env:OPENSSL="https://slproweb.com/download/Win32OpenSSL-1_0_2d.exe"
+        $env:OPENSSL="https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe"
         $env:LANG_PLATFORM=""
         $env:ARTIFACT="${env:APPVEYOR_PROJECT_NAME}-${env:APPVEYOR_BUILD_VERSION}_win32-vs${env:VSVER}"
       } Else {
         $env:VCVARS_PLATFORM="amd64"
-        $env:OPENSSL="https://slproweb.com/download/Win64OpenSSL-1_0_2d.exe"
+        $env:OPENSSL="https://slproweb.com/download/Win64OpenSSL-1_0_2e.exe"
         $env:LANG_PLATFORM="-x64"
         $env:ARTIFACT="${env:APPVEYOR_PROJECT_NAME}-${env:APPVEYOR_BUILD_VERSION}_win64-vs${env:VSVER}"
       }
