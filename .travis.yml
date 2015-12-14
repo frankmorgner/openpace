@@ -37,7 +37,7 @@ install:
         sudo apt-get -qq install mingw-w64 mingw-w64-tools binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64;
       elif [ "${TARGET}" == emscripten ]; then
         sudo apt-get -qq install g++-4.9;
-        wget -P /tmp/j2me.js -N https://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/38.1.0esr-candidates/build1/jsshell-linux-x86_64.zip;
+        wget -P /tmp/j2me.js -N https://ftp.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip;
         unzip -d /tmp/js /tmp/j2me.js/jsshell-linux-x86_64.zip;
         export PATH=$PATH;
         git clone --recursive https://github.com/marco-c/emscripten-sdk.git;
