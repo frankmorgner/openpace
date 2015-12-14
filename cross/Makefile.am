@@ -88,7 +88,7 @@ MAKE_STANDALONE_TOOLCHAIN ?= $${HOME}/.local/opt/android-ndk-r9/build/tools/make
 android:
 	test -d $(ANDROID_TOOL_DIR) \
 		|| $(MAKE_STANDALONE_TOOLCHAIN) --install-dir=$(ANDROID_TOOL_DIR) --arch=$(ANDROID_ARCH)
-	env PATH=$(ANDROID_TOOL_DIR)/bin:$${PATH} $(MAKE) cross \
+	env ac_cv_func_malloc_0_nonnull=yes PATH=$(ANDROID_TOOL_DIR)/bin:$${PATH} $(MAKE) cross \
 		TOOL=$(ANDROID_TOOL) \
 		TOOL_DIR=$(ANDROID_TOOL_DIR) \
 		TARGETDIR=$(ANDROID_TARGETDIR) \
