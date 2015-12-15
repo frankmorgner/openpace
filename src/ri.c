@@ -21,7 +21,7 @@
  * @file ri.c
  * @brief Restricted Identification implementation
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  * @author Paul Wilhelm  <wilhelm@math.hu-berlin.de>
  */

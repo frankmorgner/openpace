@@ -22,7 +22,7 @@
  * @brief Library for card verifiable certificates
  *
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #include "eac_asn1.h"

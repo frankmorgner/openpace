@@ -21,7 +21,7 @@
  * @file cvc-create.c
  * @brief Create Card Verifiable Certificates and their Description
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #include "cvc-create-cmdline.h"

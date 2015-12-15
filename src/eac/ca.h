@@ -28,7 +28,7 @@
  * key agreement symmetric keys are derived from the shared secret.
  * OpenPACE implements CA version 2.
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 

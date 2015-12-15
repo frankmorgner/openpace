@@ -21,7 +21,7 @@
  * @file eac_asn1.h
  * @brief Interface to ASN.1 structures related to PACE
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 

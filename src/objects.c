@@ -21,7 +21,7 @@
  * @file
  * @brief Implementation for object identifiers
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #include <openssl/objects.h>

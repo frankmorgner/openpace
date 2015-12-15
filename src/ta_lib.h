@@ -20,7 +20,7 @@
 /**
  * @file ta_lib.h
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 

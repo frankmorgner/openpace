@@ -22,7 +22,7 @@
  * @brief Interface for Card Verifiable Certificates
  *
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #ifndef CVC_CERT_H_

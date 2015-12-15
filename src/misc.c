@@ -21,7 +21,7 @@
  * @file misc.c
  * @brief Miscellaneous functions used in OpenPACE
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 

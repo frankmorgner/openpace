@@ -22,7 +22,7 @@
  * @brief Print a Card Verifiable Certificate and its Description
  *
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #include "cvc-print-cmdline.h"

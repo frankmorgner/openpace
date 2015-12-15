@@ -22,7 +22,7 @@
  * @brief ASN.1 structures related to PACE
  *
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #include "ca_lib.h"

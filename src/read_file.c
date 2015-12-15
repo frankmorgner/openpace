@@ -20,7 +20,7 @@
 /**
  * @file read_file.c
  *
- * @author Frank Morgner <morgner@informatik.hu-berlin.de>
+ * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
 #include <errno.h>
