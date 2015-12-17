@@ -48,6 +48,7 @@ distclean-local:
 	rm -rf ext
 
 install-exec-local:
+	rm -f ext/.RUBYARCHDIR.time
 	(test -z "$(DESTDIR)" \
 		&& $(MAKE) install -C ext DESTDIR=$(prefix)) \
 		|| $(MAKE) install -C ext DESTDIR=$(DESTDIR)
