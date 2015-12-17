@@ -1,4 +1,4 @@
-EXTRA_DIST = bsi_objects.txt
+EXTRA_DIST = bsi_objects.txt cvc-print.ggo.in cvc-create.ggo.in
 
 do_subst = $(SED) \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g'
