@@ -1,9 +1,9 @@
-EXTRA_DIST = bsi_objects.txt cvc-print.ggo.in cvc-create.ggo.in
+BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h cvc-print-cmdline.c cvc-print-cmdline.h
+
+EXTRA_DIST = bsi_objects.txt cvc-print.ggo.in cvc-create.ggo.in cvc-create.ggo cvc-print.ggo $(BUILT_SOURCES)
 
 do_subst = $(SED) \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g'
-
-BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h cvc-print-cmdline.c cvc-print-cmdline.h
 
 dist_man1_MANS		= $(builddir)/cvc-create.1 $(builddir)/cvc-print.1
 
