@@ -66,16 +66,16 @@ example_CFLAGS       = $(EAC_CFLAGS)
 
 
 cvc-create-cmdline.c cvc-create-cmdline.h: cvc-create.ggo
-	$(GENGETOPT) --file-name=cvc-create-cmdline --output-dir=$(srcdir) < $<
+	$(GENGETOPT) --file-name=cvc-create-cmdline --output-dir=$(builddir) < $<
 
 cvc-print-cmdline.c cvc-print-cmdline.h: cvc-print.ggo
-	$(GENGETOPT) --file-name=cvc-print-cmdline --output-dir=$(srcdir) < $<
+	$(GENGETOPT) --file-name=cvc-print-cmdline --output-dir=$(builddir) < $<
 
 cvc-create.ggo: cvc-create.ggo.in
-	@$(do_subst) < $< > $(srcdir)/$@
+	@$(do_subst) < $< > $(builddir)/$@
 
 cvc-print.ggo: cvc-print.ggo.in
-	@$(do_subst) < $< > $(srcdir)/$@
+	@$(do_subst) < $< > $(builddir)/$@
 
 
 
