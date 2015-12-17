@@ -5,7 +5,7 @@ do_subst = $(SED) \
 
 BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h cvc-print-cmdline.c cvc-print-cmdline.h
 
-dist_man1_MANS		= $(abs_builddir)/cvc-create.1 $(abs_builddir)/cvc-print.1
+dist_man1_MANS		= $(builddir)/cvc-create.1 $(builddir)/cvc-print.1
 
 MAINTAINERCLEANFILES = $(BUILT_SOURCES) cvc-create.ggo cvc-print.ggo $(dist_man1_MANS)
 
