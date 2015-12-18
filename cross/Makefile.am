@@ -42,7 +42,7 @@ osx:
 
 
 EMSCRIPTEN ?= ${HOME}/.local/src/emscripten
-EMSCRIPTEN_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_bc
+EMSCRIPTEN_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_js
 
 emscripten:
 	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
@@ -92,7 +92,7 @@ android:
 		TOOL=$(ANDROID_TOOL) \
 		TOOL_DIR=$(ANDROID_TOOL_DIR) \
 		TARGETDIR=$(ANDROID_TARGETDIR) \
-		ENABLE_PYTHON=--enable-python \
+		ENABLE_PYTHON="--enable-java --enable-python" \
 		LIBEAC=$(ANDROID_TARGETDIR)/lib/libeac.so
 
 
