@@ -48,18 +48,17 @@ emscripten:
 	touch $(top_builddir)/src/cvc-create.1 $(top_builddir)/src/cvc-print.1
 	cd $(top_builddir) && emconfigure ./configure \
 		--prefix=/ \
-		--enable-openssl-install \
-		CFLAGS="-O2 -Wno-warn-absolute-paths" \
-		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN)/system/include/libc -O2 -Wno-warn-absolute-paths"
+		--enable-openssl-install --disable-shared \
+		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN)/system/include/libc -O2"
 	emmake $(MAKE) -C $(top_builddir) install DESTDIR=$(EMSCRIPTEN_TARGETDIR)
-	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.html
-	emcc -O2 $(top_builddir)/src/eactest-eactest.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/eactest.js
-	emcc -O2 $(top_builddir)/src/example-example.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/example.html
-	emcc -O2 $(top_builddir)/src/example-example.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/example.js
-	emcc -O2 $(top_builddir)/src/cvc_print-cvc-print.o $(top_builddir)/src/cvc_print-read_file.o $(top_builddir)/src/cvc_print-cvc-print-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-print.html
-	emcc -O2 $(top_builddir)/src/cvc_print-cvc-print.o $(top_builddir)/src/cvc_print-read_file.o $(top_builddir)/src/cvc_print-cvc-print-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-print.js
-	emcc -O2 $(top_builddir)/src/cvc_create-cvc-create.o $(top_builddir)/src/cvc_create-read_file.o $(top_builddir)/src/cvc_create-cvc-create-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-create.html
-	emcc -O2 $(top_builddir)/src/cvc_create-cvc-create.o $(top_builddir)/src/cvc_create-read_file.o $(top_builddir)/src/cvc_create-cvc-create-cmdline.o $(EMSCRIPTEN_TARGETDIR)/lib/libeac.a $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.a -o $(EMSCRIPTEN_TARGETDIR)/cvc-create.js
+	for i in $(EMSCRIPTEN_TARGETDIR)/lib/*.a	; do mv $$i $${i%.a}.bc	; done
+	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*		; do mv $$i $$i.bc		; done
+	mv $(EMSCRIPTEN_TARGETDIR)/bin/c_rehash.bc $(EMSCRIPTEN_TARGETDIR)/bin/c_rehash
+	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*.bc	; do \
+		emcc -O2 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.bc}.html; \
+		emcc -O2 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.bc}.js; \
+		mv $${i%.bc}.html	$(EMSCRIPTEN_TARGETDIR); \
+		mv $${i%.bc}.js		$(EMSCRIPTEN_TARGETDIR); done
 
 
 
