@@ -49,6 +49,9 @@ CLEANFILES = $(CLASSES_SWIG) $(CLASSES_JPACE) $(CLASSES_EXAMPLE) $(BUILT_SOURCES
 
 lib_LTLIBRARIES = libjeac.la
 
+openpace_javadir = $(pkgdatadir)/java
+openpace_java_DATA = Example.java $(CLASSES_EXAMPLE) $(CLASSES_JPACE) $(CLASSES_SWIG)
+
 libjeac_la_SOURCES = eac_wrap.c
 libjeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS) $(JAVA_CFLAGS)
 libjeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
