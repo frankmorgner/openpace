@@ -74,7 +74,7 @@ script:
       if [ -z "$TARGET" ]; then
         make check;
       elif [ "${TARGET}" == emscripten ]; then
-        cd openpace-*_bc && js eactest.js && cd -;
+        cd openpace-*_js/bin && js eactest.js && cd -;
       fi
     fi
 

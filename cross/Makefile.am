@@ -49,16 +49,15 @@ emscripten:
 	cd $(top_builddir) && emconfigure ./configure \
 		--prefix=/ \
 		--enable-openssl-install --disable-shared \
-		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN)/system/include/libc -O2"
+		CFLAGS=-O3 LDFLAGS=-O3 \
+		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN)/system/include/libc -O3"
 	emmake $(MAKE) -C $(top_builddir) install DESTDIR=$(EMSCRIPTEN_TARGETDIR)
 	for i in $(EMSCRIPTEN_TARGETDIR)/lib/*.a	; do mv $$i $${i%.a}.bc	; done
 	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*		; do mv $$i $$i.bc		; done
 	mv $(EMSCRIPTEN_TARGETDIR)/bin/c_rehash.bc $(EMSCRIPTEN_TARGETDIR)/bin/c_rehash
-	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*.bc	; do \
-		emcc -O2 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.bc}.html; \
-		emcc -O2 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.bc}.js; \
-		mv $${i%.bc}.html	$(EMSCRIPTEN_TARGETDIR); \
-		mv $${i%.bc}.js		$(EMSCRIPTEN_TARGETDIR); done
+	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*.bc $(EMSCRIPTEN_TARGETDIR)/lib/*.bc; do \
+		emcc -O3 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.bc}.js; done
+	emcc -O3 $(EMSCRIPTEN_TARGETDIR)/bin/eactest.bc $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $(EMSCRIPTEN_TARGETDIR)/eactest.html
 
 
 
