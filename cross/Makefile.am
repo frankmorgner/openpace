@@ -85,12 +85,14 @@ MAKE_STANDALONE_TOOLCHAIN ?= $${HOME}/.local/opt/android-ndk-r10e/build/tools/ma
 
 android:
 	test -d $(ANDROID_TOOL_DIR) \
-		|| $(MAKE_STANDALONE_TOOLCHAIN) --install-dir=$(ANDROID_TOOL_DIR) --arch=$(ANDROID_ARCH)
+		|| $(MAKE_STANDALONE_TOOLCHAIN) --install-dir=$(ANDROID_TOOL_DIR) --arch=$(ANDROID_ARCH) --platform=android-16
 	env ac_cv_func_malloc_0_nonnull=yes PATH=$(ANDROID_TOOL_DIR)/bin:$${PATH} $(MAKE) cross \
 		TOOL=$(ANDROID_TOOL) \
 		TOOL_DIR=$(ANDROID_TOOL_DIR) \
 		TARGETDIR=$(ANDROID_TARGETDIR) \
 		ENABLE_PYTHON=--enable-java \
+		CROSS_CFLAGS=-fPIE \
+		CROSS_LDFLAGS="-fPIE -pie" \
 		LIBEAC=$(ANDROID_TARGETDIR)/lib/libeac.so
 
 
@@ -111,7 +113,7 @@ $(LIBEAC):
 		--host=$(TOOL) --target=$(TOOL) \
 		--enable-openssl-install \
 		$(ENABLE_PYTHON) \
-		CFLAGS="-I$(TOOL_DIR)/include -I$(TOOL_DIR)/include/python2.7" \
-		LDFLAGS="$${LDFLAGS} -L$(TOOL_DIR)/lib"
+		CFLAGS="-I$(TOOL_DIR)/include -I$(TOOL_DIR)/include/python2.7 $(CROSS_CFLAGS)" \
+		LDFLAGS="$${LDFLAGS} -L$(TOOL_DIR)/lib $(CROSS_LDFLAGS)"
 	env CROSS_COMPILE=$(CROSS_COMPILE) \
 		$(MAKE) -C $(top_builddir) install DESTDIR=$(TARGETDIR)
