@@ -81,7 +81,7 @@ ANDROID_ARCH ?= arm
 ANDROID_TOOL ?= $(ANDROID_ARCH)-linux-androideabi
 ANDROID_TOOL_DIR ?= $(abs_builddir)/ndk
 ANDROID_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_$(ANDROID_ARCH)-androideabi
-MAKE_STANDALONE_TOOLCHAIN ?= $${HOME}/.local/opt/android-ndk-r9/build/tools/make-standalone-toolchain.sh
+MAKE_STANDALONE_TOOLCHAIN ?= $${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh
 
 android:
 	test -d $(ANDROID_TOOL_DIR) \
