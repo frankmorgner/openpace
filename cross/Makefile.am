@@ -90,7 +90,7 @@ android:
 		TOOL=$(ANDROID_TOOL) \
 		TOOL_DIR=$(ANDROID_TOOL_DIR) \
 		TARGETDIR=$(ANDROID_TARGETDIR) \
-		ENABLE_PYTHON="--enable-java --enable-python" \
+		ENABLE_PYTHON=--enable-java \
 		LIBEAC=$(ANDROID_TARGETDIR)/lib/libeac.so
 
 
