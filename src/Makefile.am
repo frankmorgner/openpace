@@ -91,7 +91,7 @@ ENV = env \
 
 endif
 
-$(abs_builddir)/cvc-create.1: cvc-create.ggo.in
+cvc-create.1: cvc-create.ggo.in
 	make -C $(builddir) cvc-create$(EXEEXT)
 	$(ENV) $(HELP2MAN) \
 		--output=$@ \
@@ -99,7 +99,7 @@ $(abs_builddir)/cvc-create.1: cvc-create.ggo.in
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-create$(EXEEXT)
 
-$(abs_builddir)/cvc-print.1: cvc-print.ggo.in
+cvc-print.1: cvc-print.ggo.in
 	make -C $(builddir) cvc-print$(EXEEXT)
 	$(ENV) $(HELP2MAN) \
 		--output=$@ \
