@@ -11,9 +11,10 @@
 Download @PACKAGE_NAME@
 *******************************************************************************
 
-You can find the latest release of @PACKAGE_NAME@ on `Github
-<https://github.com/frankmorgner/openpace/releases>`_. Older releases are still
-available on `Sourceforge <http://sourceforge.net/projects/openpace/files>`_.
+You can download the latest release of @PACKAGE_NAME@ on `Github
+<https://github.com/frankmorgner/openpace/releases/latest>`_. Older releases
+are still available on `Sourceforge
+<http://sourceforge.net/projects/openpace/files>`_.
 
 Alternatively, you can clone our git repository::
 
@@ -56,7 +57,7 @@ The first option allows you to install an unchanged version of OpenSSL to your
 system. However, performance will be slightly worse and there are some
 limitations. For example, you won't be able to use the new NIDs as labels in a
 switch statement and you need to make sure to call ``EAC_init()`` first.  For
-patching OpenSSL we provide :file:`oids.patch`. You can configure
+patching OpenSSL we provide :file:bsi_objects.txt``. You can configure
 @PACKAGE_NAME@ with :option:`--enable-openssl-install`, which will
 automatically download, patch, build and install OpenSSL if needed.
 
@@ -74,7 +75,7 @@ Android. Both are tested with Debian wheezy. First create a working
 :file:`Makefile`::
 
     test -x configure || autoreconf --verbose --install
-    ./configure
+    ./configure --enable-openssl-install
 
 Compiling for Windows
 -------------------------------------------------------------------------------
@@ -96,27 +97,50 @@ On successfull compilation, the Windows binaries can be found in
 With these binaries you may now compile the native Python bindings. For this
 you need to setup your Windows as following:
 
-1. Check out the git repository to the directory :file:`openpace`
+1. Check out the git repository to the directory :file:`C:\\openpace`
 
-2. Install `SWIG`_ and modify the :envvar:`PATH` so that :command:`swig.exe` can be found.
+2. Install `Visual Studio 2013`_ and open :menuselection:`Visual Studio Tools
+   --> Developer Command Prompt`
 
-3. Install `Python` and set :envvar:`PYTHON_INCLUDE` and :envvar:`PYTHON_LIB` accordingly (e.g., to ``"C:\Python27\include"`` or ``"C:\Python27\python278.lib"`` respectively)
+3. Install `SWIG`_ and modify the :envvar:`PATH` so that :command:`swig.exe`
+   can be found::
 
-4. Copy the cross compiled OpenPACE libraries from above to the OpenPACE root directory (i.e., to :file:`openpace\\openpace-0.9_win32`).
+    set PATH="C:\swig";%PATH%
 
-5. Install `Visual Studio 2013`_
+4. Install `Python`_ and set :envvar:`PYTHON_INCLUDE` and
+   :envvar:`PYTHON_LIBD`/:envvar:`PYTHON_LIB` accordingly::
 
-Start Visual Studio by opening :file:`openpace\\bindings\\win32\\eac.sln`. If
-you can successfully :guilabel:`Build the solution`, you can find the compiled
-binaries in :file:`openpace\\bindings\\win32\\Release`. It contains
-:file:`eac.py` and :file:`_eac.pyd`. Copy these two files to
-:file:`openpace\\openpace-0.9_win32\\bin` and you're done. Now for testing, you
-may try::
+    set PYTHON_INCLUDE="C:\Python27\include"
+    set PYTHON_LIBD="C:\Python27"
+    set PYTHON_LIB="python278.lib"
 
-    cd openpace\\openpace-0.9_win32\\bin
-    python.exe
-    >>> import eac
-    >>> eac.EAC_init()
+5. Copy the cross compiled OpenPACE libraries to Windows and set :envvar:`OPENPACE_ROOT`::
+   
+    set OPENPACE_ROOT="C:\openpace\openpace-1.0.0_win32
+
+6. Create OpenPACE's and OpenSSL's import libraries::
+
+    lib /def:"%OPENPACE_ROOT%\lib\libeac-1.def" /OUT:"%OPENPACE_ROOT%\lib\libeac.lib"
+    lib /def:"%OPENPACE_ROOT%\lib\libeay32.def" /OUT:"%OPENPACE_ROOT%\lib\libeay32.lib"
+
+6. Build the Python bindings::
+
+    cd "C:\openpace"
+    msbuild "bindings\win32\eac.sln"
+
+   If you can successfully build the solution, you can find the python in
+   :file:`%OPENPACE_ROOT%\\bindings\\win32\\Release`. Put them all together
+   with the cross compiled OpenPACE library::
+   
+    copy "C:\openpace\bindings\win32\Release\_eac.pyd" "%OPENPACE_ROOT%\bin"
+    copy "C:\openpace\bindings\win32\Release\eac.py"   "%OPENPACE_ROOT%\bin"
+    copy "C:\openpace\bindings\python\chat.py"         "%OPENPACE_ROOT%\bin"
+    copy "C:\openpace\bindings\python\pace_entity.py"  "%OPENPACE_ROOT%\bin"
+   
+   Now for testing, you may try::
+
+    cd "%OPENPACE_ROOT%\bin"
+    "%PYTHON_LIBD%\python.exe" "C:\openpace\bindings\python\example.py"
 
 Compiling for Android
 -------------------------------------------------------------------------------
@@ -125,16 +149,16 @@ Cross compilation for Android can be done with::
 
     make android
 
-============================= ============================================================================== =====================================================
-Make Variable                 Default                                                                        Meaning
-============================= ============================================================================== =====================================================
-``ANDROID_ARCH``              ``arm``                                                                        target Architecture
-``ANDROID_TOOL``              ``${ANDROID_ARCH}-linux-androideabi``                                          cross compiler
-``MAKE_STANDALONE_TOOLCHAIN`` ``${HOME}/.local/opt/android-ndk-r9/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
-============================= ============================================================================== =====================================================
+============================= ================================================================================ =====================================================
+Make Variable                 Default                                                                          Meaning
+============================= ================================================================================ =====================================================
+``ANDROID_ARCH``              ``arm``                                                                          target Architecture
+``ANDROID_TOOL``              ``${ANDROID_ARCH}-linux-androideabi``                                            cross compiler
+``MAKE_STANDALONE_TOOLCHAIN`` ``${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
+============================= ================================================================================ =====================================================
 
 On successfull compilation, the Android binaries can be found in
-:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_${ANDROID_ARCH}`.
+:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_${ANDROID_ARCH}-linux-androideabi`.
 
 .. _javascript_api:
 
@@ -154,12 +178,11 @@ Make Variable                 Default                            Meaning
 ============================= ================================== ==============================================================================
 
 On successfull compilation, the compiled bitcode files can be found in
-:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_bc`. You can run our testsuite
+:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_js`. You can run our testsuite
 completely in Javascript or `in your browser <_static/eactest.html>`_::
 
-    nodejs @PACKAGE_TARNAME@-@PACKAGE_VERSION@_bc/eactest.js
-    # WARNING: Our tests are very time consuming and might stall your browser for a moment or two...
-    firefox @PACKAGE_TARNAME@-@PACKAGE_VERSION@_bc/eactest.html
+    nodejs @PACKAGE_TARNAME@-@PACKAGE_VERSION@_js/bin/eactest.js
+    firefox @PACKAGE_TARNAME@-@PACKAGE_VERSION@_js/eactest.html
 
 .. warning::
     `Javascript cryptography is considered harmful`_. You may want to think
@@ -173,4 +196,5 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
 .. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
 .. _`OpenSSL`: http://openssl.org
 .. _`SWIG`: http://www.swig.org/download.html
+.. _`Python`: https://www.python.org/downloads/release/python-278/
 .. _`Visual Studio 2013`: http://msdn.microsoft.com/library/dd831853.aspx
