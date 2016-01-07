@@ -91,6 +91,7 @@ Make Variable    Default              Meaning
 ``WIN_TOOL_DIR`` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
 ================ ==================== ===========================================================================================
 
+gendef_ should be installed to generate the library definitions.
 On successfull compilation, the Windows binaries can be found in
 :file:`openpace-1.0.0_win32`.
 
@@ -197,4 +198,5 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
 .. _`OpenSSL`: http://openssl.org
 .. _`SWIG`: http://www.swig.org/download.html
 .. _`Python`: https://www.python.org/downloads/release/python-278/
+.. _`gendef`: http://sourceforge.net/p/mingw-w64/wiki2/gendef/
 .. _`Visual Studio 2013`: http://msdn.microsoft.com/library/dd831853.aspx
