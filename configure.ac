@@ -72,7 +72,7 @@ then
     fi
 else
     # make sure these files are the most recent
-    touch scr/cvc-create.ggo scr/cvc-print.ggo
+    touch src/cvc-create.ggo src/cvc-print.ggo
     touch src/cvc-create-cmdline.h src/cvc-print-cmdline.h 
     touch src/cvc-create-cmdline.c src/cvc-print-cmdline.c 
 fi
