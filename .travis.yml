@@ -20,6 +20,9 @@ matrix:
     - env: TARGET=emscripten
   exclude:
     - env: COVERITY_SCAN_BRANCH=1 TARGET!=""
+  allow_failures:
+    - env: TARGET=win WIN_TOOL=i686-w64-mingw32
+    - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then
