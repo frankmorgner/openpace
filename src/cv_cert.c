@@ -732,6 +732,8 @@ CVC_verify_request_signature(const CVC_CERT_REQUEST *request)
             key, inner_signature, body_buf);
 
 err:
+    if (key)
+        EVP_PKEY_free(key);
     if (body)
         OPENSSL_free(body);
     if (body_buf)
