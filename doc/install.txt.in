@@ -66,6 +66,20 @@ You need to explicitely configure @PACKAGE_NAME@ to install them by using
 :option:`--enable-python`, :option:`--enable-java`, ... This requires SWIG to
 be installed along with the language's toolchain to build the bindings.
 
+==========================================================
+Setting up a development or test environment using vagrant
+==========================================================
+
+The easiest way to setup a development or test environment is to use vagrant.
+OpenPACE comes with a Vagrantfile which let's you setup a working environment
+with just one command. All you need to do is type `vagrant up` in the OpenPACE
+directory. vagrant then sets up a Ubuntu based virtual machine, installs all
+dependencies and configures OpenPACE. You then need to `vagrant ssh` in order
+to access the VM. The `openpace` folder is shared between the host and the VM
+so any changes you make on the host are immidiately visible in the VM and vice
+versa.
+
+
 ===============================================================================
 Cross compiling @PACKAGE_NAME@
 ===============================================================================
