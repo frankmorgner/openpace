@@ -29,7 +29,7 @@ ifdef(
 
 dnl Check for windows build
 case "${host}" in
-    *-mingw*|*-winnt*)
+    *-mingw*|*-winnt*|*-msys*)
         WIN32="yes"
         DYN_LIB_EXT="dll"
         ;;
