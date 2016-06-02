@@ -3908,12 +3908,13 @@ main(int argc, char *argv[])
     }
 
     /* all possible characters as character string */
-    for (c = 0x20, j = 0; j < sizeof pace_raw; c++, j++) {
+    for (c = 0x20, j = 0; j < (sizeof pace_raw) - 1; c++, j++) {
         while (c <= 0x1f || (c >= 0x7f && c <= 0x9f)) {
             c++;
         }
         pace_raw[j] = c;
     }
+    pace_raw[(sizeof pace_raw) - 1] = '\0';
 
     EAC_init();
     failed += test_parsing();
