@@ -136,7 +136,8 @@ PACE_STEP3B_compute_shared_secret(const EAC_CTX * ctx, const BUF_MEM * in)
      * makes sense to always check this... */
     if (!ctx->pace_ctx->my_eph_pubkey
                || (in->length == ctx->pace_ctx->my_eph_pubkey->length
-                && memcmp(in->data, ctx->pace_ctx->my_eph_pubkey, in->length) == 0)) {
+                && memcmp(in->data, ctx->pace_ctx->my_eph_pubkey->data,
+                    in->length) == 0)) {
         log_err("Bad DH or ECKEY object");
         goto err;
     }
