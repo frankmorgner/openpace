@@ -70,15 +70,16 @@ be installed along with the language's toolchain to build the bindings.
 Setting up a development or test environment using vagrant
 ==========================================================
 
-The easiest way to setup a development or test environment is to use vagrant.
-OpenPACE comes with a Vagrantfile which let's you setup a working environment
-with just one command. All you need to do is type `vagrant up` in the OpenPACE
-directory. vagrant then sets up a Ubuntu based virtual machine, installs all
-dependencies and configures OpenPACE. You then need to `vagrant ssh` in order
-to access the VM. The `openpace` folder is shared between the host and the VM
-so any changes you make on the host are immidiately visible in the VM and vice
-versa.
-
+The easiest way to setup a development or test environment is to use `vagrant
+<https://www.vagrantup.com>`_. @PACKAGE_NAME@ comes with a Vagrantfile which
+let's you setup a working environment with just one command. All you need to do
+is type `vagrant up` in the @PACKAGE_NAME@ directory. vagrant then sets up a
+Ubuntu based virtual machine, installs all dependencies and configures
+@PACKAGE_NAME@. You then need to `vagrant ssh` in order to access the VM. The
+`openpace` folder is shared between the host and the VM so any changes you
+make on the host are immediately visible in the VM and vice versa. In order to
+use vagrant you need to install vagrant and virtualbox. Both are available via
+the repositories of most linux distributions.
 
 ===============================================================================
 Cross compiling @PACKAGE_NAME@
