@@ -822,6 +822,8 @@ int main(int argc, char *argv[])
         goto err;
     body_buf = BUF_MEM_create_init(body_p, (size_t) body_len);
     if (cmdline.sign_as_given) {
+        if (!sign_as_cert)
+            err("no valid certificate found");
         signature = EAC_sign(OBJ_obj2nid(sign_as_cert->body->public_key->oid),
                 signer_key, body_buf);
     } else {

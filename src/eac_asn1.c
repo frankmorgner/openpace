@@ -603,6 +603,9 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                     "Could not decode CA PK domain parameter info");
 
             /* lookup or create a ca context */
+            if (!tmp_ca_info) {
+                goto err;
+            }
             get_ctx_by_keyID(ca_ctx, ctx->ca_ctxs, tmp_ca_info->keyID, CA_CTX);
             if (!ca_ctx) {
                 goto err;
