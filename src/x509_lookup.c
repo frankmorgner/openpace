@@ -39,8 +39,10 @@ static char x509_default_dir[PATH_MAX];
 
 void EAC_set_x509_default_dir(const char *default_dir)
 {
-    strncpy(x509_default_dir, default_dir, sizeof x509_default_dir);
-    x509_default_dir[(sizeof x509_default_dir) - 1] = '\0';
+    if (default_dir) {
+        strncpy(x509_default_dir, default_dir, sizeof x509_default_dir);
+        x509_default_dir[(sizeof x509_default_dir) - 1] = '\0';
+    }
 }
 
 static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)

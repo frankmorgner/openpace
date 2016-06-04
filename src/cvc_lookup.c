@@ -40,8 +40,10 @@ static char cvc_default_dir[PATH_MAX];
 
 void EAC_set_cvc_default_dir(const char *default_dir)
 {
-    strncpy(cvc_default_dir, default_dir, sizeof cvc_default_dir);
-    cvc_default_dir[(sizeof cvc_default_dir) - 1] = '\0';
+    if (default_dir) {
+        strncpy(cvc_default_dir, default_dir, sizeof cvc_default_dir);
+        cvc_default_dir[(sizeof cvc_default_dir) - 1] = '\0';
+    }
 }
 
 static int CVC_find_chr_in_file(const unsigned char *chr, size_t chr_len,
