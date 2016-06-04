@@ -28,7 +28,7 @@ class PACEEntity {
     protected SWIGTYPE_p_BUF_MEM opp_eph_pub;
 
     public PACEEntity(String sec, s_type secret_type, byte[] ef_card_access) throws NullPointerException {
-        byte[] byte_sec = sec.getBytes();
+        byte[] byte_sec = sec.getBytes("ISO-8859-1");
 
         this.encoded_nonce = null;
 
