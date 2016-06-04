@@ -23,7 +23,6 @@ class PACEEntity {
     protected SWIGTYPE_p_PACE_SEC secret;
     protected SWIGTYPE_p_BUF_MEM encoded_nonce;
     protected SWIGTYPE_p_EAC_CTX eac_context;
-    protected SWIGTYPE_p_BUF_MEM static_key;
     protected SWIGTYPE_p_BUF_MEM opp_static_pub;
     protected SWIGTYPE_p_BUF_MEM ephemeral_key;
     protected SWIGTYPE_p_BUF_MEM opp_eph_pub;
@@ -44,16 +43,16 @@ class PACEEntity {
         if (eac.EAC_CTX_init_ef_cardaccess(ef_card_access, this.eac_context) == 0)
             throw new NullPointerException("Failed to initialize EAC context from EF.CardAccess");
 
-        this.static_key = null;
         this.opp_static_pub = null;
         this.ephemeral_key = null;
     }
 
     public SWIGTYPE_p_BUF_MEM generate_static_key() {
-        this.static_key = eac.PACE_STEP3A_generate_mapping_data(this.eac_context);
-        if (this.static_key == null)
+        SWIGTYPE_p_BUF_MEM static_key;
+        static_key = eac.PACE_STEP3A_generate_mapping_data(this.eac_context);
+        if (static_key == null)
             throw new NullPointerException("Failed to generate static key");
-        return this.static_key;
+        return static_key;
     }
 
     public void map_generator(SWIGTYPE_p_BUF_MEM opp_static_pub) {
