@@ -142,7 +142,7 @@ EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data)
 
 err:
     if (ssc_buf)
-        free(ssc_buf);
+        OPENSSL_free(ssc_buf);
     /* TR-03110 uses Encrypt then authenticate, so no need to wipe the memory
      * from the authenticated data */
     if (to_authenticate)

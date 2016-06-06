@@ -474,7 +474,7 @@ int update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc)
         case NID_des_ede_cbc:
             /* For 3DES encryption or decryption the IV is always NULL */
             if (ctx->iv)
-                free(ctx->iv);
+                OPENSSL_free(ctx->iv);
             ctx->iv = NULL;
             break;
 
@@ -487,7 +487,7 @@ int update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc)
 
 err:
     if (ssc_buf)
-        free(ssc_buf);
+        OPENSSL_free(ssc_buf);
     if (sscbuf)
         BUF_MEM_free(sscbuf);
     if (ivbuf)
@@ -1025,7 +1025,7 @@ convert_from_plain_sig(const BUF_MEM *plain_sig)
 
 err:
     if (p)
-        free(p);
+        OPENSSL_free(p);
     if (ecdsa_sig)
         ECDSA_SIG_free(ecdsa_sig);
 

@@ -867,9 +867,9 @@ err:
     }
     if (sign_as_cert)
         CVC_CERT_free(sign_as_cert);
-    free(cert_buf);
-    free(body_p);
-    free(term_key_buf);
+    OPENSSL_free(cert_buf);
+    OPENSSL_free(body_p);
+    OPENSSL_free(term_key_buf);
     if (body_buf)
         BUF_MEM_free(body_buf);
     if (signature)
@@ -888,7 +888,7 @@ err:
     }
     if (request)
         CVC_CERT_REQUEST_free(request);
-    free(desc_buf);
+    OPENSSL_free(desc_buf);
     if (desc_hash)
         BUF_MEM_free(desc_hash);
 

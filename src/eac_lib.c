@@ -382,7 +382,7 @@ KA_CTX_clear_free(KA_CTX *ctx)
             OPENSSL_cleanse(ctx->k_enc->data, ctx->k_enc->max);
             BUF_MEM_free(ctx->k_enc);
         }
-        free(ctx->iv);
+        OPENSSL_free(ctx->iv);
         OPENSSL_free(ctx);
     }
 }

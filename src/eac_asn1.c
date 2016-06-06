@@ -289,7 +289,7 @@ ecpkparameters2eckey(ASN1_TYPE *ec_params)
 err:
     if (group)
         EC_GROUP_free(group);
-    free(encoded);
+    OPENSSL_free(encoded);
     if (fail) {
         if (ec)
             EC_KEY_free(ec);
@@ -318,7 +318,7 @@ dhparams2dh(ASN1_TYPE *dh_params)
             "Could not decode DH parameters");
 
 err:
-    free(encoded);
+    OPENSSL_free(encoded);
     return dh;
 }
 
