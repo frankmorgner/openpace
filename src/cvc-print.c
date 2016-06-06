@@ -167,6 +167,7 @@ err:
     cmdline_parser_free (&cmdline);
     free(cvc_data);
     free(desc_data);
+    free(csr_data);
     EAC_cleanup();
 
     return fail;
