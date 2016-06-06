@@ -30,6 +30,7 @@
 #include <eac/ca.h>
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
+#include <eac/objects.h>
 #include <eac/pace.h>
 #include <eac/ri.h>
 #include <eac/ta.h>
@@ -42,7 +43,6 @@
 #include <openssl/ec.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/objects.h>
 #include <openssl/rand.h>
 #include <openssl/x509.h>
 #include <stdio.h>
@@ -1098,380 +1098,6 @@ static char tc_dh_dv_cert[] = {
     0x10, 0x92, 0xa1, 0x50, 0x05, 0x64, 0x29, 0xe0, 0x2d, 0x1a, 0x70, 0xdf, 0xc1, 0x1e, 0x77, 0xd0,  /* ...P.d).-.p...w. */
     0xfb, 0xba, 0x00, 0xcb, 0x70, 0x0a, 0x63, 0x20, 0x98, 0x05, 0x96, 0x8d, 0xbd, 0x17, 0xd3, 0x6e,  /* ....p.c .......n */
     0x75,                                                                                            /* u */
-};
-
-#ifdef HAVE_PATCHED_OPENSSL
-#define HACK_standardizedDomainParameters		NID_standardizedDomainParameters
-#define HACK_id_PK_DH		NID_id_PK_DH
-#define HACK_id_PK_ECDH		NID_id_PK_ECDH
-#define HACK_id_TA		NID_id_TA
-#define HACK_id_TA_RSA		NID_id_TA_RSA
-#define HACK_id_TA_RSA_v1_5_SHA_1		NID_id_TA_RSA_v1_5_SHA_1
-#define HACK_id_TA_RSA_v1_5_SHA_256		NID_id_TA_RSA_v1_5_SHA_256
-#define HACK_id_TA_RSA_PSS_SHA_1		NID_id_TA_RSA_PSS_SHA_1
-#define HACK_id_TA_RSA_PSS_SHA_256		NID_id_TA_RSA_PSS_SHA_256
-#define HACK_id_TA_RSA_v1_5_SHA_512		NID_id_TA_RSA_v1_5_SHA_512
-#define HACK_id_TA_RSA_PSS_SHA_512		NID_id_TA_RSA_PSS_SHA_512
-#define HACK_id_TA_ECDSA		NID_id_TA_ECDSA
-#define HACK_id_TA_ECDSA_SHA_1		NID_id_TA_ECDSA_SHA_1
-#define HACK_id_TA_ECDSA_SHA_224		NID_id_TA_ECDSA_SHA_224
-#define HACK_id_TA_ECDSA_SHA_256		NID_id_TA_ECDSA_SHA_256
-#define HACK_id_TA_ECDSA_SHA_384		NID_id_TA_ECDSA_SHA_384
-#define HACK_id_TA_ECDSA_SHA_512		NID_id_TA_ECDSA_SHA_512
-#define HACK_id_CA_DH		NID_id_CA_DH
-#define HACK_id_CA_DH_3DES_CBC_CBC		NID_id_CA_DH_3DES_CBC_CBC
-#define HACK_id_CA_DH_AES_CBC_CMAC_128		NID_id_CA_DH_AES_CBC_CMAC_128
-#define HACK_id_CA_DH_AES_CBC_CMAC_192		NID_id_CA_DH_AES_CBC_CMAC_192
-#define HACK_id_CA_DH_AES_CBC_CMAC_256		NID_id_CA_DH_AES_CBC_CMAC_256
-#define HACK_id_CA_ECDH		NID_id_CA_ECDH
-#define HACK_id_CA_ECDH_3DES_CBC_CBC		NID_id_CA_ECDH_3DES_CBC_CBC
-#define HACK_id_CA_ECDH_AES_CBC_CMAC_128		NID_id_CA_ECDH_AES_CBC_CMAC_128
-#define HACK_id_CA_ECDH_AES_CBC_CMAC_192		NID_id_CA_ECDH_AES_CBC_CMAC_192
-#define HACK_id_CA_ECDH_AES_CBC_CMAC_256		NID_id_CA_ECDH_AES_CBC_CMAC_256
-#define HACK_id_PACE_DH_GM		NID_id_PACE_DH_GM
-#define HACK_id_PACE_DH_GM_3DES_CBC_CBC		NID_id_PACE_DH_GM_3DES_CBC_CBC
-#define HACK_id_PACE_DH_GM_AES_CBC_CMAC_128		NID_id_PACE_DH_GM_AES_CBC_CMAC_128
-#define HACK_id_PACE_DH_GM_AES_CBC_CMAC_192		NID_id_PACE_DH_GM_AES_CBC_CMAC_192
-#define HACK_id_PACE_DH_GM_AES_CBC_CMAC_256		NID_id_PACE_DH_GM_AES_CBC_CMAC_256
-#define HACK_id_PACE_ECDH_GM		NID_id_PACE_ECDH_GM
-#define HACK_id_PACE_ECDH_GM_3DES_CBC_CBC		NID_id_PACE_ECDH_GM_3DES_CBC_CBC
-#define HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_128		NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128
-#define HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_192		NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192
-#define HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_256		NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256
-#define HACK_id_PACE_DH_IM		NID_id_PACE_DH_IM
-#define HACK_id_PACE_DH_IM_3DES_CBC_CBC		NID_id_PACE_DH_IM_3DES_CBC_CBC
-#define HACK_id_PACE_DH_IM_AES_CBC_CMAC_128		NID_id_PACE_DH_IM_AES_CBC_CMAC_128
-#define HACK_id_PACE_DH_IM_AES_CBC_CMAC_192		NID_id_PACE_DH_IM_AES_CBC_CMAC_192
-#define HACK_id_PACE_DH_IM_AES_CBC_CMAC_256		NID_id_PACE_DH_IM_AES_CBC_CMAC_256
-#define HACK_id_PACE_ECDH_IM		NID_id_PACE_ECDH_IM
-#define HACK_id_PACE_ECDH_IM_3DES_CBC_CBC		NID_id_PACE_ECDH_IM_3DES_CBC_CBC
-#define HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_128		NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128
-#define HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_192		NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192
-#define HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_256		NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256
-#define HACK_id_RI_DH		NID_id_RI_DH
-#define HACK_id_RI_DH_SHA_1		NID_id_RI_DH_SHA_1
-#define HACK_id_RI_DH_SHA_224		NID_id_RI_DH_SHA_224
-#define HACK_id_RI_DH_SHA_256		NID_id_RI_DH_SHA_256
-#define HACK_id_RI_DH_SHA_384		NID_id_RI_DH_SHA_384
-#define HACK_id_RI_DH_SHA_512		NID_id_RI_DH_SHA_512
-#define HACK_id_RI_ECDH		NID_id_RI_ECDH
-#define HACK_id_RI_ECDH_SHA_1		NID_id_RI_ECDH_SHA_1
-#define HACK_id_RI_ECDH_SHA_224		NID_id_RI_ECDH_SHA_224
-#define HACK_id_RI_ECDH_SHA_256		NID_id_RI_ECDH_SHA_256
-#define HACK_id_RI_ECDH_SHA_384		NID_id_RI_ECDH_SHA_384
-#define HACK_id_RI_ECDH_SHA_512		NID_id_RI_ECDH_SHA_512
-#define HACK_id_CI		NID_id_CI
-#define HACK_id_eIDSecurity		NID_id_eIDSecurity
-#define HACK_id_PT		NID_id_PT
-#define HACK_cardInfoLocator		NID_cardInfoLocator
-#define HACK_eID		NID_eID
-#define HACK_ecka_dh_SessionKDF		NID_ecka_dh_SessionKDF
-#define HACK_ecka_dh_SessionKDF_DES3		NID_ecka_dh_SessionKDF_DES3
-#define HACK_ecka_dh_SessionKDF_AES128		NID_ecka_dh_SessionKDF_AES128
-#define HACK_ecka_dh_SessionKDF_AES192		NID_ecka_dh_SessionKDF_AES192
-#define HACK_ecka_dh_SessionKDF_AES256		NID_ecka_dh_SessionKDF_AES256
-#define HACK_id_IS		NID_id_IS
-#define HACK_id_AT		NID_id_AT
-#define HACK_id_ST		NID_id_ST
-#define HACK_id_description		NID_id_description
-#define HACK_id_plainFormat		NID_id_plainFormat
-#define HACK_id_htmlFormat		NID_id_htmlFormat
-#define HACK_id_pdfFormat		NID_id_pdfFormat
-#define HACK_id_sector		NID_id_sector
-#define HACK_id_SecurityObject		NID_id_SecurityObject
-#define HACK_id_DateOfBirth		NID_id_DateOfBirth
-#define HACK_id_DateOfExpiry		NID_id_DateOfExpiry
-#define HACK_id_CommunityID		NID_id_CommunityID
-
-#else
-/*
- * Applications should not rely on the identifiers listed below. In our test
- * cases they will work fine though.
- *
- * The identifiers might change in the future, if the OpenSSL maintainers
- * decide to add some OIDs. Also they might break if the OIDs (or their order)
- * in EAC_add_all_objects change...
- */
-#define HACK_standardizedDomainParameters		935
-#define HACK_id_PK_DH		936
-#define HACK_id_PK_ECDH		937
-#define HACK_id_TA		938
-#define HACK_id_TA_RSA		939
-#define HACK_id_TA_RSA_v1_5_SHA_1		940
-#define HACK_id_TA_RSA_v1_5_SHA_256		941
-#define HACK_id_TA_RSA_PSS_SHA_1		942
-#define HACK_id_TA_RSA_PSS_SHA_256		943
-#define HACK_id_TA_RSA_v1_5_SHA_512		944
-#define HACK_id_TA_RSA_PSS_SHA_512		945
-#define HACK_id_TA_ECDSA		946
-#define HACK_id_TA_ECDSA_SHA_1		947
-#define HACK_id_TA_ECDSA_SHA_224		948
-#define HACK_id_TA_ECDSA_SHA_256		949
-#define HACK_id_TA_ECDSA_SHA_384		950
-#define HACK_id_TA_ECDSA_SHA_512		951
-#define HACK_id_CA_DH		952
-#define HACK_id_CA_DH_3DES_CBC_CBC		953
-#define HACK_id_CA_DH_AES_CBC_CMAC_128		954
-#define HACK_id_CA_DH_AES_CBC_CMAC_192		955
-#define HACK_id_CA_DH_AES_CBC_CMAC_256		956
-#define HACK_id_CA_ECDH		957
-#define HACK_id_CA_ECDH_3DES_CBC_CBC		958
-#define HACK_id_CA_ECDH_AES_CBC_CMAC_128		959
-#define HACK_id_CA_ECDH_AES_CBC_CMAC_192		960
-#define HACK_id_CA_ECDH_AES_CBC_CMAC_256		961
-#define HACK_id_PACE_DH_GM		962
-#define HACK_id_PACE_DH_GM_3DES_CBC_CBC		963
-#define HACK_id_PACE_DH_GM_AES_CBC_CMAC_128		964
-#define HACK_id_PACE_DH_GM_AES_CBC_CMAC_192		965
-#define HACK_id_PACE_DH_GM_AES_CBC_CMAC_256		966
-#define HACK_id_PACE_ECDH_GM		967
-#define HACK_id_PACE_ECDH_GM_3DES_CBC_CBC		968
-#define HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_128		969
-#define HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_192		970
-#define HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_256		971
-#define HACK_id_PACE_DH_IM		972
-#define HACK_id_PACE_DH_IM_3DES_CBC_CBC		973
-#define HACK_id_PACE_DH_IM_AES_CBC_CMAC_128		974
-#define HACK_id_PACE_DH_IM_AES_CBC_CMAC_192		975
-#define HACK_id_PACE_DH_IM_AES_CBC_CMAC_256		976
-#define HACK_id_PACE_ECDH_IM		977
-#define HACK_id_PACE_ECDH_IM_3DES_CBC_CBC		978
-#define HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_128		979
-#define HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_192		980
-#define HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_256		981
-#define HACK_id_RI_DH		982
-#define HACK_id_RI_DH_SHA_1		983
-#define HACK_id_RI_DH_SHA_224		984
-#define HACK_id_RI_DH_SHA_256		985
-#define HACK_id_RI_DH_SHA_384		986
-#define HACK_id_RI_DH_SHA_512		987
-#define HACK_id_RI_ECDH		988
-#define HACK_id_RI_ECDH_SHA_1		989
-#define HACK_id_RI_ECDH_SHA_224		990
-#define HACK_id_RI_ECDH_SHA_256		991
-#define HACK_id_RI_ECDH_SHA_384		992
-#define HACK_id_RI_ECDH_SHA_512		993
-#define HACK_id_CI		994
-#define HACK_id_eIDSecurity		995
-#define HACK_id_PT		996
-#define HACK_cardInfoLocator		997
-#define HACK_eID		998
-#define HACK_ecka_dh_SessionKDF		999
-#define HACK_ecka_dh_SessionKDF_DES3		1000
-#define HACK_ecka_dh_SessionKDF_AES128		1001
-#define HACK_ecka_dh_SessionKDF_AES192		1002
-#define HACK_ecka_dh_SessionKDF_AES256		1003
-#define HACK_id_IS		1004
-#define HACK_id_AT		1005
-#define HACK_id_ST		1006
-#define HACK_id_description		1007
-#define HACK_id_plainFormat		1008
-#define HACK_id_htmlFormat		1009
-#define HACK_id_pdfFormat		1010
-#define HACK_id_sector		1011
-#define HACK_id_SecurityObject		1012
-#define HACK_id_DateOfBirth		1013
-#define HACK_id_DateOfExpiry		1014
-#define HACK_id_CommunityID		1015
-#endif
-
-static struct eac_worked_example eac_examples[] = {
-    {   /* EAC worked example - ECDH */
-        /* ef_cardaccess */
-        { sizeof tc_ecdh_ef_cardaccess, tc_ecdh_ef_cardaccess, sizeof tc_ecdh_ef_cardaccess, },
-        /* ef_cardsecurity */
-        { sizeof tc_ecdh_ef_cardsecurity, tc_ecdh_ef_cardsecurity, sizeof tc_ecdh_ef_cardsecurity, },
-        /* pace_info_oid */
-        HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_128,
-        /* pace_version */
-        2,
-        /* pace_curve */
-        0x0D,
-        /* password */
-        "123456",
-        /* password_type */
-        PACE_PIN,
-        /* pace_nonce */
-        { sizeof tc_ecdh_nonce, tc_ecdh_nonce, sizeof tc_ecdh_nonce, },
-        /* pace_enc_nonce */
-        { sizeof tc_ecdh_nonce_enc, tc_ecdh_nonce_enc, sizeof tc_ecdh_nonce_enc, },
-        /* pace_static_pcd_priv_key */
-        { sizeof tc_ecdh_map_pcd_priv_key, tc_ecdh_map_pcd_priv_key, sizeof tc_ecdh_map_pcd_priv_key, },
-        /* pace_static_pcd_pub_key */
-        { sizeof tc_ecdh_map_pcd_pub_key, tc_ecdh_map_pcd_pub_key, sizeof tc_ecdh_map_pcd_pub_key, },
-        /* pace_static_picc_priv_key */
-        { sizeof tc_ecdh_map_picc_priv_key, tc_ecdh_map_picc_priv_key, sizeof tc_ecdh_map_picc_priv_key, },
-        /* pace_static_picc_pub_key */
-        { sizeof tc_ecdh_map_picc_pub_key, tc_ecdh_map_picc_pub_key, sizeof tc_ecdh_map_picc_pub_key, },
-        /* pace_shared_secret_h */
-        { sizeof tc_ecdh_map_shared_secret_h, tc_ecdh_map_shared_secret_h, sizeof tc_ecdh_map_shared_secret_h, },
-        /* pace_eph_generator */
-        { sizeof tc_ecdh_map_generator, tc_ecdh_map_generator, sizeof tc_ecdh_map_generator, },
-        /* pace_eph_pcd_priv_key */
-        { sizeof tc_ecdh_pcd_priv_key, tc_ecdh_pcd_priv_key, sizeof tc_ecdh_pcd_priv_key, },
-        /* pace_eph_pcd_pub_key */
-        { sizeof tc_ecdh_pcd_pub_key, tc_ecdh_pcd_pub_key, sizeof tc_ecdh_pcd_pub_key, },
-        /* pace_eph_picc_priv_key */
-        { sizeof tc_ecdh_picc_priv_key, tc_ecdh_picc_priv_key, sizeof tc_ecdh_picc_priv_key, },
-        /* pace_eph_picc_pub_key */
-        { sizeof tc_ecdh_picc_pub_key, tc_ecdh_picc_pub_key, sizeof tc_ecdh_picc_pub_key, },
-        /* pace_shared_secret_k */
-        { sizeof tc_ecdh_shared_secret_k, tc_ecdh_shared_secret_k, sizeof tc_ecdh_shared_secret_k, },
-        /* pace_k_mac */
-        { sizeof tc_ecdh_k_mac, tc_ecdh_k_mac, sizeof tc_ecdh_k_mac, },
-        /* pace_k_enc */
-        { sizeof tc_ecdh_k_enc, tc_ecdh_k_enc, sizeof tc_ecdh_k_enc, },
-        /* pace_authentication_token_picc */
-        { sizeof tc_ecdh_authentication_token_picc, tc_ecdh_authentication_token_picc, sizeof tc_ecdh_authentication_token_picc, },
-        /* pace_authentication_token_pcd */
-        { sizeof tc_ecdh_authentication_token_pcd, tc_ecdh_authentication_token_pcd, sizeof tc_ecdh_authentication_token_pcd, },
-        /* pace_encrypt_decrypt */
-        tc_ecdh_enc_dec,
-        /* pace_encrypt_decrypt_len */
-        (sizeof tc_ecdh_enc_dec)/sizeof *tc_ecdh_enc_dec,
-        /* pace_authenticate */
-        tc_ecdh_pace_authenticate,
-        /* pace_authenticate_len */
-        (sizeof tc_ecdh_pace_authenticate)/sizeof *tc_ecdh_pace_authenticate,
-        /* ca_curve */
-        0x0D,
-        /* ca_version */
-        2,
-        /* ca_info_oid */
-        HACK_id_CA_ECDH_AES_CBC_CMAC_128,
-        /* ca_picc_priv_key */
-        { sizeof tc_ecdh_ca_picc_priv_key, tc_ecdh_ca_picc_priv_key, sizeof tc_ecdh_ca_picc_priv_key, },
-        /* ca_picc_pub_key */
-        { sizeof tc_ecdh_ca_picc_pub_key, tc_ecdh_ca_picc_pub_key, sizeof tc_ecdh_ca_picc_pub_key, },
-        /* ca_pcd_priv_key */
-        { sizeof tc_ecdh_ca_pcd_priv_key, tc_ecdh_ca_pcd_priv_key, sizeof tc_ecdh_ca_pcd_priv_key, },
-        /* ca_pcd_pub_key */
-        { sizeof tc_ecdh_ca_pcd_pub_key, tc_ecdh_ca_pcd_pub_key, sizeof tc_ecdh_ca_pcd_pub_key, },
-        /* ca_nonce */
-        { sizeof tc_ecdh_ca_nonce, tc_ecdh_ca_nonce, sizeof tc_ecdh_ca_nonce, },
-        /* ca_picc_token */
-        { sizeof tc_ecdh_ca_picc_token, tc_ecdh_ca_picc_token, sizeof tc_ecdh_ca_picc_token, },
-        /* ca_shared_secret_k */
-        { sizeof tc_ecdh_ca_shared_secret_k, tc_ecdh_ca_shared_secret_k, sizeof tc_ecdh_ca_shared_secret_k, },
-        /* ca_k_mac */
-        { sizeof tc_ecdh_ca_k_mac, tc_ecdh_ca_k_mac, sizeof tc_ecdh_ca_k_mac, },
-        /* ca_k_enc */
-        { sizeof tc_ecdh_ca_k_enc, tc_ecdh_ca_k_enc, sizeof tc_ecdh_ca_k_enc, },
-        /* ta_curve */
-        13,
-        /* ta_pcd_key */
-        { sizeof tc_ecdh_ta_pcd_key, tc_ecdh_ta_pcd_key, sizeof tc_ecdh_ta_pcd_key, },
-        /* ta_nonce */
-        { sizeof tc_ecdh_ta_nonce, tc_ecdh_ta_nonce, sizeof tc_ecdh_ta_nonce, },
-        /* ta_auxdata */
-        { 0, NULL, 0, },
-        /* ta_pcd_signature */
-        { sizeof tc_ecdh_ta_pcd_signature, tc_ecdh_ta_pcd_signature, sizeof tc_ecdh_ta_pcd_signature, },
-        /* ta_cert */
-        { sizeof tc_ecdh_ta_cert, tc_ecdh_ta_cert, sizeof tc_ecdh_ta_cert, },
-        /* ta_cvca */
-        { sizeof tc_ecdh_cvca_cert, tc_ecdh_cvca_cert, sizeof tc_ecdh_cvca_cert, },
-        /* ta_dv_cert */
-        { sizeof tc_ecdh_dv_cert, tc_ecdh_dv_cert, sizeof tc_ecdh_dv_cert, },
-    },
-    {   /* EAC worked example - DH */
-        /* ef_cardaccess */
-        { sizeof tc_dh_ef_cardaccess, tc_dh_ef_cardaccess, sizeof tc_dh_ef_cardaccess, },
-        /* ef_cardsecurity */
-        { sizeof tc_dh_ef_cardsecurity, tc_dh_ef_cardsecurity, sizeof tc_dh_ef_cardsecurity, },
-        /* pace_info_oid */
-        HACK_id_PACE_DH_GM_AES_CBC_CMAC_128,
-        /* pace_version */
-        2,
-        /* pace_curve */
-        0x00,
-        /* password */
-        "123456",
-        /* password_type */
-        PACE_PIN,
-        /* pace_nonce */
-        { sizeof tc_dh_nonce, tc_dh_nonce, sizeof tc_dh_nonce, },
-        /* pace_enc_nonce */
-        { sizeof tc_dh_nonce_enc, tc_dh_nonce_enc, sizeof tc_dh_nonce_enc, },
-        /* pace_static_pcd_priv_key */
-        { sizeof tc_dh_map_pcd_priv_key, tc_dh_map_pcd_priv_key, sizeof tc_dh_map_pcd_priv_key, },
-        /* pace_static_pcd_pub_key */
-        { sizeof tc_dh_map_pcd_pub_key, tc_dh_map_pcd_pub_key, sizeof tc_dh_map_pcd_pub_key, },
-        /* pace_static_picc_priv_key */
-        { sizeof tc_dh_map_picc_priv_key, tc_dh_map_picc_priv_key, sizeof tc_dh_map_picc_priv_key, },
-        /* pace_static_picc_pub_key */
-        { sizeof tc_dh_map_picc_pub_key, tc_dh_map_picc_pub_key, sizeof tc_dh_map_picc_pub_key, },
-        /* pace_shared_secret_h */
-        { sizeof tc_dh_map_shared_secret_h, tc_dh_map_shared_secret_h, sizeof tc_dh_map_shared_secret_h, },
-        /* pace_eph_generator */
-        { sizeof tc_dh_map_generator, tc_dh_map_generator, sizeof tc_dh_map_generator, },
-        /* pace_eph_pcd_priv_key */
-        { sizeof tc_dh_pcd_priv_key, tc_dh_pcd_priv_key, sizeof tc_dh_pcd_priv_key, },
-        /* pace_eph_pcd_pub_key */
-        { sizeof tc_dh_pcd_pub_key, tc_dh_pcd_pub_key, sizeof tc_dh_pcd_pub_key, },
-        /* pace_eph_picc_priv_key */
-        { sizeof tc_dh_picc_priv_key, tc_dh_picc_priv_key, sizeof tc_dh_picc_priv_key, },
-        /* pace_eph_picc_pub_key */
-        { sizeof tc_dh_picc_pub_key, tc_dh_picc_pub_key, sizeof tc_dh_picc_pub_key, },
-        /* pace_shared_secret_k */
-        { sizeof tc_dh_shared_secret_k, tc_dh_shared_secret_k, sizeof tc_dh_shared_secret_k, },
-        /* pace_k_mac */
-        { sizeof tc_dh_k_mac, tc_dh_k_mac, sizeof tc_dh_k_mac, },
-        /* pace_k_enc */
-        { sizeof tc_dh_k_enc, tc_dh_k_enc, sizeof tc_dh_k_enc, },
-        /* pace_authentication_token_picc */
-        { sizeof tc_dh_authentication_token_picc, tc_dh_authentication_token_picc, sizeof tc_dh_authentication_token_picc, },
-        /* pace_authentication_token_pcd */
-        { sizeof tc_dh_authentication_token_pcd, tc_dh_authentication_token_pcd, sizeof tc_dh_authentication_token_pcd, },
-        /* pace_encrypt_decrypt */
-        tc_dh_enc_dec,
-        /* pace_encrypt_decrypt_len */
-        (sizeof tc_dh_enc_dec)/sizeof *tc_dh_enc_dec,
-        /* pace_authenticate */
-        tc_dh_pace_authenticate,
-        /* pace_authenticate_len */
-        (sizeof tc_dh_pace_authenticate)/sizeof *tc_dh_pace_authenticate,
-        /* ca_curve */
-        0x00,
-        /* ca_version */
-        2,
-        /* ca_info_oid */
-        HACK_id_CA_DH_AES_CBC_CMAC_128,
-        /* ca_picc_priv_key */
-        { sizeof tc_dh_ca_picc_priv_key, tc_dh_ca_picc_priv_key, sizeof tc_dh_ca_picc_priv_key, },
-        /* ca_picc_pub_key */
-        { sizeof tc_dh_ca_picc_pub_key, tc_dh_ca_picc_pub_key, sizeof tc_dh_ca_picc_pub_key, },
-        /* ca_pcd_priv_key */
-        { sizeof tc_dh_ca_pcd_priv_key, tc_dh_ca_pcd_priv_key, sizeof tc_dh_ca_pcd_priv_key, },
-        /* ca_pcd_pub_key */
-        { sizeof tc_dh_ca_pcd_pub_key, tc_dh_ca_pcd_pub_key, sizeof tc_dh_ca_pcd_pub_key, },
-        /* ca_nonce */
-        { sizeof tc_dh_ca_nonce, tc_dh_ca_nonce, sizeof tc_dh_ca_nonce, },
-        /* ca_picc_token */
-        { sizeof tc_dh_ca_picc_token, tc_dh_ca_picc_token, sizeof tc_dh_ca_picc_token, },
-        /* ca_shared_secret_k */
-        { sizeof tc_dh_ca_shared_secret_k, tc_dh_ca_shared_secret_k, sizeof tc_dh_ca_shared_secret_k, },
-        /* ca_k_mac */
-        { sizeof tc_dh_ca_k_mac, tc_dh_ca_k_mac, sizeof tc_dh_ca_k_mac, },
-        /* ca_k_enc */
-        { sizeof tc_dh_ca_k_enc, tc_dh_ca_k_enc, sizeof tc_dh_ca_k_enc, },
-        /* ta_curve */
-        0,
-        /* ta_pcd_key */
-        { sizeof tc_dh_ta_pcd_key, tc_dh_ta_pcd_key, sizeof tc_dh_ta_pcd_key, },
-        /* ta_nonce */
-        { sizeof tc_dh_ta_nonce, tc_dh_ta_nonce, sizeof tc_dh_ta_nonce, },
-        /* ta_auxdata */
-        { 0, NULL, 0, },
-        /* ta_pcd_signature */
-        { sizeof tc_dh_ta_pcd_signature, tc_dh_ta_pcd_signature, sizeof tc_dh_ta_pcd_signature, },
-        /* ta_cert */
-        { sizeof tc_dh_ta_cert, tc_dh_ta_cert, sizeof tc_dh_ta_cert, },
-        /* ta_cvca */
-        { sizeof tc_dh_cvca, tc_dh_cvca, sizeof tc_dh_cvca, },
-        /* ta_dv_cert */
-        { sizeof tc_dh_dv_cert, tc_dh_dv_cert, sizeof tc_dh_dv_cert, },
-    },
 };
 
 static char ef_cardaccess_old_testcard[] = {
@@ -2570,68 +2196,6 @@ struct pace_secret {
     char *secret;
 };
 
-static const struct pace_params dynamic_pace_params[] = {
-    { HACK_id_PACE_DH_GM_3DES_CBC_CBC, 0 },
-    { HACK_id_PACE_DH_GM_AES_CBC_CMAC_128, 1},
-    { HACK_id_PACE_DH_GM_AES_CBC_CMAC_192, 2 },
-    { HACK_id_PACE_DH_GM_AES_CBC_CMAC_256, 0 },
-    { HACK_id_PACE_DH_IM_3DES_CBC_CBC, 1},
-    { HACK_id_PACE_DH_IM_AES_CBC_CMAC_128, 2 },
-    { HACK_id_PACE_DH_IM_AES_CBC_CMAC_192, 0 },
-    { HACK_id_PACE_DH_IM_AES_CBC_CMAC_256, 1},
-    { HACK_id_PACE_ECDH_GM_3DES_CBC_CBC, 11 },
-    { HACK_id_PACE_ECDH_GM_3DES_CBC_CBC, 16 },
-    { HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_128, 9 },
-    { HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_128, 12 },
-    { HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_192, 18 },
-    { HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_192, 10 },
-    { HACK_id_PACE_ECDH_GM_AES_CBC_CMAC_256, 15 },
-    { HACK_id_PACE_ECDH_IM_3DES_CBC_CBC, 13 },
-    { HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_128, 14 },
-    { HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_192, 8 },
-    { HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_256, 17 },
-};
-static const struct ta_params dynamic_ta_params[] = {
-    { HACK_id_TA_RSA_v1_5_SHA_1, 1024 },
-    { HACK_id_TA_RSA_v1_5_SHA_256, 1280 },
-    { HACK_id_TA_RSA_PSS_SHA_1, 1536 },
-    { HACK_id_TA_RSA_PSS_SHA_256, 2048 },
-    { HACK_id_TA_RSA_v1_5_SHA_512, 3072 },
-    { HACK_id_TA_RSA_PSS_SHA_512, 1024 },
-    { HACK_id_TA_ECDSA_SHA_1, 8 },
-    { HACK_id_TA_ECDSA_SHA_224, 9 },
-    { HACK_id_TA_ECDSA_SHA_256, 10 },
-    { HACK_id_TA_ECDSA_SHA_384, 11 },
-    { HACK_id_TA_ECDSA_SHA_512, 12 },
-};
-static const struct ca_params dynamic_ca_params[] = {
-    { HACK_id_CA_DH_3DES_CBC_CBC, 0 },
-    { HACK_id_CA_DH_AES_CBC_CMAC_128, 1 },
-    { HACK_id_CA_DH_AES_CBC_CMAC_192, 2 },
-    { HACK_id_CA_DH_AES_CBC_CMAC_256, 0 },
-    { HACK_id_CA_ECDH_3DES_CBC_CBC, 8 },
-    { HACK_id_CA_ECDH_AES_CBC_CMAC_128, 11 },
-    { HACK_id_CA_ECDH_AES_CBC_CMAC_192, 13 },
-    { HACK_id_CA_ECDH_AES_CBC_CMAC_256, 14 },
-};
-static const struct ri_params dynamic_ri_params[] = {
-    { HACK_id_RI_DH_SHA_1, 0 },
-    { HACK_id_RI_DH_SHA_224, 1 },
-    { HACK_id_RI_DH_SHA_256, 2 },
-    { HACK_id_RI_DH_SHA_384, 0 },
-    { HACK_id_RI_DH_SHA_512, 1 },
-    { HACK_id_RI_ECDH_SHA_1, 8 },
-    { HACK_id_RI_ECDH_SHA_224, 9 },
-    { HACK_id_RI_ECDH_SHA_256, 10 },
-    { HACK_id_RI_ECDH_SHA_384, 11 },
-    { HACK_id_RI_ECDH_SHA_512, 12 },
-    { HACK_id_RI_ECDH_SHA_1, 13 },
-    { HACK_id_RI_ECDH_SHA_224, 14 },
-    { HACK_id_RI_ECDH_SHA_256, 15 },
-    { HACK_id_RI_ECDH_SHA_384, 16 },
-    { HACK_id_RI_ECDH_SHA_512, 17 },
-    { HACK_id_RI_ECDH_SHA_1, 18 },
-};
 static char pace_raw[0xff];
 static const struct pace_secret dynamic_pace_secrets[] = {
     { PACE_PUK, "1234567890" },
@@ -2969,20 +2533,16 @@ dynamic_eac_test(const struct pace_secret pace_secret,
     pcd_ctx = EAC_CTX_new();
     s = PACE_SEC_new(pace_secret.secret, strlen(pace_secret.secret), pace_secret.type);
     CHECK(0, picc_ctx && pcd_ctx && s, "Creating Data");
-    switch (pace_params.protocol) {
-        case HACK_id_PACE_ECDH_IM_3DES_CBC_CBC:
-        case HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-        case HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-        case HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-        case HACK_id_PACE_DH_IM_3DES_CBC_CBC:
-        case HACK_id_PACE_DH_IM_AES_CBC_CMAC_128:
-        case HACK_id_PACE_DH_IM_AES_CBC_CMAC_192:
-        case HACK_id_PACE_DH_IM_AES_CBC_CMAC_256:
-            picc_ctx->tr_version = EAC_TR_VERSION_2_01;
-            pcd_ctx->tr_version = EAC_TR_VERSION_2_01;
-            break;
-        default:
-            break;
+    if (pace_params.protocol == NID_id_PACE_ECDH_IM_3DES_CBC_CBC
+          || pace_params.protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128
+          || pace_params.protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192
+          || pace_params.protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256
+          || pace_params.protocol == NID_id_PACE_DH_IM_3DES_CBC_CBC
+          || pace_params.protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_128
+          || pace_params.protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_192
+          || pace_params.protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_256) {
+       picc_ctx->tr_version = EAC_TR_VERSION_2_01;
+       pcd_ctx->tr_version = EAC_TR_VERSION_2_01;
     }
     CHECK(0, EAC_CTX_init_pace(picc_ctx, pace_params.protocol, pace_params.std_dp)
             && EAC_CTX_init_pace(pcd_ctx, pace_params.protocol, pace_params.std_dp),
@@ -3002,23 +2562,20 @@ dynamic_eac_test(const struct pace_secret pace_secret,
     CHECK(1, static_pub_pcd && static_pub_picc,
             "PACE step 3a: Generated key pairs for mapping");
 
-    switch (picc_ctx->pace_ctx->protocol) {
-        case HACK_id_PACE_ECDH_IM_3DES_CBC_CBC:
-        case HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_128:
-        case HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_192:
-        case HACK_id_PACE_ECDH_IM_AES_CBC_CMAC_256:
-        case HACK_id_PACE_DH_IM_3DES_CBC_CBC:
-        case HACK_id_PACE_DH_IM_AES_CBC_CMAC_128:
-        case HACK_id_PACE_DH_IM_AES_CBC_CMAC_192:
-        case HACK_id_PACE_DH_IM_AES_CBC_CMAC_256:
+    if (picc_ctx->pace_ctx->protocol == NID_id_PACE_ECDH_IM_3DES_CBC_CBC
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_DH_IM_3DES_CBC_CBC
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_128
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_192
+          || picc_ctx->pace_ctx->protocol == NID_id_PACE_DH_IM_AES_CBC_CMAC_256) {
             /* Integrated Mapping is special, only the terminal generates the key */
             CHECK(0, PACE_STEP3A_map_generator(pcd_ctx, static_pub_pcd),
                     "Computing mapped domain parameters");
-            break;
-        default:
-            CHECK(0, PACE_STEP3A_map_generator(pcd_ctx, static_pub_picc),
-                    "Computing mapped domain parameters");
-            break;
+    } else {
+       CHECK(0, PACE_STEP3A_map_generator(pcd_ctx, static_pub_picc),
+             "Computing mapped domain parameters");
     }
     CHECK(1, PACE_STEP3A_map_generator(picc_ctx, static_pub_pcd),
             "PACE step 3a: Mapped domain parameters on MRTD and Terminal");
@@ -3218,6 +2775,68 @@ do_dynamic_eac_tests(void)
 {
     size_t i, j, k, l, m;
     int failed = 0;
+    const struct pace_params dynamic_pace_params[] = {
+       { NID_id_PACE_DH_GM_3DES_CBC_CBC, 0 },
+       { NID_id_PACE_DH_GM_AES_CBC_CMAC_128, 1},
+       { NID_id_PACE_DH_GM_AES_CBC_CMAC_192, 2 },
+       { NID_id_PACE_DH_GM_AES_CBC_CMAC_256, 0 },
+       { NID_id_PACE_DH_IM_3DES_CBC_CBC, 1},
+       { NID_id_PACE_DH_IM_AES_CBC_CMAC_128, 2 },
+       { NID_id_PACE_DH_IM_AES_CBC_CMAC_192, 0 },
+       { NID_id_PACE_DH_IM_AES_CBC_CMAC_256, 1},
+       { NID_id_PACE_ECDH_GM_3DES_CBC_CBC, 11 },
+       { NID_id_PACE_ECDH_GM_3DES_CBC_CBC, 16 },
+       { NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, 9 },
+       { NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, 12 },
+       { NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192, 18 },
+       { NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192, 10 },
+       { NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256, 15 },
+       { NID_id_PACE_ECDH_IM_3DES_CBC_CBC, 13 },
+       { NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128, 14 },
+       { NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192, 8 },
+       { NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256, 17 },
+    };
+    const struct ta_params dynamic_ta_params[] = {
+       { NID_id_TA_RSA_v1_5_SHA_1, 1024 },
+       { NID_id_TA_RSA_v1_5_SHA_256, 1280 },
+       { NID_id_TA_RSA_PSS_SHA_1, 1536 },
+       { NID_id_TA_RSA_PSS_SHA_256, 2048 },
+       { NID_id_TA_RSA_v1_5_SHA_512, 3072 },
+       { NID_id_TA_RSA_PSS_SHA_512, 1024 },
+       { NID_id_TA_ECDSA_SHA_1, 8 },
+       { NID_id_TA_ECDSA_SHA_224, 9 },
+       { NID_id_TA_ECDSA_SHA_256, 10 },
+       { NID_id_TA_ECDSA_SHA_384, 11 },
+       { NID_id_TA_ECDSA_SHA_512, 12 },
+    };
+    const struct ca_params dynamic_ca_params[] = {
+       { NID_id_CA_DH_3DES_CBC_CBC, 0 },
+       { NID_id_CA_DH_AES_CBC_CMAC_128, 1 },
+       { NID_id_CA_DH_AES_CBC_CMAC_192, 2 },
+       { NID_id_CA_DH_AES_CBC_CMAC_256, 0 },
+       { NID_id_CA_ECDH_3DES_CBC_CBC, 8 },
+       { NID_id_CA_ECDH_AES_CBC_CMAC_128, 11 },
+       { NID_id_CA_ECDH_AES_CBC_CMAC_192, 13 },
+       { NID_id_CA_ECDH_AES_CBC_CMAC_256, 14 },
+    };
+    const struct ri_params dynamic_ri_params[] = {
+       { NID_id_RI_DH_SHA_1, 0 },
+       { NID_id_RI_DH_SHA_224, 1 },
+       { NID_id_RI_DH_SHA_256, 2 },
+       { NID_id_RI_DH_SHA_384, 0 },
+       { NID_id_RI_DH_SHA_512, 1 },
+       { NID_id_RI_ECDH_SHA_1, 8 },
+       { NID_id_RI_ECDH_SHA_224, 9 },
+       { NID_id_RI_ECDH_SHA_256, 10 },
+       { NID_id_RI_ECDH_SHA_384, 11 },
+       { NID_id_RI_ECDH_SHA_512, 12 },
+       { NID_id_RI_ECDH_SHA_1, 13 },
+       { NID_id_RI_ECDH_SHA_224, 14 },
+       { NID_id_RI_ECDH_SHA_256, 15 },
+       { NID_id_RI_ECDH_SHA_384, 16 },
+       { NID_id_RI_ECDH_SHA_512, 17 },
+       { NID_id_RI_ECDH_SHA_1, 18 },
+    };
 
     printf("Dynamic EAC tests:\n");
 
@@ -3500,43 +3119,36 @@ static_eac_test(struct eac_worked_example *tc)
             "TA step 5: Signed nonce, public key, auxiliary data");
 
     /* Verify the response */
-    switch(picc_ctx->ta_ctx->protocol) {
-        case HACK_id_TA_RSA_v1_5_SHA_1:
-           /* fall through */
-        case HACK_id_TA_RSA_v1_5_SHA_256:
-           /* fall through */
-        case HACK_id_TA_RSA_v1_5_SHA_512:
-            /* In case of a probabilistic signature our signature will not be
-             * equal to the signature specified in the worked example. Therefore,
-             * we only compare the signatures in the deterministic case */
-            CHECK(0, buf_eq_buf(signature, &tc->ta_pcd_signature),
-                    "Signature does match test data");
-           /* fall through */
-        case HACK_id_TA_RSA_PSS_SHA_1:
-           /* fall through */
-        case HACK_id_TA_RSA_PSS_SHA_256:
-           /* fall through */
-        case HACK_id_TA_RSA_PSS_SHA_512:
-           /* fall through */
-        case HACK_id_TA_ECDSA_SHA_1:
-           /* fall through */
-        case HACK_id_TA_ECDSA_SHA_224:
-           /* fall through */
-        case HACK_id_TA_ECDSA_SHA_256:
-           /* fall through */
-        case HACK_id_TA_ECDSA_SHA_384:
-           /* fall through */
-        case HACK_id_TA_ECDSA_SHA_512:
-            /* Verify both our as well as the pre-defined signature (equal in the
-             * deterministic case). */
-            CHECK(1, TA_STEP6_verify(picc_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc,
-                        &tc->ta_auxdata, signature) == 1
-                    && TA_STEP6_verify(picc_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc,
-                        &tc->ta_auxdata, &tc->ta_pcd_signature) == 1,
-                    "TA step 6: Verified signature");
-            break;
-        default:
-            CHECK(1, 0, "Unknown TA protocol OID");
+    if (picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_1
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_256
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_512) {
+       /* In case of a probabilistic signature our signature will not be
+        * equal to the signature specified in the worked example. Therefore,
+        * we only compare the signatures in the deterministic case */
+       CHECK(0, buf_eq_buf(signature, &tc->ta_pcd_signature),
+             "Signature does match test data");
+    }
+    if (picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_1
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_256
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_512
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_PSS_SHA_1
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_PSS_SHA_256
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_PSS_SHA_512
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_ECDSA_SHA_1
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_RSA_v1_5_SHA_256
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_ECDSA_SHA_224
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_ECDSA_SHA_256
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_ECDSA_SHA_384
+          || picc_ctx->ta_ctx->protocol == NID_id_TA_ECDSA_SHA_512) {
+       /* Verify both our as well as the pre-defined signature (equal in the
+        * deterministic case). */
+       CHECK(1, TA_STEP6_verify(picc_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc,
+                &tc->ta_auxdata, signature) == 1
+             && TA_STEP6_verify(picc_ctx, ta_pcd_comp_eph_pub_key_for_ca, id_picc,
+                &tc->ta_auxdata, &tc->ta_pcd_signature) == 1,
+             "TA step 6: Verified signature");
+    } else {
+       CHECK(1, 0, "Unknown TA protocol OID");
     }
 
     OK;
@@ -3643,6 +3255,205 @@ test_worked_examples(void)
 {
     size_t i;
     int failed = 0;
+    struct eac_worked_example eac_examples[] = {
+       {   /* EAC worked example - ECDH */
+          /* ef_cardaccess */
+          { sizeof tc_ecdh_ef_cardaccess, tc_ecdh_ef_cardaccess, sizeof tc_ecdh_ef_cardaccess, },
+          /* ef_cardsecurity */
+          { sizeof tc_ecdh_ef_cardsecurity, tc_ecdh_ef_cardsecurity, sizeof tc_ecdh_ef_cardsecurity, },
+          /* pace_info_oid */
+          NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128,
+          /* pace_version */
+          2,
+          /* pace_curve */
+          0x0D,
+          /* password */
+          "123456",
+          /* password_type */
+          PACE_PIN,
+          /* pace_nonce */
+          { sizeof tc_ecdh_nonce, tc_ecdh_nonce, sizeof tc_ecdh_nonce, },
+          /* pace_enc_nonce */
+          { sizeof tc_ecdh_nonce_enc, tc_ecdh_nonce_enc, sizeof tc_ecdh_nonce_enc, },
+          /* pace_static_pcd_priv_key */
+          { sizeof tc_ecdh_map_pcd_priv_key, tc_ecdh_map_pcd_priv_key, sizeof tc_ecdh_map_pcd_priv_key, },
+          /* pace_static_pcd_pub_key */
+          { sizeof tc_ecdh_map_pcd_pub_key, tc_ecdh_map_pcd_pub_key, sizeof tc_ecdh_map_pcd_pub_key, },
+          /* pace_static_picc_priv_key */
+          { sizeof tc_ecdh_map_picc_priv_key, tc_ecdh_map_picc_priv_key, sizeof tc_ecdh_map_picc_priv_key, },
+          /* pace_static_picc_pub_key */
+          { sizeof tc_ecdh_map_picc_pub_key, tc_ecdh_map_picc_pub_key, sizeof tc_ecdh_map_picc_pub_key, },
+          /* pace_shared_secret_h */
+          { sizeof tc_ecdh_map_shared_secret_h, tc_ecdh_map_shared_secret_h, sizeof tc_ecdh_map_shared_secret_h, },
+          /* pace_eph_generator */
+          { sizeof tc_ecdh_map_generator, tc_ecdh_map_generator, sizeof tc_ecdh_map_generator, },
+          /* pace_eph_pcd_priv_key */
+          { sizeof tc_ecdh_pcd_priv_key, tc_ecdh_pcd_priv_key, sizeof tc_ecdh_pcd_priv_key, },
+          /* pace_eph_pcd_pub_key */
+          { sizeof tc_ecdh_pcd_pub_key, tc_ecdh_pcd_pub_key, sizeof tc_ecdh_pcd_pub_key, },
+          /* pace_eph_picc_priv_key */
+          { sizeof tc_ecdh_picc_priv_key, tc_ecdh_picc_priv_key, sizeof tc_ecdh_picc_priv_key, },
+          /* pace_eph_picc_pub_key */
+          { sizeof tc_ecdh_picc_pub_key, tc_ecdh_picc_pub_key, sizeof tc_ecdh_picc_pub_key, },
+          /* pace_shared_secret_k */
+          { sizeof tc_ecdh_shared_secret_k, tc_ecdh_shared_secret_k, sizeof tc_ecdh_shared_secret_k, },
+          /* pace_k_mac */
+          { sizeof tc_ecdh_k_mac, tc_ecdh_k_mac, sizeof tc_ecdh_k_mac, },
+          /* pace_k_enc */
+          { sizeof tc_ecdh_k_enc, tc_ecdh_k_enc, sizeof tc_ecdh_k_enc, },
+          /* pace_authentication_token_picc */
+          { sizeof tc_ecdh_authentication_token_picc, tc_ecdh_authentication_token_picc, sizeof tc_ecdh_authentication_token_picc, },
+          /* pace_authentication_token_pcd */
+          { sizeof tc_ecdh_authentication_token_pcd, tc_ecdh_authentication_token_pcd, sizeof tc_ecdh_authentication_token_pcd, },
+          /* pace_encrypt_decrypt */
+          tc_ecdh_enc_dec,
+          /* pace_encrypt_decrypt_len */
+          (sizeof tc_ecdh_enc_dec)/sizeof *tc_ecdh_enc_dec,
+          /* pace_authenticate */
+          tc_ecdh_pace_authenticate,
+          /* pace_authenticate_len */
+          (sizeof tc_ecdh_pace_authenticate)/sizeof *tc_ecdh_pace_authenticate,
+          /* ca_curve */
+          0x0D,
+          /* ca_version */
+          2,
+          /* ca_info_oid */
+          NID_id_CA_ECDH_AES_CBC_CMAC_128,
+          /* ca_picc_priv_key */
+          { sizeof tc_ecdh_ca_picc_priv_key, tc_ecdh_ca_picc_priv_key, sizeof tc_ecdh_ca_picc_priv_key, },
+          /* ca_picc_pub_key */
+          { sizeof tc_ecdh_ca_picc_pub_key, tc_ecdh_ca_picc_pub_key, sizeof tc_ecdh_ca_picc_pub_key, },
+          /* ca_pcd_priv_key */
+          { sizeof tc_ecdh_ca_pcd_priv_key, tc_ecdh_ca_pcd_priv_key, sizeof tc_ecdh_ca_pcd_priv_key, },
+          /* ca_pcd_pub_key */
+          { sizeof tc_ecdh_ca_pcd_pub_key, tc_ecdh_ca_pcd_pub_key, sizeof tc_ecdh_ca_pcd_pub_key, },
+          /* ca_nonce */
+          { sizeof tc_ecdh_ca_nonce, tc_ecdh_ca_nonce, sizeof tc_ecdh_ca_nonce, },
+          /* ca_picc_token */
+          { sizeof tc_ecdh_ca_picc_token, tc_ecdh_ca_picc_token, sizeof tc_ecdh_ca_picc_token, },
+          /* ca_shared_secret_k */
+          { sizeof tc_ecdh_ca_shared_secret_k, tc_ecdh_ca_shared_secret_k, sizeof tc_ecdh_ca_shared_secret_k, },
+          /* ca_k_mac */
+          { sizeof tc_ecdh_ca_k_mac, tc_ecdh_ca_k_mac, sizeof tc_ecdh_ca_k_mac, },
+          /* ca_k_enc */
+          { sizeof tc_ecdh_ca_k_enc, tc_ecdh_ca_k_enc, sizeof tc_ecdh_ca_k_enc, },
+          /* ta_curve */
+          13,
+          /* ta_pcd_key */
+          { sizeof tc_ecdh_ta_pcd_key, tc_ecdh_ta_pcd_key, sizeof tc_ecdh_ta_pcd_key, },
+          /* ta_nonce */
+          { sizeof tc_ecdh_ta_nonce, tc_ecdh_ta_nonce, sizeof tc_ecdh_ta_nonce, },
+          /* ta_auxdata */
+          { 0, NULL, 0, },
+          /* ta_pcd_signature */
+          { sizeof tc_ecdh_ta_pcd_signature, tc_ecdh_ta_pcd_signature, sizeof tc_ecdh_ta_pcd_signature, },
+          /* ta_cert */
+          { sizeof tc_ecdh_ta_cert, tc_ecdh_ta_cert, sizeof tc_ecdh_ta_cert, },
+          /* ta_cvca */
+          { sizeof tc_ecdh_cvca_cert, tc_ecdh_cvca_cert, sizeof tc_ecdh_cvca_cert, },
+          /* ta_dv_cert */
+          { sizeof tc_ecdh_dv_cert, tc_ecdh_dv_cert, sizeof tc_ecdh_dv_cert, },
+       },
+       {   /* EAC worked example - DH */
+          /* ef_cardaccess */
+          { sizeof tc_dh_ef_cardaccess, tc_dh_ef_cardaccess, sizeof tc_dh_ef_cardaccess, },
+          /* ef_cardsecurity */
+          { sizeof tc_dh_ef_cardsecurity, tc_dh_ef_cardsecurity, sizeof tc_dh_ef_cardsecurity, },
+          /* pace_info_oid */
+          NID_id_PACE_DH_GM_AES_CBC_CMAC_128,
+          /* pace_version */
+          2,
+          /* pace_curve */
+          0x00,
+          /* password */
+          "123456",
+          /* password_type */
+          PACE_PIN,
+          /* pace_nonce */
+          { sizeof tc_dh_nonce, tc_dh_nonce, sizeof tc_dh_nonce, },
+          /* pace_enc_nonce */
+          { sizeof tc_dh_nonce_enc, tc_dh_nonce_enc, sizeof tc_dh_nonce_enc, },
+          /* pace_static_pcd_priv_key */
+          { sizeof tc_dh_map_pcd_priv_key, tc_dh_map_pcd_priv_key, sizeof tc_dh_map_pcd_priv_key, },
+          /* pace_static_pcd_pub_key */
+          { sizeof tc_dh_map_pcd_pub_key, tc_dh_map_pcd_pub_key, sizeof tc_dh_map_pcd_pub_key, },
+          /* pace_static_picc_priv_key */
+          { sizeof tc_dh_map_picc_priv_key, tc_dh_map_picc_priv_key, sizeof tc_dh_map_picc_priv_key, },
+          /* pace_static_picc_pub_key */
+          { sizeof tc_dh_map_picc_pub_key, tc_dh_map_picc_pub_key, sizeof tc_dh_map_picc_pub_key, },
+          /* pace_shared_secret_h */
+          { sizeof tc_dh_map_shared_secret_h, tc_dh_map_shared_secret_h, sizeof tc_dh_map_shared_secret_h, },
+          /* pace_eph_generator */
+          { sizeof tc_dh_map_generator, tc_dh_map_generator, sizeof tc_dh_map_generator, },
+          /* pace_eph_pcd_priv_key */
+          { sizeof tc_dh_pcd_priv_key, tc_dh_pcd_priv_key, sizeof tc_dh_pcd_priv_key, },
+          /* pace_eph_pcd_pub_key */
+          { sizeof tc_dh_pcd_pub_key, tc_dh_pcd_pub_key, sizeof tc_dh_pcd_pub_key, },
+          /* pace_eph_picc_priv_key */
+          { sizeof tc_dh_picc_priv_key, tc_dh_picc_priv_key, sizeof tc_dh_picc_priv_key, },
+          /* pace_eph_picc_pub_key */
+          { sizeof tc_dh_picc_pub_key, tc_dh_picc_pub_key, sizeof tc_dh_picc_pub_key, },
+          /* pace_shared_secret_k */
+          { sizeof tc_dh_shared_secret_k, tc_dh_shared_secret_k, sizeof tc_dh_shared_secret_k, },
+          /* pace_k_mac */
+          { sizeof tc_dh_k_mac, tc_dh_k_mac, sizeof tc_dh_k_mac, },
+          /* pace_k_enc */
+          { sizeof tc_dh_k_enc, tc_dh_k_enc, sizeof tc_dh_k_enc, },
+          /* pace_authentication_token_picc */
+          { sizeof tc_dh_authentication_token_picc, tc_dh_authentication_token_picc, sizeof tc_dh_authentication_token_picc, },
+          /* pace_authentication_token_pcd */
+          { sizeof tc_dh_authentication_token_pcd, tc_dh_authentication_token_pcd, sizeof tc_dh_authentication_token_pcd, },
+          /* pace_encrypt_decrypt */
+          tc_dh_enc_dec,
+          /* pace_encrypt_decrypt_len */
+          (sizeof tc_dh_enc_dec)/sizeof *tc_dh_enc_dec,
+          /* pace_authenticate */
+          tc_dh_pace_authenticate,
+          /* pace_authenticate_len */
+          (sizeof tc_dh_pace_authenticate)/sizeof *tc_dh_pace_authenticate,
+          /* ca_curve */
+          0x00,
+          /* ca_version */
+          2,
+          /* ca_info_oid */
+          NID_id_CA_DH_AES_CBC_CMAC_128,
+          /* ca_picc_priv_key */
+          { sizeof tc_dh_ca_picc_priv_key, tc_dh_ca_picc_priv_key, sizeof tc_dh_ca_picc_priv_key, },
+          /* ca_picc_pub_key */
+          { sizeof tc_dh_ca_picc_pub_key, tc_dh_ca_picc_pub_key, sizeof tc_dh_ca_picc_pub_key, },
+          /* ca_pcd_priv_key */
+          { sizeof tc_dh_ca_pcd_priv_key, tc_dh_ca_pcd_priv_key, sizeof tc_dh_ca_pcd_priv_key, },
+          /* ca_pcd_pub_key */
+          { sizeof tc_dh_ca_pcd_pub_key, tc_dh_ca_pcd_pub_key, sizeof tc_dh_ca_pcd_pub_key, },
+          /* ca_nonce */
+          { sizeof tc_dh_ca_nonce, tc_dh_ca_nonce, sizeof tc_dh_ca_nonce, },
+          /* ca_picc_token */
+          { sizeof tc_dh_ca_picc_token, tc_dh_ca_picc_token, sizeof tc_dh_ca_picc_token, },
+          /* ca_shared_secret_k */
+          { sizeof tc_dh_ca_shared_secret_k, tc_dh_ca_shared_secret_k, sizeof tc_dh_ca_shared_secret_k, },
+          /* ca_k_mac */
+          { sizeof tc_dh_ca_k_mac, tc_dh_ca_k_mac, sizeof tc_dh_ca_k_mac, },
+          /* ca_k_enc */
+          { sizeof tc_dh_ca_k_enc, tc_dh_ca_k_enc, sizeof tc_dh_ca_k_enc, },
+          /* ta_curve */
+          0,
+          /* ta_pcd_key */
+          { sizeof tc_dh_ta_pcd_key, tc_dh_ta_pcd_key, sizeof tc_dh_ta_pcd_key, },
+          /* ta_nonce */
+          { sizeof tc_dh_ta_nonce, tc_dh_ta_nonce, sizeof tc_dh_ta_nonce, },
+          /* ta_auxdata */
+          { 0, NULL, 0, },
+          /* ta_pcd_signature */
+          { sizeof tc_dh_ta_pcd_signature, tc_dh_ta_pcd_signature, sizeof tc_dh_ta_pcd_signature, },
+          /* ta_cert */
+          { sizeof tc_dh_ta_cert, tc_dh_ta_cert, sizeof tc_dh_ta_cert, },
+          /* ta_cvca */
+          { sizeof tc_dh_cvca, tc_dh_cvca, sizeof tc_dh_cvca, },
+          /* ta_dv_cert */
+          { sizeof tc_dh_dv_cert, tc_dh_dv_cert, sizeof tc_dh_dv_cert, },
+       },
+    };
+
 
     printf("EAC worked examples:\n");
 
