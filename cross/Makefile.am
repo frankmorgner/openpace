@@ -115,5 +115,5 @@ $(LIBEAC):
 		$(ENABLE_PYTHON) \
 		CFLAGS="-I$(TOOL_DIR)/include -I$(TOOL_DIR)/include/python2.7 $(CROSS_CFLAGS)" \
 		LDFLAGS="$${LDFLAGS} -L$(TOOL_DIR)/lib $(CROSS_LDFLAGS)"
-	env CROSS_COMPILE=$(CROSS_COMPILE) \
+	env CROSS_COMPILE=$(CROSS_COMPILE) WINDRES=$(TOOL)-windres \
 		$(MAKE) -C $(top_builddir) install DESTDIR=$(TARGETDIR)
