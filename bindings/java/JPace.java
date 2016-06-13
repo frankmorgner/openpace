@@ -62,7 +62,7 @@ class PACEEntity {
 
     public void map_generator(SWIGTYPE_p_BUF_MEM opp_static_pub) {
         this.opp_static_pub = opp_static_pub;
-        ret = eac.PACE_STEP3A_map_generator(this.eac_context, opp_static_pub);
+        eac.PACE_STEP3A_map_generator(this.eac_context, opp_static_pub);
     }
 
     public SWIGTYPE_p_BUF_MEM generate_ephemeral_key() {
@@ -125,7 +125,7 @@ class PCD extends PACEEntity {
 
     public void decode_nonce(SWIGTYPE_p_BUF_MEM enc_nonce) {
         this.encoded_nonce = enc_nonce;
-        return eac.PACE_STEP2_dec_nonce(this.eac_context, this.secret, this.encoded_nonce);
+        eac.PACE_STEP2_dec_nonce(this.eac_context, this.secret, this.encoded_nonce);
     }
 
     public SWIGTYPE_p_BUF_MEM compute_authentication_token() {
