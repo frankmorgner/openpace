@@ -24,7 +24,6 @@ class PACEEntity {
     protected SWIGTYPE_p_PACE_SEC secret;
     protected SWIGTYPE_p_BUF_MEM encoded_nonce;
     protected SWIGTYPE_p_EAC_CTX eac_context;
-    protected SWIGTYPE_p_BUF_MEM opp_static_pub;
     protected SWIGTYPE_p_BUF_MEM ephemeral_key;
     protected SWIGTYPE_p_BUF_MEM opp_eph_pub;
 
@@ -48,7 +47,6 @@ class PACEEntity {
         if (eac.EAC_CTX_init_ef_cardaccess(ef_card_access, this.eac_context) == 0)
             throw new NullPointerException("Failed to initialize EAC context from EF.CardAccess");
 
-        this.opp_static_pub = null;
         this.ephemeral_key = null;
     }
 
@@ -61,7 +59,6 @@ class PACEEntity {
     }
 
     public void map_generator(SWIGTYPE_p_BUF_MEM opp_static_pub) {
-        this.opp_static_pub = opp_static_pub;
         eac.PACE_STEP3A_map_generator(this.eac_context, opp_static_pub);
     }
 
@@ -73,7 +70,6 @@ class PACEEntity {
     }
 
     public void compute_shared_secret(SWIGTYPE_p_BUF_MEM opp_static_pub) {
-        this.opp_eph_pub = opp_static_pub;
         if (eac.PACE_STEP3B_compute_shared_secret(this.eac_context,
                 opp_static_pub) == 0)
             throw new NullPointerException("Failed to compute shared secret");
