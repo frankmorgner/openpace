@@ -1,3 +1,182 @@
+2016-06-25  Frank Morgner <frankmorgner@gmail.com>
+
+	* ChangeLog: released 1.0.1
+
+2016-06-25  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/JPace.java: fixed regression of
+	c44a828277a1b8cf0ce807aa8a0f9f7c7ba725bf
+
+2016-06-24  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: working around shell oddity
+
+2016-06-22  Frank Morgner <frankmorgner@gmail.com>
+
+	* configure.ac: preparing 1.0.1
+
+2016-06-14  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/JPace.java: removed unread field
+
+2016-06-13  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/JPace.java: fixed compilation of JPace.java regression of 6ca820223361388acf05744b0d7b4dee82531b21
+
+2016-06-13  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/Example.java, bindings/java/JPace.java: import and
+	check for UnsupportedEncodingException
+
+2016-06-13  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: define WINDRES when cross compiling OpenSSL
+
+2016-06-04  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/cvc-create.c, src/eac_asn1.c: avoid potention NULL dereference
+
+2016-06-04  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/cvc_lookup.c, src/x509_lookup.c: check input when changing
+	lookup directory
+
+2016-06-04  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/JPace.java: removed unused local variable
+
+2016-06-04  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/Example.java, bindings/java/JPace.java: use
+	ISO-8859-1 encoding for PACE passwords
+
+2016-06-04  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/JPace.java: fixed Unread field
+
+2016-06-06  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/eactest.c: use the correct NIDs in eactest.c
+
+2016-06-06  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/cvc-print.c: fixed memory leak
+
+2016-06-06  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/cvc-create.c, src/eac.c, src/eac_asn1.c, src/eac_lib.c,
+	src/eac_util.c: free OpenSSL allocated memory with OPENSSL_free fixes segmentation fault on Windows
+
+2016-06-02  Frank Morgner <frankmorgner@gmail.com>
+
+	* configure.ac: recognize the msys environment
+
+2016-06-02  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/eactest.c: fixed bad memory access
+
+2016-06-02  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/pace.c: fixed bad memory access
+
+2016-06-02  Frank Morgner <frankmorgner@gmail.com>
+
+	* : Merge pull request #31 from d0/vagrant Add documentation for using vagrant
+
+2016-06-01  Dominik <oepen@informatik.hu-berlin.de>
+
+	* doc/install.txt.in: Add documentation for setting up a dev
+	environment using vagrant
+
+2016-06-01  Dominik <oepen@informatik.hu-berlin.de>
+
+	* Vagrantfile: Add a symlink to the shared folder to the home of the
+	vagrant user
+
+2016-05-27  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/cv_cert.c: fixed memory leak
+
+2016-05-25  Frank Morgner <frankmorgner@gmail.com>
+
+	* : Merge pull request #30 from d0/vagrant Add Vagrantfile for a easy dev environment setup
+
+2016-05-24  Frank Morgner <frankmorgner@gmail.com>
+
+	* .travis.yml: travis: allow cross compiled windows build to fail Travis appears to be building only a static version of OpenSSL.
+	Thus, the compile error can be fixed by adding "-lgdi32" to
+	CRYPTO_LIBS.  However, we don't want to change this to just satisfy
+	CI.  Unfortunately, I was not able to reproduce this problem on my
+	machine to examine the root cause.  closes https://github.com/frankmorgner/openpace/issues/29
+
+2016-05-23  Frank Morgner <frankmorgner@gmail.com>
+
+	* .travis.yml: travis: use empty swiggoparams
+
+2016-05-21  Dominik <oepen@informatik.hu-berlin.de>
+
+	* configure.ac: Fix typo in configure.ac
+
+2016-03-11  Frank Morgner <frankmorgner@gmail.com>
+
+	* ISSUE_TEMPLATE.md: added ISSUE_TEMPLATE
+
+2016-01-07  Frank Morgner <frankmorgner@gmail.com>
+
+	* doc/install.txt, doc/install.txt.in: added reference to gendef fixes https://github.com/frankmorgner/openpace/issues/28
+
+2015-12-25  Frank Morgner <frankmorgner@gmail.com>
+
+	* doc/_static/eactest.html, doc/_static/eactest.js,
+	doc/install.txt, doc/install.txt.in: updated documentation for new
+	release
+
+2015-12-24  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/Makefile.am: fixed targets for generating manuals
+
+2015-12-21  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: use worker thread for eactest.html
+
+2015-12-20  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: Building with PIE for Android 4.1+
+
+2015-12-20  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/java/Makefile.am: install the generated java bindings
+
+2015-12-20  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: indicate the new ndk version used
+
+2015-12-20  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: for android build JNI only
+
+2015-12-20  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: renamed android distribution directory
+
+2015-12-20  Frank Morgner <frankmorgner@gmail.com>
+
+	* .travis.yml, cross/Makefile.am: build emscripten with more
+	optimizations
+
+2015-12-19  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: compile emscripten without special CFLAGS renames bitcode files to *.bc
+
+2015-12-18  Frank Morgner <frankmorgner@gmail.com>
+
+	* cross/Makefile.am: use _js postfix for javascript distribution
+	directory
+
+2015-12-18  Frank Morgner <frankmorgner@gmail.com>
+
+	* ChangeLog: released 1.0
+
 2015-12-18  Frank Morgner <frankmorgner@gmail.com>
 
 	* bindings/win32/eac.vcxproj: fixed location of library files
