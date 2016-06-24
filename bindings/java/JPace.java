@@ -25,7 +25,7 @@ class PACEEntity {
     protected SWIGTYPE_p_BUF_MEM encoded_nonce;
     protected SWIGTYPE_p_EAC_CTX eac_context;
     protected SWIGTYPE_p_BUF_MEM ephemeral_key;
-    protected SWIGTYPE_p_BUF_MEM opp_eph_pub;
+    protected SWIGTYPE_p_BUF_MEM opp_pub;
 
     public PACEEntity(String sec, s_type secret_type, byte[] ef_card_access) throws NullPointerException {
         byte[] byte_sec = null;
@@ -69,9 +69,10 @@ class PACEEntity {
         return this.ephemeral_key;
     }
 
-    public void compute_shared_secret(SWIGTYPE_p_BUF_MEM opp_static_pub) {
+    public void compute_shared_secret(SWIGTYPE_p_BUF_MEM opp_pub) {
+        this.opp_pub = opp_pub;
         if (eac.PACE_STEP3B_compute_shared_secret(this.eac_context,
-                opp_static_pub) == 0)
+                opp_pub) == 0)
             throw new NullPointerException("Failed to compute shared secret");
     }
 
@@ -126,7 +127,7 @@ class PCD extends PACEEntity {
 
     public SWIGTYPE_p_BUF_MEM compute_authentication_token() {
         SWIGTYPE_p_BUF_MEM ret;
-        ret = eac.PACE_STEP3D_compute_authentication_token(this.eac_context, this.opp_eph_pub);
+        ret = eac.PACE_STEP3D_compute_authentication_token(this.eac_context, this.opp_pub);
         return ret;
     }
 }
