@@ -56,7 +56,7 @@ emscripten:
 	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*		; do mv $$i $$i.bc		; done
 	mv $(EMSCRIPTEN_TARGETDIR)/bin/c_rehash.bc $(EMSCRIPTEN_TARGETDIR)/bin/c_rehash
 	for i in $(EMSCRIPTEN_TARGETDIR)/bin/*.bc $(EMSCRIPTEN_TARGETDIR)/lib/*.bc; do \
-		emcc -O3 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.bc}.js; done
+		emcc -O3 $$i $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $${i%.*}.js; done
 	emcc --proxy-to-worker -O3 $(EMSCRIPTEN_TARGETDIR)/bin/eactest.bc $(EMSCRIPTEN_TARGETDIR)/lib/libeac.bc $(EMSCRIPTEN_TARGETDIR)/lib/libcrypto.bc -o $(EMSCRIPTEN_TARGETDIR)/eactest.html
 
 
