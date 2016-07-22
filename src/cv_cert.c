@@ -973,9 +973,8 @@ cvc_chat_print(BIO *bio, const CVC_CHAT *chat, int indent)
             goto err;
     } else {
         if (!BIO_indent(bio, indent, 80)
-                || !BIO_printf(bio, "Invalid terminal type\n"))
+                || !BIO_printf(bio, "Unknown terminal type\n"))
             goto err;
-        goto err;
     }
 
     cvc_chat_print_authorizations(bio, chat, indent+2);
