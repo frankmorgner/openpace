@@ -133,17 +133,21 @@ else
                   [#include <openssl/obj_mac.h>])
     CPPFLAGS="$saved_CPPFLAGS"
 
-    saved_LIBS="$LIBS"
-    LIBS="$CRYPTO_LIBS $LIBS"
-    AC_MSG_CHECKING([for OPENSSL_cleanse])
-    AC_TRY_LINK_FUNC(OPENSSL_cleanse,
-                     [AC_MSG_RESULT([yes])],
-                     [AC_MSG_ERROR([Cannot link against libcrypto])])
-    AC_MSG_CHECKING([for EVP_sha256])
-    AC_TRY_LINK_FUNC(EVP_sha256,
-                     [AC_MSG_RESULT([yes])],
-                     [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
-    LIBS="$saved_LIBS"
+    # avoid test when compiling in visual studio
+    if test "${WIN32}" != "yes";
+    then
+        saved_LIBS="$LIBS"
+        LIBS="$CRYPTO_LIBS $LIBS"
+        AC_MSG_CHECKING([for OPENSSL_cleanse])
+        AC_TRY_LINK_FUNC(OPENSSL_cleanse,
+                         [AC_MSG_RESULT([yes])],
+                         [AC_MSG_ERROR([Cannot link against libcrypto])])
+        AC_MSG_CHECKING([for EVP_sha256])
+        AC_TRY_LINK_FUNC(EVP_sha256,
+                         [AC_MSG_RESULT([yes])],
+                         [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
+        LIBS="$saved_LIBS"
+    fi
 fi
 AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
 

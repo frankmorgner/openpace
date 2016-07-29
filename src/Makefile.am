@@ -32,6 +32,7 @@ noinst_HEADERS = ca_lib.h \
 
 
 lib_LTLIBRARIES = libeac.la
+noinst_LTLIBRARIES = libvc.la
 
 libeac_la_SOURCES  = ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c objects.c
 libeac_la_CPPFLAGS = $(CRYPTO_CFLAGS) -DCVCDIR=\"@CVCDIR@\" -DX509DIR=\"@X509DIR@\"
@@ -42,10 +43,12 @@ AM_CPPFLAGS        = -DWIN32_LEAN_AND_MEAN
 libeac_la_LIBADD  += -lws2_32
 endif
 
+libvc_la_SOURCES  = vc.c
+
 
 bin_PROGRAMS         = eactest cvc-print cvc-create example
 
-EAC_LIBS             = libeac.la $(CRYPTO_LIBS)
+EAC_LIBS             = libeac.la libvc.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
 
 eactest_SOURCES      = eactest.c
