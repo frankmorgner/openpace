@@ -14,8 +14,8 @@ Using OpenPACE in C/C++
 
 .. seealso::
 
-    See the `OpenPACE API documentation <_static/doxygen/modules.html>`_
-    for the native C/C++ interface
+    The `OpenPACE API documentation <_static/doxygen/modules.html>`_
+    has all details of the native C/C++ interface.
 
 Here we have a small example in C:
 

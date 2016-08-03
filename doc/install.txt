@@ -6,6 +6,7 @@
 .. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
 .. |CVCA| replace:: :abbr:`CVCA (Country Verifying Certificate Authority)`
 .. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
+.. |correct (TM)| unicode:: correct U+2122 .. correct with trademark sign
 
 *******************************************************************************
 Download OpenPACE
@@ -21,13 +22,32 @@ Alternatively, you can clone our git repository::
     git clone https://github.com/frankmorgner/openpace.git
 
 
+
 *******************************************************************************
-Install OpenPACE
+Compiling and Installing OpenPACE
 *******************************************************************************
 
-=======================================
-Installation on Linux, Unix and similar
-=======================================
+
+==================================================
+Setting up a development environment using Vagrant
+==================================================
+
+The easiest way to setup a development or test environment is to use Vagrant_ with VirtualBox_.
+OpenPACE comes with a Vagrantfile which lets you setup a working
+environment with just one command. To create a Ubuntu based virtual machine,
+install all dependencies and compile OpenPACE, run the following command
+in the OpenPACE directory::
+
+   vagrant up
+
+You then need to ``vagrant ssh`` in order to access the VM. The
+:file:`openpace` folder is shared between the host and the VM so any
+changes you make on the host are immediately visible in the VM and vice versa.
+
+
+====================================
+Compiling on Linux, Unix and similar
+====================================
 
 OpenPACE uses the GNU Build System to compile and install. If you are
 unfamiliar with it, please have a look at :file:`INSTALL`. If you can not find
@@ -37,14 +57,14 @@ auxiliary files::
     
     autoreconf --verbose --install
 
-To configure (:command:`./configure --help` lists possible options), build and
+To configure (``./configure --help`` lists possible options), build and
 install OpenPACE now do the following::
 
     ./configure
     make
     make install
 
-OpenPACE depends on the `OpenSSL`_ library. Since |PACE| uses CMAC and the
+OpenPACE depends on the OpenSSL_ library. Since |PACE| uses CMAC and the
 Brainpool curves, OpenSSL is required with version 1.0.2 or later.
 
 Furthermore, additional object identifiers from `BSI TR-03110`_ are required.
@@ -57,7 +77,7 @@ The first option allows you to install an unchanged version of OpenSSL to your
 system. However, performance will be slightly worse and there are some
 limitations. For example, you won't be able to use the new NIDs as labels in a
 switch statement and you need to make sure to call ``EAC_init()`` first.  For
-patching OpenSSL we provide :file:bsi_objects.txt``. You can configure
+patching OpenSSL we provide :file:`bsi_objects.txt`. You can configure
 OpenPACE with :option:`--enable-openssl-install`, which will
 automatically download, patch, build and install OpenSSL if needed.
 
@@ -66,52 +86,58 @@ You need to explicitely configure OpenPACE to install them by using
 :option:`--enable-python`, :option:`--enable-java`, ... This requires SWIG to
 be installed along with the language's toolchain to build the bindings.
 
-==========================================================
-Setting up a development or test environment using vagrant
-==========================================================
 
-The easiest way to setup a development or test environment is to use `vagrant
-<https://www.vagrantup.com>`_. OpenPACE comes with a Vagrantfile which
-let's you setup a working environment with just one command. All you need to do
-is type `vagrant up` in the OpenPACE directory. vagrant then sets up a
-Ubuntu based virtual machine, installs all dependencies and configures
-OpenPACE. You then need to `vagrant ssh` in order to access the VM. The
-`openpace` folder is shared between the host and the VM so any changes you
-make on the host are immediately visible in the VM and vice versa. In order to
-use vagrant you need to install vagrant and virtualbox. Both are available via
-the repositories of most linux distributions.
+=====================
+Compiling for Windows
+=====================
 
-===============================================================================
-Cross compiling OpenPACE
-===============================================================================
+Cross-Compiling for Windows on Linux
+------------------------------------
 
-We have added some scripts for the ease of cross compiling for Windows and
-Android. Both are tested with Debian wheezy. First create a working
-:file:`Makefile`::
+Our :file:`Makefile` includes scripts for cross compilation for Windows
+on Debian wheezy::
 
     test -x configure || autoreconf --verbose --install
     ./configure --enable-openssl-install
-
-Compiling for Windows
--------------------------------------------------------------------------------
-
-Cross compilation for Windows can be done with::
-
     make win
-
-================ ==================== ===========================================================================================
-Make Variable    Default              Meaning
-================ ==================== ===========================================================================================
-``WIN_TOOL``     ``i686-w64-mingw32`` cross compiler
-``WIN_TOOL_DIR`` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
-================ ==================== ===========================================================================================
 
 gendef_ should be installed to generate the library definitions.
 On successfull compilation, the Windows binaries can be found in
-:file:`openpace-1.0.0_win32`.
+:file:`openpace-1.0.1_win32`. For customization you
+may pass the following :command:`make` variables:
 
-With these binaries you may now compile the native Python bindings. For this
-you need to setup your Windows as following:
+====================== ==================== ===========================================================================================
+Make Variable          Default              Meaning
+====================== ==================== ===========================================================================================
+:envvar:`WIN_TOOL`     ``i686-w64-mingw32`` cross compiler
+:envvar:`WIN_TOOL_DIR` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
+====================== ==================== ===========================================================================================
+
+Compiling with Visual Studio
+----------------------------
+
+.. highlight:: bat
+
+A quick and dirty way without
+wasting too much time on setting up the development environment would be to
+compile the library by hand in the :menuselection:`Visual Studio Tools -->
+Developer Command Prompt` with installed `OpenSSL Windows binaries`_:
+
+.. literalinclude:: ../appveyor.yml
+    :lines: 106-112
+
+The |correct (TM)| process combines Visual Studio, MSYS2_ with cccl_ and allows
+using the same procedure and features that we are used to when `Compiling on
+Linux, Unix and similar`_. We will not depict it here. If you're interested,
+have a look at our `Windows CI script
+<https://github.com/frankmorgner/openpace/blob/master/appveyor.yml>`_ which
+includes all steps of this procedure.
+
+Compiling the Python Bindings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With the cross compiled or native binaries you may now compile the Python
+bindings.  For this you need to setup your Windows as following:
 
 1. Check out the git repository to the directory :file:`C:\\openpace`
 
@@ -158,47 +184,58 @@ you need to setup your Windows as following:
     cd "%OPENPACE_ROOT%\bin"
     "%PYTHON_LIBD%\python.exe" "C:\openpace\bindings\python\example.py"
 
+
+=====================
 Compiling for Android
--------------------------------------------------------------------------------
+=====================
 
-Cross compilation for Android can be done with::
+.. highlight:: sh
 
+Our :file:`Makefile` includes scripts for cross compilation for Android on
+Debian wheezy::
+
+    test -x configure || autoreconf --verbose --install
+    ./configure --enable-openssl-install
     make android
 
-============================= ================================================================================ =====================================================
-Make Variable                 Default                                                                          Meaning
-============================= ================================================================================ =====================================================
-``ANDROID_ARCH``              ``arm``                                                                          target Architecture
-``ANDROID_TOOL``              ``${ANDROID_ARCH}-linux-androideabi``                                            cross compiler
-``MAKE_STANDALONE_TOOLCHAIN`` ``${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
-============================= ================================================================================ =====================================================
+=================================== ================================================================================ =====================================================
+Make Variable                       Default                                                                          Meaning
+=================================== ================================================================================ =====================================================
+:envvar:`ANDROID_ARCH`              ``arm``                                                                          target Architecture
+:envvar:`ANDROID_TOOL`              ``${ANDROID_ARCH}-linux-androideabi``                                            cross compiler
+:envvar:`MAKE_STANDALONE_TOOLCHAIN` ``${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
+=================================== ================================================================================ =====================================================
 
 On successfull compilation, the Android binaries can be found in
-:file:`openpace-1.0.0_${ANDROID_ARCH}-linux-androideabi`.
+:file:`openpace-1.0.1_${ANDROID_ARCH}-linux-androideabi`.
+
 
 .. _javascript_api:
 
+========================
 Compiling for Javascript
--------------------------------------------------------------------------------
+========================
 
 Technically the process for getting OpenPACE into Javascript is similar to
 cross compiling. With Emscripten_ the library is compiled into LLVM bytecode
 and then translated into Javascript. Use the following command::
 
+    test -x configure || autoreconf --verbose --install
+    ./configure --enable-openssl-install
     make emscripten
 
-============================= ================================== ==============================================================================
-Make Variable                 Default                            Meaning
-============================= ================================== ==============================================================================
-``EMSCRIPTEN_ROOT``           ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc` folder
-============================= ================================== ==============================================================================
+========================= ================================== =======================================================================
+Make Variable             Default                            Meaning
+========================= ================================== =======================================================================
+:envvar:`EMSCRIPTEN_ROOT` ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc`
+========================= ================================== =======================================================================
 
 On successfull compilation, the compiled bitcode files can be found in
-:file:`openpace-1.0.0_js`. You can run our testsuite
+:file:`openpace-1.0.1_js`. You can run our testsuite
 completely in Javascript or `in your browser <_static/eactest.html>`_::
 
-    nodejs openpace-1.0.0_js/bin/eactest.js
-    firefox openpace-1.0.0_js/eactest.html
+    nodejs openpace-1.0.1_js/bin/eactest.js
+    firefox openpace-1.0.1_js/eactest.html
 
 .. warning::
     `Javascript cryptography is considered harmful`_. You may want to think
@@ -214,4 +251,9 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
 .. _`SWIG`: http://www.swig.org/download.html
 .. _`Python`: https://www.python.org/downloads/release/python-278/
 .. _`gendef`: http://sourceforge.net/p/mingw-w64/wiki2/gendef/
+.. _`Vagrant`: https://www.vagrantup.com
+.. _`VirtualBox`: https://www.virtualbox.org/
 .. _`Visual Studio 2013`: http://msdn.microsoft.com/library/dd831853.aspx
+.. _`MSYS2`: https://msys2.github.io/
+.. _`cccl`: https://github.com/frankmorgner/cccl
+.. _`OpenSSL Windows binaries`: https://slproweb.com/products/Win32OpenSSL.html
