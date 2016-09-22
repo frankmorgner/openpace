@@ -6,7 +6,7 @@ AC_INIT([OpenPACE], [1.0.1], [https://github.com/frankmorgner/openpace/issues], 
 AC_CONFIG_SRCDIR([src/eactest.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(foreign)
 
 # If you need to see the details, just run make V=1.
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -280,6 +280,8 @@ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
 
 AC_CONFIG_FILES([
                  Makefile
+                 src/doc/Makefile
+                 src/doc/_static/Makefile
                  src/Makefile
                  bindings/Makefile
                  bindings/java/Makefile
@@ -287,8 +289,6 @@ AC_CONFIG_FILES([
                  bindings/ruby/Makefile
                  bindings/go/Makefile
                  cross/Makefile
-                 doc/Makefile
-                 doc/_static/Makefile
                  ])
 AC_OUTPUT
 

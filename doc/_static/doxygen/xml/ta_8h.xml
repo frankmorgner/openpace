@@ -1,0 +1,452 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="ta_8h" kind="file">
+    <compoundname>ta.h</compoundname>
+    <includes refid="eac_8h" local="no">eac/eac.h</includes>
+    <incdepgraph>
+      <node id="84">
+        <label>openssl/asn1t.h</label>
+      </node>
+      <node id="82">
+        <label>openssl/obj_mac.h</label>
+      </node>
+      <node id="83">
+        <label>openssl/asn1.h</label>
+      </node>
+      <node id="81">
+        <label>eac/objects.h</label>
+        <link refid="objects_8h"/>
+        <childnode refid="82" relation="include">
+        </childnode>
+      </node>
+      <node id="85">
+        <label>openssl/bio.h</label>
+      </node>
+      <node id="80">
+        <label>eac/cv_cert.h</label>
+        <link refid="cv__cert_8h"/>
+        <childnode refid="81" relation="include">
+        </childnode>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="84" relation="include">
+        </childnode>
+        <childnode refid="85" relation="include">
+        </childnode>
+      </node>
+      <node id="86">
+        <label>openssl/buffer.h</label>
+      </node>
+      <node id="79">
+        <label>eac/eac.h</label>
+        <link refid="eac_8h"/>
+        <childnode refid="80" relation="include">
+        </childnode>
+        <childnode refid="81" relation="include">
+        </childnode>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="86" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+        <childnode refid="89" relation="include">
+        </childnode>
+      </node>
+      <node id="89">
+        <label>openssl/evp.h</label>
+      </node>
+      <node id="88">
+        <label>openssl/ec.h</label>
+      </node>
+      <node id="87">
+        <label>openssl/cmac.h</label>
+      </node>
+      <node id="78">
+        <label>eac/ta.h</label>
+        <link refid="ta.h"/>
+        <childnode refid="79" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="ta_8h_1ab828df94adf4d17cd35281c676bb45d0" prot="public" static="no">
+        <name>TA_FLAG_SKIP_TIMECHECK</name>
+        <initializer>1</initializer>
+        <briefdescription>
+<para>Skip checking effective and expiration date of cv certificates against the system&apos;s current time. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="50" column="9" bodyfile="/home/fm/Dokumente/openpace/src/eac/ta.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__taproto_1ga3b9f3dfea8560bd63e9594d32994bd95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TA_disable_checks</definition>
+        <argsstring>(EAC_CTX *ctx)</argsstring>
+        <name>TA_disable_checks</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Enables <computeroutput>TA_FLAG_SKIP_TIMECHECK</computeroutput> in the TA context. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context for which to disable TA checks </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="63" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__taproto_1ga042883976e7a3423db2f99f6501272a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int TA_STEP2_import_certificate</definition>
+        <argsstring>(const EAC_CTX *ctx, const unsigned char *cert, size_t cert_len)</argsstring>
+        <name>TA_STEP2_import_certificate</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>cert</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>cert_len</declname>
+        </param>
+        <briefdescription>
+<para>Imports a CV Certificate to the EAC context. </para>        </briefdescription>
+        <detaileddescription>
+<para>This function should be used to subsequently verify all certificates of a certificate chain. The signature and date of the certificate are verified using the trust anchor or the most recently imported certificate. The TA context is adjusted to use domain parameters of the imported certificate. If the chain contains a new trust anchor (i.e. a CVCA certificate), the old trust anchor is replaced when EAC is completed.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>raw Certificate to import </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">cert_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>cert</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id3">TA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="84" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__taproto_1ga1d7bcb63f5a375759d9d040c200068c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* TA_STEP3_generate_ephemeral_key</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>TA_STEP3_generate_ephemeral_key</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Generates ephemeral key for CA. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The CA context of <emphasis>ctx</emphasis> is initialized for key agreement</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Ephemeral public key or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id3">TA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="96" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__taproto_1ga1a4d4534bb23c4d2ffefb5bfdec335ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* TA_STEP4_get_nonce</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>TA_STEP4_get_nonce</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Generates a nonce for the PCD. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The nonce is saved in <emphasis>ctx</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Nonce or NULL in case of an error</para></simplesect>
+<simplesect kind="note"><para>EAC_CTX_init_ca must have been called before the nonce can be generated</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id3">TA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="109" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__taproto_1ga65d4a5c270c5071b7bc7bce3ab189cda" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int TA_STEP4_set_nonce</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *nonce)</argsstring>
+        <name>TA_STEP4_set_nonce</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>nonce</declname>
+        </param>
+        <briefdescription>
+<para>Import the nonce from the PICC. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The nonce is saved in <emphasis>ctx</emphasis> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nonce</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The nonce to be copied</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id3">TA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="121" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__taproto_1ga31712e0ebf291f0f31cd462f33a0d802" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* TA_STEP5_sign</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *my_ta_eph_pubkey, const BUF_MEM *opp_pace_eph_pubkey, const BUF_MEM *auxdata)</argsstring>
+        <name>TA_STEP5_sign</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>my_ta_eph_pubkey</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>opp_pace_eph_pubkey</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>auxdata</declname>
+        </param>
+        <briefdescription>
+<para>Signs data for terminal authentication. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">my_ta_eph_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PCD&apos;s ephemeral public key generated in Step 3 </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">opp_pace_eph_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PICC&apos;s ephemeral public key generated in PACE Step 3b </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">auxdata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Auxiliary data from PCD</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Signature or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id3">TA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="135" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__taproto_1ga76fe96c3ba3d1ed684f08e8d486d2f2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int TA_STEP6_verify</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *opp_ta_comp_eph_pubkey, const BUF_MEM *my_pace_comp_eph_pubkey, const BUF_MEM *auxdata, const BUF_MEM *signature)</argsstring>
+        <name>TA_STEP6_verify</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>opp_ta_comp_eph_pubkey</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>my_pace_comp_eph_pubkey</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>auxdata</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>signature</declname>
+        </param>
+        <briefdescription>
+<para>Verifies PCD&apos;s signature from TA step 5. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">opp_ta_comp_eph_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PCD&apos;s compressed ephemeral public key generated in Step 3 </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">my_pace_comp_eph_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PICC&apos;s compressed ephemeral public key generated in PACE Step 3b </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">auxdata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Auxiliary data from PCD </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">signature</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Data to verify</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if the signature has been verified, 0 if not or -1 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id3">TA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ta.h" line="151" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Interface for Terminal Authentication. </para>    </briefdescription>
+    <detaileddescription>
+<para>Terminal authentication (TA) is a protocol used to check the authenticity of a Terminal communicating with an MRTD chip. It is also used to establish the effective access rights of the terminal for all further communication. TA is a challenge- response protocol in which the certificate issues a challenge which is signed by the terminal. In order to be able to prove the authenticity of the answer, the MRTD chip needs to be provided with a certificate chain, which goes back to its own trust anchor.</para><para><simplesect kind="date"><para>2011-04-03</para></simplesect>
+<simplesect kind="author"><para>Frank Morgner <ulink url="mailto:frankmorgner@gmail.com">frankmorgner@gmail.com</ulink> </para></simplesect>
+<simplesect kind="author"><para>Dominik Oepen <ulink url="mailto:oepen@informatik.hu-berlin.de">oepen@informatik.hu-berlin.de</ulink> </para></simplesect>
+</para>    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2010-2012<sp/>Frank<sp/>Morgner<sp/>and<sp/>Dominik<sp/>Oepen</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>OpenPACE.</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>OpenPACE<sp/>is<sp/>free<sp/>software:<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify<sp/>it<sp/>under</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>Software<sp/>Foundation,<sp/>either<sp/>version<sp/>3<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>any<sp/>later<sp/>version.</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/>OpenPACE<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/>but<sp/>WITHOUT<sp/>ANY</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of<sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>details.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>along<sp/>with</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>OpenPACE.<sp/><sp/>If<sp/>not,<sp/>see<sp/>&lt;http://www.gnu.org/licenses/&gt;.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="preprocessor">#ifndef<sp/>TA_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TA_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="eac_8h" kindref="compound">eac/eac.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="ta_8h_1ab828df94adf4d17cd35281c676bb45d0" refkind="member"><highlight class="preprocessor">#define<sp/>TA_FLAG_SKIP_TIMECHECK<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><ref refid="group__taproto_1ga3b9f3dfea8560bd63e9594d32994bd95" kindref="member">TA_disable_checks</ref>(<ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><ref refid="group__taproto_1ga042883976e7a3423db2f99f6501272a7" kindref="member">TA_STEP2_import_certificate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*cert,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cert_len);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal">BUF_MEM<sp/>*</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><ref refid="group__taproto_1ga1d7bcb63f5a375759d9d040c200068c3" kindref="member">TA_STEP3_generate_ephemeral_key</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal">BUF_MEM<sp/>*</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><ref refid="group__taproto_1ga1a4d4534bb23c4d2ffefb5bfdec335ff" kindref="member">TA_STEP4_get_nonce</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx);</highlight></codeline>
+<codeline lineno="120"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><ref refid="group__taproto_1ga65d4a5c270c5071b7bc7bce3ab189cda" kindref="member">TA_STEP4_set_nonce</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*nonce);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal">BUF_MEM<sp/>*</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><ref refid="group__taproto_1ga31712e0ebf291f0f31cd462f33a0d802" kindref="member">TA_STEP5_sign</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*my_ta_eph_pubkey,</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*opp_pace_eph_pubkey,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*auxdata);</highlight></codeline>
+<codeline lineno="150"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><ref refid="group__taproto_1ga76fe96c3ba3d1ed684f08e8d486d2f2b" kindref="member">TA_STEP6_verify</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*opp_ta_comp_eph_pubkey,</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*my_pace_comp_eph_pubkey,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*auxdata,</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*signature);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/fm/Dokumente/openpace/src/eac/ta.h"/>
+  </compounddef>
+</doxygen>

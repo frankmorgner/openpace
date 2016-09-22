@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="structpace__sec" kind="struct" prot="public">
+    <compoundname>pace_sec</compoundname>
+    <includes refid="pace_8h" local="no">pace.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structpace__sec_1a4edee42cfb3cbaa2ca7a0612e5bfd70a" prot="public" static="no" mutable="no">
+        <type>enum <ref refid="pace_8h_1a02b29cbcf45cfaa2e6df0f59b98b3525" kindref="member">s_type</ref></type>
+        <definition>enum s_type pace_sec::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <briefdescription>
+<para>Type of the secret. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="226" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/pace.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__sec_1a0f6398c39c804664105a8b9595618894" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* pace_sec::mem</definition>
+        <argsstring></argsstring>
+        <name>mem</name>
+        <briefdescription>
+<para>Raw secret. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="73" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/pace.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__sec_1ab10cebaa4080f060c6e2be702129a2bf" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* pace_sec::encoded</definition>
+        <argsstring></argsstring>
+        <name>encoded</name>
+        <briefdescription>
+<para>Encoded secret. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="75" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/pace.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Shared secret for PACE. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="69" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/pace.h" bodystart="69" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structpace__sec_1ab10cebaa4080f060c6e2be702129a2bf" prot="public" virt="non-virtual"><scope>pace_sec</scope><name>encoded</name></member>
+      <member refid="structpace__sec_1a0f6398c39c804664105a8b9595618894" prot="public" virt="non-virtual"><scope>pace_sec</scope><name>mem</name></member>
+      <member refid="structpace__sec_1a4edee42cfb3cbaa2ca7a0612e5bfd70a" prot="public" virt="non-virtual"><scope>pace_sec</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

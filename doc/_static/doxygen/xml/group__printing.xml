@@ -1,0 +1,422 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="group__printing" kind="group">
+    <compoundname>printing</compoundname>
+    <title>Data Printing</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__printing_1ga4d2388a9e59f0494a7fc8b8bf5cd5538" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int certificate_description_print</definition>
+        <argsstring>(BIO *bio, const CVC_CERTIFICATE_DESCRIPTION *desc, int indent)</argsstring>
+        <name>certificate_description_print</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bio</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1adf748bf4eb467dbce2b5ea54c3a2062f" kindref="member">CVC_CERTIFICATE_DESCRIPTION</ref> *</type>
+          <declname>desc</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print CV certificate description in human readable form. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">bio</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">desc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate desciption to print </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of spaces to prepend</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="447" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga6cbe7fccc3b3c50761efc05f43a00c3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int cvc_chat_print</definition>
+        <argsstring>(BIO *bio, const CVC_CHAT *chat, int indent)</argsstring>
+        <name>cvc_chat_print</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bio</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1a397bdd4c39a973f58c75c51c884d2d8a" kindref="member">CVC_CHAT</ref> *</type>
+          <declname>chat</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print CHAT in human readable form. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">bio</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">chat</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CHAT to dump </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of spaces to prepend</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="460" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1gacdda7b257013c199ce6ff92793fa6767" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int cvc_chat_print_authorizations</definition>
+        <argsstring>(BIO *bio, const CVC_CHAT *chat, int indent)</argsstring>
+        <name>cvc_chat_print_authorizations</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bio</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1a397bdd4c39a973f58c75c51c884d2d8a" kindref="member">CVC_CHAT</ref> *</type>
+          <declname>chat</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print the relative authorization contained in a CHAT in human readable form. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">bio</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">chat</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CHAT which contains the relative authorization </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of spaces to prepend</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="473" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga33515c2eb1aa44b1a85f7d9e9fa9c15e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CVC_print</definition>
+        <argsstring>(BIO *bio, const CVC_CERT *cv, int indent)</argsstring>
+        <name>CVC_print</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bio</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+          <declname>cv</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print CV certificate in human readable form. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">bio</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">cv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate to print </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of spaces to prepend</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="485" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga9e8c6ae74ee9d904c252fbb84842561e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int certificate_request_print</definition>
+        <argsstring>(BIO *bio, const CVC_CERT_REQUEST *request, int indent)</argsstring>
+        <name>certificate_request_print</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bio</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1a3c0041409de1d0ac8fdf5cd8f981b322" kindref="member">CVC_CERT_REQUEST</ref> *</type>
+          <declname>request</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print CV certificate request in human readable form. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">bio</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">request</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate request to print </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of spaces to prepend</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="496" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga24eac0cd08d21e122f93fe8e59f598e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int certificate_authentication_request_print</definition>
+        <argsstring>(BIO *bio, const CVC_CERT_AUTHENTICATION_REQUEST *authentication, int indent)</argsstring>
+        <name>certificate_authentication_request_print</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bio</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1ac5ffa8517c061b409d8dd92285b9ce15" kindref="member">CVC_CERT_AUTHENTICATION_REQUEST</ref> *</type>
+          <declname>authentication</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print CV certificate authentication request in human readable form. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">bio</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">request</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate authentication request to print </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of spaces to prepend</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="508" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga69dfa847f834d5cfa559a88ceb8d04c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_print_private</definition>
+        <argsstring>(BIO *out, const EAC_CTX *ctx, int indent)</argsstring>
+        <name>EAC_CTX_print_private</name>
+        <param>
+          <type>BIO *</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print EAC context including private data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context to be printed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of whitespaces used for indenting the output</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="727" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga7bd156b63fc10e59fddb4d9fbe6f2f5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int BUF_MEM_print</definition>
+        <argsstring>(BIO *out, const BUF_MEM *buf, int indent)</argsstring>
+        <name>BUF_MEM_print</name>
+        <param>
+          <type>BIO *</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Prints buffer. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Buffer to print </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of whitespaces used for indenting the output</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="737" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__printing_1ga2ed7b3ca7230dc0d6f66e64a72257ff2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void BUF_MEM_clear_free</definition>
+        <argsstring>(BUF_MEM *b)</argsstring>
+        <name>BUF_MEM_clear_free</name>
+        <param>
+          <type>BUF_MEM *</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+<para>Frees and wipes a buffer. </para>        </briefdescription>
+        <detaileddescription>
+<para>Calls <computeroutput>OPENSSL_cleanse()</computeroutput> and <computeroutput>BUF_MEM_free()</computeroutput>.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="748" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="structeac__ctx" kind="struct" prot="public">
+    <compoundname>eac_ctx</compoundname>
+    <includes refid="eac_8h" local="no">eac.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structeac__ctx_1af35b8ee2566fcb58b784d18c6955b044" prot="public" static="no" mutable="no">
+        <type>enum <ref refid="eac_8h_1a1071d557ae2c818d130e7479c5f10dda" kindref="member">eac_tr_version</ref></type>
+        <definition>enum eac_tr_version eac_ctx::tr_version</definition>
+        <argsstring></argsstring>
+        <name>tr_version</name>
+        <briefdescription>
+<para>Perform EAC conforming to this version of TR-03110. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="320" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="326" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1aa4689aae53a76259fc0a5b6986beed44" prot="public" static="no" mutable="no">
+        <type>BN_CTX *</type>
+        <definition>BN_CTX* eac_ctx::bn_ctx</definition>
+        <argsstring></argsstring>
+        <name>bn_ctx</name>
+        <briefdescription>
+<para>Context for various operations with <computeroutput>BIGNUM</computeroutput> objects. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="328" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="328" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1a66f01e318e94ef27f184496c1ee08258" prot="public" static="no" mutable="no">
+        <type>EVP_MD_CTX *</type>
+        <definition>EVP_MD_CTX* eac_ctx::md_ctx</definition>
+        <argsstring></argsstring>
+        <name>md_ctx</name>
+        <briefdescription>
+<para>Context for various hashing operations. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="330" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="330" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1ae4ae226d67fed219a32807c74246f96d" prot="public" static="no" mutable="no">
+        <type>EVP_CIPHER_CTX *</type>
+        <definition>EVP_CIPHER_CTX* eac_ctx::cipher_ctx</definition>
+        <argsstring></argsstring>
+        <name>cipher_ctx</name>
+        <briefdescription>
+<para>Context for various cipher operations. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="332" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="332" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1a932f295824a7c470be10a2399692b14e" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1aa9e73c85f6dda35ca719f6e760f65f7a" kindref="member">PACE_CTX</ref> *</type>
+        <definition>PACE_CTX* eac_ctx::pace_ctx</definition>
+        <argsstring></argsstring>
+        <name>pace_ctx</name>
+        <briefdescription>
+<para>Context for the currently selected Password Authenticated Connection Establishment protocol. </para>        </briefdescription>
+        <detaileddescription>
+<para>Points to an element of <computeroutput>pace_ctxs</computeroutput> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="336" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="336" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1aeba652c7c12edbc1154c329f923e516d" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a5f9ef24d00954284d3dfb4988d89ccd5" kindref="member">RI_CTX</ref> *</type>
+        <definition>RI_CTX* eac_ctx::ri_ctx</definition>
+        <argsstring></argsstring>
+        <name>ri_ctx</name>
+        <briefdescription>
+<para>Context for the currently selected Restricted Identification protocol. </para>        </briefdescription>
+        <detaileddescription>
+<para>Points to an element of <computeroutput>ri_ctxs</computeroutput> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="342" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="342" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1a2d80bb6842313788c23c422d12c81437" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a0ead002282275f60d3cd3afa173b3374" kindref="member">TA_CTX</ref> *</type>
+        <definition>TA_CTX* eac_ctx::ta_ctx</definition>
+        <argsstring></argsstring>
+        <name>ta_ctx</name>
+        <briefdescription>
+<para>Context for the currently selected Terminal Authentication protocol. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="346" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="346" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1a335d8db00b3c531ec2a8bdf70259a487" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a8b43fdb0714ba4c6495c8dfe6c773b04" kindref="member">CA_CTX</ref> *</type>
+        <definition>CA_CTX* eac_ctx::ca_ctx</definition>
+        <argsstring></argsstring>
+        <name>ca_ctx</name>
+        <briefdescription>
+<para>Context for the currently selected Chip Authentication protocol. </para>        </briefdescription>
+        <detaileddescription>
+<para>Points to an element of <computeroutput>ca_ctxs</computeroutput> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="350" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="350" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1a920e45bffa7ac62240aa98b448286aac" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a4402d634a911197302d4e837028e3574" kindref="member">KA_CTX</ref> *</type>
+        <definition>KA_CTX* eac_ctx::key_ctx</definition>
+        <argsstring></argsstring>
+        <name>key_ctx</name>
+        <briefdescription>
+<para>Context for currently selected secure messaging established with PACE or CA. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="354" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="354" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structeac__ctx_1ac5ac966e53d3d76ea6861a7bf8e5ad5b" prot="public" static="no" mutable="no">
+        <type>BIGNUM *</type>
+        <definition>BIGNUM* eac_ctx::ssc</definition>
+        <argsstring></argsstring>
+        <name>ssc</name>
+        <briefdescription>
+<para>Send sequence counter. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="356" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="356" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structeac__ctx_1aba9bee0f71ee1e7483f6e4ad6a14e173" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>eac_ctx::STACK_OF</definition>
+        <argsstring>(PACE_CTX *) pace_ctxs</argsstring>
+        <name>STACK_OF</name>
+        <param>
+          <type><ref refid="eac_8h_1aa9e73c85f6dda35ca719f6e760f65f7a" kindref="member">PACE_CTX</ref> *</type>
+        </param>
+        <briefdescription>
+<para>stack of available Password Authenticated Connection Establishment configurations </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="338" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="structeac__ctx_1a9ef2db2812d568bb5d9518b9143c0613" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>eac_ctx::STACK_OF</definition>
+        <argsstring>(RI_CTX *) ri_ctxs</argsstring>
+        <name>STACK_OF</name>
+        <param>
+          <type><ref refid="eac_8h_1a5f9ef24d00954284d3dfb4988d89ccd5" kindref="member">RI_CTX</ref> *</type>
+        </param>
+        <briefdescription>
+<para>stack of available Restricted Identification configurations </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="344" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="structeac__ctx_1a23783fc5062b4767f151e13c3eec7e6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>eac_ctx::STACK_OF</definition>
+        <argsstring>(CA_CTX *) ca_ctxs</argsstring>
+        <name>STACK_OF</name>
+        <param>
+          <type><ref refid="eac_8h_1a8b43fdb0714ba4c6495c8dfe6c773b04" kindref="member">CA_CTX</ref> *</type>
+        </param>
+        <briefdescription>
+<para>stack of available Chip Authentication configurations </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="352" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Context for the Extended Access Control protocol. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="45">
+        <label>ri_ctx</label>
+        <link refid="structri__ctx"/>
+      </node>
+      <node id="43">
+        <label>cvc_chat_seq_st</label>
+        <link refid="structcvc__chat__seq__st"/>
+      </node>
+      <node id="37">
+        <label>ca_ctx</label>
+        <link refid="structca__ctx"/>
+        <childnode refid="38" relation="usage">
+          <edgelabel>ka_ctx</edgelabel>
+        </childnode>
+      </node>
+      <node id="40">
+        <label>cvc_cert_seq_st</label>
+        <link refid="structcvc__cert__seq__st"/>
+        <childnode refid="41" relation="usage">
+          <edgelabel>body</edgelabel>
+        </childnode>
+      </node>
+      <node id="44">
+        <label>pace_ctx</label>
+        <link refid="structpace__ctx"/>
+        <childnode refid="38" relation="usage">
+          <edgelabel>ka_ctx</edgelabel>
+        </childnode>
+      </node>
+      <node id="42">
+        <label>cvc_pubkey_st</label>
+        <link refid="structcvc__pubkey__st"/>
+      </node>
+      <node id="36">
+        <label>eac_ctx</label>
+        <link refid="structeac__ctx"/>
+        <childnode refid="37" relation="usage">
+          <edgelabel>ca_ctx</edgelabel>
+        </childnode>
+        <childnode refid="39" relation="usage">
+          <edgelabel>ta_ctx</edgelabel>
+        </childnode>
+        <childnode refid="44" relation="usage">
+          <edgelabel>pace_ctx</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>key_ctx</edgelabel>
+        </childnode>
+        <childnode refid="45" relation="usage">
+          <edgelabel>ri_ctx</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>cvc_cert_body_seq_st</label>
+        <link refid="structcvc__cert__body__seq__st"/>
+        <childnode refid="42" relation="usage">
+          <edgelabel>public_key</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>chat</edgelabel>
+        </childnode>
+      </node>
+      <node id="38">
+        <label>ka_ctx</label>
+        <link refid="structka__ctx"/>
+      </node>
+      <node id="39">
+        <label>ta_ctx</label>
+        <link refid="structta__ctx"/>
+        <childnode refid="40" relation="usage">
+          <edgelabel>new_trust_anchor</edgelabel>
+          <edgelabel>lookup_cvca_cert</edgelabel>
+          <edgelabel>trust_anchor</edgelabel>
+          <edgelabel>current_cert</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="324" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="324" bodyend="357"/>
+    <listofallmembers>
+      <member refid="structeac__ctx_1aa4689aae53a76259fc0a5b6986beed44" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>bn_ctx</name></member>
+      <member refid="structeac__ctx_1a335d8db00b3c531ec2a8bdf70259a487" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>ca_ctx</name></member>
+      <member refid="structeac__ctx_1ae4ae226d67fed219a32807c74246f96d" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>cipher_ctx</name></member>
+      <member refid="structeac__ctx_1a920e45bffa7ac62240aa98b448286aac" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>key_ctx</name></member>
+      <member refid="structeac__ctx_1a66f01e318e94ef27f184496c1ee08258" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>md_ctx</name></member>
+      <member refid="structeac__ctx_1a932f295824a7c470be10a2399692b14e" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>pace_ctx</name></member>
+      <member refid="structeac__ctx_1aeba652c7c12edbc1154c329f923e516d" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>ri_ctx</name></member>
+      <member refid="structeac__ctx_1ac5ac966e53d3d76ea6861a7bf8e5ad5b" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>ssc</name></member>
+      <member refid="structeac__ctx_1aba9bee0f71ee1e7483f6e4ad6a14e173" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>STACK_OF</name></member>
+      <member refid="structeac__ctx_1a9ef2db2812d568bb5d9518b9143c0613" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>STACK_OF</name></member>
+      <member refid="structeac__ctx_1a23783fc5062b4767f151e13c3eec7e6b" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>STACK_OF</name></member>
+      <member refid="structeac__ctx_1a2d80bb6842313788c23c422d12c81437" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>ta_ctx</name></member>
+      <member refid="structeac__ctx_1af35b8ee2566fcb58b784d18c6955b044" prot="public" virt="non-virtual"><scope>eac_ctx</scope><name>tr_version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

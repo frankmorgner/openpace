@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Extended Access Control Specification &mdash; OpenPACE 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="OpenPACE 1.0.1 documentation" href="index.html" />
+    <link rel="prev" title="Python API to OpenPACE" href="python_api.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/frankmorgner/openpace"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          OpenPACE</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Download OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#compiling-and-installing-openpace">Compiling and Installing OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage of OpenPACE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Extended Access Control Specification</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Extended Access Control Specification</a><ul>
+<li><a class="reference internal" href="#password-authenticated-connection-establishment">Password Authenticated Connection Establishment</a><ul>
+<li><a class="reference internal" href="#protocol-specification">Protocol Specification</a></li>
+<li><a class="reference internal" href="#ecdh-mapping">ECDH Mapping</a><ul>
+<li><a class="reference internal" href="#generic-mapping">Generic Mapping</a></li>
+<li><a class="reference internal" href="#integrated-mapping">Integrated Mapping</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dh-mapping">DH Mapping</a><ul>
+<li><a class="reference internal" href="#id1">Generic Mapping</a></li>
+<li><a class="reference internal" href="#id2">Integrated Mapping</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#terminal-authentication">Terminal Authentication</a><ul>
+<li><a class="reference internal" href="#id3">Protocol Specification</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chip-authentication">Chip Authentication</a><ul>
+<li><a class="reference internal" href="#id4">Protocol Specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="python_api.html" title="Previous Chapter: Python API to OpenPACE"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Python API to Op...</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <span class="target" id="protocols"></span><div class="section" id="extended-access-control-specification">
+<h1>Extended Access Control Specification<a class="headerlink" href="#extended-access-control-specification" title="Permalink to this headline">¶</a></h1>
+<p>Extended Access Control version 2 (EAC) defined by the <a class="reference external" href="https://www.bsi.bund.de">Federal Office for
+Information Security (BSI)</a> <a class="footnote-reference" href="#id5" id="id6">[1]</a> in the <a class="reference external" href="https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html">Technical Guideline TR-03110</a> <a class="footnote-reference" href="#id7" id="id8">[2]</a>.  It is
+designed to be compatible and submitted to be standardized with <a class="reference external" href="http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx">ICAO Machine
+Readable Travel Documents Doc 9303</a> <a class="footnote-reference" href="#id9" id="id10">[3]</a>.  <abbr title="Extended Access Control">EAC</abbr> consists of three subsequent
+steps:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#password-authenticated-connection-establishment">Password Authenticated Connection Establishment</a> (PACE)</li>
+<li><a class="reference internal" href="#terminal-authentication">Terminal Authentication</a> (TA)</li>
+<li><a class="reference internal" href="#chip-authentication">Chip Authentication</a> (CA)</li>
+</ol>
+<p>The following description of <abbr title="Password Authenticated Connection Establishment">PACE</abbr>, <abbr title="Terminal Authenticatation">TA</abbr> and <abbr title="Chip Authentication">CA</abbr> is cited from BSI TR-03110
+(Version 2.05). With Terminal or PCD and MRTD chip or PICC we denote the two
+parties involved in <abbr title="Extended Access Control">EAC</abbr>.</p>
+<div class="section" id="password-authenticated-connection-establishment">
+<h2>Password Authenticated Connection Establishment<a class="headerlink" href="#password-authenticated-connection-establishment" title="Permalink to this headline">¶</a></h2>
+<p>The PACE Protocol is a password authenticated Diffie-Hellman key agreement
+protocol that provides secure communication and explicit password-based
+authentication of the MRTD chip and the terminal (i.e. MRTD chip and terminal
+share the same password <span class="math">\(\pi\)</span>).</p>
+<div class="section" id="protocol-specification">
+<h3>Protocol Specification<a class="headerlink" href="#protocol-specification" title="Permalink to this headline">¶</a></h3>
+<p>The following steps are performed by the terminal and the MRTD chip:</p>
+<ol class="arabic">
+<li><p class="first">The MRTD chip randomly and uniformly chooses a nonce <span class="math">\(s\)</span>, encrypts the
+nonce to <span class="math">\(z=\operatorname{E} ( K_\pi , s)\)</span>, where
+<span class="math">\(K_\pi=\operatorname{KDF}_\pi(\pi)\)</span> is derived from the shared
+password <span class="math">\(\pi\)</span>, and sends the ciphertext <span class="math">\(z\)</span> together with the
+static domain parameters <span class="math">\(D_{\text{PICC}}\)</span> to the terminal.</p>
+</li>
+<li><p class="first">The terminal recovers the plaintext <span class="math">\(s=\operatorname{D}( K_\pi , z )\)</span>
+with the help of the shared password <span class="math">\(\pi\)</span>.</p>
+</li>
+<li><p class="first">Both the MRTD chip and the terminal perform the following steps:</p>
+<ol class="loweralpha">
+<li><p class="first">They compute the ephemeral domain parameters <span class="math">\(\widetilde{D}
+=\operatorname{Map}( D_{\text{PICC}} , s )\)</span>.</p>
+</li>
+<li><p class="first">They perform an anonymous Diffie-Hellman key agreement based on the
+ephemeral domain parameters and generate the shared secret.</p>
+<blockquote>
+<div><blockquote>
+<div><div class="math">
+\[K =\operatorname{KA} ( \widetilde{SK_{\text{PICC}}} ,
+\widetilde{PK_{\text{PCD}}} , \widetilde{D}) =\operatorname{KA} (
+\widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PICC}}} ,
+\widetilde{D} )\]</div>
+</div></blockquote>
+<p>During Diffie-Hellman key agreement, each party SHOULD check that the
+two public keys <span class="math">\(\widetilde{PK_{\text{PICC}}}\)</span> and
+<span class="math">\(\widetilde{PK_{\text{PCD}}}\)</span> differ.</p>
+</div></blockquote>
+</li>
+<li><p class="first">They derive session keys.</p>
+<blockquote>
+<div><div class="math">
+\[K_{\text{MAC}} =\operatorname{KDF}_{\text{MAC}} ( K )\text{ and }
+K_{\text{Enc}}=\operatorname{KDF}_{\text{Enc}} ( K )\]</div>
+</div></blockquote>
+</li>
+<li><p class="first">They exchange and verify the authentication token.</p>
+<blockquote>
+<div><div class="math">
+\[T_{\text{PCD}} =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
+\widetilde{PK_{\text{PICC}}} )\text{ and }T_{\text{PICC}}
+=\operatorname{\text{MAC}}( K_{\text{MAC}} ,
+\widetilde{PK_{\text{PCD}}} )\]</div>
+</div></blockquote>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+<div class="section" id="ecdh-mapping">
+<h3>ECDH Mapping<a class="headerlink" href="#ecdh-mapping" title="Permalink to this headline">¶</a></h3>
+<p>Let <span class="math">\(G\)</span> and <span class="math">\(\widetilde{G}\)</span> be the static and an ephemeral base
+point on the elliptic curve.</p>
+<div class="section" id="generic-mapping">
+<h4>Generic Mapping<a class="headerlink" href="#generic-mapping" title="Permalink to this headline">¶</a></h4>
+<p>The function <span class="math">\(\operatorname{Map}:G \mapsto \widetilde{G}\)</span> is defined as
+<span class="math">\(\widetilde{G} =s\cdot G+H\)</span>, where <span class="math">\(H \in \langle G \rangle\)</span> is
+chosen s.th. <span class="math">\(\log_G H\)</span> is unknown. The point <span class="math">\(H\)</span> SHALL be
+calculated by an anonymous Diffie-Hellman Key Agreement.</p>
+<p>Note: The key agreement algorithm ECKA prevents small subgroup attacks by using
+compatible cofactor multiplication.</p>
+</div>
+<div class="section" id="integrated-mapping">
+<h4>Integrated Mapping<a class="headerlink" href="#integrated-mapping" title="Permalink to this headline">¶</a></h4>
+<p>The Integrated ECDH Mapping is specified by ICAO.</p>
+</div>
+</div>
+<div class="section" id="dh-mapping">
+<h3>DH Mapping<a class="headerlink" href="#dh-mapping" title="Permalink to this headline">¶</a></h3>
+<p>Let <span class="math">\(g\)</span> and <span class="math">\(\widetilde{g}\)</span> be the static and an ephemeral
+generator.</p>
+<div class="section" id="id1">
+<h4>Generic Mapping<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>The function <span class="math">\(\operatorname{Map}: g \mapsto \widetilde{g}\)</span> is defined as
+<span class="math">\(\widetilde{g} =g^s \cdot h\)</span>, where <span class="math">\(h \in \langle g \rangle\)</span> is
+chosen s.th. <span class="math">\(\log_g h\)</span> is unknown.  The group element <span class="math">\(h\)</span> SHALL be
+calculated by an anonymous Diffie-Hellman Key Agreement.</p>
+<p>Note: The public key validation method described in RFC 2631 MUST be used to
+prevent small subgroup attacks.</p>
+</div>
+<div class="section" id="id2">
+<h4>Integrated Mapping<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>The Integrated DH Mapping is specified by ICAO.</p>
+</div>
+</div>
+</div>
+<div class="section" id="terminal-authentication">
+<h2>Terminal Authentication<a class="headerlink" href="#terminal-authentication" title="Permalink to this headline">¶</a></h2>
+<p>The Terminal Authentication Protocol is a two move challenge-response
+protocol that provides explicit unilateral authentication of the terminal.</p>
+<p>In this protocol <span class="math">\(ID_{\text{PICC}}\)</span> is an identifier of the MRTD chip:</p>
+<ul class="simple">
+<li>If BAC is used <span class="math">\(ID_{\text{PICC}}\)</span> is the MRTD chip’s Document Number as
+contained in the MRZ including the check digit.</li>
+<li>If PACE is used <span class="math">\(ID_{\text{PICC}}\)</span> is computed using the MRTD chip’s
+ephemeral PACE public key, i.e. <span class="math">\(ID_{\text{PICC}} =\operatorname{Comp}
+(\widetilde{PK_{\text{PICC}}})\)</span></li>
+</ul>
+<p>Note: All messages MUST be transmitted with Secure Messaging in
+Encrypt-then-Authenticate mode using session keys derived from PACE or Chip
+Authentication.</p>
+<div class="section" id="id3">
+<h3>Protocol Specification<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>The following steps are performed by the terminal and the MRTD chip.</p>
+<ol class="arabic">
+<li><p class="first">The terminal sends a certificate chain to the MRTD chip. The chain starts
+with a certificate verifiable with the CVCA public key stored on the chip
+and ends with the Terminal Certificate.</p>
+</li>
+<li><p class="first">The MRTD chip verifies the certificates and extracts the terminal’s public
+key <span class="math">\(PK_{\text{PCD}}\)</span>.</p>
+</li>
+<li><p class="first">Version 2 only:</p>
+<ol class="loweralpha simple">
+<li>The terminal generates an ephemeral Diffie-Hellman key pair
+<span class="math">\((\widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PCD}}} ,
+D_{\text{PICC}} )\)</span>, and sends the compressed ephemeral public key
+<span class="math">\(\operatorname{Comp}( \widetilde{PK_{\text{PCD}}})\)</span> to the MRTD chip.</li>
+<li>The terminal may send auxiliary data <span class="math">\(A_{\text{PCD}}\)</span> to the MRTD
+chip.</li>
+</ol>
+</li>
+<li><p class="first">The MRTD chip randomly chooses a challenge <span class="math">\(r_{\text{PICC}}\)</span> and sends
+it to the terminal.</p>
+</li>
+<li><p class="first">The terminal responds with the signature.</p>
+<blockquote>
+<div><div class="math">
+\[s_{\text{PCD}} =\operatorname{Sign}( SK_{\text{PCD}} , ID_{\text{PICC}}
+\parallel r_{\text{PICC}} \parallel
+\operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
+A_{\text{PCD}} )\]</div>
+</div></blockquote>
+</li>
+<li><p class="first">The MRTD chip checks that</p>
+<blockquote>
+<div><div class="math">
+\[\operatorname{Verify} ( PK_{\text{PCD}} , s_{\text{PCD}} ,
+ID_{\text{PICC}}\parallel r_{\text{PICC}}\parallel
+\operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
+A_{\text{PCD}} ) = \operatorname{true}\]</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="chip-authentication">
+<h2>Chip Authentication<a class="headerlink" href="#chip-authentication" title="Permalink to this headline">¶</a></h2>
+<p>The Chip Authentication Protocol is an ephemeral-static Diffie-Hellman key
+agreement protocol that provides secure communication and unilateral
+authentication of the MRTD chip.</p>
+<p>The protocol provides explicit authentication of the MRTD chip by verifying
+the authentication token and implicit authentication of the stored data by
+performing Secure Messaging using the new session keys.</p>
+<div class="section" id="id4">
+<h3>Protocol Specification<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>In this version Terminal Authentication MUST be performed before Chip
+Authentication, as the terminal&#8217;s ephemeral key pair
+<span class="math">\((\widetilde{SK_{\text{PCD}}}, \widetilde{PK_{\text{PCD}}},
+\widetilde{D_{\text{PICC}}})\)</span> is generated as part of Terminal Authentication.</p>
+<ol class="arabic">
+<li><p class="first">The MRTD chip sends its static Diffie-Hellman public key
+<span class="math">\(PK_{\text{PICC}}\)</span> and the domain parameters <span class="math">\(D_{\text{PICC}}\)</span>
+to the terminal.</p>
+</li>
+<li><p class="first">The terminal sends the ephemeral public key
+<span class="math">\(\widetilde{PK_{\text{PCD}}}\)</span> to the MRTD chip.</p>
+</li>
+<li><p class="first">The MRTD chip computes the terminal’s compressed ephemeral public key
+<span class="math">\(\operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\)</span> and compares this
+to the compressed public key received in Terminal Authentication.</p>
+</li>
+<li><p class="first">Both the MRTD chip and the terminal compute the shared
+secret.</p>
+<blockquote>
+<div><div class="math">
+\[K=\operatorname{KA}(SK_{\text{PICC}}, \widetilde{PK_{\text{PCD}}},
+D_{\text{PICC}})=\operatorname{KA}(\widetilde{SK_{\text{PCD}}},
+PK_{\text{PICC}}, D_{\text{PICC}})\]</div>
+</div></blockquote>
+</li>
+<li><p class="first">The MRTD chip randomly chooses a nonce <span class="math">\(r_{\text{PICC}}\)</span>, derives
+session keys <span class="math">\(K_{\text{MAC}}=\operatorname{KDF}_{\text{MAC}}(K,
+r_{\text{PICC}})\)</span> and <span class="math">\(K_{\text{Enc}} =
+\operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}} )\)</span> for Secure
+Messaging from <span class="math">\(K\)</span> and <span class="math">\(r_{\text{PICC}}\)</span>, computes the
+authentication token <span class="math">\(T_{\text{PICC}} =\operatorname{\text{MAC}}(
+K_{\text{MAC}} , \widetilde{PK_{\text{PCD}}})\)</span> and sends
+<span class="math">\(r_{\text{PICC}}\)</span> and <span class="math">\(T_{\text{PICC}}\)</span> to the terminal.</p>
+</li>
+<li><p class="first">The terminal derives session keys <span class="math">\(K_{\text{MAC}}
+=\operatorname{KDF}_{\text{MAC}} ( K , r_{\text{PICC}})\)</span> and
+<span class="math">\(K_{\text{Enc}} =\operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}}
+)\)</span> for Secure Messaging from <span class="math">\(K\)</span> and <span class="math">\(r_{\text{PICC}}\)</span> and
+verifies the authentication token <span class="math">\(T_{\text{PICC}}\)</span>.</p>
+</li>
+</ol>
+<p>To verify the authenticity of the <span class="math">\(PK_{\text{PICC}}\)</span> the terminal SHALL
+perform Passive Authentication.</p>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[1]</a></td><td><a class="reference external" href="https://www.bsi.bund.de">https://www.bsi.bund.de</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[2]</a></td><td><a class="reference external" href="https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html">https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[3]</a></td><td><a class="reference external" href="http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx">http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2012-2016 by Frank Morgner and Dominik Oepen.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

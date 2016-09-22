@@ -1,3 +1,5 @@
+SUBDIRS = doc
+
 BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h cvc-print-cmdline.c cvc-print-cmdline.h
 
 EXTRA_DIST = bsi_objects.txt cvc-print.ggo.in cvc-create.ggo.in cvc-create.ggo cvc-print.ggo $(BUILT_SOURCES)

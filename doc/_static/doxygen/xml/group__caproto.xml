@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="group__caproto" kind="group">
+    <compoundname>caproto</compoundname>
+    <title>Protocol Steps for Chip Authentication</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__caproto_1gafdf162f33faea84cb7ff359bb1d5c09d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* CA_STEP1_get_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>CA_STEP1_get_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Get the PICC&apos;s encoded public key. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Encoded public key or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="110" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1gad2aaec726b132e27f50aaa16bfbde574" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* CA_STEP2_get_eph_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>CA_STEP2_get_eph_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Get the PCD&apos;s ephemeral public key (generated in TA step 3) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Public key or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="121" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga6f5f7dfc8323a946fec506956018525a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP3_check_pcd_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey)</argsstring>
+        <name>CA_STEP3_check_pcd_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>comp_pubkey</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pubkey</declname>
+        </param>
+        <briefdescription>
+<para>Check whether the public key matches the compressed public key previously received in TA. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">comp_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Compressed public key (received in TA step 3) </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Uncompressed public key (received in CA step 2)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if the keys match, 0 if they don&apos;t or -1 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="135" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga5ebe4465cab901c4bb94a75c74bf71fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP4_compute_shared_secret</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *pubkey)</argsstring>
+        <name>CA_STEP4_compute_shared_secret</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pubkey</declname>
+        </param>
+        <briefdescription>
+<para>Compute the shared secret using the PICC&apos;s static key pair and the PCD&apos;s ephemeral key pair. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The secret is saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Public key from the other party</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="ca_8h_1a5819e0a4b3b321e69ebd21661ee84134" kindref="member">CA_get_pubkey()</ref></computeroutput> extracts the PICC&apos;s public key from an <computeroutput>EF.CardSecurity</computeroutput> </para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="151" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga37bfdcc37ae95d411b5919cdd02fa3bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP5_derive_keys</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *pub, BUF_MEM **nonce, BUF_MEM **token)</argsstring>
+        <name>CA_STEP5_derive_keys</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pub</declname>
+        </param>
+        <param>
+          <type>BUF_MEM **</type>
+          <declname>nonce</declname>
+        </param>
+        <param>
+          <type>BUF_MEM **</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Derives the PICC&apos;s encryption and authentication keys. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The keys are saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pub</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PCD&apos;s ephemeral public key </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">nonce</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Generated nonce </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Authentication token</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="166" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga34352b58c89ce58c4e3e425bfb20ef45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP6_derive_keys</definition>
+        <argsstring>(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)</argsstring>
+        <name>CA_STEP6_derive_keys</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>nonce</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Derives the PCD&apos;s encryption and authentication keys. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The keys are saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">nonce</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PICC&apos;s generated nonce </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PICC&apos;s authentication token to verify</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="181" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

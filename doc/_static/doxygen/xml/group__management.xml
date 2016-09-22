@@ -1,0 +1,1169 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="group__management" kind="group">
+    <compoundname>management</compoundname>
+    <title>Data Management and Initialization</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__management_1ga28c1d11845924a1cd08461c6a1a765cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void CA_disable_passive_authentication</definition>
+        <argsstring>(EAC_CTX *ctx)</argsstring>
+        <name>CA_disable_passive_authentication</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Disable passive authentication for this EAC_CTX. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="58" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga59de291be2953ebf60bce12225fed74f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+        <definition>CVC_CERT* CVC_d2i_CVC_CERT</definition>
+        <argsstring>(CVC_CERT **cert, const unsigned char **in, long len)</argsstring>
+        <name>CVC_d2i_CVC_CERT</name>
+        <param>
+          <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> **</type>
+          <declname>cert</declname>
+        </param>
+        <param>
+          <type>const unsigned char **</type>
+          <declname>in</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+<para>Convert ASN1 formatted CV certificate to the internal structure. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Where to save the CV certificate </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ASN1 formatted CV certificate </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>in</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>CV certificate or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="346" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga63dd3f2ebdc39d4a9e0b0af8d12ec655" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int i2d_CVC_CERT</definition>
+        <argsstring>(CVC_CERT *a, unsigned char **out)</argsstring>
+        <name>i2d_CVC_CERT</name>
+        <param>
+          <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>unsigned char **</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Convert a CV certificate description to its ASN1 representation. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">a</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate description </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to write the ASN1 representation of <emphasis>a</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Number of bytes successfully encoded or a negative value if an error occured. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="357" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga90b0e7ddb7b193cbc414f8d88cd9e6cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+        <definition>CVC_CERT* CVC_CERT_new</definition>
+        <argsstring>(void)</argsstring>
+        <name>CVC_CERT_new</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Allocate memory for a CV certificate. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>CHAT or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="391" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga24e6f1a7b4eff8f8379ca5eed3f20b8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void CVC_CERT_free</definition>
+        <argsstring>(CVC_CERT *a)</argsstring>
+        <name>CVC_CERT_free</name>
+        <param>
+          <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+          <declname>a</declname>
+        </param>
+        <briefdescription>
+<para>Free a CV certificate. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">a</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate to free </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="397" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga19aa7bd7c16a19d41536c674283d1457" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+        <definition>CVC_CERT* d2i_CVC_CERT_bio</definition>
+        <argsstring>(BIO *bp, CVC_CERT **cvc)</argsstring>
+        <name>d2i_CVC_CERT_bio</name>
+        <param>
+          <type>BIO *</type>
+          <declname>bp</declname>
+        </param>
+        <param>
+          <type><ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> **</type>
+          <declname>cvc</declname>
+        </param>
+        <briefdescription>
+<para>Load a CV certificate from a BIO object. </para>        </briefdescription>
+        <detaileddescription>
+<para>This function seeks the BIO so that subsequent reads of multiple certificates are possible.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">bp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>bio object where to read from </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">cvc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) CV certificate to use</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>CV certificate read or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="410" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga84dfe7c3da5df6756c92eeca501c87fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>EVP_PKEY *</type>
+        <definition>EVP_PKEY* CVC_pubkey2pkey</definition>
+        <argsstring>(const CVC_CERT *cert, BN_CTX *bn_ctx, EVP_PKEY *out)</argsstring>
+        <name>CVC_pubkey2pkey</name>
+        <param>
+          <type>const <ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref> *</type>
+          <declname>cert</declname>
+        </param>
+        <param>
+          <type>BN_CTX *</type>
+          <declname>bn_ctx</declname>
+        </param>
+        <param>
+          <type>EVP_PKEY *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Extract the public key from a CV certificate. Since EC domain parameters are only included in CVCA certificates, they must be passed as parameters for DV and terminal certificates. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the certificate containing the public key </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">bn_ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) where to save the extracted key. May contain domain parameters.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An EVP_PKEY container with the public key or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="424" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga5fc040c933e5f19f17af686bd5f6cf6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structcvc__pubkey__st" kindref="compound">CVC_PUBKEY</ref> *</type>
+        <definition>CVC_PUBKEY* CVC_pkey2pubkey</definition>
+        <argsstring>(int all_parameters, int protocol, EVP_PKEY *key, BN_CTX *bn_ctx, CVC_PUBKEY *out)</argsstring>
+        <name>CVC_pkey2pubkey</name>
+        <param>
+          <type>int</type>
+          <declname>all_parameters</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>protocol</declname>
+        </param>
+        <param>
+          <type>EVP_PKEY *</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>BN_CTX *</type>
+          <declname>bn_ctx</declname>
+        </param>
+        <param>
+          <type><ref refid="structcvc__pubkey__st" kindref="compound">CVC_PUBKEY</ref> *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="427" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga583066ccb6f5510b69fa278513927764" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void EAC_init</definition>
+        <argsstring>(void)</argsstring>
+        <name>EAC_init</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Initializes OpenSSL and the EAC identifier. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><computeroutput>OpenSSL_add_all_algorithms()</computeroutput> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="372" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga6c56cc0f2481edc73bcdba4d5c79585a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void EAC_cleanup</definition>
+        <argsstring>(void)</argsstring>
+        <name>EAC_cleanup</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Wrapper to <computeroutput>EVP_cleanup()</computeroutput> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="377" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga193ce25ca9312d11f4f72810f961dd99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+        <definition>EAC_CTX* EAC_CTX_new</definition>
+        <argsstring>(void)</argsstring>
+        <name>EAC_CTX_new</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Create a new EAC context. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>New EAC context or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="384" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga6876daecd8aa07c88ed1af1e9df294d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void EAC_CTX_clear_free</definition>
+        <argsstring>(EAC_CTX *ctx)</argsstring>
+        <name>EAC_CTX_clear_free</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Free an EAC context. </para>        </briefdescription>
+        <detaileddescription>
+<para>Sensitive memory is cleared with OPENSSL_cleanse().</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context to free </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="393" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga46f0c11c2cb763f166f8392bda3cd250" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_init_pace</definition>
+        <argsstring>(EAC_CTX *ctx, int protocol, int curve)</argsstring>
+        <name>EAC_CTX_init_pace</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>protocol</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>curve</declname>
+        </param>
+        <briefdescription>
+<para>Initialize an EAC context for PACE. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context to initialize </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">protocol</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Identifier of the protocol&apos;s OID specifying the exact PACE parameters </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">curve</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Standardized domain parameter identifier</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ref refid="structpace__ctx_1af97dcc517de0fde8e83a7aa40f50da3e" kindref="member">PACE_CTX.protocol</ref> lists possible values for <emphasis>protocol</emphasis> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="407" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga8f778cd8d31fa9657eab86eea947092a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_init_ta</definition>
+        <argsstring>(const EAC_CTX *ctx, const unsigned char *privkey, size_t privkey_len, const unsigned char *cvca, size_t cvca_len)</argsstring>
+        <name>EAC_CTX_init_ta</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>privkey</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>privkey_len</declname>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>cvca</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>cvca_len</declname>
+        </param>
+        <briefdescription>
+<para>Initialize an EAC context for TA with the terminal&apos;s PKI data. Use either a CV certificate or a known CAR for initialization. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">privkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Private key to the given CV certificate </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">privkey_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>privkey</emphasis> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">cvca</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) CV certificate to use as trust anchor for verification of other CV certificates </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">cvca_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Length of <emphasis>cvca</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="422" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga7eac0f33848a850c1e5609d862e15546" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_init_ca</definition>
+        <argsstring>(EAC_CTX *ctx, int protocol, int curve)</argsstring>
+        <name>EAC_CTX_init_ca</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>protocol</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>curve</declname>
+        </param>
+        <briefdescription>
+<para>Initialize an EAC context for Chip Authentication. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">protocol</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Identifier of the protocol&apos;s OID specifying the exact CA parameters to use </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">curve</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Standardized domain parameter identifier</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ref refid="structca__ctx_1a9322acf2acaef458196c3b26e42993d2" kindref="member">CA_CTX.protocol</ref> lists possible values for <emphasis>protocol</emphasis> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="437" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga13af3e1b70c708d99e81e4c7d3b0d750" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_init_ri</definition>
+        <argsstring>(EAC_CTX *ctx, int protocol, int stnd_dp)</argsstring>
+        <name>EAC_CTX_init_ri</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>protocol</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>stnd_dp</declname>
+        </param>
+        <briefdescription>
+<para>Initialize an EAC context for Restricted Identification. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">protocol</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>protocol Identifier of the protocol&apos;s OID specifying the exact RI parameters to use </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">stnd_dp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Standardized domain parameter identifier</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ref refid="structri__ctx_1a26dcc3b24d0be9e786f73da29ac14078" kindref="member">RI_CTX.protocol</ref> lists possible values for <emphasis>protocol</emphasis> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="451" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga8e67d2316561446a55256760afd9610e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_init_ef_cardaccess</definition>
+        <argsstring>(unsigned const char *in, size_t in_len, EAC_CTX *ctx)</argsstring>
+        <name>EAC_CTX_init_ef_cardaccess</name>
+        <param>
+          <type>unsigned const char *</type>
+          <declname>in</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>in_len</declname>
+        </param>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Initialize an EAC context for PACE, TA and CA from the data given in an <computeroutput>EF.CardAccess</computeroutput>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><computeroutput>EF.CardAccess</computeroutput> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">in_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>in</emphasis> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context to initialize</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="463" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1gaa1eff489ae5f8d56d826c991893decac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_init_ef_cardsecurity</definition>
+        <argsstring>(const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len, EAC_CTX *ctx)</argsstring>
+        <name>EAC_CTX_init_ef_cardsecurity</name>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>ef_cardsecurity</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ef_cardsecurity_len</declname>
+        </param>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Initialize an EAC context for PACE, TA and CA from the data given in an <computeroutput>EF.CardSecurity</computeroutput>. </para>        </briefdescription>
+        <detaileddescription>
+<para>Performs passive authentication if required.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ef_cardsecurity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer containing the ASN.1 encoded EF.CardSecurity </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ef_cardsecurity_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>length of <emphasis>ef_cardsecurity</emphasis> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context to initialize</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="478" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1gaabd3c88e09a47c2513d6c68c0bed7479" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_get_cvca_lookup_cert</definition>
+        <argsstring>(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert)</argsstring>
+        <name>EAC_CTX_get_cvca_lookup_cert</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type><ref refid="eac_8h_1a8fd953d6eda2a6ef83e4ec23e065fa56" kindref="member">CVC_lookup_cvca_cert</ref> *</type>
+          <declname>lookup_cvca_cert</declname>
+        </param>
+        <briefdescription>
+<para>Return the EAC context&apos;s CVCA lookup callback. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">lookup_cvca_cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>lookup callback</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="490" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1gad5e131a9130b00ff9e589cd365736e71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_set_cvca_lookup_cert</definition>
+        <argsstring>(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert)</argsstring>
+        <name>EAC_CTX_set_cvca_lookup_cert</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type><ref refid="eac_8h_1a8fd953d6eda2a6ef83e4ec23e065fa56" kindref="member">CVC_lookup_cvca_cert</ref></type>
+          <declname>lookup_cvca_cert</declname>
+        </param>
+        <briefdescription>
+<para>Set the CVCA lookup callback. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lookup_cvca_cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>lookup callback</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="499" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga842d902f8c9ce5d7ecdc83c2940c313b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="eac_8h_1a8fd953d6eda2a6ef83e4ec23e065fa56" kindref="member">CVC_lookup_cvca_cert</ref></type>
+        <definition>CVC_lookup_cvca_cert EAC_get_default_cvca_lookup</definition>
+        <argsstring>(void)</argsstring>
+        <name>EAC_get_default_cvca_lookup</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Return the default lookup of the country verifying CA. </para>        </briefdescription>
+        <detaileddescription>
+<para>The default callback looks at /etc/eac/$issuer_name_hash.cer for the CSCA certificate, where $issuer_name_hash is an eight character lower hex value of the CSCA subject name.</para><para><simplesect kind="return"><para>default lookup of the country verifying CA</para></simplesect>
+<simplesect kind="see"><para><computeroutput>openssl x509 -in CERTIFICATE.cer -inform DER -hash -noout</computeroutput> to obtain the hash value. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="511" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga6ea1d637fd78de052fff7a048a25aafb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void EAC_set_cvc_default_dir</definition>
+        <argsstring>(const char *default_dir)</argsstring>
+        <name>EAC_set_cvc_default_dir</name>
+        <param>
+          <type>const char *</type>
+          <declname>default_dir</declname>
+        </param>
+        <briefdescription>
+<para>Set directory for <computeroutput><ref refid="group__management_1ga842d902f8c9ce5d7ecdc83c2940c313b" kindref="member">EAC_get_default_cvca_lookup()</ref></computeroutput> </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>cvc_default_dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="518" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga063457a7d04d05cf437f0b6bd3cc1367" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_get_csca_lookup_cert</definition>
+        <argsstring>(const EAC_CTX *ctx, X509_lookup_csca_cert *lookup_cvca_cert)</argsstring>
+        <name>EAC_CTX_get_csca_lookup_cert</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type><ref refid="eac_8h_1a14e6ca81c4faa924f26f58c7f76fd189" kindref="member">X509_lookup_csca_cert</ref> *</type>
+          <declname>lookup_cvca_cert</declname>
+        </param>
+        <briefdescription>
+<para>Get the CSCA lookup callback. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">lookup_cvca_cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>lookup callback</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="528" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga528afab99e4eeb222fcc6b4edc46139e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int EAC_CTX_set_csca_lookup_cert</definition>
+        <argsstring>(EAC_CTX *ctx, X509_lookup_csca_cert lookup_cvca_cert)</argsstring>
+        <name>EAC_CTX_set_csca_lookup_cert</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type><ref refid="eac_8h_1a14e6ca81c4faa924f26f58c7f76fd189" kindref="member">X509_lookup_csca_cert</ref></type>
+          <declname>lookup_cvca_cert</declname>
+        </param>
+        <briefdescription>
+<para>Set the CSCA lookup callback. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lookup_cvca_cert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>lookup callback</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="537" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga2603a5a963d5d95cce3cc76ea470d794" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="eac_8h_1a14e6ca81c4faa924f26f58c7f76fd189" kindref="member">X509_lookup_csca_cert</ref></type>
+        <definition>X509_lookup_csca_cert EAC_get_default_csca_lookup</definition>
+        <argsstring>(void)</argsstring>
+        <name>EAC_get_default_csca_lookup</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Return the default lookup of the country signing CA. </para>        </briefdescription>
+        <detaileddescription>
+<para>The default callback looks at /etc/eac/$chr for the CVCA certificate, where $chr is the card holder reference of the CVCA.</para><para><simplesect kind="return"><para>default lookup of the country verifying CA </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="546" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga595722cf2af1e61aaaa67a6ff23dcaad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void EAC_set_x509_default_dir</definition>
+        <argsstring>(const char *default_dir)</argsstring>
+        <name>EAC_set_x509_default_dir</name>
+        <param>
+          <type>const char *</type>
+          <declname>default_dir</declname>
+        </param>
+        <briefdescription>
+<para>Set directory for <computeroutput><ref refid="group__management_1ga2603a5a963d5d95cce3cc76ea470d794" kindref="member">EAC_get_default_csca_lookup()</ref></computeroutput> </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x509_default_dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="553" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga434cf93529804c711640461a3930f576" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PACE_SEC_clear_free</definition>
+        <argsstring>(PACE_SEC *s)</argsstring>
+        <name>PACE_SEC_clear_free</name>
+        <param>
+          <type><ref refid="pace_8h_1a4077e81a0fc6bf763716d0a578e7f46f" kindref="member">PACE_SEC</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Free a PACE secret. </para>        </briefdescription>
+        <detaileddescription>
+<para>Sensitive memory is cleared with OPENSSL_cleanse().</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Object to free </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="90" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1gae35799ea82f5af5420ed100da61fde71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="pace_8h_1a4077e81a0fc6bf763716d0a578e7f46f" kindref="member">PACE_SEC</ref> *</type>
+        <definition>PACE_SEC* PACE_SEC_new</definition>
+        <argsstring>(const char *sec, size_t sec_len, enum s_type type)</argsstring>
+        <name>PACE_SEC_new</name>
+        <param>
+          <type>const char *</type>
+          <declname>sec</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>sec_len</declname>
+        </param>
+        <param>
+          <type>enum <ref refid="pace_8h_1a02b29cbcf45cfaa2e6df0f59b98b3525" kindref="member">s_type</ref></type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Create and initialize a new PACE secret. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">sec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Raw secret </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">sec_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>sec</emphasis> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Type of secret</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>New PACE secret or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="101" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga7a3bae35256a5d00c765d4bc60e2c833" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int PACE_SEC_print_private</definition>
+        <argsstring>(BIO *out, const PACE_SEC *sec, int indent)</argsstring>
+        <name>PACE_SEC_print_private</name>
+        <param>
+          <type>BIO *</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>const <ref refid="pace_8h_1a4077e81a0fc6bf763716d0a578e7f46f" kindref="member">PACE_SEC</ref> *</type>
+          <declname>sec</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>indent</declname>
+        </param>
+        <briefdescription>
+<para>Print PACE_SEC object including private secret. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Where to print the data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">sec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context to be printed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">indent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of whitespaces used for indenting the output</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="113" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1ga3f50a8cffdf5aab322e37dafc6763ef7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void RI_CTX_clear_free</definition>
+        <argsstring>(RI_CTX *s)</argsstring>
+        <name>RI_CTX_clear_free</name>
+        <param>
+          <type><ref refid="eac_8h_1a5f9ef24d00954284d3dfb4988d89ccd5" kindref="member">RI_CTX</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Frees a <computeroutput>RI_CTX</computeroutput> object and all its components. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Object to free (optional) </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ri.h" line="59" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1gac0bf8ff4cfd00ed06afceaf89c10aa3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="eac_8h_1a5f9ef24d00954284d3dfb4988d89ccd5" kindref="member">RI_CTX</ref> *</type>
+        <definition>RI_CTX* RI_CTX_new</definition>
+        <argsstring>(void)</argsstring>
+        <name>RI_CTX_new</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Creates a new <computeroutput>RI_CTX</computeroutput> object. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The new object or NULL if an error occurred </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ri.h" line="65" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__management_1gabeaf41c7c78859490c52308196c1aa66" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int RI_CTX_set_protocol</definition>
+        <argsstring>(RI_CTX *ctx, int protocol)</argsstring>
+        <name>RI_CTX_set_protocol</name>
+        <param>
+          <type><ref refid="eac_8h_1a5f9ef24d00954284d3dfb4988d89ccd5" kindref="member">RI_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>protocol</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a <computeroutput>RI_CTX</computeroutput> object using the protocol OID. This parameter can be found in the RIInfo part of an EF.CardSecurity. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <computeroutput>RI_CTX</computeroutput> object to initialize </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">protocol</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The NID of the OID</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 in case of success, 0 otherwise </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ri.h" line="75" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="group__management_1gaf8df0122e9d69243120b62033c4b9474" prot="public" static="no">
+        <name>CVC_CERT_dup</name>
+        <param><defname>x</defname></param>
+        <initializer>ASN1_dup_of(<ref refid="cv__cert_8h_1aea535afcbb11c7ac5f77e4edfb825ab4" kindref="member">CVC_CERT</ref>, <ref refid="group__management_1ga63dd3f2ebdc39d4a9e0b0af8d12ec655" kindref="member">i2d_CVC_CERT</ref>, <ref refid="group__management_1ga59de291be2953ebf60bce12225fed74f" kindref="member">CVC_d2i_CVC_CERT</ref>, x)</initializer>
+        <briefdescription>
+<para>Duplicate a CV certificate. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CV certificate to duplicate</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Duplicated CV certificate or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="366" column="9" bodyfile="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" bodystart="366" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__management_1ga3c3f5a64d45ed99d9c5cfd0a0c61b869" prot="public" static="no">
+        <name>CVC_PUBKEY_dup</name>
+        <param><defname>x</defname></param>
+        <initializer>ASN1_dup_of(<ref refid="structcvc__pubkey__st" kindref="compound">CVC_PUBKEY</ref>, i2d_CVC_PUBKEY, d2i_CVC_PUBKEY, x)</initializer>
+        <briefdescription>
+<para>Duplicate a CVC public key. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CVC public key to duplicate</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Duplicated CVC public or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="375" column="9" bodyfile="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" bodystart="375" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__management_1gadf010f3a63a21336d1025a3f7814c322" prot="public" static="no">
+        <name>CVC_CHAT_dup</name>
+        <param><defname>x</defname></param>
+        <initializer>ASN1_dup_of(<ref refid="cv__cert_8h_1a397bdd4c39a973f58c75c51c884d2d8a" kindref="member">CVC_CHAT</ref>, i2d_CVC_CHAT, d2i_CVC_CHAT, x)</initializer>
+        <briefdescription>
+<para>Duplicate a CHAT. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CHAT to duplicate</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Duplicated CHAT or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="384" column="9" bodyfile="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" bodystart="384" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

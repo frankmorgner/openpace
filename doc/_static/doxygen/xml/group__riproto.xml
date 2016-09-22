@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="group__riproto" kind="group">
+    <compoundname>riproto</compoundname>
+    <title>Protocol Steps for Restricted Authentication</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__riproto_1ga93bccb469abf0a6070b839b099505e96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* RI_STEP2_compute_identifier</definition>
+        <argsstring>(EAC_CTX *ctx, BUF_MEM *sector_pubkey)</argsstring>
+        <name>RI_STEP2_compute_identifier</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>BUF_MEM *</type>
+          <declname>sector_pubkey</declname>
+        </param>
+        <briefdescription>
+<para>Compute a sector specific identifier for a card within a given sector. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The EAC context of the card </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">sector_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the sector public key</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The sector identifier or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ri.h" line="91" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

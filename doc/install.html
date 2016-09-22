@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Download OpenPACE &mdash; OpenPACE 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="OpenPACE 1.0.1 documentation" href="index.html" />
+    <link rel="next" title="Usage of OpenPACE" href="usage.html" />
+    <link rel="prev" title="Welcome to OpenPACE’s documentation!" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/frankmorgner/openpace"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          OpenPACE</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Download OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#compiling-and-installing-openpace">Compiling and Installing OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage of OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Extended Access Control Specification</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Download OpenPACE</a></li>
+<li><a class="reference internal" href="#compiling-and-installing-openpace">Compiling and Installing OpenPACE</a><ul>
+<li><a class="reference internal" href="#setting-up-a-development-environment-using-vagrant">Setting up a development environment using Vagrant</a></li>
+<li><a class="reference internal" href="#compiling-on-linux-unix-and-similar">Compiling on Linux, Unix and similar</a></li>
+<li><a class="reference internal" href="#compiling-for-windows">Compiling for Windows</a><ul>
+<li><a class="reference internal" href="#cross-compiling-for-windows-on-linux">Cross-Compiling for Windows on Linux</a></li>
+<li><a class="reference internal" href="#compiling-with-visual-studio">Compiling with Visual Studio</a><ul>
+<li><a class="reference internal" href="#compiling-the-python-bindings">Compiling the Python Bindings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compiling-for-android">Compiling for Android</a></li>
+<li><a class="reference internal" href="#compiling-for-javascript">Compiling for Javascript</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="index.html" title="Previous Chapter: Welcome to OpenPACE’s documentation!"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Welcome to OpenP...</span>
+    </a>
+  </li>
+  <li>
+    <a href="usage.html" title="Next Chapter: Usage of OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Usage of OpenPAC... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="download-openpace">
+<h1>Download OpenPACE<a class="headerlink" href="#download-openpace" title="Permalink to this headline">¶</a></h1>
+<p>You can download the latest release of OpenPACE on <a class="reference external" href="https://github.com/frankmorgner/openpace/releases/latest">Github</a>. Older releases
+are still available on <a class="reference external" href="http://sourceforge.net/projects/openpace/files">Sourceforge</a>.</p>
+<p>If you plan to make contribution, you can clone our git repository to later
+make a pull request on Github:</p>
+<div class="highlight-sh"><div class="highlight"><pre>git clone https://github.com/frankmorgner/openpace.git
+</pre></div>
+</div>
+<p>Alternatively, the current developement version is available as <a class="reference external" href="https://github.com/frankmorgner/openpace/archive/master.zip">zip file</a> or as
+precompiled Windows <a class="reference external" href="https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win32-vs12.zip?branch=master&amp;job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x86">32 bit binaries</a>
+and <a class="reference external" href="https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win64-vs12.zip?branch=master&amp;job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x64">64 bit binaries</a>.</p>
+</div>
+<div class="section" id="compiling-and-installing-openpace">
+<h1>Compiling and Installing OpenPACE<a class="headerlink" href="#compiling-and-installing-openpace" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setting-up-a-development-environment-using-vagrant">
+<h2>Setting up a development environment using Vagrant<a class="headerlink" href="#setting-up-a-development-environment-using-vagrant" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to setup a development or test environment is to use <a class="reference external" href="https://www.vagrantup.com">Vagrant</a> <a class="footnote-reference" href="#id16" id="id17">[8]</a> with <a class="reference external" href="https://www.virtualbox.org/">VirtualBox</a> <a class="footnote-reference" href="#id18" id="id19">[9]</a>.
+OpenPACE comes with a Vagrantfile which lets you setup a working
+environment with just one command. To create a Ubuntu based virtual machine,
+install all dependencies and compile OpenPACE, run the following command
+in the OpenPACE directory:</p>
+<div class="highlight-sh"><div class="highlight"><pre>vagrant up
+</pre></div>
+</div>
+<p>You then need to <code class="docutils literal"><span class="pre">vagrant</span> <span class="pre">ssh</span></code> in order to access the VM. The
+<code class="file docutils literal"><span class="pre">openpace</span></code> folder is shared between the host and the VM so any
+changes you make on the host are immediately visible in the VM and vice versa.</p>
+</div>
+<div class="section" id="compiling-on-linux-unix-and-similar">
+<h2>Compiling on Linux, Unix and similar<a class="headerlink" href="#compiling-on-linux-unix-and-similar" title="Permalink to this headline">¶</a></h2>
+<p>OpenPACE uses the GNU Build System to compile and install. If you are
+unfamiliar with it, please have a look at <code class="file docutils literal"><span class="pre">INSTALL</span></code>. If you can not find
+it, you are probably working bleeding edge in the repository.  Run the
+following command in <code class="file docutils literal"><span class="pre">openpace</span></code> to get the missing standard
+auxiliary files:</p>
+<div class="highlight-sh"><div class="highlight"><pre>autoreconf --verbose --install
+</pre></div>
+</div>
+<p>To configure (<code class="docutils literal"><span class="pre">./configure</span> <span class="pre">--help</span></code> lists possible options), build and
+install OpenPACE now do the following:</p>
+<div class="highlight-sh"><div class="highlight"><pre>./configure
+make
+make install
+</pre></div>
+</div>
+<p>OpenPACE depends on the <a class="reference external" href="http://openssl.org">OpenSSL</a> <a class="footnote-reference" href="#id8" id="id9">[4]</a> library. Since <abbr title="Password Authenticated Connection Establishment">PACE</abbr> uses CMAC and the
+Brainpool curves, OpenSSL is required with version 1.0.2 or later.</p>
+<p>Furthermore, additional object identifiers from <a class="reference external" href="https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html">BSI TR-03110</a> <a class="footnote-reference" href="#id2" id="id3">[1]</a> are required.
+You have two options to get them to work:</p>
+<ol class="arabic simple">
+<li>Let OpenPACE load the object identifiers at runtime</li>
+<li>Patch OpenSSL to include the identifiers</li>
+</ol>
+<p>The first option allows you to install an unchanged version of OpenSSL to your
+system. However, performance will be slightly worse and there are some
+limitations. For example, you won&#8217;t be able to use the new NIDs as labels in a
+switch statement and you need to make sure to call <code class="docutils literal"><span class="pre">EAC_init()</span></code> first.  For
+patching OpenSSL we provide <code class="file docutils literal"><span class="pre">bsi_objects.txt</span></code>. You can configure
+OpenPACE with <code class="xref std std-option docutils literal"><span class="pre">--enable-openssl-install</span></code>, which will
+automatically download, patch, build and install OpenSSL if needed.</p>
+<p>The language bindings for Python, Java, ... are currently disabled by default.
+You need to explicitely configure OpenPACE to install them by using
+<code class="xref std std-option docutils literal"><span class="pre">--enable-python</span></code>, <code class="xref std std-option docutils literal"><span class="pre">--enable-java</span></code>, ... This requires SWIG to
+be installed along with the language&#8217;s toolchain to build the bindings.</p>
+</div>
+<div class="section" id="compiling-for-windows">
+<h2>Compiling for Windows<a class="headerlink" href="#compiling-for-windows" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cross-compiling-for-windows-on-linux">
+<h3>Cross-Compiling for Windows on Linux<a class="headerlink" href="#cross-compiling-for-windows-on-linux" title="Permalink to this headline">¶</a></h3>
+<p>Our <code class="file docutils literal"><span class="pre">Makefile</span></code> includes scripts for cross compilation for Windows
+on Debian wheezy:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+./configure --enable-openssl-install
+make win
+</pre></div>
+</div>
+<p><a class="reference external" href="http://sourceforge.net/p/mingw-w64/wiki2/gendef/">gendef</a> <a class="footnote-reference" href="#id14" id="id15">[7]</a> should be installed to generate the library definitions.
+On successfull compilation, the Windows binaries can be found in
+<code class="file docutils literal"><span class="pre">openpace-1.0.1_win32</span></code>. For customization you
+may pass the following <strong class="command">make</strong> variables:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="15%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Make Variable</th>
+<th class="head">Default</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal"><span class="pre">WIN_TOOL</span></code></td>
+<td><code class="docutils literal"><span class="pre">i686-w64-mingw32</span></code></td>
+<td>cross compiler</td>
+</tr>
+<tr class="row-odd"><td><span class="target" id="index-1"></span><code class="xref std std-envvar docutils literal"><span class="pre">WIN_TOOL_DIR</span></code></td>
+<td><code class="docutils literal"><span class="pre">/usr/${WIN_TOOL}</span></code></td>
+<td>root directory of the cross compiler containing the <code class="file docutils literal"><span class="pre">lib</span></code> and <code class="file docutils literal"><span class="pre">include</span></code> folders</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="compiling-with-visual-studio">
+<h3>Compiling with Visual Studio<a class="headerlink" href="#compiling-with-visual-studio" title="Permalink to this headline">¶</a></h3>
+<p>A quick and dirty way without
+wasting too much time on setting up the development environment would be to
+compile the library by hand in the <span class="menuselection">Visual Studio Tools ‣
+Developer Command Prompt</span> with installed <a class="reference external" href="https://slproweb.com/products/Win32OpenSSL.html">OpenSSL Windows binaries</a> <a class="footnote-reference" href="#id26" id="id27">[13]</a>:</p>
+<p>The correct™ process combines Visual Studio, <a class="reference external" href="https://msys2.github.io/">MSYS2</a> <a class="footnote-reference" href="#id22" id="id23">[11]</a> with <a class="reference external" href="https://github.com/frankmorgner/cccl">cccl</a> <a class="footnote-reference" href="#id24" id="id25">[12]</a> and allows
+using the same procedure and features that we are used to when <a class="reference internal" href="#compiling-on-linux-unix-and-similar">Compiling on
+Linux, Unix and similar</a>. We will not depict it here. If you&#8217;re interested,
+have a look at our <a class="reference external" href="https://github.com/frankmorgner/openpace/blob/master/appveyor.yml">Windows CI script</a> which
+includes all steps of this procedure.</p>
+<div class="section" id="compiling-the-python-bindings">
+<h4>Compiling the Python Bindings<a class="headerlink" href="#compiling-the-python-bindings" title="Permalink to this headline">¶</a></h4>
+<p>With the cross compiled or native binaries you may now compile the Python
+bindings.  For this you need to setup your Windows as following:</p>
+<ol class="arabic">
+<li><p class="first">Check out the git repository to the directory <code class="file docutils literal"><span class="pre">C:\openpace</span></code></p>
+</li>
+<li><p class="first">Install <a class="reference external" href="http://msdn.microsoft.com/library/dd831853.aspx">Visual Studio 2013</a> <a class="footnote-reference" href="#id20" id="id21">[10]</a> and open <span class="menuselection">Visual Studio Tools
+‣ Developer Command Prompt</span></p>
+</li>
+<li><p class="first">Install <a class="reference external" href="http://www.swig.org/download.html">SWIG</a> <a class="footnote-reference" href="#id10" id="id11">[5]</a> and modify the <span class="target" id="index-2"></span><code class="xref std std-envvar docutils literal"><span class="pre">PATH</span></code> so that <strong class="command">swig.exe</strong>
+can be found:</p>
+<div class="highlight-bat"><div class="highlight"><pre><span class="k">set</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;C:\swig&quot;</span>;<span class="nv">%PATH%</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Install <a class="reference external" href="https://www.python.org/downloads/release/python-278/">Python</a> <a class="footnote-reference" href="#id12" id="id13">[6]</a> and set <span class="target" id="index-3"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHON_INCLUDE</span></code> and
+<span class="target" id="index-4"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHON_LIBD</span></code>/<span class="target" id="index-5"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHON_LIB</span></code> accordingly:</p>
+<div class="highlight-bat"><div class="highlight"><pre><span class="k">set</span> <span class="nv">PYTHON_INCLUDE</span><span class="o">=</span><span class="s2">&quot;C:\Python27\include&quot;</span>
+<span class="k">set</span> <span class="nv">PYTHON_LIBD</span><span class="o">=</span><span class="s2">&quot;C:\Python27&quot;</span>
+<span class="k">set</span> <span class="nv">PYTHON_LIB</span><span class="o">=</span><span class="s2">&quot;python278.lib&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Copy the cross compiled OpenPACE libraries to Windows and set <span class="target" id="index-6"></span><code class="xref std std-envvar docutils literal"><span class="pre">OPENPACE_ROOT</span></code>:</p>
+<div class="highlight-bat"><div class="highlight"><pre><span class="k">set</span> <span class="nv">OPENPACE_ROOT</span><span class="o">=</span>&quot;C:\openpace\openpace<span class="m">-1</span>.<span class="m">0</span>.<span class="m">0</span>_win<span class="m">32</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Create OpenPACE&#8217;s and OpenSSL&#8217;s import libraries:</p>
+<div class="highlight-bat"><div class="highlight"><pre>lib <span class="n">/def:&quot;%OPENPACE_ROOT%\lib\libeac-1.def&quot;</span> <span class="n">/OUT:&quot;%OPENPACE_ROOT%\lib\libeac.lib&quot;</span>
+lib <span class="n">/def:&quot;%OPENPACE_ROOT%\lib\libeay32.def&quot;</span> <span class="n">/OUT:&quot;%OPENPACE_ROOT%\lib\libeay32.lib&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<ol class="arabic" start="6">
+<li><p class="first">Build the Python bindings:</p>
+<div class="highlight-bat"><div class="highlight"><pre><span class="k">cd</span> <span class="s2">&quot;C:\openpace&quot;</span>
+msbuild <span class="s2">&quot;bindings\win32\eac.sln&quot;</span>
+</pre></div>
+</div>
+<p>If you can successfully build the solution, you can find the python in
+<code class="file docutils literal"><span class="pre">%OPENPACE_ROOT%\bindings\win32\Release</span></code>. Put them all together
+with the cross compiled OpenPACE library:</p>
+<div class="highlight-bat"><div class="highlight"><pre>copy <span class="s2">&quot;C:\openpace\bindings\win32\Release\_eac.pyd&quot;</span> <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
+copy <span class="s2">&quot;C:\openpace\bindings\win32\Release\eac.py&quot;</span>   <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
+copy <span class="s2">&quot;C:\openpace\bindings\python\chat.py&quot;</span>         <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
+copy <span class="s2">&quot;C:\openpace\bindings\python\pace_entity.py&quot;</span>  <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
+</pre></div>
+</div>
+<p>Now for testing, you may try:</p>
+<div class="highlight-bat"><div class="highlight"><pre><span class="k">cd</span> <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
+<span class="s2">&quot;%PYTHON_LIBD%\python.exe&quot;</span> <span class="s2">&quot;C:\openpace\bindings\python\example.py&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="section" id="compiling-for-android">
+<h2>Compiling for Android<a class="headerlink" href="#compiling-for-android" title="Permalink to this headline">¶</a></h2>
+<p>Our <code class="file docutils literal"><span class="pre">Makefile</span></code> includes scripts for cross compilation for Android on
+Debian wheezy:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+./configure --enable-openssl-install
+make android
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="48%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Make Variable</th>
+<th class="head">Default</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><span class="target" id="index-7"></span><code class="xref std std-envvar docutils literal"><span class="pre">ANDROID_ARCH</span></code></td>
+<td><code class="docutils literal"><span class="pre">arm</span></code></td>
+<td>target Architecture</td>
+</tr>
+<tr class="row-odd"><td><span class="target" id="index-8"></span><code class="xref std std-envvar docutils literal"><span class="pre">ANDROID_TOOL</span></code></td>
+<td><code class="docutils literal"><span class="pre">${ANDROID_ARCH}-linux-androideabi</span></code></td>
+<td>cross compiler</td>
+</tr>
+<tr class="row-even"><td><span class="target" id="index-9"></span><code class="xref std std-envvar docutils literal"><span class="pre">MAKE_STANDALONE_TOOLCHAIN</span></code></td>
+<td><code class="docutils literal"><span class="pre">${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh</span></code></td>
+<td>location of the NDK script for creating the toolchain</td>
+</tr>
+</tbody>
+</table>
+<p>On successfull compilation, the Android binaries can be found in
+<code class="file docutils literal"><span class="pre">openpace-1.0.1_$</span><em><span class="pre">ANDROID_ARCH</span></em><span class="pre">-linux-androideabi</span></code>.</p>
+</div>
+<div class="section" id="compiling-for-javascript">
+<span id="javascript-api"></span><h2>Compiling for Javascript<a class="headerlink" href="#compiling-for-javascript" title="Permalink to this headline">¶</a></h2>
+<p>Technically the process for getting OpenPACE into Javascript is similar to
+cross compiling. With <a class="reference external" href="https://github.com/kripken/emscripten">Emscripten</a> <a class="footnote-reference" href="#id4" id="id5">[2]</a> the library is compiled into LLVM bytecode
+and then translated into Javascript. Use the following command:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+./configure --enable-openssl-install
+make emscripten
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="26%" />
+<col width="55%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Make Variable</th>
+<th class="head">Default</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><span class="target" id="index-10"></span><code class="xref std std-envvar docutils literal"><span class="pre">EMSCRIPTEN_ROOT</span></code></td>
+<td><code class="docutils literal"><span class="pre">${HOME}/.local/src/emscripten</span></code></td>
+<td>root directory of emscripten containing the <code class="file docutils literal"><span class="pre">system/include/libc</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>On successfull compilation, the compiled bitcode files can be found in
+<code class="file docutils literal"><span class="pre">openpace-1.0.1_js</span></code>. You can run our testsuite
+completely in Javascript or <a class="reference external" href="_static/eactest.html">in your browser</a>:</p>
+<div class="highlight-sh"><div class="highlight"><pre>nodejs openpace-1.0.1_js/bin/eactest.js
+firefox openpace-1.0.1_js/eactest.html
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><a class="reference external" href="http://www.matasano.com/articles/javascript-cryptography">Javascript cryptography is considered harmful</a> <a class="footnote-reference" href="#id6" id="id7">[3]</a>. You may want to think
+twice before using the Javascript version of OpenPACE.</p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td><a class="reference external" href="https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html">https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[2]</a></td><td><a class="reference external" href="https://github.com/kripken/emscripten">https://github.com/kripken/emscripten</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[3]</a></td><td><a class="reference external" href="http://www.matasano.com/articles/javascript-cryptography">http://www.matasano.com/articles/javascript-cryptography</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[4]</a></td><td><a class="reference external" href="http://openssl.org">http://openssl.org</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[5]</a></td><td><a class="reference external" href="http://www.swig.org/download.html">http://www.swig.org/download.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id12" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id13">[6]</a></td><td><a class="reference external" href="https://www.python.org/downloads/release/python-278/">https://www.python.org/downloads/release/python-278/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id14" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id15">[7]</a></td><td><a class="reference external" href="http://sourceforge.net/p/mingw-w64/wiki2/gendef/">http://sourceforge.net/p/mingw-w64/wiki2/gendef/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id16" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id17">[8]</a></td><td><a class="reference external" href="https://www.vagrantup.com">https://www.vagrantup.com</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id18" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id19">[9]</a></td><td><a class="reference external" href="https://www.virtualbox.org/">https://www.virtualbox.org/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id20" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id21">[10]</a></td><td><a class="reference external" href="http://msdn.microsoft.com/library/dd831853.aspx">http://msdn.microsoft.com/library/dd831853.aspx</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id22" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id23">[11]</a></td><td><a class="reference external" href="https://msys2.github.io/">https://msys2.github.io/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id24" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id25">[12]</a></td><td><a class="reference external" href="https://github.com/frankmorgner/cccl">https://github.com/frankmorgner/cccl</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id26" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id27">[13]</a></td><td><a class="reference external" href="https://slproweb.com/products/Win32OpenSSL.html">https://slproweb.com/products/Win32OpenSSL.html</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2012-2016 by Frank Morgner and Dominik Oepen.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

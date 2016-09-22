@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="group__eacproto" kind="group">
+    <compoundname>eacproto</compoundname>
+    <title>Protocol Steps for Extended Access Control</title>
+    <innergroup refid="group__paceproto">Protocol Steps for Password Authenticated Connection Establishment</innergroup>
+    <innergroup refid="group__taproto">Protocol Steps for Terminal Authentication</innergroup>
+    <innergroup refid="group__caproto">Protocol Steps for Chip Authentication</innergroup>
+    <innergroup refid="group__riproto">Protocol Steps for Restricted Authentication</innergroup>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

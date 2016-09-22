@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Usage of OpenPACE &mdash; OpenPACE 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="OpenPACE 1.0.1 documentation" href="index.html" />
+    <link rel="next" title="Programming with OpenPACE" href="programming.html" />
+    <link rel="prev" title="Download OpenPACE" href="install.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/frankmorgner/openpace"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          OpenPACE</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Download OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#compiling-and-installing-openpace">Compiling and Installing OpenPACE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Usage of OpenPACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Extended Access Control Specification</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Usage of OpenPACE</a><ul>
+<li><a class="reference internal" href="#using-libeac">Using <code class="docutils literal"><span class="pre">libeac</span></code></a></li>
+<li><a class="reference internal" href="#using-cvc-create-to-create-the-eac-pki">Using <code class="docutils literal"><span class="pre">cvc-create</span></code> to Create the EAC PKI</a></li>
+<li><a class="reference internal" href="#using-cvc-print">Using <code class="docutils literal"><span class="pre">cvc-print</span></code></a></li>
+<li><a class="reference internal" href="#creating-the-document-pki-and-ef-cardaccess-ef-cardsecurity">Creating the Document PKI and EF.CardAccess/EF.CardSecurity</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="install.html" title="Previous Chapter: Download OpenPACE"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Download OpenPAC...</span>
+    </a>
+  </li>
+  <li>
+    <a href="programming.html" title="Next Chapter: Programming with OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Programming with... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="usage-of-openpace">
+<h1>Usage of OpenPACE<a class="headerlink" href="#usage-of-openpace" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="using-libeac">
+<h2>Using <code class="docutils literal"><span class="pre">libeac</span></code><a class="headerlink" href="#using-libeac" title="Permalink to this headline">¶</a></h2>
+<p>OpenPACE is a native C library on top of OpenSSL. If you want to know how to
+use OpenPACE from C/C++, have a look at our <a class="reference external" href="_static/doxygen/modules.html">API documentation</a>.</p>
+<p>OpenPACE uses <a class="reference external" href="http://swig.org">SWIG</a> to offer bindings in some more
+programming languages. The bindings are easily portable to lots of different
+languages. Currently, native language bindings need to be explicitly turned on
+with <code class="docutils literal"><span class="pre">./configure</span> <span class="pre">--enable-...</span></code></p>
+<p>If you have chosen to install OpenPACE in a non-standard location you have to
+set up the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal"><span class="pre">LD_LIBRARY_PATH</span></code> environment variable correctly. One way to
+do this on Linux is:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/path/to/libeac
+</pre></div>
+</div>
+<p>If OpenPACE is compiled for Javascript, it results in a standalone Javascript
+file that can be used without special requirements.</p>
+<p>More details and a number of examples for using the library are covered here:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="programming.html">Programming with OpenPACE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="programming.html#using-openpace-in-c-c">Using OpenPACE in C/C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="programming.html#using-openpace-in-python">Using OpenPACE in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="programming.html#using-openpace-in-ruby">Using OpenPACE in Ruby</a></li>
+<li class="toctree-l2"><a class="reference internal" href="programming.html#using-openpace-in-go">Using OpenPACE in Go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="programming.html#using-openpace-in-java">Using OpenPACE in Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="programming.html#using-openpace-in-javascript">Using OpenPACE in Javascript</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="using-cvc-create-to-create-the-eac-pki">
+<h2>Using <code class="docutils literal"><span class="pre">cvc-create</span></code> to Create the EAC PKI<a class="headerlink" href="#using-cvc-create-to-create-the-eac-pki" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.9: </span><cite>cvc-create</cite> is a command line tool for creating a <abbr title="Extended Access Control">EAC</abbr> PKI of
+Authentication Terminals, Signature Terminals or Inspection Systems.</p>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>cvc-create 1.0.1
+
+Create a card verifiable certificate
+
+Usage: cvc-create [OPTIONS]...
+
+  -h, --help                 Print help and exit
+  -V, --version              Print version and exit
+      --out-cert=FILENAME    Where to save the certificate
+                               (default=`CHR.cvcert&#39;)
+      --role=ENUM            The terminal&#39;s role  (possible values=&quot;cvca&quot;,
+                               &quot;dv_domestic&quot;, &quot;dv_foreign&quot;, &quot;terminal&quot;)
+      --type=ENUM            Type of the terminal (Authentication Terminal,
+                               Inspection System or Signature Terminal)
+                               (possible values=&quot;at&quot;, &quot;is&quot;, &quot;st&quot;,
+                               &quot;derived_from_signer&quot;
+                               default=`derived_from_signer&#39;)
+      --issued=YYMMDD        Date the certificate was issued  (default=`today&#39;)
+      --expires=YYMMDD       Date until the certicate is valid
+      --sign-with=FILENAME   Private key for signing the new certificate
+      --scheme=ENUM          Signature scheme that the new terminal will use
+                               (possible values=&quot;ECDSA_SHA_1&quot;,
+                               &quot;ECDSA_SHA_224&quot;, &quot;ECDSA_SHA_256&quot;,
+                               &quot;ECDSA_SHA_384&quot;, &quot;ECDSA_SHA_512&quot;,
+                               &quot;RSA_v1_5_SHA_1&quot;, &quot;RSA_v1_5_SHA_256&quot;,
+                               &quot;RSA_v1_5_SHA_512&quot;, &quot;RSA_PSS_SHA_1&quot;,
+                               &quot;RSA_PSS_SHA_256&quot;, &quot;RSA_PSS_SHA_512&quot;)
+
+ Mode: csr
+  The properties of the certificate are derived from the given signing request.
+      --csr=FILENAME         Certificate signing request with the attributes
+
+ Mode: manual
+  The properties of the certificate are derived from the command line switches.
+      --chr=CCH...HSSSSS     Certificate holder reference (2 characters ISO
+                               3166-1 ALPHA-2 country code, 0-9 characters
+                               ISO/IEC 8859-1 holder mnemonic, 5 characters
+                               ISO/IEC 8859-1 numeric or alphanumeric sequence
+                               number)
+      --sign-as=FILENAME     CV certificate of the entity signing the new
+                               certificate  (default=`self signed&#39;)
+      --key=FILENAME         Private key of the Terminal  (default=`derived
+                               from signer&#39;)
+      --out-key=FILENAME     Where to save the derived private key
+                               (default=`CHR.pkcs8&#39;)
+
+Options for an Authentication Terminal (AT):
+      --cert-desc=FILENAME   Certificate description (as *.txt, *.html or
+                               *.pdf)
+      --out-desc=FILENAME    Where to save the encoded certificate description
+                               (default=`CHR.desc&#39;)
+      --issuer-name=STRING   Name of the issuer of this certificate
+      --issuer-url=URL       URL that points to informations about the issuer
+                               of this certificate
+      --subject-name=STRING  Name of the holder of this certificate
+      --subject-url=URL      URL that points to informations about the subject
+                               of this certificate
+      --write-dg17           Allow writing DG 17 (Normal Place of Residence)
+                               (default=off)
+      --write-dg18           Allow writing DG 18 (Community ID)  (default=off)
+      --write-dg19           Allow writing DG 19 (Residence Permit I)
+                               (default=off)
+      --write-dg20           Allow writing DG 20 (Residence Permit II)
+                               (default=off)
+      --write-dg21           Allow writing DG 21 (Optional Data)  (default=off)
+      --at-rfu32             Allow RFU R/W Access bit 32  (default=off)
+      --at-rfu31             Allow RFU R/W Access bit 31  (default=off)
+      --at-rfu30             Allow RFU R/W Access bit 30  (default=off)
+      --at-rfu29             Allow RFU R/W Access bit 29  (default=off)
+      --read-dg1             Allow reading DG 1   (Document Type)
+                               (default=off)
+      --read-dg2             Allow reading DG 2   (Issuing State)
+                               (default=off)
+      --read-dg3             Allow reading DG 3   (Date of Expiry)
+                               (default=off)
+      --read-dg4             Allow reading DG 4   (Given Names)  (default=off)
+      --read-dg5             Allow reading DG 5   (Family Names)  (default=off)
+      --read-dg6             Allow reading DG 6   (Religious/Artistic Name)
+                               (default=off)
+      --read-dg7             Allow reading DG 7   (Academic Title)
+                               (default=off)
+      --read-dg8             Allow reading DG 8   (Date of Birth)
+                               (default=off)
+      --read-dg9             Allow reading DG 9   (Place of Birth)
+                               (default=off)
+      --read-dg10            Allow reading DG 10  (Nationality)  (default=off)
+      --read-dg11            Allow reading DG 11  (Sex)  (default=off)
+      --read-dg12            Allow reading DG 12  (Optional Data)
+                               (default=off)
+      --read-dg13            Allow reading DG 13  (default=off)
+      --read-dg14            Allow reading DG 14  (default=off)
+      --read-dg15            Allow reading DG 15  (default=off)
+      --read-dg16            Allow reading DG 16  (default=off)
+      --read-dg17            Allow reading DG 17  (Normal Place of Residence)
+                               (default=off)
+      --read-dg18            Allow reading DG 18  (Community ID)  (default=off)
+      --read-dg19            Allow reading DG 19  (Residence Permit I)
+                               (default=off)
+      --read-dg20            Allow reading DG 20  (Residence Permit II)
+                               (default=off)
+      --read-dg21            Allow reading DG 21  (Optional Data)
+                               (default=off)
+      --install-qual-cert    Allow installing qualified certificate
+                               (default=off)
+      --install-cert         Allow installing certificate  (default=off)
+      --pin-management       Allow PIN management  (default=off)
+      --can-allowed          CAN allowed  (default=off)
+      --privileged           Privileged terminal  (default=off)
+      --rid                  Allow restricted identification  (default=off)
+      --verify-community     Allow community ID verification  (default=off)
+      --verify-age           Allow age verification  (default=off)
+
+Options for a Signature Terminal (ST):
+      --st-rfu5              Allow RFU bit 5  (default=off)
+      --st-rfu4              Allow RFU bit 4  (default=off)
+      --st-rfu3              Allow RFU bit 3  (default=off)
+      --st-rfu2              Allow RFU bit 2  (default=off)
+      --gen-qualified-sig    Generate qualified electronic signature
+                               (default=off)
+      --gen-sig              Generate electronic signature  (default=off)
+
+Options for an Inspection System (IS):
+      --read-eid             Read access to eID application (Deprecated)
+                               (default=off)
+      --is-rfu4              Allow RFU bit 4  (default=off)
+      --is-rfu3              Allow RFU bit 3  (default=off)
+      --is-rfu2              Allow RFU bit 2  (default=off)
+      --read-iris            Read access to ePassport application: DG 4 (Iris)
+                               (default=off)
+      --read-finger          Read access to ePassport application: DG 3
+                               (Fingerprint)  (default=off)
+
+Report bugs to https://github.com/frankmorgner/openpace/issues
+
+Written by Frank Morgner &lt;frankmorgner@gmail.com&gt;
+</pre></div>
+</div>
+<p>Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Create country verifying CA&#39;s private key</span>
+openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey -param_enc explicit
+openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
+<span class="c"># Create self signed country verifying CA certificate</span>
+cvc-create --role<span class="o">=</span>cvca --type<span class="o">=</span>at --chr<span class="o">=</span>ZZATCVCA00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next year&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATCVCA00001.pkcs8 --scheme<span class="o">=</span>ECDSA_SHA_256 --rid
+
+<span class="c"># Create DVCA certificate signed by CVCA and generate its private key</span>
+cvc-create --role<span class="o">=</span>dv_domestic --chr<span class="o">=</span>ZZATDVCA00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next month&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATCVCA00001.pkcs8 --sign-as<span class="o">=</span>ZZATCVCA00001.cvcert --scheme<span class="o">=</span>ECDSA_SHA_256 --rid
+
+<span class="c"># Create plain text description</span>
+<span class="nb">echo</span> <span class="s2">&quot;whatever&quot;</span> &gt; ZZATTERM00001.txt
+<span class="c"># Create TERM certificate signed by DVCA along with the description and generate its private key</span>
+cvc-create --role<span class="o">=</span>terminal --chr<span class="o">=</span>ZZATTERM00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next week&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATDVCA00001.pkcs8 --sign-as<span class="o">=</span>ZZATDVCA00001.cvcert --scheme<span class="o">=</span>ECDSA_SHA_256 --rid --cert-desc<span class="o">=</span>ZZATTERM00001.txt --issuer-name<span class="o">=</span>DVCA --subject-name<span class="o">=</span>TERM
+</pre></div>
+</div>
+<p>The script <code class="file docutils literal"><span class="pre">generate-eac-pki.sh</span></code> generates a set of
+authentication terminals and signature terminals for all signature schemes in
+all standardized elliptic curves.</p>
+</div>
+<div class="section" id="using-cvc-print">
+<h2>Using <code class="docutils literal"><span class="pre">cvc-print</span></code><a class="headerlink" href="#using-cvc-print" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.8: </span><cite>cvc-print</cite> is a command line tool for printing card verifiable certificates.</p>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>cvc-print 1.0.1
+
+Prints card verifiable certificate and its description
+
+Usage: cvc-print [OPTIONS]...
+
+  -h, --help                  Print help and exit
+  -V, --version               Print version and exit
+  -c, --cvc=FILENAME          Card Verifiable Certificate
+  -d, --description=FILENAME  Certificate description
+  -r, --csr=FILENAME          Certificate request
+
+Report bugs to https://github.com/frankmorgner/openpace/issues
+
+Written by Frank Morgner and Dominik Oepen
+</pre></div>
+</div>
+<p>Below you see of how to print the certificates created in the example above:</p>
+<div class="highlight-sh"><div class="highlight"><pre>cvc-print --cvc ZZATCVCA00001.cvcert
+cvc-print --cvc ZZATDVCA00001.cvcert
+cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-the-document-pki-and-ef-cardaccess-ef-cardsecurity">
+<h2>Creating the Document PKI and EF.CardAccess/EF.CardSecurity<a class="headerlink" href="#creating-the-document-pki-and-ef-cardaccess-ef-cardsecurity" title="Permalink to this headline">¶</a></h2>
+<p>The card&#8217;s key agreement capabilities can be read by the terminal from
+EF.CardAccess.  The standardized domain parameter for <abbr title="Chip Authentication">CA</abbr> (e.g.
+brainpoolP256r1/<code class="docutils literal"><span class="pre">0x0D</span></code>) need to match the key agreement scheme for <abbr title="Chip Authentication">CA</abbr> (e.g.
+ECDH):</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="nv">asn1</span><span class="o">=</span>SET:SecurityInfos
+
+<span class="o">[</span>SecurityInfos<span class="o">]</span>
+<span class="nv">tainfo</span><span class="o">=</span>SEQUENCE:TerminalAuthenticationInfo
+<span class="nv">cainfo</span><span class="o">=</span>SEQUENCE:ChipAuthenticationInfo
+<span class="nv">chipauthenticationdomainparameterinfo</span><span class="o">=</span>SEQUENCE:ChipAuthenticationDomainParameterInfo
+
+<span class="o">[</span>TerminalAuthenticationInfo<span class="o">]</span>
+<span class="c"># id-TA</span>
+<span class="nv">protocol</span><span class="o">=</span>OID:0.4.0.127.0.7.2.2.2
+<span class="nv">version</span><span class="o">=</span>INTEGER:0x02
+
+<span class="o">[</span>ChipAuthenticationInfo<span class="o">]</span>
+<span class="c"># id-CA-ECDH-AES-CBC-CMAC-128</span>
+<span class="hll"><span class="nv">protocol</span><span class="o">=</span>OID:0.4.0.127.0.7.2.2.3.2.2
+</span><span class="nv">version</span><span class="o">=</span>INTEGER:0x02
+
+<span class="o">[</span>ChipAuthenticationDomainParameterInfo<span class="o">]</span>
+<span class="c"># id-CA-ECDH</span>
+<span class="hll"><span class="nv">protocol</span><span class="o">=</span>OID:0.4.0.127.0.7.2.2.3.2
+</span><span class="nv">aid</span><span class="o">=</span>SEQUENCE:AlgorithmIdentifier
+
+<span class="o">[</span>AlgorithmIdentifier<span class="o">]</span>
+<span class="c"># standardizedDomainParameters</span>
+<span class="nv">algorithm</span><span class="o">=</span>OID:0.4.0.127.0.7.1.2
+<span class="c"># brainpoolP256r1</span>
+<span class="hll"><span class="nv">parameter</span><span class="o">=</span>INTEGER:0x0D
+</span></pre></div>
+</div>
+<p>The above example can be found in <code class="file docutils literal"><span class="pre">doc/efcardaccess_asn1.conf</span></code>. OpenSSL
+can translate this into its ASN.1 represantation, which gives us
+EF.CardAccess:</p>
+<div class="highlight-sh"><div class="highlight"><pre>openssl asn1parse -genconf efcardaccess_asn1.conf -out efcardaccess.dump
+</pre></div>
+</div>
+<p>In EF.CardSecurity the data of EF.CardAccess including the <abbr title="Chip Authentication">CA</abbr> public key of
+the chip is signed by the document signer. First we create the <abbr title="Country Signing Certificate Authority">CSCA</abbr> and the
+document signer:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Create the country signing CA&#39;s private key</span>
+openssl ecparam -out csca_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
+<span class="c"># Create the country verifying CA&#39;s self signed certificate</span>
+openssl req -new -x509 -days <span class="m">5000</span> -key csca_key.pem -out csca_cert.pem
+
+<span class="c"># Create the document signer&#39;s private key</span>
+openssl ecparam -out docsigner_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
+<span class="c"># Create the document signer&#39;s certificate (signing request)</span>
+openssl req -new -key docsigner_key.pem -out docsigner.csr
+openssl x509 -req -in docsigner.csr -CA csca_cert.pem -CAkey csca_key.pem -CAcreateserial -out docsigner_cert.pem
+</pre></div>
+</div>
+<p>Now generate the chip&#8217;s private key for <abbr title="Chip Authentication">CA</abbr> and print its (public) key:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Create chip&#39;s key</span>
+openssl ecparam -out card_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
+<span class="c"># Print the public key and copy it to the clipboard</span>
+openssl ec -in card_key.pem -text
+</pre></div>
+</div>
+<p>Finally we can create EF.CardSecurity by adding the card&#8217;s public key to the
+last line of our template and signing the content with the document signer&#8217;s
+key:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Add the public key (without &#39;:&#39; and &#39; &#39;) to the template for EF.CardSecurity</span>
+cp doc/efcardsecurity_templ_asn1.conf efcardsecurity_asn1.conf <span class="o">&amp;&amp;</span> vi efcardsecurity_asn1.conf
+
+<span class="c"># Create and sign EF.CardSecurity</span>
+openssl asn1parse -genconf efcardsecurity_asn1.conf -out efcardsecurity_content.dump
+openssl cms -sign -nodetach -binary -in efcardsecurity_content.dump -inform DER -signer docsigner_cert.pem -inkey docsigner_key.pem -econtent_type 0.4.0.127.0.7.3.2.1 -noattr -outform DER -out efcardsecurity.dump
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2012-2016 by Frank Morgner and Dominik Oepen.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

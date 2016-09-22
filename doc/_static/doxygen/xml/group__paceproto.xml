@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="group__paceproto" kind="group">
+    <compoundname>paceproto</compoundname>
+    <title>Protocol Steps for Password Authenticated Connection Establishment</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__paceproto_1ga275e2d1f7e8cd77f2448ad4fbd09984f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* PACE_STEP1_enc_nonce</definition>
+        <argsstring>(const EAC_CTX *ctx, const PACE_SEC *pi)</argsstring>
+        <name>PACE_STEP1_enc_nonce</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const <ref refid="pace_8h_1a4077e81a0fc6bf763716d0a578e7f46f" kindref="member">PACE_SEC</ref> *</type>
+          <declname>pi</declname>
+        </param>
+        <briefdescription>
+<para>Generates and encrypts a nonce. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The nonce is saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pi</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Shared secret for PACE</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the encrypted nonce on success or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="131" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1gaa46fbd637f3bf063b5c68f37d40efba3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int PACE_STEP2_dec_nonce</definition>
+        <argsstring>(const EAC_CTX *ctx, const PACE_SEC *pi, const BUF_MEM *enc_nonce)</argsstring>
+        <name>PACE_STEP2_dec_nonce</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const <ref refid="pace_8h_1a4077e81a0fc6bf763716d0a578e7f46f" kindref="member">PACE_SEC</ref> *</type>
+          <declname>pi</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>enc_nonce</declname>
+        </param>
+        <briefdescription>
+<para>Decrypt the nonce from the other party. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context The decrypted nonce is saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pi</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Shared secret for PACE </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">enc_nonce</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Encrypted nonce from the other party</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="143" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1gafd890198805ed2591f172e7815b8a2df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* PACE_STEP3A_generate_mapping_data</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>PACE_STEP3A_generate_mapping_data</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Generate a mapping data to perform the mapping to ephemeral domain parameters. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Mapping data to be transmitted to the other party or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="157" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1ga56c295adbcbca57a6059c04a480d9ff7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int PACE_STEP3A_map_generator</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *in)</argsstring>
+        <name>PACE_STEP3A_map_generator</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>in</declname>
+        </param>
+        <briefdescription>
+<para>Map to the ephemeral domain parameters. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mapping data from the other party</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="169" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1gafcb6f32a13e38cb23a82e33faa817179" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* PACE_STEP3B_generate_ephemeral_key</definition>
+        <argsstring>(EAC_CTX *ctx)</argsstring>
+        <name>PACE_STEP3B_generate_ephemeral_key</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Generate a keypair for key agreement. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Public key or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="179" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1gaee1105d7cbd1fe8629157a3b97f25c52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int PACE_STEP3B_compute_shared_secret</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *in)</argsstring>
+        <name>PACE_STEP3B_compute_shared_secret</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>in</declname>
+        </param>
+        <briefdescription>
+<para>Compute the shared secret for key agreement. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The secret is saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Public key from the other party</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="191" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1gae3a44c7269e95f48874dd909ed34ba77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int PACE_STEP3C_derive_keys</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>PACE_STEP3C_derive_keys</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Derives encryption and authentication keys. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The keys are saved in <emphasis>ctx</emphasis>.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="201" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1gaf682c5881e60755ef23e4e583e4d7cdd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* PACE_STEP3D_compute_authentication_token</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *pub)</argsstring>
+        <name>PACE_STEP3D_compute_authentication_token</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pub</declname>
+        </param>
+        <briefdescription>
+<para>Compute the authentication token from domain parameters and public key. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pub</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Public key from the other party (generated in PACE step 3b)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Authentication token or NULL in case of error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="213" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__paceproto_1ga424f7f098e8377ea602c4f5233a04f3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int PACE_STEP3D_verify_authentication_token</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *token)</argsstring>
+        <name>PACE_STEP3D_verify_authentication_token</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Verifies an authentication token. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Authentication token from the other party</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if the token has been verified as correct, 0 if not or -1 in case of an error occurred.</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#protocol-specification">PACE&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/pace.h" line="226" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

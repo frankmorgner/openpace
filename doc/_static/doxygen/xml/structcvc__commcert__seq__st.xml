@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="structcvc__commcert__seq__st" kind="struct" prot="public">
+    <compoundname>cvc_commcert_seq_st</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structcvc__commcert__seq__st_1a52f90146d3ac5aa2cb2936f107e41d87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cvc_commcert_seq_st::STACK_OF</definition>
+        <argsstring>(ASN1_OCTET_STRING)*values</argsstring>
+        <name>STACK_OF</name>
+        <param>
+          <type>ASN1_OCTET_STRING</type>
+        </param>
+        <briefdescription>
+<para>Contains hash values of admissible X.509 certificates of the remote terminal (optional) </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="210" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" line="207" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/cv_cert.h" bodystart="207" bodyend="211"/>
+    <listofallmembers>
+      <member refid="structcvc__commcert__seq__st_1a52f90146d3ac5aa2cb2936f107e41d87" prot="public" virt="non-virtual"><scope>cvc_commcert_seq_st</scope><name>STACK_OF</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

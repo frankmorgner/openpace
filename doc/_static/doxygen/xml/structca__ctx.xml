@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="structca__ctx" kind="struct" prot="public">
+    <compoundname>ca_ctx</compoundname>
+    <includes refid="eac_8h" local="no">eac.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structca__ctx_1a01f3b87f0a1c8db086aeecb359e22f81" prot="public" static="no" mutable="no">
+        <type>unsigned char</type>
+        <definition>unsigned char ca_ctx::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <briefdescription>
+<para>(currently unused) Version of the CA protocol, MUST be 1 or 2 </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="288" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="288" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structca__ctx_1a9322acf2acaef458196c3b26e42993d2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ca_ctx::protocol</definition>
+        <argsstring></argsstring>
+        <name>protocol</name>
+        <briefdescription>
+<para>Identifier of the protocol&apos;s OID specifying the exact CA parameters to use. </para>        </briefdescription>
+        <detaileddescription>
+<para>Accepts the following values:<itemizedlist>
+<listitem><para><computeroutput>NID_id_CA_DH_3DES_CBC_CBC</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_DH_AES_CBC_CMAC_128</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_DH_AES_CBC_CMAC_192</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_DH_AES_CBC_CMAC_256</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_ECDH_3DES_CBC_CBC</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_ECDH_AES_CBC_CMAC_128</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_ECDH_AES_CBC_CMAC_192</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_CA_ECDH_AES_CBC_CMAC_256</computeroutput> </para></listitem></itemizedlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="301" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="301" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structca__ctx_1a0f1a30c4b0548cdb0920e928351964d6" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ca_ctx::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <briefdescription>
+<para>identifier of this CA context </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="303" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="303" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structca__ctx_1a4b00f374e7f43c90c6799276feb2cf2a" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ca_ctx::flags</definition>
+        <argsstring></argsstring>
+        <name>flags</name>
+        <briefdescription>
+<para>Flags to control some of the behaviour of the CA. </para>        </briefdescription>
+        <detaileddescription>
+<para>Accepts the following values:<itemizedlist>
+<listitem><para><computeroutput>CA_FLAG_DISABLE_PASSIVE_AUTH</computeroutput> </para></listitem></itemizedlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="309" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="309" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structca__ctx_1ad869c8e99104ace4478a9f5b52a51abc" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a4402d634a911197302d4e837028e3574" kindref="member">KA_CTX</ref> *</type>
+        <definition>KA_CTX* ca_ctx::ka_ctx</definition>
+        <argsstring></argsstring>
+        <name>ka_ctx</name>
+        <briefdescription>
+<para>Key agreement object used with the PICC&apos;s private key. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="311" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="311" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structca__ctx_1ac2999e422c563a94a34746cd2afca8bb" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a14e6ca81c4faa924f26f58c7f76fd189" kindref="member">X509_lookup_csca_cert</ref></type>
+        <definition>X509_lookup_csca_cert ca_ctx::lookup_csca_cert</definition>
+        <argsstring></argsstring>
+        <name>lookup_csca_cert</name>
+        <briefdescription>
+<para>callback for finding the X.509 trust anchor </para>        </briefdescription>
+        <detaileddescription>
+<para>This function is called when passive authentication with the signed public key of the card.</para><para><simplesect kind="see"><para><ref refid="ca_8h_1a5819e0a4b3b321e69ebd21661ee84134" kindref="member">CA_get_pubkey()</ref> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="320" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="320" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Context for the Chip Authentication protocol. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>ca_ctx</label>
+        <link refid="structca__ctx"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>ka_ctx</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ka_ctx</label>
+        <link refid="structka__ctx"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="286" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="286" bodyend="321"/>
+    <listofallmembers>
+      <member refid="structca__ctx_1a4b00f374e7f43c90c6799276feb2cf2a" prot="public" virt="non-virtual"><scope>ca_ctx</scope><name>flags</name></member>
+      <member refid="structca__ctx_1a0f1a30c4b0548cdb0920e928351964d6" prot="public" virt="non-virtual"><scope>ca_ctx</scope><name>id</name></member>
+      <member refid="structca__ctx_1ad869c8e99104ace4478a9f5b52a51abc" prot="public" virt="non-virtual"><scope>ca_ctx</scope><name>ka_ctx</name></member>
+      <member refid="structca__ctx_1ac2999e422c563a94a34746cd2afca8bb" prot="public" virt="non-virtual"><scope>ca_ctx</scope><name>lookup_csca_cert</name></member>
+      <member refid="structca__ctx_1a9322acf2acaef458196c3b26e42993d2" prot="public" virt="non-virtual"><scope>ca_ctx</scope><name>protocol</name></member>
+      <member refid="structca__ctx_1a01f3b87f0a1c8db086aeecb359e22f81" prot="public" virt="non-virtual"><scope>ca_ctx</scope><name>version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

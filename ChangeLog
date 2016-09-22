@@ -1,3 +1,219 @@
+2016-09-22  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/doc/index.txt, src/doc/install.txt, src/doc/programming.txt,
+	src/doc/usage.txt: af
+
+2016-09-22  Frank Morgner <frankmorgner@gmail.com>
+
+	* .gitignore, AUTHORS, ChangeLog, INSTALL, Makefile.am, NEWS,
+	README, configure.ac, doc/Doxyfile.in, doc/Makefile.am,
+	doc/Makefile.sphinx, doc/_sources/index.txt,
+	doc/_sources/install.txt, doc/_sources/programming.txt,
+	doc/_sources/protocols.txt, doc/_sources/python_api.txt,
+	doc/_sources/usage.txt, doc/_static/Makefile.am,
+	doc/_static/basic.css,
+	doc/_static/bootstrap-2.3.2/css/bootstrap-responsive.css,
+	doc/_static/bootstrap-2.3.2/css/bootstrap-responsive.min.css,
+	doc/_static/bootstrap-2.3.2/css/bootstrap.css,
+	doc/_static/bootstrap-2.3.2/css/bootstrap.min.css,
+	doc/_static/bootstrap-2.3.2/js/bootstrap.js,
+	doc/_static/bootstrap-2.3.2/js/bootstrap.min.js,
+	doc/_static/bootstrap-3.3.4/css/bootstrap-theme.css,
+	doc/_static/bootstrap-3.3.4/css/bootstrap-theme.css.map,
+	doc/_static/bootstrap-3.3.4/css/bootstrap-theme.min.css,
+	doc/_static/bootstrap-3.3.4/css/bootstrap.css,
+	doc/_static/bootstrap-3.3.4/css/bootstrap.css.map,
+	doc/_static/bootstrap-3.3.4/css/bootstrap.min.css,
+	doc/_static/bootstrap-3.3.4/fonts/glyphicons-halflings-regular.svg,
+	doc/_static/bootstrap-3.3.4/js/bootstrap.js,
+	doc/_static/bootstrap-3.3.4/js/bootstrap.min.js,
+	doc/_static/bootstrap-3.3.4/js/npm.js,
+	doc/_static/bootstrap-sphinx.css, doc/_static/bootstrap-sphinx.js,
+	doc/_static/bootswatch-2.3.2/amelia/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/cerulean/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/cosmo/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/cyborg/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/flatly/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/journal/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/readable/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/simplex/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/slate/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/spacelab/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/spruce/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/superhero/bootstrap.min.css,
+	doc/_static/bootswatch-2.3.2/united/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/cerulean/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/cosmo/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/custom/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/cyborg/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/darkly/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/flatly/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/fonts/glyphicons-halflings-regular.svg
+	, doc/_static/bootswatch-3.3.4/journal/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/lumen/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/paper/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/readable/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/sandstone/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/simplex/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/slate/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/spacelab/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/superhero/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/united/bootstrap.min.css,
+	doc/_static/bootswatch-3.3.4/yeti/bootstrap.min.css,
+	doc/_static/doctools.js, doc/_static/doxygen,
+	doc/_static/doxygen/OpenPACE.tag,
+	doc/_static/doxygen/html/annotated.html,
+	doc/_static/doxygen/html/ca_8h.html,
+	doc/_static/doxygen/html/ca_8h_source.html,
+	doc/_static/doxygen/html/classes.html,
+	doc/_static/doxygen/html/cv__cert_8h.html,
+	doc/_static/doxygen/html/cv__cert_8h_source.html,
+	doc/_static/doxygen/html/dir_2beb2c8fad66f6564e9cdda73fb11327.html,
+	doc/_static/doxygen/html/doxygen.css,
+	doc/_static/doxygen/html/dynsections.js,
+	doc/_static/doxygen/html/eac_8h.html,
+	doc/_static/doxygen/html/eac_8h_source.html,
+	doc/_static/doxygen/html/files.html,
+	doc/_static/doxygen/html/functions.html,
+	doc/_static/doxygen/html/functions_func.html,
+	doc/_static/doxygen/html/functions_vars.html,
+	doc/_static/doxygen/html/globals.html,
+	doc/_static/doxygen/html/globals_defs.html,
+	doc/_static/doxygen/html/globals_enum.html,
+	doc/_static/doxygen/html/globals_eval.html,
+	doc/_static/doxygen/html/globals_func.html,
+	doc/_static/doxygen/html/globals_type.html,
+	doc/_static/doxygen/html/group__caproto.html,
+	doc/_static/doxygen/html/group__eacproto.html,
+	doc/_static/doxygen/html/group__management.html,
+	doc/_static/doxygen/html/group__paceproto.html,
+	doc/_static/doxygen/html/group__printing.html,
+	doc/_static/doxygen/html/group__riproto.html,
+	doc/_static/doxygen/html/group__sm.html,
+	doc/_static/doxygen/html/group__taproto.html,
+	doc/_static/doxygen/html/index.html,
+	doc/_static/doxygen/html/modules.html,
+	doc/_static/doxygen/html/objects_8h.html,
+	doc/_static/doxygen/html/objects_8h_source.html,
+	doc/_static/doxygen/html/pace_8h.html,
+	doc/_static/doxygen/html/pace_8h_source.html,
+	doc/_static/doxygen/html/ri_8h.html,
+	doc/_static/doxygen/html/ri_8h_source.html,
+	doc/_static/doxygen/html/structca__ctx.html,
+	doc/_static/doxygen/html/structcvc__cert__authentication__request__
+	seq__st.html,
+	doc/_static/doxygen/html/structcvc__cert__body__seq__st.html,
+	doc/_static/doxygen/html/structcvc__cert__request__body__seq__st.ht
+	ml,
+	doc/_static/doxygen/html/structcvc__cert__request__seq__st.html,
+	doc/_static/doxygen/html/structcvc__cert__seq__st.html,
+	doc/_static/doxygen/html/structcvc__certificate__description__st.ht
+	ml, doc/_static/doxygen/html/structcvc__chat__seq__st.html,
+	doc/_static/doxygen/html/structcvc__commcert__seq__st.html,
+	doc/_static/doxygen/html/structcvc__discretionary__data__template__
+	seq__st.html, doc/_static/doxygen/html/structcvc__pubkey__st.html,
+	doc/_static/doxygen/html/structeac__ctx.html,
+	doc/_static/doxygen/html/structka__ctx.html,
+	doc/_static/doxygen/html/structpace__ctx.html,
+	doc/_static/doxygen/html/structpace__sec.html,
+	doc/_static/doxygen/html/structri__ctx.html,
+	doc/_static/doxygen/html/structta__ctx.html,
+	doc/_static/doxygen/html/ta_8h.html,
+	doc/_static/doxygen/html/ta_8h_source.html,
+	doc/_static/doxygen/html/tabs.css,
+	doc/_static/doxygen/xml/ca_8h.xml,
+	doc/_static/doxygen/xml/combine.xslt,
+	doc/_static/doxygen/xml/compound.xsd,
+	doc/_static/doxygen/xml/cv__cert_8h.xml,
+	doc/_static/doxygen/xml/dir_2beb2c8fad66f6564e9cdda73fb11327.xml,
+	doc/_static/doxygen/xml/eac_8h.xml,
+	doc/_static/doxygen/xml/group__caproto.xml,
+	doc/_static/doxygen/xml/group__eacproto.xml,
+	doc/_static/doxygen/xml/group__management.xml,
+	doc/_static/doxygen/xml/group__paceproto.xml,
+	doc/_static/doxygen/xml/group__printing.xml,
+	doc/_static/doxygen/xml/group__riproto.xml,
+	doc/_static/doxygen/xml/group__sm.xml,
+	doc/_static/doxygen/xml/group__taproto.xml,
+	doc/_static/doxygen/xml/index.xml,
+	doc/_static/doxygen/xml/index.xsd,
+	doc/_static/doxygen/xml/objects_8h.xml,
+	doc/_static/doxygen/xml/pace_8h.xml,
+	doc/_static/doxygen/xml/ri_8h.xml,
+	doc/_static/doxygen/xml/structca__ctx.xml,
+	doc/_static/doxygen/xml/structcvc__cert__authentication__request__s
+	eq__st.xml,
+	doc/_static/doxygen/xml/structcvc__cert__body__seq__st.xml,
+	doc/_static/doxygen/xml/structcvc__cert__request__body__seq__st.xml
+	, doc/_static/doxygen/xml/structcvc__cert__request__seq__st.xml,
+	doc/_static/doxygen/xml/structcvc__cert__seq__st.xml,
+	doc/_static/doxygen/xml/structcvc__certificate__description__st.xml
+	, doc/_static/doxygen/xml/structcvc__chat__seq__st.xml,
+	doc/_static/doxygen/xml/structcvc__commcert__seq__st.xml,
+	doc/_static/doxygen/xml/structcvc__discretionary__data__template__s
+	eq__st.xml, doc/_static/doxygen/xml/structcvc__pubkey__st.xml,
+	doc/_static/doxygen/xml/structeac__ctx.xml,
+	doc/_static/doxygen/xml/structka__ctx.xml,
+	doc/_static/doxygen/xml/structpace__ctx.xml,
+	doc/_static/doxygen/xml/structpace__sec.xml,
+	doc/_static/doxygen/xml/structri__ctx.xml,
+	doc/_static/doxygen/xml/structta__ctx.xml,
+	doc/_static/doxygen/xml/ta_8h.xml, doc/_static/jquery-1.11.1.js,
+	doc/_static/jquery.js, doc/_static/js/jquery-1.11.0.min.js,
+	doc/_static/js/jquery-fix.js, doc/_static/pygments.css,
+	doc/_static/searchtools.js, doc/_static/underscore-1.3.1.js,
+	doc/_static/underscore.js, doc/_static/websupport.js,
+	doc/_templates/layout.html, doc/conf.py.in,
+	doc/efcardaccess_asn1.conf, doc/efcardsecurity_templ_asn1.conf,
+	doc/index.html, doc/index.txt, doc/index.txt.in, doc/install.html,
+	doc/install.txt, doc/install.txt.in, doc/programming.html,
+	doc/programming.txt, doc/programming.txt.in, doc/protocols.html,
+	doc/protocols.txt, doc/python_api.html, doc/python_api.txt,
+	doc/search.html, doc/searchindex.js, doc/usage.html, doc/usage.txt,
+	doc/usage.txt.in, src/Makefile.am, src/doc/Doxyfile.in,
+	src/doc/Makefile.am, src/doc/Makefile.sphinx,
+	src/doc/_static/Makefile.am, src/doc/_static/eactest.html,
+	src/doc/_static/eactest.js, src/doc/_templates/layout.html,
+	src/doc/conf.py.in, src/doc/efcardaccess_asn1.conf,
+	src/doc/efcardsecurity_templ_asn1.conf, src/doc/index.txt,
+	src/doc/index.txt.in, src/doc/install.txt, src/doc/install.txt.in,
+	src/doc/programming.txt, src/doc/programming.txt.in,
+	src/doc/protocols.txt, src/doc/python_api.txt, src/doc/usage.txt,
+	src/doc/usage.txt.in: moved documentation from branch gh-pages to
+	master fixes `make distcheck` problems during generation of documentation
+
+2016-09-22  Frank Morgner <frankmorgner@gmail.com>
+
+	* bindings/go/Makefile.am: added missing dependency
+
+2016-09-22  Frank Morgner <frankmorgner@gmail.com>
+
+	* doc/install.txt, doc/install.txt.in: added link to windows
+	developement binaries
+
+2016-09-21  Frank Morgner <frankmorgner@gmail.com>
+
+	* appveyor.yml: AppVeyor: upload windows binaries with static URL
+
+2016-08-03  Frank Morgner <frankmorgner@gmail.com>
+
+	* doc/install.txt, doc/install.txt.in, doc/programming.txt,
+	doc/programming.txt.in: rewrite of documentation for compilation
+
+2016-07-29  Frank Morgner <frankmorgner@gmail.com>
+
+	* appveyor.yml, configure.ac,
+	cross/libeac-0_with_patched_openssl.def,
+	cross/libeac-0_without_patched_openssl.def,
+	cross/libeac-1_with_patched_openssl.def,
+	cross/libeac-1_without_patched_openssl.def, doc/install.txt,
+	src/Makefile.am, src/vc.c: added compatibility with various VC
+	versions
+
+2016-07-22  Frank Morgner <frankmorgner@gmail.com>
+
+	* src/cv_cert.c: don't error when printing unknown terminal type
+
 2016-06-25  Frank Morgner <frankmorgner@gmail.com>
 
 	* ChangeLog: released 1.0.1

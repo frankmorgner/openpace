@@ -230,15 +230,18 @@ setup.py
 libeac.pc
 _build
 Doxyfile
-doc/conf.py
+src/doc/conf.py
 s_type.java
 eacJNI.java
 eacConstants.java
 efcardsecurity_asn1.conf
-doc/doxygen/
 openpace-*.tar.gz
 openpace-*_win32.zip
-doc/doc
 
 openpace-*.*/
 eac-pki_*/
+bindings/go/example
+bindings/java/*.class
+bindings/ruby/ext/
+doc/.buildinfo
+src/doc/_static/doxygen/

@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="structri__ctx" kind="struct" prot="public">
+    <compoundname>ri_ctx</compoundname>
+    <includes refid="eac_8h" local="no">eac.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structri__ctx_1a26dcc3b24d0be9e786f73da29ac14078" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ri_ctx::protocol</definition>
+        <argsstring></argsstring>
+        <name>protocol</name>
+        <briefdescription>
+<para>Identifier of the hash function to use. </para>        </briefdescription>
+        <detaileddescription>
+<para>see tr 03110 p. 60<itemizedlist>
+<listitem><para><computeroutput>NID_id_RI_DH_SHA_1</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_DH_SHA_224</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_DH_SHA_256</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_DH_SHA_384</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_DH_SHA_512</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_ECDH_SHA_1</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_ECDH_SHA_224</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_ECDH_SHA_256</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_ECDH_SHA_384</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_RI_ECDH_SHA_512</computeroutput> </para></listitem></itemizedlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="197" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structri__ctx_1aa02f62fa11872a3ea637b934dca3de9e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ri_ctx::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <briefdescription>
+<para>identifier of this RI context </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="199" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structri__ctx_1ad6a276a184c01a115b8f6f602aea0bf5" prot="public" static="no" mutable="no">
+        <type>const EVP_MD *</type>
+        <definition>const EVP_MD* ri_ctx::md</definition>
+        <argsstring></argsstring>
+        <name>md</name>
+        <briefdescription>
+<para>Digest to use for derivation of I^{sector}_{ID}. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="201" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structri__ctx_1a0575020ded3354b7de0bcbfb893ec865" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *(*</type>
+        <definition>BUF_MEM*(* ri_ctx::generate_key)(EVP_PKEY *key, BN_CTX *bn_ctx)</definition>
+        <argsstring>)(EVP_PKEY *key, BN_CTX *bn_ctx)</argsstring>
+        <name>generate_key</name>
+        <briefdescription>
+<para>Generates a key pair for key agreement. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Object for key generation, usually <computeroutput>&amp;<ref refid="structka__ctx_1a67c28ed126bc0cc85b21f854edb1c6bc" kindref="member">KA_CTX.key</ref></computeroutput> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">bn_ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Public key or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="210" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structri__ctx_1a83529722bfbf8b9071d44380b51abe61" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *(*</type>
+        <definition>BUF_MEM*(* ri_ctx::compute_key)(EVP_PKEY *key, const BUF_MEM *in, BN_CTX *bn_ctx)</definition>
+        <argsstring>)(EVP_PKEY *key, const BUF_MEM *in, BN_CTX *bn_ctx)</argsstring>
+        <name>compute_key</name>
+        <briefdescription>
+<para>Completes a key agreement by computing the shared secret. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Object for key computation, usually <computeroutput>&amp;<ref refid="structka__ctx_1a67c28ed126bc0cc85b21f854edb1c6bc" kindref="member">KA_CTX.key</ref></computeroutput> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Public key from the other party </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">bn_ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Shared secret or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="220" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structri__ctx_1a8de84de9b8a818bfc0f6910d2b6d1505" prot="public" static="no" mutable="no">
+        <type>EVP_PKEY *</type>
+        <definition>EVP_PKEY* ri_ctx::static_key</definition>
+        <argsstring></argsstring>
+        <name>static_key</name>
+        <briefdescription>
+<para>PICC&apos;s static domain parameters. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="222" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="222" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Context for the Restricted Identification protocol. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="181" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="181" bodyend="223"/>
+    <listofallmembers>
+      <member refid="structri__ctx_1a83529722bfbf8b9071d44380b51abe61" prot="public" virt="non-virtual"><scope>ri_ctx</scope><name>compute_key</name></member>
+      <member refid="structri__ctx_1a0575020ded3354b7de0bcbfb893ec865" prot="public" virt="non-virtual"><scope>ri_ctx</scope><name>generate_key</name></member>
+      <member refid="structri__ctx_1aa02f62fa11872a3ea637b934dca3de9e" prot="public" virt="non-virtual"><scope>ri_ctx</scope><name>id</name></member>
+      <member refid="structri__ctx_1ad6a276a184c01a115b8f6f602aea0bf5" prot="public" virt="non-virtual"><scope>ri_ctx</scope><name>md</name></member>
+      <member refid="structri__ctx_1a26dcc3b24d0be9e786f73da29ac14078" prot="public" virt="non-virtual"><scope>ri_ctx</scope><name>protocol</name></member>
+      <member refid="structri__ctx_1a8de84de9b8a818bfc0f6910d2b6d1505" prot="public" virt="non-virtual"><scope>ri_ctx</scope><name>static_key</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="structpace__ctx" kind="struct" prot="public">
+    <compoundname>pace_ctx</compoundname>
+    <includes refid="eac_8h" local="no">eac.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structpace__ctx_1af97dcc517de0fde8e83a7aa40f50da3e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int pace_ctx::protocol</definition>
+        <argsstring></argsstring>
+        <name>protocol</name>
+        <briefdescription>
+<para>Identifier of the protocol&apos;s OID specifying the exact PACE parameters to use. </para>        </briefdescription>
+        <detaileddescription>
+<para>The OID of the <computeroutput>PACEInfo</computeroutput> structure in the <computeroutput>EF.CardAccess</computeroutput> is used, because it is more specific than the OID contained in the (optional) <computeroutput>PaceDomainParameterInfo</computeroutput> structures.</para><para>Accepts the following values:<itemizedlist>
+<listitem><para><computeroutput>NID_id_PACE_DH_GM_3DES_CBC_CBC</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_GM_AES_CBC_CMAC_128</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_GM_AES_CBC_CMAC_192</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_GM_AES_CBC_CMAC_256</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_GM_3DES_CBC_CBC</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_IM_3DES_CBC_CBC</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_IM_AES_CBC_CMAC_128</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_IM_AES_CBC_CMAC_192</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_DH_IM_AES_CBC_CMAC_256</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_IM_3DES_CBC_CBC</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192</computeroutput> </para></listitem><listitem><para><computeroutput>NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256</computeroutput> </para></listitem></itemizedlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="154" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a1e1c98e8c010ac57c1529d4a7ac7d140" prot="public" static="no" mutable="no">
+        <type>unsigned char</type>
+        <definition>unsigned char pace_ctx::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <briefdescription>
+<para>(currently unused) Version of the PACE protocol, MUST be 1 or 2 </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="156" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1af298b849509aa042d7704348e89d09d7" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int pace_ctx::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <briefdescription>
+<para>identifier of this PACE context </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="158" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a693587f2f0ce3376e02308dd55152bc9" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *(*</type>
+        <definition>BUF_MEM*(* pace_ctx::map_generate_key)(const struct pace_ctx *ctx, BN_CTX *bn_ctx)</definition>
+        <argsstring>)(const struct pace_ctx *ctx, BN_CTX *bn_ctx)</argsstring>
+        <name>map_generate_key</name>
+        <briefdescription>
+<para>Points to the implementation of a specific mapping. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__paceproto_1gafd890198805ed2591f172e7815b8a2df" kindref="member">PACE_STEP3A_generate_mapping_data()</ref> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="162" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a989c4b5e086fdd04a2efb08a24c70d55" prot="public" static="no" mutable="no">
+        <type>int(*</type>
+        <definition>int(* pace_ctx::map_compute_key)(struct pace_ctx *ctx, const BUF_MEM *s, const BUF_MEM *in, BN_CTX *bn_ctx)</definition>
+        <argsstring>)(struct pace_ctx *ctx, const BUF_MEM *s, const BUF_MEM *in, BN_CTX *bn_ctx)</argsstring>
+        <name>map_compute_key</name>
+        <briefdescription>
+<para>Points to the implementation of a specific mapping. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__paceproto_1ga56c295adbcbca57a6059c04a480d9ff7" kindref="member">PACE_STEP3A_map_generator()</ref> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="166" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a9e8dc5891a4991d3ee15681959a530f4" prot="public" static="no" mutable="no">
+        <type>EVP_PKEY *</type>
+        <definition>EVP_PKEY* pace_ctx::static_key</definition>
+        <argsstring></argsstring>
+        <name>static_key</name>
+        <briefdescription>
+<para>PICC&apos;s static domain parameters. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="170" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="170" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a13ac5102711cf4fe79065811bff0fb2c" prot="public" static="no" mutable="no">
+        <type><ref refid="eac_8h_1a4402d634a911197302d4e837028e3574" kindref="member">KA_CTX</ref> *</type>
+        <definition>KA_CTX* pace_ctx::ka_ctx</definition>
+        <argsstring></argsstring>
+        <name>ka_ctx</name>
+        <briefdescription>
+<para>Key agreement object used with the ephemeral domain parameters. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="172" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="172" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a01213725b7c8d6e154b9b0d78d4dd2d8" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* pace_ctx::nonce</definition>
+        <argsstring></argsstring>
+        <name>nonce</name>
+        <briefdescription>
+<para>PICC&apos;s decrypted challenge generated in PACE step 1. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="174" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="174" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structpace__ctx_1a3d6695ce3c69a1b98d33fac739cdc31b" prot="public" static="no" mutable="no">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* pace_ctx::my_eph_pubkey</definition>
+        <argsstring></argsstring>
+        <name>my_eph_pubkey</name>
+        <briefdescription>
+<para>The own ephemeral public key generated in PACe step 3b. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="176" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Context for the Password Authenticated Connection Establishment protocol. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="49">
+        <label>pace_ctx</label>
+        <link refid="structpace__ctx"/>
+        <childnode refid="50" relation="usage">
+          <edgelabel>ka_ctx</edgelabel>
+        </childnode>
+      </node>
+      <node id="50">
+        <label>ka_ctx</label>
+        <link refid="structka__ctx"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/fm/Dokumente/openpace/src/eac/eac.h" line="128" column="1" bodyfile="/home/fm/Dokumente/openpace/src/eac/eac.h" bodystart="128" bodyend="177"/>
+    <listofallmembers>
+      <member refid="structpace__ctx_1af298b849509aa042d7704348e89d09d7" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>id</name></member>
+      <member refid="structpace__ctx_1a13ac5102711cf4fe79065811bff0fb2c" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>ka_ctx</name></member>
+      <member refid="structpace__ctx_1a989c4b5e086fdd04a2efb08a24c70d55" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>map_compute_key</name></member>
+      <member refid="structpace__ctx_1a693587f2f0ce3376e02308dd55152bc9" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>map_generate_key</name></member>
+      <member refid="structpace__ctx_1a3d6695ce3c69a1b98d33fac739cdc31b" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>my_eph_pubkey</name></member>
+      <member refid="structpace__ctx_1a01213725b7c8d6e154b9b0d78d4dd2d8" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>nonce</name></member>
+      <member refid="structpace__ctx_1af97dcc517de0fde8e83a7aa40f50da3e" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>protocol</name></member>
+      <member refid="structpace__ctx_1a9e8dc5891a4991d3ee15681959a530f4" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>static_key</name></member>
+      <member refid="structpace__ctx_1a1e1c98e8c010ac57c1529d4a7ac7d140" prot="public" virt="non-virtual"><scope>pace_ctx</scope><name>version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,560 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.8">
+  <compounddef id="ca_8h" kind="file">
+    <compoundname>ca.h</compoundname>
+    <includes refid="eac_8h" local="yes">eac.h</includes>
+    <includes local="no">openssl/buffer.h</includes>
+    <incdepgraph>
+      <node id="6">
+        <label>openssl/asn1t.h</label>
+      </node>
+      <node id="4">
+        <label>openssl/obj_mac.h</label>
+      </node>
+      <node id="5">
+        <label>openssl/asn1.h</label>
+      </node>
+      <node id="3">
+        <label>eac/objects.h</label>
+        <link refid="objects_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>openssl/bio.h</label>
+      </node>
+      <node id="2">
+        <label>eac/cv_cert.h</label>
+        <link refid="cv__cert_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>openssl/buffer.h</label>
+      </node>
+      <node id="1">
+        <label>eac.h</label>
+        <link refid="eac_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>openssl/evp.h</label>
+      </node>
+      <node id="10">
+        <label>openssl/ec.h</label>
+      </node>
+      <node id="9">
+        <label>openssl/cmac.h</label>
+      </node>
+      <node id="0">
+        <label>eac/ca.h</label>
+        <link refid="ca.h"/>
+        <childnode refid="1" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="ca_8h_1a5766da26877961a967490cb6de6901bb" prot="public" static="no">
+        <name>CA_FLAG_DISABLE_PASSIVE_AUTH</name>
+        <initializer>1</initializer>
+        <briefdescription>
+<para>Skip the passive authentication. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="46" column="9" bodyfile="/home/fm/Dokumente/openpace/src/eac/ca.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__management_1ga28c1d11845924a1cd08461c6a1a765cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void CA_disable_passive_authentication</definition>
+        <argsstring>(EAC_CTX *ctx)</argsstring>
+        <name>CA_disable_passive_authentication</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Disable passive authentication for this EAC_CTX. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="58" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="ca_8h_1a5819e0a4b3b321e69ebd21661ee84134" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* CA_get_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx, const unsigned char *ef_cardsecurity, size_t ef_cardsecurity_len)</argsstring>
+        <name>CA_get_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>ef_cardsecurity</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ef_cardsecurity_len</declname>
+        </param>
+        <briefdescription>
+<para>Extract the public key from a EF.CardSecurity file. </para>        </briefdescription>
+        <detaileddescription>
+<para>Perform passive authentication if required.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ef_cardsecurity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer containing the ASN.1 encoded EF.CardSecurity </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ef_cardsecurity_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>length of <emphasis>ef_cardsecurity</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The public key or NULL in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="74" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="ca_8h_1ac91aa5d0a95c6c52ffe98192e63614e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_set_key</definition>
+        <argsstring>(const EAC_CTX *ctx, const unsigned char *priv, size_t priv_len, const unsigned char *pub, size_t pub_len)</argsstring>
+        <name>CA_set_key</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>priv</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>priv_len</declname>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+          <declname>pub</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>pub_len</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the CA context with keys. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">priv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Private CA key. Can be an encoded key or a raw point/integer. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">priv_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>priv</emphasis> </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pub</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) Public CA key </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pub_len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of <emphasis>pub</emphasis> </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>See <computeroutput>d2i_AutoPrivateKey()</computeroutput> for supported encodings of <computeroutput>priv</computeroutput> </para></simplesect>
+<simplesect kind="return"><para>1 on success or 0 in case of an error </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="92" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1gafdf162f33faea84cb7ff359bb1d5c09d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* CA_STEP1_get_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>CA_STEP1_get_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Get the PICC&apos;s encoded public key. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Encoded public key or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="110" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1gad2aaec726b132e27f50aaa16bfbde574" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>BUF_MEM *</type>
+        <definition>BUF_MEM* CA_STEP2_get_eph_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx)</argsstring>
+        <name>CA_STEP2_get_eph_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Get the PCD&apos;s ephemeral public key (generated in TA step 3) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Public key or NULL in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="121" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga6f5f7dfc8323a946fec506956018525a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP3_check_pcd_pubkey</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *comp_pubkey, const BUF_MEM *pubkey)</argsstring>
+        <name>CA_STEP3_check_pcd_pubkey</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>comp_pubkey</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pubkey</declname>
+        </param>
+        <briefdescription>
+<para>Check whether the public key matches the compressed public key previously received in TA. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">comp_pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Compressed public key (received in TA step 3) </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Uncompressed public key (received in CA step 2)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if the keys match, 0 if they don&apos;t or -1 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="135" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga5ebe4465cab901c4bb94a75c74bf71fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP4_compute_shared_secret</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *pubkey)</argsstring>
+        <name>CA_STEP4_compute_shared_secret</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pubkey</declname>
+        </param>
+        <briefdescription>
+<para>Compute the shared secret using the PICC&apos;s static key pair and the PCD&apos;s ephemeral key pair. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The secret is saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pubkey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Public key from the other party</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="ca_8h_1a5819e0a4b3b321e69ebd21661ee84134" kindref="member">CA_get_pubkey()</ref></computeroutput> extracts the PICC&apos;s public key from an <computeroutput>EF.CardSecurity</computeroutput> </para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="151" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga37bfdcc37ae95d411b5919cdd02fa3bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP5_derive_keys</definition>
+        <argsstring>(const EAC_CTX *ctx, const BUF_MEM *pub, BUF_MEM **nonce, BUF_MEM **token)</argsstring>
+        <name>CA_STEP5_derive_keys</name>
+        <param>
+          <type>const <ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>pub</declname>
+        </param>
+        <param>
+          <type>BUF_MEM **</type>
+          <declname>nonce</declname>
+        </param>
+        <param>
+          <type>BUF_MEM **</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Derives the PICC&apos;s encryption and authentication keys. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The keys are saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">pub</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PCD&apos;s ephemeral public key </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">nonce</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Generated nonce </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Authentication token</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="166" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="group__caproto_1ga34352b58c89ce58c4e3e425bfb20ef45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int CA_STEP6_derive_keys</definition>
+        <argsstring>(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)</argsstring>
+        <name>CA_STEP6_derive_keys</name>
+        <param>
+          <type><ref refid="eac_8h_1ae9b1b2593999b3c1b8eb10a4629b7c94" kindref="member">EAC_CTX</ref> *</type>
+          <declname>ctx</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>nonce</declname>
+        </param>
+        <param>
+          <type>const BUF_MEM *</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Derives the PCD&apos;s encryption and authentication keys. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>EAC context. The keys are saved in <emphasis>ctx</emphasis>. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">nonce</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PICC&apos;s generated nonce </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PICC&apos;s authentication token to verify</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on success or 0 in case of an error</para></simplesect>
+<simplesect kind="see"><para><ulink url="http://frankmorgner.github.io/openpace/protocols.html#id4">CA&apos;s Protocol Specification</ulink> </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/fm/Dokumente/openpace/src/eac/ca.h" line="181" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Interface for Chip Authentication. </para>    </briefdescription>
+    <detaileddescription>
+<para>Chip Authentication (CA) is a protocol which is used to check the authenticity of a MRTD chip and establish a secure channel for further communication. The chip contains one or more key pairs used for key agreement. After successful key agreement symmetric keys are derived from the shared secret. OpenPACE implements CA version 2.</para><para><simplesect kind="author"><para>Frank Morgner <ulink url="mailto:frankmorgner@gmail.com">frankmorgner@gmail.com</ulink> </para></simplesect>
+<simplesect kind="author"><para>Dominik Oepen <ulink url="mailto:oepen@informatik.hu-berlin.de">oepen@informatik.hu-berlin.de</ulink> </para></simplesect>
+</para>    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2010-2012<sp/>Frank<sp/>Morgner<sp/>and<sp/>Dominik<sp/>Oepen</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>OpenPACE.</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>OpenPACE<sp/>is<sp/>free<sp/>software:<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify<sp/>it<sp/>under</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>Software<sp/>Foundation,<sp/>either<sp/>version<sp/>3<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>any<sp/>later<sp/>version.</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/>OpenPACE<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/>but<sp/>WITHOUT<sp/>ANY</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of<sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>details.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>along<sp/>with</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>OpenPACE.<sp/><sp/>If<sp/>not,<sp/>see<sp/>&lt;http://www.gnu.org/licenses/&gt;.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="preprocessor">#ifndef<sp/>CA_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CA_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="eac_8h" kindref="compound">eac.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;openssl/buffer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="ca_8h_1a5766da26877961a967490cb6de6901bb" refkind="member"><highlight class="preprocessor">#define<sp/>CA_FLAG_DISABLE_PASSIVE_AUTH<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="group__management_1ga28c1d11845924a1cd08461c6a1a765cc" kindref="member">CA_disable_passive_authentication</ref>(<ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal">BUF_MEM<sp/>*</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><ref refid="ca_8h_1a5819e0a4b3b321e69ebd21661ee84134" kindref="member">CA_get_pubkey</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*ef_cardsecurity,</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ef_cardsecurity_len);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><ref refid="ca_8h_1ac91aa5d0a95c6c52ffe98192e63614e9" kindref="member">CA_set_key</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*priv,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>priv_len,</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*pub,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>pub_len);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">BUF_MEM<sp/>*</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><ref refid="group__caproto_1gafdf162f33faea84cb7ff359bb1d5c09d" kindref="member">CA_STEP1_get_pubkey</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal">BUF_MEM<sp/>*</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><ref refid="group__caproto_1gad2aaec726b132e27f50aaa16bfbde574" kindref="member">CA_STEP2_get_eph_pubkey</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx);</highlight></codeline>
+<codeline lineno="134"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><ref refid="group__caproto_1ga6f5f7dfc8323a946fec506956018525a" kindref="member">CA_STEP3_check_pcd_pubkey</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*comp_pubkey,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*pubkey);</highlight></codeline>
+<codeline lineno="150"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><ref refid="group__caproto_1ga5ebe4465cab901c4bb94a75c74bf71fa" kindref="member">CA_STEP4_compute_shared_secret</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*pubkey);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><ref refid="group__caproto_1ga37bfdcc37ae95d411b5919cdd02fa3bf" kindref="member">CA_STEP5_derive_keys</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*pub,</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>BUF_MEM<sp/>**nonce,<sp/>BUF_MEM<sp/>**token);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="keywordtype">int</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><ref refid="group__caproto_1ga34352b58c89ce58c4e3e425bfb20ef45" kindref="member">CA_STEP6_derive_keys</ref>(<ref refid="structeac__ctx" kindref="compound">EAC_CTX</ref><sp/>*ctx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*nonce,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BUF_MEM<sp/>*token);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/fm/Dokumente/openpace/src/eac/ca.h"/>
+  </compounddef>
+</doxygen>
