@@ -17,9 +17,17 @@ You can download the latest release of OpenPACE on `Github
 are still available on `Sourceforge
 <http://sourceforge.net/projects/openpace/files>`_.
 
-Alternatively, you can clone our git repository::
+If you plan to make contribution, you can clone our git repository to later
+make a pull request on Github::
 
     git clone https://github.com/frankmorgner/openpace.git
+
+Alternatively, the current developement version is available as `zip file
+<https://github.com/frankmorgner/openpace/archive/master.zip>`_ or as
+precompiled Windows `32 bit binaries
+<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win32-vs12.zip?branch=master&job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x86>`_
+and `64 bit binaries
+<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win64-vs12.zip?branch=master&job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x64>`_.
 
 
 
