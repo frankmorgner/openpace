@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src cross bindings
 
-EXTRA_DIST = libeac.pc.in bootstrap generate-eac-pki.sh doc
+EXTRA_DIST = libeac.pc.in bootstrap generate-eac-pki.sh docs
 DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-go --enable-ruby --enable-python --disable-openssl-install
 
 if WIN32
@@ -38,9 +38,9 @@ emscripten:
 osx:
 	$(MAKE) -C cross $@
 
-.PHONY: doc libeac.pc
-doc:
-	$(MAKE) -C src/doc $@
+.PHONY: docs libeac.pc
+docs:
+	$(MAKE) -C src/docs $@
 
 clean-local:
 	rm -f libeac.pc
@@ -114,5 +114,5 @@ distcheck-hook:
 		&& git2cl > ChangeLog \
 		|| true
 
-# Check whether regular files were deleted except in the doc directory
-distcleancheck_listfiles = find . -path ./doc -prune -o -type f -print
+# Check whether regular files were deleted except in the docs directory
+distcleancheck_listfiles = find . -path ./docs -prune -o -type f -print

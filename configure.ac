@@ -280,8 +280,8 @@ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
 
 AC_CONFIG_FILES([
                  Makefile
-                 src/doc/Makefile
-                 src/doc/_static/Makefile
+                 src/docs/Makefile
+                 src/docs/_static/Makefile
                  src/Makefile
                  bindings/Makefile
                  bindings/java/Makefile

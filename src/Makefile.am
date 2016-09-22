@@ -1,4 +1,4 @@
-SUBDIRS = doc
+SUBDIRS = docs
 
 BUILT_SOURCES = cvc-create-cmdline.c cvc-create-cmdline.h cvc-print-cmdline.c cvc-print-cmdline.h
 
