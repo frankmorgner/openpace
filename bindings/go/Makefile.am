@@ -23,7 +23,7 @@ $(BUILT_SOURCES): $(INTERFACES)
 eac.o: $(BUILT_SOURCES)
 	$(GCCGO) -c eac.go $(GCCGOFLAGS)
 
-example.o: $(srcdir)/example.go
+example.o: libgeac.la $(srcdir)/example.go
 	$(GCCGO) -c $(srcdir)/example.go $(GCCGOFLAGS)
 
 example: example.o eac.o
