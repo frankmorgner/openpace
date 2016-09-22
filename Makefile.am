@@ -106,13 +106,5 @@ install-data-local:
 	$(INSTALL) -d $(DESTDIR)$(CVCDIR)
 	$(INSTALL) -d $(DESTDIR)$(X509DIR)
 
-distcheck-hook:
-	test -d .svn \
-		&& svn2cl --group-by-day --reparagraph --separate-daylogs --include-actions --include-rev \
-		|| true
-	test -d .git \
-		&& git2cl > ChangeLog \
-		|| true
-
 # Check whether regular files were deleted except in the docs directory
 distcleancheck_listfiles = find . -path ./docs -prune -o -type f -print
