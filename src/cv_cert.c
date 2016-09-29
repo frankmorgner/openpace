@@ -1507,8 +1507,8 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
         goto err;
 
     /* Set generator, order and cofactor */
-    if (!ASN1_INTEGER_to_BN(cofactor, cofactor_bn) ||
-        !ASN1_INTEGER_to_BN(base_order, order_bn))
+    if (!BN_bin2bn(ASN1_STRING_get0_data(cofactor), ASN1_STRING_length(cofactor), cofactor_bn) ||
+        !BN_bin2bn(ASN1_STRING_get0_data(base_order), ASN1_STRING_length(base_order), order_bn))
             goto err;
 
     generator = EC_POINT_new(group);
