@@ -75,9 +75,6 @@ bsi-de 2 2 6 :          id-CI
 bsi-de 2 2 7 :          id-eIDSecurity
 bsi-de 2 2 8 :          id-PT
 
-bsi-de 2 2 6 :          cardInfoLocator
-bsi-de 2 2 7 :          eID
-
 # BSI extensions TR-03111
 !Alias id-ecc   bsi-de 1 1
 !Alias ecka-dh  id-ecc 5 2

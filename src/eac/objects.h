@@ -298,14 +298,6 @@ extern int NID_id_eIDSecurity;
 extern int NID_id_PT;
 #define OBJ_id_PT		OBJ_bsi_de,2L,2L,8L
 
-#define SN_cardInfoLocator		"cardInfoLocator"
-extern int NID_cardInfoLocator;
-#define OBJ_cardInfoLocator		OBJ_bsi_de,2L,2L,6L
-
-#define SN_eID		"eID"
-extern int NID_eID;
-#define OBJ_eID		OBJ_bsi_de,2L,2L,7L
-
 #define OBJ_id_ecc		OBJ_bsi_de,1L,1L
 
 #define OBJ_ecka_dh		OBJ_id_ecc,5L,2L

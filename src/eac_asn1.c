@@ -636,9 +636,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                 goto err;
 
         } else if (nid == NID_id_CI) {
-            /* ChipIdentifer */
-        } else if (nid == NID_cardInfoLocator) {
-            /* cardInfoLocator */
+            /* ChipIdentifer or cardInfoLocator */
         } else if (nid == NID_id_PT) {
         } else if (nid == NID_id_RI_DH_SHA_1
                 || nid == NID_id_RI_DH_SHA_224

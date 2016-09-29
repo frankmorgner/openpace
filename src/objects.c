@@ -312,12 +312,6 @@ EAC_add_all_objects(void)
 #define ASC_id_PT		ASC_bsi_de".2.2.8"
     NID_id_PT = OBJ_create(ASC_id_PT	, SN_id_PT	, SN_id_PT	);
 
-#define ASC_cardInfoLocator		ASC_bsi_de".2.2.6"
-    NID_cardInfoLocator = OBJ_create(ASC_cardInfoLocator	, SN_cardInfoLocator	, SN_cardInfoLocator	);
-
-#define ASC_eID		ASC_bsi_de".2.2.7"
-    NID_eID = OBJ_create(ASC_eID	, SN_eID	, SN_eID	);
-
 #define ASC_id_ecc		ASC_bsi_de".1.1"
 
 #define ASC_ecka_dh		ASC_id_ecc".5.2"
@@ -443,8 +437,6 @@ EAC_add_all_objects(void)
             || NID_undef == NID_id_CI
             || NID_undef == NID_id_eIDSecurity
             || NID_undef == NID_id_PT
-            || NID_undef == NID_cardInfoLocator
-            || NID_undef == NID_eID
             || NID_undef == NID_ecka_dh_SessionKDF
             || NID_undef == NID_ecka_dh_SessionKDF_DES3
             || NID_undef == NID_ecka_dh_SessionKDF_AES128
