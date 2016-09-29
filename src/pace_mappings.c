@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_dh.h"
 #include "eac_ecdh.h"
 #include "eac_err.h"
@@ -50,8 +54,9 @@ dh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
 {
     int ret = 0;
     BUF_MEM * mem_h = NULL;
-    BIGNUM * bn_s = NULL, *bn_h = NULL, *bn_g = NULL;
+    BIGNUM * bn_s = NULL, *bn_h = NULL, *bn_g = NULL, *new_g = NULL;
     DH *static_key = NULL, *ephemeral_key = NULL;
+    const BIGNUM *p, *q, *g;
 
     check(ctx && ctx->static_key && s && ctx->ka_ctx, "Invalid arguments");
 
@@ -75,17 +80,23 @@ dh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
         goto err;
 
     /* Initialize ephemeral parameters with parameters from the static key */
-    ephemeral_key = DHparams_dup_with_q(static_key);
+    ephemeral_key = DHparams_dup(static_key);
     if (!ephemeral_key)
         goto err;
 
+    DH_get0_pqg(static_key, &p, &q, &g);
+
     /* map to new generator */
     bn_g = BN_CTX_get(bn_ctx);
-    if (!bn_g ||
+    new_g = BN_new();
+    if (!bn_g || !new_g ||
         /* bn_g = g^s mod p */
-        !BN_mod_exp(bn_g, static_key->g, bn_s, static_key->p, bn_ctx) ||
+        !BN_mod_exp(bn_g, g, bn_s, p, bn_ctx) ||
         /* ephemeral_key->g = bn_g * h mod p = g^s * h mod p */
-        !BN_mod_mul(ephemeral_key->g, bn_g, bn_h, static_key->p, bn_ctx))
+        !BN_mod_mul(new_g, bn_g, bn_h, p, bn_ctx))
+        goto err;
+
+    if (!DH_set0_pqg(ephemeral_key, BN_dup(p), BN_dup(q), new_g))
         goto err;
 
     /* Copy ephemeral key to context structure */
@@ -127,7 +138,8 @@ dh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
 {
     int ret = 0;
     BUF_MEM * x_mem = NULL;
-    BIGNUM * x_bn = NULL, *a = NULL, *p_1 = NULL, *q = NULL;
+    BIGNUM * x_bn = NULL, *a = NULL, *p_1 = NULL, *q = NULL, *g_new = NULL;
+    const BIGNUM *p, *g;
     DH *static_key = NULL, *ephemeral_key = NULL;
 
     check((ctx && in && ctx->ka_ctx), "Invalid arguments");
@@ -145,6 +157,7 @@ dh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     ephemeral_key = DHparams_dup_with_q(static_key);
     if (!ephemeral_key)
         goto err;
+    DH_get0_pqg(ephemeral_key, &p, NULL, &g);
 
     /* Perform the actual mapping */
     x_mem = cipher_no_pad(ctx->ka_ctx, NULL, in, s, 1);
@@ -153,18 +166,21 @@ dh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     x_bn = BN_bin2bn((unsigned char *) x_mem->data, x_mem->length, x_bn);
     a = BN_CTX_get(bn_ctx);
     q = DH_get_q(static_key, bn_ctx);
-    p_1 = BN_dup(static_key->p);
-    if (!x_bn || !a || !q || !p_1 ||
+    p_1 = BN_dup(p);
+    g_new = BN_dup(g);
+    if (!x_bn || !a || !q || !p_1 || !g_new ||
             /* p_1 = p-1 */
             !BN_sub_word(p_1, 1) ||
             /* a = p-1 / q */
             !BN_div(a, NULL, p_1, q, bn_ctx) ||
             /* g~ = x^a mod p */
-            !BN_mod_exp(ephemeral_key->g, x_bn, a, static_key->p, bn_ctx))
+            !BN_mod_exp(g_new, x_bn, a, p, bn_ctx))
         goto err;
 
     /* check if g~ != 1 */
-    check((!BN_is_one(ephemeral_key->g)), "Bad DH generator");
+    check((!BN_is_one(g_new)), "Bad DH generator");
+
+    DH_set0_pqg(ephemeral_key, BN_dup(p), q, g_new);
 
     /* Copy ephemeral key to context structure */
     if (!EVP_PKEY_set1_DH(ctx->ka_ctx->key, ephemeral_key))
@@ -173,8 +189,12 @@ dh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     ret = 1;
 
 err:
-    if (q)
-        BN_clear_free(q);
+    if (!ret) {
+        if (q)
+            BN_clear_free(q);
+        if (g_new)
+            BN_clear_free(g_new);
+    }
     if (p_1)
         BN_clear_free(p_1);
     if (x_bn)
@@ -207,9 +227,13 @@ ecdh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     BUF_MEM * mem_h = NULL;
     BIGNUM * bn_s = NULL, *order = NULL, *cofactor = NULL;
     EC_POINT * ecp_h = NULL, *ecp_g = NULL;
-    const ECDH_METHOD *default_method;
     EC_GROUP *group = NULL;
     EC_KEY *static_key = NULL, *ephemeral_key = NULL;
+#ifdef HAVE_EC_KEY_METHOD
+    const EC_KEY_METHOD *default_method;
+#else
+    const ECDH_METHOD *default_method;
+#endif
 
     BN_CTX_start(bn_ctx);
 
@@ -232,11 +256,20 @@ ecdh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     if (!bn_s)
         goto err;
 
+#ifdef HAVE_EC_KEY_METHOD
+    default_method = EC_KEY_get_method(static_key);
+    if (!EC_KEY_set_method(static_key, EC_KEY_OpenSSL_Point()))
+        goto err;
+    /* complete the ECDH and get the resulting point h */
+    mem_h = ecdh_compute_key(ctx->static_key, in, bn_ctx);
+    EC_KEY_set_method(static_key, default_method);
+#else
     default_method = ECDH_get_default_method();
     ECDH_set_default_method(ECDH_OpenSSL_Point());
     /* complete the ECDH and get the resulting point h */
     mem_h = ecdh_compute_key(ctx->static_key, in, bn_ctx);
     ECDH_set_default_method(default_method);
+#endif
     ecp_h = EC_POINT_new(group);
     if (!mem_h || !ecp_h || !EC_POINT_oct2point(group, ecp_h,
             (unsigned char *) mem_h->data, mem_h->length, bn_ctx))

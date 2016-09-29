@@ -24,6 +24,10 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "cvc-create-cmdline.h"
 #include "misc.h"
 #include "eac_util.h"
@@ -267,7 +271,7 @@ ASN1_OCTET_STRING *get_at_authorizations(const struct gengetopt_args_info *cmdli
         authorization[0] |= 1<<5;
 
     out = ASN1_OCTET_STRING_new();
-    if (!out || !M_ASN1_OCTET_STRING_set(out,
+    if (!out || !ASN1_OCTET_STRING_set(out,
                 authorization, sizeof authorization))
         goto err;
 
@@ -299,7 +303,7 @@ ASN1_OCTET_STRING *get_is_authorizations(const struct gengetopt_args_info *cmdli
         authorization[0] |= 1<<5;
 
     out = ASN1_OCTET_STRING_new();
-    if (!out || !M_ASN1_OCTET_STRING_set(out,
+    if (!out || !ASN1_OCTET_STRING_set(out,
                 authorization, sizeof authorization))
         goto err;
 
@@ -331,7 +335,7 @@ ASN1_OCTET_STRING *get_st_authorizations(const struct gengetopt_args_info *cmdli
         authorization[0] |= 1<<5;
 
     out = ASN1_OCTET_STRING_new();
-    if (!out || !M_ASN1_OCTET_STRING_set(out,
+    if (!out || !ASN1_OCTET_STRING_set(out,
                 authorization, sizeof authorization))
         goto err;
 
@@ -510,7 +514,7 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
             /* desc_type == NID_id_pdfFormat */
             asn1 = ASN1_OCTET_STRING_new();
         }
-        if (!asn1 || !M_ASN1_OCTET_STRING_set(asn1, desc_data, desc_data_len))
+        if (!asn1 || !ASN1_OCTET_STRING_set(asn1, desc_data, desc_data_len))
             goto err;
 #ifdef HAVE_PATCHED_OPENSSL
         switch (desc_type) {
@@ -536,7 +540,7 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
         if (cmdline->issuer_name_arg) {
             desc->issuerName = ASN1_UTF8STRING_new();
             if (!desc->issuerName
-                    || !M_ASN1_OCTET_STRING_set(desc->issuerName,
+                    || !ASN1_OCTET_STRING_set(desc->issuerName,
                         cmdline->issuer_name_arg, strlen(cmdline->issuer_name_arg)))
                 goto err;
         }
@@ -544,7 +548,7 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
         if (cmdline->issuer_url_arg) {
             desc->issuerURL = ASN1_PRINTABLESTRING_new();
             if (!desc->issuerURL
-                    || !M_ASN1_OCTET_STRING_set(desc->issuerURL,
+                    || !ASN1_OCTET_STRING_set(desc->issuerURL,
                         cmdline->issuer_url_arg, strlen(cmdline->issuer_url_arg)))
                 goto err;
         }
@@ -552,7 +556,7 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
         if (cmdline->subject_name_arg) {
             desc->subjectName = ASN1_UTF8STRING_new();
             if (!desc->subjectName
-                    || !M_ASN1_OCTET_STRING_set(desc->subjectName,
+                    || !ASN1_OCTET_STRING_set(desc->subjectName,
                         cmdline->subject_name_arg, strlen(cmdline->subject_name_arg)))
                 goto err;
         }
@@ -560,7 +564,7 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
         if (cmdline->subject_url_arg) {
             desc->subjectURL = ASN1_PRINTABLESTRING_new();
             if (!desc->subjectURL
-                    || !M_ASN1_OCTET_STRING_set(desc->subjectURL,
+                    || !ASN1_OCTET_STRING_set(desc->subjectURL,
                         cmdline->subject_url_arg, strlen(cmdline->subject_url_arg)))
                 goto err;
         }
@@ -654,7 +658,7 @@ int main(int argc, char *argv[])
         }
         body->certificate_authority_reference = ASN1_UTF8STRING_new();
         if (!body->certificate_authority_reference
-                || !M_ASN1_OCTET_STRING_set(body->certificate_authority_reference, car, car_len))
+                || !ASN1_OCTET_STRING_set(body->certificate_authority_reference, car, car_len))
             goto err;
     } else {
         body->certificate_authority_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_authority_reference);
@@ -667,7 +671,7 @@ int main(int argc, char *argv[])
     if (cmdline.manual_mode_counter) {
         body->certificate_holder_reference = ASN1_UTF8STRING_new();
         if (!body->certificate_holder_reference
-                || !M_ASN1_OCTET_STRING_set(body->certificate_holder_reference,
+                || !ASN1_OCTET_STRING_set(body->certificate_holder_reference,
                     (unsigned char *) cmdline.chr_arg, strlen(cmdline.chr_arg)))
             goto err;
         strncpy(basename, cmdline.chr_arg, sizeof basename);
@@ -703,7 +707,7 @@ int main(int argc, char *argv[])
                 if (!term_key_ctx
                         || !EVP_PKEY_keygen_init(term_key_ctx))
                     goto err;
-                if (EVP_PKEY_type(signer_key->type) == EVP_PKEY_RSA) {
+                if (EVP_PKEY_base_id(signer_key) == EVP_PKEY_RSA) {
                     /* RSA keys set the key length during key generation
                      * rather than parameter generation! */
                     if (!EVP_PKEY_CTX_set_rsa_keygen_bits(term_key_ctx,
@@ -764,7 +768,7 @@ int main(int argc, char *argv[])
     }
     body->certificate_effective_date = ASN1_OCTET_STRING_new();
     if (!body->certificate_effective_date
-            || !M_ASN1_OCTET_STRING_set(body->certificate_effective_date,
+            || !ASN1_OCTET_STRING_set(body->certificate_effective_date,
                 (unsigned char *) string, 6))
         goto err;
 
@@ -773,7 +777,7 @@ int main(int argc, char *argv[])
     body->certificate_expiration_date = ASN1_OCTET_STRING_new();
     if (!body->certificate_expiration_date
             || !to_bcd(cmdline.expires_arg, (unsigned char *) string, 6)
-            || !M_ASN1_OCTET_STRING_set(body->certificate_expiration_date,
+            || !ASN1_OCTET_STRING_set(body->certificate_expiration_date,
                 (unsigned char *) string, 6))
         goto err;
 
@@ -799,7 +803,7 @@ int main(int argc, char *argv[])
         template->type = OBJ_nid2obj(NID_id_description);
         template->discretionary_data1 = ASN1_OCTET_STRING_new();
         if (!template->type || !template->discretionary_data1
-                || !M_ASN1_OCTET_STRING_set(template->discretionary_data1,
+                || !ASN1_OCTET_STRING_set(template->discretionary_data1,
                     desc_hash->data, desc_hash->length)
                 || !sk_push((_STACK *) cert->body->certificate_extensions, template))
             goto err;
@@ -837,7 +841,7 @@ int main(int argc, char *argv[])
     /* assamble everything */
     cert->signature = ASN1_OCTET_STRING_new();
     if (!cert->signature
-            || !M_ASN1_OCTET_STRING_set(cert->signature,
+            || !ASN1_OCTET_STRING_set(cert->signature,
                 signature->data, signature->length))
         goto err;
 

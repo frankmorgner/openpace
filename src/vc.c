@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef _WIN32
 #if defined(_MSC_VER) && (_MSC_VER >= 1900)
 // needed for OpenSSL static link

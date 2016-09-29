@@ -130,7 +130,7 @@ EAC_sign
 EAC_verify
 EAC_verify_authentication
 ECDH_OpenSSL_Point
-EC_POINT_point2buf
+EC_POINT_point2mem
 EVP_PKEY_dup
 EVP_PKEY_set_keys
 EVP_PKEY_set_std_dp

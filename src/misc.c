@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_err.h"
 #include "misc.h"
 #include <limits.h>
@@ -33,22 +37,73 @@
 #include <openssl/ossl_typ.h>
 #include <string.h>
 
+static int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
+        EC_KEY *ecdh,
+        void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
+static int new_ecdh_compute_key_point(unsigned char **psec, size_t *pseclen,
+        const EC_POINT *pub_key, const EC_KEY *ecdh);
+
+struct ec_key_method_st {
+    const char *name;
+    int32_t flags;
+    int (*init)(EC_KEY *key);
+    void (*finish)(EC_KEY *key);
+    int (*copy)(EC_KEY *dest, const EC_KEY *src);
+    int (*set_group)(EC_KEY *key, const EC_GROUP *grp);
+    int (*set_private)(EC_KEY *key, const BIGNUM *priv_key);
+    int (*set_public)(EC_KEY *key, const EC_POINT *pub_key);
+    int (*keygen)(EC_KEY *key);
+    int (*compute_key)(unsigned char **pout, size_t *poutlen,
+            const EC_POINT *pub_key, const EC_KEY *ecdh);
+    int (*sign)(int type, const unsigned char *dgst, int dlen, unsigned char
+            *sig, unsigned int *siglen, const BIGNUM *kinv,
+            const BIGNUM *r, EC_KEY *eckey);
+    int (*sign_setup)(EC_KEY *eckey, BN_CTX *ctx_in, BIGNUM **kinvp,
+            BIGNUM **rp);
+    ECDSA_SIG *(*sign_sig)(const unsigned char *dgst, int dgst_len,
+            const BIGNUM *in_kinv, const BIGNUM *in_r,
+            EC_KEY *eckey);
+
+    int (*verify)(int type, const unsigned char *dgst, int dgst_len,
+            const unsigned char *sigbuf, int sig_len, EC_KEY *eckey);
+    int (*verify_sig)(const unsigned char *dgst, int dgst_len,
+            const ECDSA_SIG *sig, EC_KEY *eckey);
+};
+
 struct ecdh_method
-    {
+{
     const char *name;
     int (*compute_key)(void *key, size_t outlen, const EC_POINT *pub_key, EC_KEY *ecdh,
-                       void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
+            void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
 #if 0
     int (*init)(EC_KEY *eckey);
     int (*finish)(EC_KEY *eckey);
 #endif
     int flags;
     char *app_data;
-    };
+};
 
-static int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
-   EC_KEY *ecdh,
-   void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen));
+#ifdef HAVE_EC_KEY_METHOD
+
+static const EC_KEY_METHOD openssl_ec_key_meth_point = {
+    "OpenSSL EC_KEY method with Point",
+    0,
+    0,0,0,0,0,0,
+    NULL,
+    new_ecdh_compute_key_point,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
+const EC_KEY_METHOD *EC_KEY_OpenSSL_Point(void)
+{
+    return &openssl_ec_key_meth_point;
+}
+
+#else
 
 static ECDH_METHOD openssl_ecdh_meth_point = {
     "OpenSSL ECDH method with Point",
@@ -61,32 +116,63 @@ static ECDH_METHOD openssl_ecdh_meth_point = {
     NULL  /* app_data */
 };
 
+const ECDH_METHOD *ECDH_OpenSSL_Point(void)
+{
+    return &openssl_ecdh_meth_point;
+}
+#endif
+
+int new_ecdh_compute_key_point(unsigned char **psec, size_t *pseclen, const
+        EC_POINT *pub_key, const EC_KEY *ecdh)
+{
+    /* The new API requires us to allocate the memory for the output buffer */
+    int ret= -1;
+    /* should be enough to hold an uncompressed point of a 528 bit curve
+     * (e.g. secp521r1, which is the biggest curve of BSI TR-03110) */
+    *psec = OPENSSL_malloc(133);
+    check(*psec, "Out of memory");
+    *pseclen = 133;
+    ret = ecdh_compute_key_point(*psec, *pseclen, pub_key, (EC_KEY *) ecdh, NULL);
+err:
+    if (ret <= 0) {
+        OPENSSL_free(*psec);
+        *psec = NULL;
+        *pseclen = 0;
+        ret = 0;
+    } else {
+        *pseclen = ret;
+        ret = 1;
+    }
+    return ret;
+}
+
 int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
-   EC_KEY *ecdh,
-   void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen))
-   {
-   BN_CTX *ctx = NULL;
-   EC_POINT *tmp=NULL;
-   const BIGNUM *priv_key;
-   const EC_GROUP* group;
-   int ret= -1;
-   size_t buflen;
-   unsigned char *buf=NULL;
+        EC_KEY *ecdh,
+        void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen))
+{
+    /* The old API allocates the memory for us */
+    BN_CTX *ctx = NULL;
+    EC_POINT *tmp=NULL;
+    const BIGNUM *priv_key;
+    const EC_GROUP* group;
+    int ret= -1;
+    size_t buflen;
+    unsigned char *buf=NULL;
 
-   check((outlen < INT_MAX), "out of memory"); /* sort of, anyway */
+    check((outlen < INT_MAX), "out of memory"); /* sort of, anyway */
 
-   if ((ctx = BN_CTX_new()) == NULL) goto err;
-   BN_CTX_start(ctx);
+    if ((ctx = BN_CTX_new()) == NULL) goto err;
+    BN_CTX_start(ctx);
 
-   priv_key = EC_KEY_get0_private_key(ecdh);
-   check(priv_key, "No pivate key");
+    priv_key = EC_KEY_get0_private_key(ecdh);
+    check(priv_key, "No pivate key");
 
-   group = EC_KEY_get0_group(ecdh);
-   tmp = EC_POINT_new(group);
-   check(tmp, "Out of memory");
+    group = EC_KEY_get0_group(ecdh);
+    tmp = EC_POINT_new(group);
+    check(tmp, "Out of memory");
 
-   check((EC_POINT_mul(group, tmp, NULL, pub_key, priv_key, ctx)),
-           "Arithmetic error");
+    check((EC_POINT_mul(group, tmp, NULL, pub_key, priv_key, ctx)),
+            "Arithmetic error");
 
     buflen = EC_POINT_point2oct(group, tmp, EC_KEY_get_conv_form(ecdh), NULL,
             0, ctx);
@@ -186,7 +272,7 @@ BN_bn2buf(const BIGNUM *bn)
 }
 
 BUF_MEM *
-EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
+EC_POINT_point2mem(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
 {
     size_t len;
     BUF_MEM * out;
@@ -206,8 +292,3 @@ EC_POINT_point2buf(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
 
     return out;
 }
-
-const ECDH_METHOD *ECDH_OpenSSL_Point(void)
-    {
-    return &openssl_ecdh_meth_point;
-    }

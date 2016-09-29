@@ -24,6 +24,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_err.h"
 #include "eac_util.h"
 #include "ta_lib.h"

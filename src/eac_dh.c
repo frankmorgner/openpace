@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_dh.h"
 #include "eac_err.h"
 #include "misc.h"
@@ -253,22 +257,26 @@ DH_check_pub_key_rfc(const DH *dh, BN_CTX *ctx, int *ret)
 {
     BIGNUM *bn = NULL;
     int ok = 0;
+    const BIGNUM *pub_key, *p, *q, *g;
 
     check((dh && ret), "Invalid arguments");
 
     BN_CTX_start(ctx);
 
+    DH_get0_key(dh, &pub_key, NULL);
+    DH_get0_pqg(dh, &p, &q, &g);
+
     /* Verify that y lies within the interval [2,p-1]. */
-    if (!DH_check_pub_key(dh, dh->pub_key, ret))
+    if (!DH_check_pub_key(dh, pub_key, ret))
         goto err;
 
     /* If the DH is conform to RFC 2631 it should have a non-NULL q.
      * Others (like the DHs generated from OpenSSL) might have a problem with
      * this check. */
-    if (dh->q) {
+    if (q) {
         /* Compute y^q mod p. If the result == 1, the key is valid. */
         bn = BN_CTX_get(ctx);
-        if (!bn || !BN_mod_exp(bn, dh->pub_key, dh->q, dh->p, ctx))
+        if (!bn || !BN_mod_exp(bn, pub_key, q, p, ctx))
             goto err;
         if (!BN_is_one(bn))
             *ret |= DH_CHECK_PUBKEY_INVALID;
@@ -284,40 +292,43 @@ err:
 BIGNUM *
 DH_get_q(const DH *dh, BN_CTX *ctx)
 {
-    BIGNUM *q = NULL, *bn = NULL;
+    BIGNUM *q_new = NULL, *bn = NULL;
     int i;
+    const BIGNUM *p, *q;
 
     check(dh, "Invalid arguments");
 
-    if (!dh->q) {
-        q = BN_new();
-        bn = BN_dup(dh->p);
+    DH_get0_pqg(dh, &p, &q, NULL);
+    if (!q) {
+        q_new = BN_new();
+        bn = BN_dup(p);
+
         /* DH primes should be strong, based on a Sophie Germain prime q
          * p=(2*q)+1 or (p-1)/2=q */
-        if (!q || !bn ||
+        if (!q_new || !bn ||
                 !BN_sub_word(bn, 1) ||
-                !BN_rshift1(q, bn)) {
+                !BN_rshift1(q_new, bn)) {
             goto err;
         }
     } else {
-        q = BN_dup(dh->q);
+        q_new = BN_dup(q);
     }
 
     /* q should always be prime */
-    i = BN_is_prime(q, BN_prime_checks, NULL, ctx, NULL);
+    i = BN_is_prime_ex(q_new, BN_prime_checks, ctx, NULL);
     if (i <= 0) {
        if (i == 0)
           log_err("Unable to get Sophie Germain prime");
        goto err;
     }
 
-    return q;
+    return q_new;
 
 err:
     if (bn)
         BN_clear_free(bn);
-    if (q)
-        BN_clear_free(q);
+    if (q_new)
+        BN_clear_free(q_new);
 
     return NULL;
 }
@@ -326,23 +337,26 @@ BIGNUM *
 DH_get_order(const DH *dh, BN_CTX *ctx)
 {
     BIGNUM *order = NULL, *bn = NULL;
+    const BIGNUM *p, *g;
 
     check(dh && ctx, "Invalid argument");
 
     BN_CTX_start(ctx);
 
+    DH_get0_pqg(dh, &p, NULL, &g);
+
     /* suppose the order of g is q-1 */
     order = DH_get_q(dh, ctx);
     bn = BN_CTX_get(ctx);
-    if (!bn || !order || !BN_sub_word(order, 1) ||
-            !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
+    if (!bn || !order || !BN_sub_word(order, 1)
+          || !BN_mod_exp(bn, g, order, p, ctx))
         goto err;
 
     if (BN_cmp(bn, BN_value_one()) != 0) {
         /* if bn != 1, then q-1 is not the order of g, but p-1 should be */
-        if (!BN_sub(order, dh->p, BN_value_one()) ||
-                !BN_mod_exp(bn, dh->g, order, dh->p, ctx))
-            goto err;
+        if (!BN_sub(order, p, BN_value_one()) ||
+              !BN_mod_exp(bn, g, order, p, ctx))
+           goto err;
         check(BN_cmp(bn, BN_value_one()) == 0, "Unable to get order");
     }
 
@@ -364,6 +378,7 @@ dh_generate_key(EVP_PKEY *key, BN_CTX *bn_ctx)
     int suc;
     DH *dh = NULL;
     BUF_MEM *ret = NULL;
+    const BIGNUM *pub_key;
 
 
     check(key, "Invalid arguments");
@@ -378,7 +393,9 @@ dh_generate_key(EVP_PKEY *key, BN_CTX *bn_ctx)
     if (suc)
         goto err;
 
-    ret = BN_bn2buf(dh->pub_key);
+    DH_get0_key(dh, &pub_key, NULL);
+
+    ret = BN_bn2buf(pub_key);
 
 err:
     if (dh)
@@ -463,14 +480,8 @@ get_rfc5114_modp(int num)
     if (!p || !g || !q)
         goto err;
 
-    /* There are no setter functions for the DH structure. Therefore we must
-       set access the members directly */
-    ret->p = BN_dup(p);
-    ret->g = BN_dup(g);
-    ret->q = BN_dup(q);
-
-    if (!ret->p || !ret->g || !ret->q)
-        goto err;
+    if (!DH_set0_pqg(ret, p, q, g))
+       goto err;
 
     /* Perform some checks. OpenSSL only knows generators 2 and 5, so the
      * DH_UNABLE_TO_CHECK_GENERATOR will be set, but the prime should be safe
@@ -478,10 +489,6 @@ get_rfc5114_modp(int num)
     if (!DH_check(ret, &check)) goto err;
     if (check & DH_CHECK_P_NOT_PRIME)
         goto err;
-
-    BN_free(p);
-    BN_free(g);
-    BN_free(q);
 
     return ret;
 
@@ -500,15 +507,11 @@ err:
 DH *
 DHparams_dup_with_q(DH *dh)
 {
-    DH *dup = DHparams_dup(dh);
+    const BIGNUM *p, *q, *g;
 
-    if (dup && dh->q && !dup->q) {
-        dup->q = BN_dup(dh->q);
-        if (!dup->q) {
-            DH_free(dup);
-            return NULL;
-        }
-    }
+    DH *dup = DHparams_dup(dh);
+    DH_get0_pqg(dh, &p, &q, &g);
+    DH_set0_pqg(dup, BN_dup(p), BN_dup(q), BN_dup(g));
 
     return dup;
 }

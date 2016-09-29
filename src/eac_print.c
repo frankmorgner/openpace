@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <eac/eac.h>
 #include <eac/pace.h>
 #include <openssl/bio.h>

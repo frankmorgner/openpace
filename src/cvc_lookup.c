@@ -24,6 +24,10 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_err.h"
 #include "eac_util.h"
 #include <eac/cv_cert.h>
@@ -56,7 +60,7 @@ static int CVC_find_chr_in_file(const unsigned char *chr, size_t chr_len,
     if (!chr)
         goto err;
 
-    in = BIO_new(BIO_s_file_internal());
+    in = BIO_new(BIO_s_file());
     if (!in || !BIO_read_filename(in, file))
         goto err;
 

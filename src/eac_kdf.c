@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_err.h"
 #include "eac_kdf.h"
 #include "eac_util.h"
@@ -41,12 +45,13 @@ BUF_MEM *
 kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
         const KA_CTX *ka_ctx, EVP_MD_CTX *md_ctx)
 {
-    size_t inlen;
+    size_t inlen, key_len;
     BUF_MEM *in = NULL, *digest = NULL, *out = NULL;
 
     check((key && ka_ctx->md && ka_ctx->cipher), "Invalid arguments");
 
-    check(ka_ctx->cipher->key_len <= EVP_MD_size(ka_ctx->md),
+    key_len = EVP_CIPHER_key_length(ka_ctx->cipher);
+    check(key_len <= EVP_MD_size(ka_ctx->md),
             "Message digest not suitable for cipher");
 
     in = BUF_MEM_new();
@@ -76,7 +81,7 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
     check(digest, "Failed to compute hash");
 
     /* Truncate the hash to the length of the key */
-    out = BUF_MEM_create_init(digest->data, ka_ctx->cipher->key_len);
+    out = BUF_MEM_create_init(digest->data, key_len);
 
     OPENSSL_cleanse(in->data, in->max);
     BUF_MEM_free(in);

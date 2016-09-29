@@ -25,6 +25,10 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ca_lib.h"
 #include "eac_asn1.h"
 #include "eac_dh.h"

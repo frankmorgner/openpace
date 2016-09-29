@@ -24,6 +24,10 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <openssl/objects.h>
 #include <eac/objects.h>
 #include "eac_err.h"

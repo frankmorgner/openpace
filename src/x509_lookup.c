@@ -24,6 +24,10 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_err.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>

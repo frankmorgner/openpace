@@ -25,11 +25,16 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_asn1.h"
 #include "eac_dh.h"
 #include "eac_err.h"
 #include "eac_util.h"
 #include "misc.h"
+#include "ssl_compat.h"
 #include "ta_lib.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
@@ -547,13 +552,12 @@ CVC_pubkey2rsa(const CVC_PUBKEY *public_key, EVP_PKEY *out)
     if (!rsa)
         goto err;
 
-    /* There are no setter functions in rsa.h so we need to modify the
-     * struct directly */
-    rsa->n = BN_bin2bn(public_key->cont1->data,
-            public_key->cont1->length, rsa->n);
-    rsa->e = BN_bin2bn(public_key->cont2->data,
-            public_key->cont2->length, rsa->e);
-    check(rsa->n && rsa->e, "Internal error");
+    check(RSA_set0_key(rsa,
+                BN_bin2bn(public_key->cont1->data, public_key->cont1->length,
+                    NULL),
+                BN_bin2bn(public_key->cont2->data, public_key->cont2->length,
+                    NULL), NULL),
+            "Internal error");
 
     ok = EVP_PKEY_set1_RSA(out, rsa);
 
@@ -609,7 +613,7 @@ CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
                 && !public_key->cont7),
             "Invalid key format");
 
-        check(EVP_PKEY_type(key->type) == EVP_PKEY_EC,
+        check(EVP_PKEY_base_id(key) == EVP_PKEY_EC,
                "Incorrect domain parameters");
 
         ec = (EC_KEY *) EVP_PKEY_get0(key);
@@ -1271,10 +1275,10 @@ static int CVC_eckey2pubkey(int all_parameters,
         goto err;
 
     /* Public point */
-    Y_buf = EC_POINT_point2buf(ec, bn_ctx, EC_KEY_get0_public_key(ec));
+    Y_buf = EC_POINT_point2mem(ec, bn_ctx, EC_KEY_get0_public_key(ec));
     out->cont6 = ASN1_OCTET_STRING_new();
     if (!Y_buf || !out->cont6 ||
-            !M_ASN1_OCTET_STRING_set(out->cont6, Y_buf->data,
+            !ASN1_OCTET_STRING_set(out->cont6, Y_buf->data,
                 Y_buf->length))
         goto err;
 
@@ -1298,11 +1302,11 @@ static int CVC_eckey2pubkey(int all_parameters,
         out->cont3 = BN_to_ASN1_UNSIGNED_INTEGER(b_bn, out->cont3);
 
         /* Base Point */
-        G_buf = EC_POINT_point2buf(ec, bn_ctx,
+        G_buf = EC_POINT_point2mem(ec, bn_ctx,
                 EC_GROUP_get0_generator(group));
         out->cont4 = ASN1_OCTET_STRING_new();
         if (!out->cont4
-                || !M_ASN1_OCTET_STRING_set(
+                || !ASN1_OCTET_STRING_set(
                     out->cont4, G_buf->data, G_buf->length))
             goto err;
 
@@ -1344,14 +1348,16 @@ static int CVC_rsa2pubkey(EVP_PKEY *key, CVC_PUBKEY *out)
 {
     RSA *rsa = NULL;
     int ok = 0;
+    const BIGNUM *n, *e;
 
     check(key && out, "Invalid Arguments");
 
     rsa = EVP_PKEY_get1_RSA(key);
     check(rsa, "Could not get RSA key");
 
-    out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(rsa->n, out->cont1);
-    out->cont2 = BN_to_ASN1_UNSIGNED_INTEGER(rsa->e, out->cont2);
+    RSA_get0_key(rsa, &n, &e, NULL);
+    out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(n, out->cont1);
+    out->cont2 = BN_to_ASN1_UNSIGNED_INTEGER(e, out->cont2);
     if (!out->cont1 || !out->cont2)
         goto err;
 
@@ -1369,6 +1375,7 @@ static int CVC_dh2pubkey(int all_parameters, EVP_PKEY *key, BN_CTX *bn_ctx,
 {
     DH *dh = NULL;
     BIGNUM *bn = NULL;
+    const BIGNUM *pub_key, *p, *g;
     int ok = 0;
 
     check(out, "Invalid argument");
@@ -1377,13 +1384,16 @@ static int CVC_dh2pubkey(int all_parameters, EVP_PKEY *key, BN_CTX *bn_ctx,
     check(dh, "Could not get DH key");
 
     /* Public value */
-    out->cont4 = BN_to_ASN1_UNSIGNED_INTEGER(dh->pub_key, out->cont4);
+    DH_get0_key(dh, &pub_key, NULL);
+    out->cont4 = BN_to_ASN1_UNSIGNED_INTEGER(pub_key, out->cont4);
     if (!out->cont4)
         goto err;
 
     if (all_parameters) {
+        DH_get0_pqg(dh, &p, NULL, &g);
+
         /* Prime modulus */
-        out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(dh->p, out->cont1);
+        out->cont1 = BN_to_ASN1_UNSIGNED_INTEGER(p, out->cont1);
 
         /* Order of the subgroup */
         bn = DH_get_order(dh, bn_ctx);
@@ -1392,7 +1402,7 @@ static int CVC_dh2pubkey(int all_parameters, EVP_PKEY *key, BN_CTX *bn_ctx,
         out->cont2 = BN_to_ASN1_UNSIGNED_INTEGER(bn, out->cont2);
 
         /* Generator */
-        out->cont3 = BN_to_ASN1_UNSIGNED_INTEGER(dh->g, out->cont3);
+        out->cont3 = BN_to_ASN1_UNSIGNED_INTEGER(g, out->cont3);
 
         if (!out->cont1|| !out->cont2 || !out->cont3)
             goto err;
@@ -1434,7 +1444,7 @@ CVC_pkey2pubkey(int all_parameters, int protocol, EVP_PKEY *key,
     pubkey->oid = OBJ_nid2obj(protocol);
     check(pubkey->oid, "Could not encode oid");
 
-    switch (EVP_PKEY_type(key->type)) {
+    switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_EC:
             if (!CVC_eckey2pubkey(all_parameters, key, bn_ctx, pubkey))
                 goto err;
@@ -1496,9 +1506,9 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
         goto err;
 
     /* Copy field and curve */
-    if (!BN_bin2bn(ASN1_STRING_data(p), ASN1_STRING_length(p), p_bn) ||
-        !BN_bin2bn(ASN1_STRING_data(a), ASN1_STRING_length(a), a_bn) ||
-        !BN_bin2bn(ASN1_STRING_data(b), ASN1_STRING_length(b), b_bn))
+    if (!BN_bin2bn(ASN1_STRING_get0_data(p), ASN1_STRING_length(p), p_bn) ||
+        !BN_bin2bn(ASN1_STRING_get0_data(a), ASN1_STRING_length(a), a_bn) ||
+        !BN_bin2bn(ASN1_STRING_get0_data(b), ASN1_STRING_length(b), b_bn))
             goto err;
     else
         group = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, lcl_bn_ctx);
@@ -1515,7 +1525,7 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
     if (!generator)
         goto err;
 
-    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_data(base),
+    if (!EC_POINT_oct2point(group, generator, ASN1_STRING_get0_data(base),
             ASN1_STRING_length(base), lcl_bn_ctx))
         goto err;
 
@@ -1539,7 +1549,7 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
         if (!pub_point)
             goto err;
 
-        if (!EC_POINT_oct2point(group, pub_point, ASN1_STRING_data(pub),
+        if (!EC_POINT_oct2point(group, pub_point, ASN1_STRING_get0_data(pub),
                 ASN1_STRING_length(pub), lcl_bn_ctx))
             goto err;
 
@@ -1587,7 +1597,7 @@ BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in)
     if (!bn_buf || !out
             /* BIGNUMs converted to binary don't have a sign,
              * so we copy everything to the octet string */
-            || !M_ASN1_OCTET_STRING_set(out, bn_buf->data, bn_buf->length))
+            || !ASN1_OCTET_STRING_set(out, bn_buf->data, bn_buf->length))
         goto err;
 
     BUF_MEM_free(bn_buf);

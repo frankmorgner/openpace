@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_asn1.h"
 #include "eac_dh.h"
 #include "eac_ecdh.h"
@@ -133,6 +137,7 @@ cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
     BUF_MEM * out = NULL;
     EVP_CIPHER_CTX * tmp_ctx = NULL;
     int i;
+    unsigned long flags;
 
     check(in, "Invalid arguments");
 
@@ -147,7 +152,9 @@ cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
             goto err;
     }
 
-    if (tmp_ctx->flags & EVP_CIPH_NO_PADDING) {
+    flags = EVP_CIPHER_flags(EVP_CIPHER_CTX_cipher(tmp_ctx));
+
+    if (flags & EVP_CIPH_NO_PADDING) {
         i = in->length;
         check((in->length % EVP_CIPHER_block_size(type) == 0), "Data is not of blocklength");
     } else
@@ -166,7 +173,7 @@ cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
             &i))
             goto err;
 
-    if (!(tmp_ctx->flags & EVP_CIPH_NO_PADDING))
+    if (!(flags & EVP_CIPH_NO_PADDING))
         out->length += i;
 
     if (!ctx)
@@ -596,7 +603,7 @@ EVP_PKEY_dup(EVP_PKEY *key)
     if (!out)
         goto err;
 
-    switch (EVP_PKEY_type(key->type)) {
+    switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
             dh_in = EVP_PKEY_get1_DH(key);
             if (!dh_in)
@@ -770,7 +777,7 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx)
 
     check((key && pub), "Invalid arguments");
 
-    switch (EVP_PKEY_type(key->type)) {
+    switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
             out = hash(EVP_sha1(), md_ctx, NULL, pub);
             break;
@@ -882,13 +889,13 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
     EC_KEY *ec_key = NULL;
     DH *dh = NULL;
     EC_POINT *ec_point = NULL;
-    BIGNUM *bn = NULL;
+    BIGNUM *bn = NULL, *dh_pub_key, *dh_priv_key;
     int ok = 0;
     const EC_GROUP *group;
 
     check(evp_pkey, "Invalid arguments");
 
-    switch (EVP_PKEY_type(evp_pkey->type)) {
+    switch (EVP_PKEY_base_id(evp_pkey)) {
         case EVP_PKEY_EC:
             ec_key = EVP_PKEY_get1_EC_KEY(evp_pkey);
             if (!ec_key)
@@ -919,13 +926,13 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
                 goto err;
 
             if (pubkey) {
-                dh->pub_key = BN_bin2bn(pubkey, pubkey_len, dh->pub_key);
-                if (!dh->pub_key)
+                dh_pub_key = BN_bin2bn(pubkey, pubkey_len, NULL);
+                if (!dh_pub_key || !DH_set0_key(dh, dh_pub_key, NULL))
                     goto err;
             }
             if (privkey) {
-                dh->priv_key = BN_bin2bn(privkey, privkey_len, dh->priv_key);
-                if (!dh->priv_key)
+                dh_priv_key = BN_bin2bn(privkey, privkey_len, NULL);
+                if (!dh_priv_key || !DH_set0_key(dh, NULL, dh_priv_key))
                     goto err;
             }
 
@@ -961,15 +968,17 @@ get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx)
     DH *dh;
     EC_KEY *ec;
     const EC_POINT *ec_pub;
+    const BIGNUM *dh_pub_key;
 
     check_return(key, "invalid arguments");
 
-    switch (EVP_PKEY_type(key->type)) {
+    switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
             dh = EVP_PKEY_get1_DH(key);
             check_return(dh, "no DH key");
 
-            out = BN_bn2buf(dh->pub_key);
+            DH_get0_key(dh, &dh_pub_key, NULL);
+            out = BN_bn2buf(dh_pub_key);
 
             DH_free(dh);
             break;
@@ -981,7 +990,7 @@ get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx)
             ec_pub = EC_KEY_get0_public_key(ec);
             check_return(ec_pub, "no EC public key");
 
-            out = EC_POINT_point2buf(ec, bn_ctx, ec_pub);
+            out = EC_POINT_point2mem(ec, bn_ctx, ec_pub);
 
             EC_KEY_free(ec);
             break;
@@ -998,6 +1007,7 @@ BUF_MEM *
 convert_from_plain_sig(const BUF_MEM *plain_sig)
 {
     ECDSA_SIG *ecdsa_sig = NULL;
+    BIGNUM *r, *s;
     BUF_MEM *x962_sig = NULL;
     int l;
     unsigned char *p = NULL;
@@ -1012,10 +1022,14 @@ convert_from_plain_sig(const BUF_MEM *plain_sig)
 
     /* The first l/2 bytes of the plain signature contain the number r, the second
      * l/2 bytes contain the number s. */
-    ecdsa_sig->r = BN_bin2bn((unsigned char *) plain_sig->data,
-            plain_sig->length/2, ecdsa_sig->r);
-    ecdsa_sig->s = BN_bin2bn((unsigned char *) plain_sig->data +
-            plain_sig->length/2, plain_sig->length/2, ecdsa_sig->s);
+    r = BN_bin2bn((unsigned char *) plain_sig->data,
+            plain_sig->length/2, NULL);
+    s = BN_bin2bn((unsigned char *) plain_sig->data + plain_sig->length/2,
+            plain_sig->length/2, NULL);
+    if (!r || !s || !ECDSA_SIG_set0(ecdsa_sig, r, s))
+        goto err;
+    r = NULL;
+    s = NULL;
 
     /* ASN.1 encode the signature*/
     l = i2d_ECDSA_SIG(ecdsa_sig, &p);
@@ -1028,6 +1042,10 @@ err:
         OPENSSL_free(p);
     if (ecdsa_sig)
         ECDSA_SIG_free(ecdsa_sig);
+    if (r)
+        BN_free(r);
+    if (s)
+        BN_free(s);
 
     return x962_sig;
 }
@@ -1040,6 +1058,7 @@ convert_to_plain_sig(const BUF_MEM *x962_sig)
     ECDSA_SIG *tmp_sig = NULL;
     const unsigned char *tmp;
     unsigned char *r = NULL, *s = NULL;
+    const BIGNUM *bn_r, *bn_s;
 
     check_return(x962_sig, "Invalid arguments");
 
@@ -1051,9 +1070,11 @@ convert_to_plain_sig(const BUF_MEM *x962_sig)
     if (!d2i_ECDSA_SIG(&tmp_sig, &tmp, x962_sig->length))
         goto err;
 
+    ECDSA_SIG_get0(tmp_sig, &bn_r, &bn_s);
+
     /* Extract the parameters r and s*/
-    r_len = BN_num_bytes(tmp_sig->r);
-    s_len = BN_num_bytes(tmp_sig->s);
+    r_len = BN_num_bytes(bn_r);
+    s_len = BN_num_bytes(bn_s);
     rs_max = r_len > s_len ? r_len : s_len;
     r = OPENSSL_malloc(rs_max);
     s = OPENSSL_malloc(rs_max);
@@ -1061,9 +1082,9 @@ convert_to_plain_sig(const BUF_MEM *x962_sig)
         goto err;
 
     /* Convert r and s to a binary representation */
-    if (!BN_bn2bin(tmp_sig->r, r + rs_max - r_len))
+    if (!BN_bn2bin(bn_r, r + rs_max - r_len))
         goto err;
-    if (!BN_bn2bin(tmp_sig->s, s + rs_max - s_len))
+    if (!BN_bn2bin(bn_s, s + rs_max - s_len))
         goto err;
     /* r and s must be padded with leading zero bytes to ensure they have the
      * same length */
@@ -1126,6 +1147,7 @@ EAC_verify(int protocol, EVP_PKEY *key,    const BUF_MEM *signature,
     EVP_PKEY_CTX *tmp_key_ctx = NULL;
     int ret = -1;
     const EVP_MD *md = eac_oid2md(protocol);
+    int type;
 
     check((key && signature), "Invalid arguments");
 
@@ -1136,12 +1158,13 @@ EAC_verify(int protocol, EVP_PKEY *key,    const BUF_MEM *signature,
         goto err;
 
 
+    type = EVP_PKEY_base_id(key);
     if (       protocol == NID_id_TA_ECDSA_SHA_1
             || protocol == NID_id_TA_ECDSA_SHA_224
             || protocol == NID_id_TA_ECDSA_SHA_256
             || protocol == NID_id_TA_ECDSA_SHA_384
             || protocol == NID_id_TA_ECDSA_SHA_512) {
-        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_EC))
+        if (!(type == EVP_PKEY_EC))
             goto err;
 
         /* EAC signatures are always in plain signature format for EC curves but
@@ -1154,7 +1177,7 @@ EAC_verify(int protocol, EVP_PKEY *key,    const BUF_MEM *signature,
     } else if (protocol == NID_id_TA_RSA_v1_5_SHA_1
             || protocol == NID_id_TA_RSA_v1_5_SHA_256
             || protocol == NID_id_TA_RSA_v1_5_SHA_512) {
-        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+        if (!(type == EVP_PKEY_RSA))
             goto err;
 
         signature_to_verify = BUF_MEM_create_init(signature->data,
@@ -1166,7 +1189,7 @@ EAC_verify(int protocol, EVP_PKEY *key,    const BUF_MEM *signature,
     } else if (protocol == NID_id_TA_RSA_PSS_SHA_1
             || protocol == NID_id_TA_RSA_PSS_SHA_256
             || protocol == NID_id_TA_RSA_PSS_SHA_512) {
-        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+        if (!(type == EVP_PKEY_RSA))
             goto err;
 
         signature_to_verify = BUF_MEM_create_init(signature->data, signature->length);
@@ -1207,6 +1230,7 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data)
     EVP_PKEY_CTX *tmp_key_ctx = NULL;
     size_t len;
     const EVP_MD *md = eac_oid2md(protocol);
+    int type;
 
     check((key && data), "Invalid arguments");
 
@@ -1217,18 +1241,19 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data)
         goto err;
 
 
+    type = EVP_PKEY_base_id(key);
     if (       protocol == NID_id_TA_ECDSA_SHA_1
             || protocol == NID_id_TA_ECDSA_SHA_224
             || protocol == NID_id_TA_ECDSA_SHA_256
             || protocol == NID_id_TA_ECDSA_SHA_384
             || protocol == NID_id_TA_ECDSA_SHA_512) {
-        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_EC))
+        if (!(type == EVP_PKEY_EC))
             goto err;
 
     } else if (protocol == NID_id_TA_RSA_v1_5_SHA_1
             || protocol == NID_id_TA_RSA_v1_5_SHA_256
             || protocol == NID_id_TA_RSA_v1_5_SHA_512) {
-        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+        if (!(type == EVP_PKEY_RSA))
             goto err;
 
         if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PADDING))
@@ -1237,7 +1262,7 @@ EAC_sign(int protocol, EVP_PKEY *key, const BUF_MEM *data)
     } else if (protocol == NID_id_TA_RSA_PSS_SHA_1
             || protocol == NID_id_TA_RSA_PSS_SHA_256
             || protocol == NID_id_TA_RSA_PSS_SHA_512) {
-        if (!(EVP_PKEY_type(key->type) == EVP_PKEY_RSA))
+        if (!(type == EVP_PKEY_RSA))
             goto err;
 
         if (!EVP_PKEY_CTX_set_rsa_padding(tmp_key_ctx, RSA_PKCS1_PSS_PADDING))

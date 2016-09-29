@@ -131,6 +131,12 @@ else
                   ,
                   [AC_MSG_ERROR([OpenSSL 1.0.2 not found])],
                   [#include <openssl/obj_mac.h>])
+    # check for declarations of OpenSSL 1.1.0 and later
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <openssl/ec.h>],
+                      [const EC_KEY_METHOD *default_method = EC_KEY_get_default_method();])],
+                      [AC_DEFINE([HAVE_EC_KEY_METHOD], [1],
+                                 [Define to 1 if you have the `EC_KEY_METHOD' type.])])
+
     CPPFLAGS="$saved_CPPFLAGS"
 
     # avoid test when compiling in visual studio
@@ -146,6 +152,8 @@ else
         AC_TRY_LINK_FUNC(EVP_sha256,
                          [AC_MSG_RESULT([yes])],
                          [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
+        # check for functions of OpenSSL 1.1.0 and later
+        AC_CHECK_FUNCS(RSA_set0_key RSA_get0_key DH_set0_key DH_get0_key DH_set0_pqg DH_get0_pqg EVP_PKEY_base_id BN_is_prime_ex ECDSA_SIG_set0 ECDSA_SIG_get0 ASN1_STRING_get0_data)
         LIBS="$saved_LIBS"
     fi
 fi

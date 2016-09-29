@@ -1,0 +1,51 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <openssl/dh.h>
+#include <openssl/ecdsa.h>
+#include <openssl/rsa.h>
+
+#ifndef HAVE_DH_SET0_KEY
+int DH_set0_key(DH *dh, BIGNUM *pub_key, BIGNUM *priv_key);
+#endif
+
+#ifndef HAVE_DH_GET0_KEY
+void DH_get0_key(const DH *dh, const BIGNUM **pub_key, const BIGNUM **priv_key);
+#endif
+
+#ifndef HAVE_DH_GET0_PQG
+void DH_get0_pqg(const DH *dh, const BIGNUM **p, const BIGNUM **q, const BIGNUM **g);
+#endif
+
+#ifndef HAVE_DH_SET0_PQG
+int DH_set0_pqg(DH *dh, BIGNUM *p, BIGNUM *q, BIGNUM *g);
+#endif
+
+#ifndef HAVE_RSA_SET0_KEY
+int RSA_set0_key(RSA *r, BIGNUM *n, BIGNUM *e, BIGNUM *d);
+#endif
+
+#ifndef HAVE_RSA_GET0_KEY
+void RSA_get0_key(const RSA *r, const BIGNUM **n, const BIGNUM **e, const BIGNUM **d);
+#endif
+
+#ifndef HAVE_EVP_PKEY_BASE_ID
+int EVP_PKEY_base_id(const EVP_PKEY *pkey);
+#endif
+
+#ifndef HAVE_BN_IS_PRIME_EX
+int BN_is_prime_ex(const BIGNUM *a, int checks, BN_CTX *ctx_passed, BN_GENCB *cb);
+#endif
+
+#ifndef HAVE_ECDSA_SIG_SET0
+int ECDSA_SIG_set0(ECDSA_SIG *sig, BIGNUM *r, BIGNUM *s);
+#endif
+
+#ifndef HAVE_ECDSA_SIG_GET0
+void ECDSA_SIG_get0(const ECDSA_SIG *sig, const BIGNUM **pr, const BIGNUM **ps);
+#endif
+
+#ifndef HAVE_ASN1_STRING_get0_data
+const unsigned char *ASN1_STRING_get0_data(const ASN1_STRING *x);
+#endif

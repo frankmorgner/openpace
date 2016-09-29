@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_ecdh.h"
 #include "eac_err.h"
 #include "misc.h"
@@ -116,7 +120,7 @@ ecdh_generate_key(EVP_PKEY *key, BN_CTX *bn_ctx)
 
     /* The key agreement algorithm ECKA prevents small subgroup attacks by
      * using compatible cofactor multiplication. */
-    ret = EC_POINT_point2buf(ec, bn_ctx, EC_KEY_get0_public_key(ec));
+    ret = EC_POINT_point2mem(ec, bn_ctx, EC_KEY_get0_public_key(ec));
 
 err:
     if (ec)

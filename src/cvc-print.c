@@ -25,6 +25,10 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "cvc-print-cmdline.h"
 #include "read_file.h"
 #include <eac/cv_cert.h>

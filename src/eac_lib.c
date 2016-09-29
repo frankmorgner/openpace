@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ca_lib.h"
 #include "eac_dh.h"
 #include "eac_ecdh.h"
@@ -78,7 +82,6 @@ EAC_CTX_new(void)
             || !ctx->ri_ctxs || !ctx->ssc)
         goto err;
 
-    BN_CTX_init(ctx->bn_ctx);
     EVP_CIPHER_CTX_init(ctx->cipher_ctx);
     ctx->ca_ctx = NULL;
     ctx->key_ctx = NULL;
@@ -403,7 +406,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->mac_keylen = 16;
         ctx->md = EVP_sha1();
         ctx->cipher = EVP_des_ede_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_DH_AES_CBC_CMAC_128
             || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_128
@@ -414,7 +417,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
         ctx->md = EVP_sha1();
         ctx->cipher = EVP_aes_128_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_DH_AES_CBC_CMAC_192
             || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_192
@@ -425,7 +428,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
         ctx->md = EVP_sha256();
         ctx->cipher = EVP_aes_192_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_DH_AES_CBC_CMAC_256
             || protocol == NID_id_PACE_DH_GM_AES_CBC_CMAC_256
@@ -436,7 +439,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
         ctx->md = EVP_sha256();
         ctx->cipher = EVP_aes_256_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_ECDH_3DES_CBC_CBC
             || protocol == NID_id_PACE_ECDH_GM_3DES_CBC_CBC
@@ -446,7 +449,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->mac_keylen = 16;
         ctx->md = EVP_sha1();
         ctx->cipher = EVP_des_ede_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_ECDH_AES_CBC_CMAC_128
             || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128
@@ -457,7 +460,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
         ctx->md = EVP_sha1();
         ctx->cipher = EVP_aes_128_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_ECDH_AES_CBC_CMAC_192
             || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192
@@ -468,7 +471,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
         ctx->md = EVP_sha256();
         ctx->cipher = EVP_aes_192_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else if (protocol == NID_id_CA_ECDH_AES_CBC_CMAC_256
             || protocol == NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256
@@ -479,7 +482,7 @@ KA_CTX_set_protocol(KA_CTX *ctx, int protocol)
         ctx->cmac_ctx = NULL; /* We don't set cmac_ctx, because of potential segfaults */
         ctx->md = EVP_sha256();
         ctx->cipher = EVP_aes_256_cbc();
-        ctx->enc_keylen = ctx->cipher->key_len;
+        ctx->enc_keylen = EVP_CIPHER_key_length(ctx->cipher);
 
     } else {
         log_err("Unknown protocol");

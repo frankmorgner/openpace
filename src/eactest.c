@@ -25,6 +25,10 @@
  * @author Dominik Oepen <oepen@informatik.hu-berlin.de>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "eac_util.h"
 #include "misc.h"
 #include <eac/ca.h>
@@ -2404,10 +2408,11 @@ check_generator(EVP_PKEY *evp_pkey, const BUF_MEM generator, BN_CTX *bn_ctx)
     DH *dh = NULL;
     EC_POINT *ec_point = NULL;
     BIGNUM *bn = NULL;
+    const BIGNUM *g;
     int ok = 0;
     const EC_GROUP *group;
 
-    switch (EVP_PKEY_type(evp_pkey->type)) {
+    switch (EVP_PKEY_base_id(evp_pkey)) {
         case EVP_PKEY_EC:
             ec_key = EVP_PKEY_get1_EC_KEY(evp_pkey);
             if (!ec_key)
@@ -2426,7 +2431,8 @@ check_generator(EVP_PKEY *evp_pkey, const BUF_MEM generator, BN_CTX *bn_ctx)
         case EVP_PKEY_DH:
             dh = EVP_PKEY_get1_DH(evp_pkey);
             bn = BN_bin2bn((unsigned char *) generator.data, generator.length, bn);
-            if (!dh || !bn || BN_cmp(dh->g, bn) != 0)
+            DH_get0_pqg(dh, NULL, NULL, &g);
+            if (!dh || !bn || BN_cmp(g, bn) != 0)
                 goto err;
             break;
         default:
