@@ -35,6 +35,7 @@
 #include <openssl/ecdh.h>
 #include <openssl/engine.h>
 #include <openssl/ossl_typ.h>
+#include <stdint.h>
 #include <string.h>
 
 static int ecdh_compute_key_point(void *out, size_t outlen, const EC_POINT *pub_key,
