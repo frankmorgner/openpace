@@ -125,13 +125,6 @@ void RSA_get0_key(const RSA *r,
 }
 #endif
 
-#ifndef HAVE_EVP_PKEY_BASE_ID
-int EVP_PKEY_base_id(const EVP_PKEY *pkey)
-{
-    return EVP_PKEY_type(pkey->type);
-}
-#endif
-
 #ifndef HAVE_ECDSA_SIG_SET0
 int ECDSA_SIG_set0(ECDSA_SIG *sig, BIGNUM *r, BIGNUM *s)
 {

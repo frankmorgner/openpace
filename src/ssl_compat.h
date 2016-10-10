@@ -30,10 +30,6 @@ int RSA_set0_key(RSA *r, BIGNUM *n, BIGNUM *e, BIGNUM *d);
 void RSA_get0_key(const RSA *r, const BIGNUM **n, const BIGNUM **e, const BIGNUM **d);
 #endif
 
-#ifndef HAVE_EVP_PKEY_BASE_ID
-int EVP_PKEY_base_id(const EVP_PKEY *pkey);
-#endif
-
 #ifndef HAVE_BN_IS_PRIME_EX
 int BN_is_prime_ex(const BIGNUM *a, int checks, BN_CTX *ctx_passed, BN_GENCB *cb);
 #endif
