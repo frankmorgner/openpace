@@ -54,7 +54,7 @@ bin_PROGRAMS         = eactest cvc-print cvc-create example
 EAC_LIBS             = libeac.la libvc.la $(CRYPTO_LIBS)
 EAC_CFLAGS           = $(CRYPTO_CFLAGS)
 
-eactest_SOURCES      = eactest.c
+eactest_SOURCES      = eactest.c ssl_compat.c
 eactest_LDADD        = $(EAC_LIBS)
 eactest_CFLAGS       = $(EAC_CFLAGS)
 
