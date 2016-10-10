@@ -153,7 +153,7 @@ else
                          [AC_MSG_RESULT([yes])],
                          [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
         # check for functions of OpenSSL 1.1.0 and later
-        AC_CHECK_FUNCS(RSA_set0_key RSA_get0_key DH_set0_key DH_get0_key DH_set0_pqg DH_get0_pqg EVP_PKEY_base_id BN_is_prime_ex ECDSA_SIG_set0 ECDSA_SIG_get0 ASN1_STRING_get0_data)
+        AC_CHECK_FUNCS(RSA_set0_key RSA_get0_key DH_set0_key DH_get0_key DH_set0_pqg DH_get0_pqg EVP_PKEY_base_id ECDSA_SIG_set0 ECDSA_SIG_get0 ASN1_STRING_get0_data)
         LIBS="$saved_LIBS"
     fi
 fi

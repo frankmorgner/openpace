@@ -4,6 +4,7 @@
 
 #include <openssl/dh.h>
 #include <openssl/ecdsa.h>
+#include <openssl/evp.h>
 #include <openssl/rsa.h>
 
 #ifndef HAVE_DH_SET0_KEY
@@ -128,14 +129,6 @@ void RSA_get0_key(const RSA *r,
 int EVP_PKEY_base_id(const EVP_PKEY *pkey)
 {
     return EVP_PKEY_type(pkey->type);
-}
-#endif
-
-#ifndef HAVE_BN_IS_PRIME_EX
-int BN_is_prime_ex(const BIGNUM *a, int checks, BN_CTX *ctx_passed,
-        BN_GENCB *cb)
-{
-    return BN_is_prime(a, checks, cb, ctx_passed, NULL);
 }
 #endif
 
