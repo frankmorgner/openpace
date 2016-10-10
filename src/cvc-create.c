@@ -29,10 +29,11 @@
 #endif
 
 #include "cvc-create-cmdline.h"
-#include "misc.h"
-#include "eac_util.h"
 #include "eac_asn1.h"
+#include "eac_util.h"
+#include "misc.h"
 #include "read_file.h"
+#include "ssl_compat.h"
 #include <eac/eac.h>
 #include <eac/cv_cert.h>
 #include <openssl/asn1.h>
@@ -541,7 +542,8 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
             desc->issuerName = ASN1_UTF8STRING_new();
             if (!desc->issuerName
                     || !ASN1_OCTET_STRING_set(desc->issuerName,
-                        cmdline->issuer_name_arg, strlen(cmdline->issuer_name_arg)))
+                         (const unsigned char *) cmdline->issuer_name_arg,
+                         strlen(cmdline->issuer_name_arg)))
                 goto err;
         }
 
@@ -549,7 +551,8 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
             desc->issuerURL = ASN1_PRINTABLESTRING_new();
             if (!desc->issuerURL
                     || !ASN1_OCTET_STRING_set(desc->issuerURL,
-                        cmdline->issuer_url_arg, strlen(cmdline->issuer_url_arg)))
+                         (const unsigned char *) cmdline->issuer_url_arg,
+                         strlen(cmdline->issuer_url_arg)))
                 goto err;
         }
 
@@ -557,7 +560,8 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
             desc->subjectName = ASN1_UTF8STRING_new();
             if (!desc->subjectName
                     || !ASN1_OCTET_STRING_set(desc->subjectName,
-                        cmdline->subject_name_arg, strlen(cmdline->subject_name_arg)))
+                         (const unsigned char *) cmdline->subject_name_arg,
+                         strlen(cmdline->subject_name_arg)))
                 goto err;
         }
 
@@ -565,7 +569,8 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
             desc->subjectURL = ASN1_PRINTABLESTRING_new();
             if (!desc->subjectURL
                     || !ASN1_OCTET_STRING_set(desc->subjectURL,
-                        cmdline->subject_url_arg, strlen(cmdline->subject_url_arg)))
+                         (const unsigned char *) cmdline->subject_url_arg,
+                         strlen(cmdline->subject_url_arg)))
                 goto err;
         }
     }

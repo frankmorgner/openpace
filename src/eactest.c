@@ -31,6 +31,7 @@
 
 #include "eac_util.h"
 #include "misc.h"
+#include "ssl_compat.h"
 #include <eac/ca.h>
 #include <eac/cv_cert.h>
 #include <eac/eac.h>

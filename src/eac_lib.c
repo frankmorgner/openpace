@@ -37,6 +37,7 @@
 #include "eac_util.h"
 #include "misc.h"
 #include "pace_lib.h"
+#include "ssl_compat.h"
 #include "ta_lib.h"
 #include <eac/ca.h>
 #include <eac/cv_cert.h>

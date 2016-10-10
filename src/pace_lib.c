@@ -35,6 +35,7 @@
 #include "eac_lib.h"
 #include "eac_util.h"
 #include "misc.h"
+#include "ssl_compat.h"
 #include "pace_mappings.h"
 #include <eac/pace.h>
 #include <openssl/buffer.h>

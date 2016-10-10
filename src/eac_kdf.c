@@ -33,6 +33,7 @@
 #include "eac_kdf.h"
 #include "eac_util.h"
 #include "misc.h"
+#include "ssl_compat.h"
 #ifdef _WIN32
 #include <winsock2.h>
 #else

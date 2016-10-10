@@ -1278,8 +1278,8 @@ static int CVC_eckey2pubkey(int all_parameters,
     Y_buf = EC_POINT_point2mem(ec, bn_ctx, EC_KEY_get0_public_key(ec));
     out->cont6 = ASN1_OCTET_STRING_new();
     if (!Y_buf || !out->cont6 ||
-            !ASN1_OCTET_STRING_set(out->cont6, Y_buf->data,
-                Y_buf->length))
+            !ASN1_OCTET_STRING_set(out->cont6,
+                (const unsigned char *) Y_buf->data, Y_buf->length))
         goto err;
 
     /* If cert is not a CVCA certificate it MUST NOT contain any domain
@@ -1306,8 +1306,8 @@ static int CVC_eckey2pubkey(int all_parameters,
                 EC_GROUP_get0_generator(group));
         out->cont4 = ASN1_OCTET_STRING_new();
         if (!out->cont4
-                || !ASN1_OCTET_STRING_set(
-                    out->cont4, G_buf->data, G_buf->length))
+                || !ASN1_OCTET_STRING_set(out->cont4,
+                    (const unsigned char *) G_buf->data, G_buf->length))
             goto err;
 
         /* Order of the base point */
@@ -1597,7 +1597,8 @@ BN_to_ASN1_UNSIGNED_INTEGER(const BIGNUM *bn, ASN1_OCTET_STRING *in)
     if (!bn_buf || !out
             /* BIGNUMs converted to binary don't have a sign,
              * so we copy everything to the octet string */
-            || !ASN1_OCTET_STRING_set(out, bn_buf->data, bn_buf->length))
+            || !ASN1_OCTET_STRING_set(out,
+                (const unsigned char *) bn_buf->data, bn_buf->length))
         goto err;
 
     BUF_MEM_free(bn_buf);
