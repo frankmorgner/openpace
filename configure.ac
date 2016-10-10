@@ -288,6 +288,7 @@ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
 
 AC_CONFIG_FILES([
                  Makefile
+                 src/certs/Makefile
                  src/docs/Makefile
                  src/docs/_static/Makefile
                  src/Makefile
