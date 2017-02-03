@@ -19,6 +19,12 @@ option "csr"            r
     typestr="FILENAME"
     optional
 
+option "cvc-dir"        -
+    "Directory of trusted CVCs"
+    string
+    typestr="DIRECTORY"
+    optional
+
 text "
 Report bugs to @PACKAGE_BUGREPORT@
 

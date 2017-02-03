@@ -33,6 +33,7 @@
 #include "read_file.h"
 #include <eac/cv_cert.h>
 #include <eac/eac.h>
+#include <eac/ta.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <stdio.h>
@@ -57,6 +58,8 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
         err("could not get output buffer");
 
     if (cvc_data && cvc_len) {
+        EAC_CTX *ctx;
+
         p = cvc_data;
         if (!CVC_d2i_CVC_CERT(&cvc, &p, cvc_len))
             err("could not parse card verifiable certificate");
@@ -64,6 +67,14 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
         puts("Certificate:");
         if (!CVC_print(bio_stdout, cvc, 2))
             err("could not print card verifiable certificate");
+
+        ctx = EAC_CTX_new();
+        if (!TA_STEP2_import_certificate(ctx, cvc_data, cvc_len)) {
+            puts("certificate not verified");
+        } else {
+            puts("certificate verified");
+        }
+        EAC_CTX_clear_free(ctx);
     }
 
     /* FIXME: CVC_CERT_print_ctx -> segfault */
@@ -165,6 +176,9 @@ int main(int argc, char *argv[])
     }
 
     EAC_init();
+    if (cmdline.cvc_dir_arg) {
+        EAC_set_cvc_default_dir(cmdline.cvc_dir_arg);
+    }
     fail = print_cvc(cvc_data, cvc_len, desc_data, desc_len, csr_data, csr_len);
 
 err:
