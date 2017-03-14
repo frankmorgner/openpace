@@ -38,7 +38,7 @@ Please refer to [our project's website](http://frankmorgner.github.io/openpace/)
 
 ## License
 
-GPL version 3
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 ## Tested Platforms
 
