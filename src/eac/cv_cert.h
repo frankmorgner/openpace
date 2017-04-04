@@ -120,8 +120,6 @@ typedef struct cvc_pubkey_st {
 typedef CVC_PUBKEY_BODY CVC_PUBKEY;
 DECLARE_ASN1_FUNCTIONS(CVC_PUBKEY)
 DECLARE_ASN1_ITEM(CVC_PUBKEY)
-/* FIXME */
-/* DECLARE_ASN1_PRINT_FUNCTION(CVC_PUBKEY) */
 
 /**
  * @brief Discretionary data template, used to encode certificate extensions.
@@ -198,11 +196,6 @@ typedef struct cvc_cert_seq_st {
 } CVC_CERT_SEQ;
 /** @brief Short name for CVC_CERT_SEQ */
 typedef CVC_CERT_SEQ CVC_CERT;
-/*void CVC_CERT_print_ctx(BIO *bio, CVC_CERT *cert, int indent, const ASN1_PCTX *pctx);*/
-/* FIXME the default printing functions currently crash
-DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT)
-DECLARE_ASN1_PRINT_FUNCTION(CVC_CHAT)
-*/
 
 typedef struct cvc_commcert_seq_st {
     /** @brief Contains hash values of admissible X.509 certificates of the remote
@@ -257,7 +250,6 @@ typedef struct cvc_commcert_seq_st {
     CVC_COMMCERT_SEQ *commCertificates;
 } CVC_CERTIFICATE_DESCRIPTION;
 DECLARE_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
-DECLARE_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 
 
 /**
@@ -303,10 +295,6 @@ typedef struct cvc_cert_request_seq_st {
 /** @brief Short name for CVC_CERT_REQUEST_SEQ */
 typedef CVC_CERT_REQUEST_SEQ CVC_CERT_REQUEST;
 DECLARE_ASN1_FUNCTIONS(CVC_CERT_REQUEST)
-/*void CVC_CERT_REQUEST_print_ctx(BIO *bio, CVC_CERT_REQUEST *cert, int indent, const ASN1_PCTX *pctx);*/
-/* FIXME the default printing functions currently crash
-DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT_REQUEST)
-*/
 
 /**
  * @brief The authentication request, consisting of the certificate request, certificate authority reference and outer signature
@@ -325,10 +313,6 @@ typedef struct cvc_cert_authentication_request_seq_st {
 /** @brief Short name for CVC_CERT_AUTHENTICATION_REQUEST_SEQ */
 typedef CVC_CERT_AUTHENTICATION_REQUEST_SEQ CVC_CERT_AUTHENTICATION_REQUEST;
 DECLARE_ASN1_FUNCTIONS(CVC_CERT_AUTHENTICATION_REQUEST)
-/*void CVC_CERT_REQUEST_print_ctx(BIO *bio, CVC_CERT_AUTHENTICATION_REQUEST *cert, int indent, const ASN1_PCTX *pctx);*/
-/* FIXME the default printing functions currently crash
-DECLARE_ASN1_PRINT_FUNCTION(CVC_CERT_AUTHENTICATION_REQUEST)
-*/
 
 /**
  * @addtogroup management

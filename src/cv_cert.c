@@ -141,7 +141,6 @@ ASN1_ITEM_TEMPLATE(CVC_CHAT) =
         ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x4c, CVC_CHAT, CVC_CHAT_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CHAT)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CHAT)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CHAT)
 
 /* Actually we would need two types of public keys: one for ECDSA and one for
  * RSA. Since I did not find a suitable solution using the OpenSSL ASN.1 macros,
@@ -172,8 +171,6 @@ ASN1_ITEM_TEMPLATE(CVC_PUBKEY) =
             0x49, CVC_PUBKEY, CVC_PUBKEY_BODY)
 ASN1_ITEM_TEMPLATE_END(CVC_PUBKEY)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_PUBKEY)
-/* FIXME */
-/* IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_PUBKEY) */
 
 ASN1_SEQUENCE(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ) = {
     ASN1_SIMPLE(CVC_DISCRETIONARY_DATA_TEMPLATE_SEQ, type, ASN1_OBJECT),
@@ -226,8 +223,6 @@ ASN1_ITEM_TEMPLATE(CVC_CERT) =
         ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x21, CVC_CERT, CVC_CERT_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CERT)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT)
-/*IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CHAT)*/
 
 ASN1_ADB_TEMPLATE(cert_def) = ASN1_SIMPLE(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.other, ASN1_ANY);
 
@@ -255,7 +250,6 @@ ASN1_SEQUENCE(CVC_CERTIFICATE_DESCRIPTION) = {
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, commCertificates, CVC_COMMCERT_SEQ, 0x07),
 } ASN1_SEQUENCE_END(CVC_CERTIFICATE_DESCRIPTION)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERTIFICATE_DESCRIPTION)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERTIFICATE_DESCRIPTION)
 
 
 ASN1_SEQUENCE(CVC_CERT_REQUEST_BODY_SEQ) = {
@@ -288,7 +282,6 @@ ASN1_ITEM_TEMPLATE(CVC_CERT_REQUEST) =
         ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 0x21, CVC_CERT_REQUEST, CVC_CERT_REQUEST_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CERT_REQUEST)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT_REQUEST)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT_REQUEST)
 
 ASN1_SEQUENCE(CVC_CERT_AUTHENTICATION_REQUEST_SEQ) = {
         /* tag: 0x7f21 */
@@ -304,7 +297,6 @@ ASN1_ITEM_TEMPLATE(CVC_CERT_AUTHENTICATION_REQUEST) =
     ASN1_EX_TEMPLATE_TYPE(ASN1_TFLG_SEQUENCE_OF|ASN1_TFLG_IMPTAG|ASN1_TFLG_APPLICATION, 7, CVC_CERT_AUTHENTICATION_REQUEST, CVC_CERT_AUTHENTICATION_REQUEST_SEQ)
 ASN1_ITEM_TEMPLATE_END(CVC_CERT_AUTHENTICATION_REQUEST)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT_AUTHENTICATION_REQUEST)
-IMPLEMENT_ASN1_PRINT_FUNCTION(CVC_CERT_AUTHENTICATION_REQUEST)
 
 
 /** @} ***********************************************************************/
@@ -663,7 +655,6 @@ CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
             || !BIO_printf(bio, "Profile identifier: %d\n", CVC_get_profile_identifier(cv))
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CAR: %s\n", car)
-            /*|| !CVC_PUBKEY_print_ctx(bio, cv->body->public_key, indent, NULL)*/
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CHR: %s\n", chr)
             || !BIO_indent(bio, indent, 80)
@@ -683,14 +674,9 @@ CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
     }
     for (i = 0; i < count; i++) {
         p = sk_value((_STACK*) cv->body->certificate_extensions, i);
-#if 0
-        if (!CVC_DISCRETIONARY_DATA_TEMPLATE_print_ctx(bio, p, indent+2, NULL))
-            goto err;
-#else
         if (!BIO_indent(bio, indent+2, 80)
                 || !BIO_printf(bio, "%s\n", OBJ_nid2sn(OBJ_obj2nid(p->type))))
                 goto err;
-#endif
     }
 
     r = 1;
@@ -835,7 +821,6 @@ int certificate_request_print(BIO *bio,
             || !BIO_printf(bio, "Profile identifier: %ld\n", ASN1_INTEGER_get(request->body->certificate_profile_identifier))
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CAR: %s\n", car)
-            /*|| !CVC_PUBKEY_print_ctx(bio, request->body->public_key, indent, NULL)*/
             || !BIO_indent(bio, indent, 80)
             || !BIO_printf(bio, "CHR: %s\n", chr)
             || !BIO_indent(bio, indent, 80))
@@ -849,14 +834,9 @@ int certificate_request_print(BIO *bio,
     }
     for (i = 0; i < count; i++) {
         p = sk_value((_STACK*) request->body->certificate_extensions, i);
-#if 0
-        if (!CVC_DISCRETIONARY_DATA_TEMPLATE_print_ctx(bio, p, indent+2, NULL))
-            goto err;
-#else
         if (!BIO_indent(bio, indent+2, 80)
                 || !BIO_printf(bio, "%s\n", OBJ_nid2sn(OBJ_obj2nid(p->type))))
                 goto err;
-#endif
     }
 
     r = 1;
