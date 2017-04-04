@@ -809,7 +809,7 @@ int main(int argc, char *argv[])
         template->discretionary_data1 = ASN1_OCTET_STRING_new();
         if (!template->type || !template->discretionary_data1
                 || !ASN1_OCTET_STRING_set(template->discretionary_data1,
-                    desc_hash->data, desc_hash->length)
+                    (unsigned char *) desc_hash->data, desc_hash->length)
                 || !sk_push((_STACK *) cert->body->certificate_extensions, template))
             goto err;
         if (!cmdline.out_desc_given) {
@@ -847,7 +847,7 @@ int main(int argc, char *argv[])
     cert->signature = ASN1_OCTET_STRING_new();
     if (!cert->signature
             || !ASN1_OCTET_STRING_set(cert->signature,
-                signature->data, signature->length))
+                (unsigned char *) signature->data, signature->length))
         goto err;
 
     /* write certificate */
