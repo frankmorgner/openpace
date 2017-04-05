@@ -88,7 +88,7 @@ script:
     fi
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
       if [ -z "$TARGET" ]; then
-        make check;
+        make check >> /tmp/checkout 2>&1 || (cat /tmp/checkout && false);
       elif [ "${TARGET}" == emscripten ]; then
         cd openpace-*_js/bin && js eactest.js && cd -;
       fi
