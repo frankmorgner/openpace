@@ -697,7 +697,7 @@ err:
 int
 CVC_verify_request_signature(const CVC_CERT_REQUEST *request)
 {
-    int r = -1;
+    int r = -1, nid;
     unsigned char *body = NULL;
     int body_len;
     BUF_MEM *inner_signature = NULL, *body_buf = NULL;
@@ -707,8 +707,29 @@ CVC_verify_request_signature(const CVC_CERT_REQUEST *request)
         goto err;
 
     key = EVP_PKEY_new();
-    if (!key||!CVC_pubkey2eckey(1, request->body->public_key, NULL, key))
+    if (!key)
+        goto err;
+
+    nid = OBJ_obj2nid(request->body->public_key->oid);
+    if (nid == NID_id_TA_ECDSA_SHA_1
+            || nid == NID_id_TA_ECDSA_SHA_224
+            || nid == NID_id_TA_ECDSA_SHA_256
+            || nid == NID_id_TA_ECDSA_SHA_384
+            || nid == NID_id_TA_ECDSA_SHA_512) {
+        if (!CVC_pubkey2eckey(1, request->body->public_key, NULL, key))
             goto err;
+    } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
+            || nid == NID_id_TA_RSA_v1_5_SHA_256
+            || nid == NID_id_TA_RSA_v1_5_SHA_512
+            || nid == NID_id_TA_RSA_PSS_SHA_1
+            || nid == NID_id_TA_RSA_PSS_SHA_256
+            || nid == NID_id_TA_RSA_PSS_SHA_512) {
+        if (!CVC_pubkey2rsa(request->body->public_key, key))
+            goto err;
+    } else {
+        log_err("Unknown protocol");
+        goto err;
+    }
 
     body_len = i2d_CVC_CERT_REQUEST_BODY(request->body, &body);
     if (body_len <= 0)
@@ -718,8 +739,7 @@ CVC_verify_request_signature(const CVC_CERT_REQUEST *request)
     /* Get signature from certificate and convert it to a X9.62 representation */
     inner_signature = BUF_MEM_create_init(request->inner_signature->data, request->inner_signature->length);
 
-    r = EAC_verify(OBJ_obj2nid(request->body->public_key->oid),
-            key, inner_signature, body_buf);
+    r = EAC_verify(nid, key, inner_signature, body_buf);
 
 err:
     if (key)
