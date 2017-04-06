@@ -111,10 +111,9 @@ err:
     return ok;
 }
 
-/* FIXME CVC_default_lookup is not thread safe */
-static const CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_len)
+CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_len)
 {
-    static CVC_CERT *cvc = NULL;
+    CVC_CERT *cvc = NULL;
 
     if (!CVC_find_chr_in_directory(chr, chr_len, cvc_default_dir, &cvc)) {
         if (cvc) {
@@ -123,7 +122,7 @@ static const CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_l
         }
     }
 
-    return cvc;
+    return CVC_CERT_dup(cvc);
 }
 
 CVC_lookup_cvca_cert EAC_get_default_cvca_lookup(void)

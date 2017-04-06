@@ -187,7 +187,7 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
            BN_CTX *bn_ctx)
 {
     int ok = 0, i;
-    const CVC_CERT *trust_anchor = NULL;
+    CVC_CERT *trust_anchor = NULL;
 
     check(ctx && next_cert && next_cert->body && next_cert->body->chat &&
             next_cert->body->certificate_authority_reference,
@@ -210,9 +210,16 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
         trust_anchor = ctx->lookup_cvca_cert(
                 next_cert->body->certificate_authority_reference->data,
                 next_cert->body->certificate_authority_reference->length);
-        check(trust_anchor && TA_CTX_set_trust_anchor(ctx, trust_anchor,
-                    bn_ctx),
-                "Could not look up trust anchor");
+        check(trust_anchor, "Could not look up trust anchor");
+
+        /* lookup the whole certificate chain until we hit an CVCA
+         * certificate, otherwise we won't have a complete public key */
+        if (CVC_get_role(trust_anchor->body->chat) == CVC_CVCA) {
+            TA_CTX_set_trust_anchor(ctx, trust_anchor, bn_ctx);
+        } else {
+            check(TA_CTX_import_certificate(ctx, trust_anchor, bn_ctx),
+                    "Could not look up certificate chain");
+        }
     }
     check(trust_anchor && trust_anchor->body
             && trust_anchor->body->certificate_holder_reference,
@@ -234,8 +241,11 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
     check((i > 0), "Could not verify current signature");
 
     /* Certificate has been verified as next part of the chain */
-    if (ctx->current_cert)
+    if (ctx->current_cert) {
+        if (trust_anchor == ctx->current_cert)
+            trust_anchor = NULL;
         CVC_CERT_free(ctx->current_cert);
+    }
     ctx->current_cert = CVC_CERT_dup(next_cert);
     if (!ctx->current_cert)
         goto err;
@@ -252,6 +262,11 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
     ok = TA_CTX_set_parameters(ctx, next_cert, bn_ctx);
 
 err:
+    if (trust_anchor && trust_anchor != ctx->current_cert
+            && trust_anchor != ctx->trust_anchor) {
+        CVC_CERT_free(trust_anchor);
+    }
+
     return ok;
 }
 

@@ -223,7 +223,7 @@ typedef struct ri_ctx {
 } RI_CTX;
 
 /** @brief callback for finding the CVCA trust anchor */
-typedef const CVC_CERT * (*CVC_lookup_cvca_cert) (const unsigned char *chr, size_t car_len);
+typedef CVC_CERT * (*CVC_lookup_cvca_cert) (const unsigned char *chr, size_t car_len);
 
 /** @brief Context for the Terminal Authentication protocol */
 typedef struct ta_ctx {
