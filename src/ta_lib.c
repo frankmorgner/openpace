@@ -229,7 +229,8 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
                     trust_anchor->body->certificate_holder_reference->length) == 0),
             "Current CHR does not match next CAR");
 
-    i = CVC_verify_signature(next_cert, ctx->pub_key);
+    i = CVC_verify_signature(next_cert,
+            OBJ_obj2nid(trust_anchor->body->public_key->oid), ctx->pub_key);
     check((i > 0), "Could not verify current signature");
 
     /* Certificate has been verified as next part of the chain */

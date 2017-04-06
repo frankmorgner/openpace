@@ -579,13 +579,14 @@ CVC_get_expiration_date(const CVC_CERT *cert);
  * certificate issuer
  *
  * @param[in] cert CV certificate to verify
+ * @param[in] protocol Mechanism for verification
  * @param[in] key Public key used for verification
  *
  * @return 1 if the signature was verified, 0 if not and a negative value in
  * case of an error.
  */
 int
-CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key);
+CVC_verify_signature(const CVC_CERT *cert, int protocol, EVP_PKEY *key);
 
 /**
  * @brief Verify the inner signature of a CV certificate request

@@ -391,7 +391,7 @@ err:
 }
 
 int
-CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key)
+CVC_verify_signature(const CVC_CERT *cert, int protocol, EVP_PKEY *key)
 {
     int r = -1;
     unsigned char *body = NULL;
@@ -410,8 +410,7 @@ CVC_verify_signature(const CVC_CERT *cert, EVP_PKEY *key)
     /* Get signature from certificate and convert it to a X9.62 representation */
     signature = BUF_MEM_create_init(cert->signature->data, cert->signature->length);
 
-    r = EAC_verify(OBJ_obj2nid(cert->body->public_key->oid),
-            key, signature, body_buf);
+    r = EAC_verify(protocol, key, signature, body_buf);
 
 err:
     if (body)
