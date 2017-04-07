@@ -136,6 +136,7 @@ else
                       [const EC_KEY_METHOD *default_method = EC_KEY_get_default_method();])],
                       [AC_DEFINE([HAVE_EC_KEY_METHOD], [1],
                                  [Define to 1 if you have the `EC_KEY_METHOD' type.])])
+    AC_CHECK_DECLS([OPENSSL_zalloc], [], [], [[#include <openssl/crypto.h>]])
 
     CPPFLAGS="$saved_CPPFLAGS"
 

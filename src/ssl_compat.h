@@ -2,6 +2,7 @@
 #include "config.h"
 #endif
 
+#include <openssl/crypto.h>
 #include <openssl/dh.h>
 #include <openssl/ecdsa.h>
 #include <openssl/rsa.h>
@@ -44,4 +45,8 @@ void ECDSA_SIG_get0(const ECDSA_SIG *sig, const BIGNUM **pr, const BIGNUM **ps);
 
 #ifndef HAVE_ASN1_STRING_get0_data
 const unsigned char *ASN1_STRING_get0_data(const ASN1_STRING *x);
+#endif
+
+#if !defined(HAVE_DECL_OPENSSL_ZALLOC) || HAVE_DECL_OPENSSL_ZALLOC == 0
+void *OPENSSL_zalloc(size_t num);
 #endif

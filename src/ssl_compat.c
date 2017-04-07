@@ -2,10 +2,12 @@
 #include "config.h"
 #endif
 
+#include <openssl/crypto.h>
 #include <openssl/dh.h>
 #include <openssl/ecdsa.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
+#include <string.h>
 
 #ifndef HAVE_DH_SET0_KEY
 int DH_set0_key(DH *dh, BIGNUM *pub_key, BIGNUM *priv_key)
@@ -152,5 +154,17 @@ void ECDSA_SIG_get0(const ECDSA_SIG *sig, const BIGNUM **pr, const BIGNUM **ps)
 const unsigned char *ASN1_STRING_get0_data(const ASN1_STRING *x)
 {
     return x->data;
+}
+#endif
+
+#if !defined(HAVE_DECL_OPENSSL_ZALLOC) || HAVE_DECL_OPENSSL_ZALLOC == 0
+void *OPENSSL_zalloc(size_t num)
+{
+    void *out = OPENSSL_malloc(num);
+
+    if (out != NULL)
+        memset(out, 0, num);
+
+    return out;
 }
 #endif

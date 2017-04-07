@@ -35,9 +35,9 @@
 #include "eac_err.h"
 #include "eac_lib.h"
 #include "eac_util.h"
+#include "ssl_compat.h"
 #include <eac/ri.h>
 #include <openssl/buffer.h>
-#include <openssl/crypto.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <string.h>
