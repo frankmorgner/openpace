@@ -57,16 +57,11 @@ RI_CTX_new(void)
 {
     RI_CTX *out = NULL;
 
-    out = (RI_CTX *)OPENSSL_malloc(sizeof(RI_CTX));
+    out = (RI_CTX *)OPENSSL_zalloc(sizeof(RI_CTX));
     check(out, "Out of memory");
 
     out->static_key = EVP_PKEY_new();
     check(out->static_key, "Failed to create keypair for restricted identification");
-
-    out->compute_key = NULL;
-    out->generate_key = NULL;
-    out->protocol = NID_undef;
-    out->md = NULL;
 
     return out;
 

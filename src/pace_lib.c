@@ -92,7 +92,7 @@ PACE_SEC_clear_free(PACE_SEC * s)
 PACE_SEC *
 PACE_SEC_new(const char *sec, size_t sec_len, enum s_type type)
 {
-    PACE_SEC *out = OPENSSL_malloc(sizeof(PACE_SEC));
+    PACE_SEC *out = OPENSSL_zalloc(sizeof(PACE_SEC));
     check(out, "Out of memory");
 
     switch (type) {
@@ -128,7 +128,7 @@ encoded_secret(const PACE_SEC * pi)
     /* Encoding of the secret according to TR-03110 2.02 Table A3 */
     BUF_MEM * out;
 
-    check_return(pi, "Invalid arguments");
+    check_return(pi && pi->mem, "Invalid arguments");
 
     switch (pi->type) {
         case PACE_PUK:
@@ -213,7 +213,7 @@ PACE_CTX_clear_free(PACE_CTX * ctx)
 PACE_CTX *
 PACE_CTX_new(void)
 {
-    PACE_CTX *out = OPENSSL_malloc(sizeof(PACE_CTX));
+    PACE_CTX *out = OPENSSL_zalloc(sizeof(PACE_CTX));
     check(out, "Out of memory");
 
     out->ka_ctx = KA_CTX_new();
@@ -221,12 +221,6 @@ PACE_CTX_new(void)
     if (!out->ka_ctx || !out->static_key)
         goto err;
 
-    out->map_compute_key = NULL;
-    out->map_generate_key = NULL;
-    out->nonce = NULL;
-    out->my_eph_pubkey = NULL;
-    out->protocol = NID_undef;
-    out->version = 0;
     out->id = -1;
 
     return out;

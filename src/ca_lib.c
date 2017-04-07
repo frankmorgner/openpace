@@ -35,7 +35,7 @@
 CA_CTX *
 CA_CTX_new(void)
 {
-    CA_CTX *ctx = OPENSSL_malloc(sizeof(CA_CTX));
+    CA_CTX *ctx = OPENSSL_zalloc(sizeof(CA_CTX));
     if (!ctx)
         return NULL;
 
@@ -44,9 +44,6 @@ CA_CTX_new(void)
             OPENSSL_free(ctx);
             return NULL;
     }
-    ctx->version = 0;
-    ctx->protocol = NID_undef;
-    ctx->flags = 0;
     ctx->lookup_csca_cert = EAC_get_default_csca_lookup();
 
     return ctx;

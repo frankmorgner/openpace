@@ -41,21 +41,10 @@
 
 TA_CTX *
 TA_CTX_new(void) {
-    TA_CTX *ctx = (TA_CTX *) OPENSSL_malloc(sizeof(TA_CTX));
+    TA_CTX *ctx = (TA_CTX *) OPENSSL_zalloc(sizeof(TA_CTX));
     if (!ctx)
         return NULL;
 
-    ctx->priv_key = NULL;
-    ctx->pub_key = NULL;
-    ctx->key_engine = NULL;
-    ctx->protocol = NID_undef;
-    ctx->version = 0;
-    ctx->pk_pcd = NULL;
-    ctx->nonce = NULL;
-    ctx->trust_anchor = NULL;
-    ctx->new_trust_anchor = NULL;
-    ctx->current_cert = NULL;
-    ctx->flags = 0;
     ctx->lookup_cvca_cert = EAC_get_default_cvca_lookup();
 
     return ctx;

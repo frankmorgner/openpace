@@ -65,7 +65,7 @@ void EAC_cleanup(void)
 EAC_CTX *
 EAC_CTX_new(void)
 {
-    EAC_CTX *ctx = OPENSSL_malloc(sizeof(EAC_CTX));
+    EAC_CTX *ctx = OPENSSL_zalloc(sizeof(EAC_CTX));
     if (!ctx)
         return NULL;
 
@@ -84,10 +84,6 @@ EAC_CTX_new(void)
         goto err;
 
     EVP_CIPHER_CTX_init(ctx->cipher_ctx);
-    ctx->ca_ctx = NULL;
-    ctx->key_ctx = NULL;
-    ctx->pace_ctx = NULL;
-    ctx->ri_ctx = NULL;
     ctx->tr_version = EAC_TR_VERSION_2_02;
 
     return ctx;
@@ -281,27 +277,13 @@ EAC_CTX_clear_free(EAC_CTX *ctx)
 KA_CTX *
 KA_CTX_new(void)
 {
-    KA_CTX * out = OPENSSL_malloc(sizeof(KA_CTX));
+    KA_CTX * out = OPENSSL_zalloc(sizeof(KA_CTX));
     if (!out)
         goto err;
 
     out->key = EVP_PKEY_new();
     if (!out->key)
         goto err;
-
-    out->md = NULL;
-    out->md_engine = NULL;
-    out->cmac_ctx = NULL;
-    out->cipher = NULL;
-    out->cipher_engine = NULL;
-    out->iv = NULL;
-    out->generate_key = NULL;
-    out->compute_key = NULL;
-    out->mac_keylen = 0;
-    out->enc_keylen = 0;
-    out->shared_secret = NULL;
-    out->k_enc = NULL;
-    out->k_mac = NULL;
 
     return out;
 
@@ -321,7 +303,7 @@ KA_CTX_dup(const KA_CTX *ka_ctx)
 
     check(ka_ctx, "Invalid arguments");
 
-    out = OPENSSL_malloc(sizeof(KA_CTX));
+    out = OPENSSL_zalloc(sizeof(KA_CTX));
     if (!out)
         goto err;
 
@@ -331,10 +313,8 @@ KA_CTX_dup(const KA_CTX *ka_ctx)
 
     out->md = ka_ctx->md;
     out->md_engine = ka_ctx->md_engine;
-    out->cmac_ctx = NULL;
     out->cipher = ka_ctx->cipher;
     out->cipher_engine = ka_ctx->cipher_engine;
-    out->iv = NULL;
     out->generate_key = ka_ctx->generate_key;
     out->compute_key = ka_ctx->compute_key;
     out->mac_keylen = ka_ctx->mac_keylen;
@@ -343,20 +323,17 @@ KA_CTX_dup(const KA_CTX *ka_ctx)
         out->k_enc = BUF_MEM_create_init(ka_ctx->k_enc->data, ka_ctx->k_enc->length);
         if (!out->k_enc)
             goto err;
-    } else
-        out->k_enc = NULL;
+    }
     if (ka_ctx->k_mac) {
         out->k_mac = BUF_MEM_create_init(ka_ctx->k_mac->data, ka_ctx->k_mac->length);
         if (!out->k_mac)
             goto err;
-    } else
-        out->k_mac = NULL;
+    }
     if (ka_ctx->shared_secret) {
         out->shared_secret = BUF_MEM_create_init(ka_ctx->shared_secret->data, ka_ctx->shared_secret->length);
         if (!out->shared_secret)
             goto err;
-    } else
-        out->shared_secret = NULL;
+    }
 
     return out;
 
