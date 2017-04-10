@@ -310,8 +310,10 @@ DHparams_dup_with_q(DH *dh)
     const BIGNUM *p, *q, *g;
 
     DH *dup = DHparams_dup(dh);
-    DH_get0_pqg(dh, &p, &q, &g);
-    DH_set0_pqg(dup, BN_dup(p), BN_dup(q), BN_dup(g));
+    if (dup) {
+        DH_get0_pqg(dh, &p, &q, &g);
+        DH_set0_pqg(dup, BN_dup(p), BN_dup(q), BN_dup(g));
+    }
 
     return dup;
 }
