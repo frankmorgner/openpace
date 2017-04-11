@@ -53,7 +53,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define CHECK(reportverbose, test, message) { \
+#define CHECK(reportverbose, test, message) do { \
     if (test) { \
         if (!verbose) \
             printf("."); \
@@ -72,10 +72,10 @@
         } \
         goto err; \
     } \
-}
-#define OK { if (!verbose) printf(" ok\n"); }
-#define TESTEND { if (!verbose && !failed) printf(" ok\n"); }
-#define END { TESTEND return failed; }
+} while (0)
+#define OK do { if (!verbose) printf(" ok\n"); } while (0)
+#define TESTEND do { if (!verbose && !failed) printf(" ok\n"); } while (0)
+#define END do { TESTEND; return failed; } while (0)
 
 static char verbose=0;
 static char debug=0;
@@ -2736,13 +2736,13 @@ dynamic_eac_test(const struct pace_secret pace_secret,
 
     CHECK(0, EAC_CTX_init_ri(picc_ctx, ri_params.protocol, ri_params.std_dp)
             && EAC_CTX_init_ri(pcd_ctx, ri_params.protocol, ri_params.std_dp),
-            "Initializing RI")
+            "Initializing RI");
 
     sector_pub = get_pubkey(pcd_ctx->ri_ctx->static_key, pcd_ctx->bn_ctx);
-    CHECK(1, sector_pub, "RI step 1: Retrieving terminal's public key")
+    CHECK(1, sector_pub, "RI step 1: Retrieving terminal's public key");
 
     ri = RI_STEP2_compute_identifier(picc_ctx, sector_pub);
-    CHECK(1, ri, "RI step 2: Computing sector identifier")
+    CHECK(1, ri, "RI step 2: Computing sector identifier");
 
     failed = 0;
 
@@ -2981,6 +2981,13 @@ err:
     return ok;
 }
 
+static const struct eac_worked_example *current_tc;
+CVC_CERT * dummy_lookup_cvca_cert(const unsigned char *chr, size_t car_len)
+{
+   const unsigned char *p = (const unsigned char *) current_tc->ta_cvca.data;
+   return CVC_d2i_CVC_CERT(NULL, &p, current_tc->ta_cvca.length);
+}
+
 /* Perform one EAC protocol run using static test data */
 static int
 static_eac_test(struct eac_worked_example *tc)
@@ -3133,13 +3140,13 @@ static_eac_test(struct eac_worked_example *tc)
                 (unsigned char *) tc->ca_picc_pub_key.data, tc->ca_picc_pub_key.length),
             "Initializing Chip Authentication");
 
-    /* Initialize the TA contexts. The PICC gets initialized with the trust anchor
-     * (CVCA) and the PCD gets initialized with the terminal certificate */
+    /* Initialize the TA contexts. The PICC looks up the trust anchor (CVCA) on
+     * demand and the PCD gets initialized with the terminal certificate */
+    current_tc = tc;
     CHECK(1, EAC_CTX_init_ta(pcd_ctx, (unsigned char *) tc->ta_pcd_key.data,
                 tc->ta_pcd_key.length, (unsigned char *) tc->ta_cert.data,
                 tc->ta_cert.length)
-            && EAC_CTX_init_ta(picc_ctx, NULL, 0, (unsigned char *)
-                tc->ta_cvca.data, tc->ta_cvca.length),
+            && EAC_CTX_set_cvca_lookup(picc_ctx, dummy_lookup_cvca_cert),
             "Initializing Terminal Authentication");
     OK;
     print_desc(pcd_ctx->ta_ctx->protocol, tc->ta_curve);

@@ -487,7 +487,7 @@ int EAC_CTX_init_ef_cardsecurity(
  *
  * @return 1 on success or 0 in case of an error
  */
-int EAC_CTX_get_cvca_lookup_cert(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert);
+int EAC_CTX_get_cvca_lookup(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert);
 /**
  * @brief Set the CVCA lookup callback
  *
@@ -496,7 +496,7 @@ int EAC_CTX_get_cvca_lookup_cert(const EAC_CTX *ctx, CVC_lookup_cvca_cert *looku
  *
  * @return 1 on success or 0 in case of an error
  */
-int EAC_CTX_set_cvca_lookup_cert(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert);
+int EAC_CTX_set_cvca_lookup(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert);
 /**
  * @brief Return the default lookup of the country verifying CA
  *
