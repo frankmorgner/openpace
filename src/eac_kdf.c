@@ -63,18 +63,13 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
     if (nonce) {
         inlen = key->length + nonce->length + sizeof counter;
         check(BUF_MEM_grow(in, inlen), "Failed to allocate memory");
-        /* Flawfinder: ignore */
         memcpy(in->data, key->data, key->length);
-        /* Flawfinder: ignore */
         memcpy(in->data + key->length, nonce->data, nonce->length);
-        /* Flawfinder: ignore */
         memcpy(in->data + key->length + nonce->length, &counter, sizeof counter);
     } else {
         inlen = key->length + sizeof counter;
         check(BUF_MEM_grow(in, inlen), "Failed to allocate memory");
-        /* Flawfinder: ignore */
         memcpy(in->data, key->data, key->length);
-        /* Flawfinder: ignore */
         memcpy(in->data + key->length, &counter, sizeof counter);
     }
 

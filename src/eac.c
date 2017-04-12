@@ -68,7 +68,6 @@ EAC_remove_iso_pad(const BUF_MEM *padded)
     out = BUF_MEM_create(m_len);
     check(out, "Out of memory");
 
-    /* Flawfinder: ignore */
     memcpy(out->data, padded->data, m_len);
 
 err:
@@ -136,9 +135,7 @@ EAC_authenticate(const EAC_CTX *ctx, const BUF_MEM *data)
     to_authenticate = BUF_MEM_create(l + data->length);
     check(to_authenticate, "Failed to allocate memory");
 
-    /* Flawfinder: ignore */
     memcpy(to_authenticate->data, ssc_buf, l);
-    /* Flawfinder: ignore */
     memcpy(to_authenticate->data + l, data->data, data->length);
     to_authenticate->length = l + data->length;
 

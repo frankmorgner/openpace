@@ -311,7 +311,6 @@ retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
 
     check(key, "Invalid arguments");
 
-    /* Flawfinder: ignore */
     len = EVP_CIPHER_block_size(EVP_des_cbc());
     check(key->length >= 2*len, "Key too short");
 
@@ -319,14 +318,12 @@ retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
     if (!ctx)
         goto err;
     EVP_CIPHER_CTX_init(ctx);
-    /* Flawfinder: ignore */
     if (!EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
             (unsigned char *) key->data, NULL, 1) ||
             !EVP_CIPHER_CTX_set_padding(ctx, 0))
         goto err;
 
     /* get last block of des_cbc encrypted input */
-    /* Flawfinder: ignore */
     c_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, in);
     if (!c_tmp)
         goto err;
@@ -334,22 +331,18 @@ retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
 
     /* decrypt last block with the rest of the key */
     /* IV is always NULL */
-    /* Flawfinder: ignore */
     if (!block || !EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
             (unsigned char *) key->data + len, NULL, 0) ||
             !EVP_CIPHER_CTX_set_padding(ctx, 0))
         goto err;
-    /* Flawfinder: ignore */
     d_tmp = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 0, block);
 
     /* encrypt last block with the first key */
     /* IV is always NULL */
-    /* Flawfinder: ignore */
     if (!d_tmp || !EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL,
             (unsigned char *) key->data, NULL, 1) ||
             !EVP_CIPHER_CTX_set_padding(ctx, 0))
         goto err;
-    /* Flawfinder: ignore */
     mac = cipher(ctx, EVP_des_cbc(), NULL, NULL, NULL, 1, d_tmp);
 
     BUF_MEM_free(block);
@@ -387,7 +380,6 @@ add_iso_pad(const BUF_MEM * m, int block_size)
     if (!out)
         goto err;
 
-    /* Flawfinder: ignore */
     memcpy(out->data, m->data, m->length);
 
     /* now add iso padding */
@@ -426,7 +418,6 @@ int encode_ssc(const BIGNUM *ssc, const KA_CTX *ctx, unsigned char **encoded)
         if (!p)
             return -1;
         BN_bn2bin(ssc, p);
-        /* Flawfinder: ignore */
         memcpy(*encoded, p + bn_len - en_len, en_len);
         OPENSSL_free(p);
     }
@@ -475,7 +466,6 @@ int update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc)
             if (!p)
                 goto err;
             ctx->iv = p;
-            /* Flawfinder: ignore */
             memcpy(ctx->iv, ivbuf->data, ivbuf->length);
             break;
 

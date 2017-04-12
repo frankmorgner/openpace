@@ -176,11 +176,8 @@ encoded_mrz(const char *in, size_t len)
             MRZ_DATEOFEXPIRY_LEN);
     if (!cat)
         goto err;
-    /* Flawfinder: ignore */
     memcpy(cat->data, serial, MRZ_SERIALNUMBER_LEN);
-    /* Flawfinder: ignore */
     memcpy(cat->data + MRZ_SERIALNUMBER_LEN, dob, MRZ_DATEOFBIRTH_LEN);
-    /* Flawfinder: ignore */
     memcpy(cat->data + MRZ_SERIALNUMBER_LEN + MRZ_DATEOFBIRTH_LEN,
             doe, MRZ_DATEOFEXPIRY_LEN);
 
