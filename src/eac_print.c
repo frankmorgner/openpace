@@ -277,7 +277,6 @@ EAC_CTX_print_private(BIO *out, const EAC_CTX *ctx, int indent)
             return 0;
         stack_print_private(CA_CTX, out, ctx->ca_ctxs, indent+4);
         if (!BIO_indent(out, indent, 80)
-                /* FIXME segfaults for me */
                 || !BIO_printf(out, "%d Context%s for RI (default has keyID 0x%02X)\n",
                     sk_num((_STACK*) ctx->ri_ctxs),
                     sk_num((_STACK*) ctx->ri_ctxs) > 1 ? "s" : "",

@@ -347,7 +347,7 @@ void
 KA_CTX_clear_free(KA_CTX *ctx)
 {
     if (ctx) {
-        if (ctx->cmac_ctx) /* FIXME: Segfaults if CMAC_Init has not been called */
+        if (ctx->cmac_ctx)
             CMAC_CTX_free(ctx->cmac_ctx);
         if (ctx->key)
             EVP_PKEY_free(ctx->key);

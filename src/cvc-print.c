@@ -77,9 +77,6 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
         EAC_CTX_clear_free(ctx);
     }
 
-    /* FIXME: CVC_CERT_print_ctx -> segfault */
-    /* CVC_CERT_print_ctx(bio_stdout, cvc, 1, NULL); */
-
     if (desc_data && desc_len) {
         p = desc_data;
         if (!d2i_CVC_CERTIFICATE_DESCRIPTION(&desc, &p, desc_len))
