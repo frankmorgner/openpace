@@ -87,7 +87,7 @@ test-cvcutils:
 	rm -f ZZATTERM00001.txt ZZATCVCA00001 ZZATCVCA00001.pem ZZATCVCA00001.pkcs8 ZZATCVCA00001.cvcert ZZATDVCA00001 ZZATDVCA00001.cvcert ZZATDVCA00001.pkcs8 ZZATTERM00001.cvcert ZZATTERM00001.pkcs8 ZZATTERM00001.desc
 	openssl genrsa -out ZZISCVCA00001.pem 2048 \
 		&& openssl pkcs8 -topk8 -nocrypt -in ZZISCVCA00001.pem -outform DER -out ZZISCVCA00001.pkcs8 \
-		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=is --chr=ZZISCVCA00001 --issued=170101--expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZISCVCA00001.pkcs8 --scheme=RSA_v1_5_SHA_512 --read-eid --is-rfu4 --is-rfu3 --is-rfu2 --read-iris --read-finger \
+		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=is --chr=ZZISCVCA00001 --issued=170101 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZISCVCA00001.pkcs8 --scheme=RSA_v1_5_SHA_512 --read-eid --is-rfu4 --is-rfu3 --is-rfu2 --read-iris --read-finger \
 		&& $(ENV) $(builddir)/src/cvc-create --role=dv_foreign --chr=ZZISDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZISCVCA00001.pkcs8 --sign-as=ZZISCVCA00001.cvcert --scheme=RSA_v1_5_SHA_256 --read-eid \
 		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZISTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZISDVCA00001.pkcs8 --sign-as=ZZISDVCA00001.cvcert --scheme=RSA_v1_5_SHA_1 --read-eid \
 		&& ln -s ZZISCVCA00001.cvcert ZZISCVCA00001 \
