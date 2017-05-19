@@ -116,13 +116,11 @@ CVC_CERT *CVC_default_lookup(const unsigned char *chr, size_t chr_len)
     CVC_CERT *cvc = NULL;
 
     if (!CVC_find_chr_in_directory(chr, chr_len, cvc_default_dir, &cvc)) {
-        if (cvc) {
-            CVC_CERT_free(cvc);
-            cvc = NULL;
-        }
+        CVC_CERT_free(cvc);
+        cvc = NULL;
     }
 
-    return CVC_CERT_dup(cvc);
+    return cvc;
 }
 
 CVC_lookup_cvca_cert EAC_get_default_cvca_lookup(void)
