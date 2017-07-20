@@ -1,7 +1,6 @@
 INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../cvc.i \
 			 $(srcdir)/../eac.i \
-			 $(srcdir)/../eac.i \
 			 $(srcdir)/../ta.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
@@ -28,7 +27,7 @@ ext/extconf.rb: $(srcdir)/extconf.rb.in
 	@$(do_subst) < $(srcdir)/extconf.rb.in > ext/extconf.rb
 
 eac_wrap.c:
-	$(SWIG) -ruby -outdir $(builddir) -I$(srcdir)/.. eac.i
+	$(SWIG) -ruby -outdir $(builddir) -o eac_wrap.c -I$(srcdir)/.. $(srcdir)/../eac.i
 
 ext/Makefile: ext/extconf.rb eac_wrap.c $(top_builddir)/src/libeac.la
 	cd ext && $(RUBY) extconf.rb

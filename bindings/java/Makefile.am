@@ -57,7 +57,7 @@ libjeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS) $(JAVA_CFLAGS)
 libjeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
 
 $(BUILT_SOURCES_SWIG): $(INTERFACES)
-	$(SWIG) -java -outdir $(builddir) -I$(srcdir)/.. eac.i
+	$(SWIG) -java -outdir $(builddir) -o eac_wrap.c -I$(srcdir)/.. $(srcdir)/../eac.i
 
 libjeac_la-local: $(BUILT_SOURCES_SWIG)
 
@@ -68,3 +68,6 @@ $(CLASSES_JPACE): $(srcdir)/JPace.java $(BUILT_SOURCES_SWIG)
 
 $(CLASSES_EXAMPLE): $(srcdir)/Example.java $(BUILT_SOURCES_SWIG)
 	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/Example.java
+
+%.class: %.java
+	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $*.java
