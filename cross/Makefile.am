@@ -72,7 +72,7 @@ win:
 		TARGETDIR=$(WIN_TARGETDIR) \
 		ENABLE_PYTHON="" \
 		LDFLAGS="-static-libgcc" \
-		LIBEAC=$(WIN_TARGETDIR)/bin/libeac-1.dll
+		LIBEAC=$(WIN_TARGETDIR)/bin/libeac-2.dll
 	cd $(WIN_TARGETDIR)/lib && gendef $(WIN_TARGETDIR)/bin/*.dll
 
 

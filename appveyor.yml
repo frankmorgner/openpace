@@ -86,13 +86,13 @@ build_script:
           || cat config.log)
         && make || true"
     # The import library is not created by libtool. We need to do it by hand!
-  - bash -c "cat cross/libeac-1_without_patched_openssl.def | sed 's, DATA,,' > libeac-1.def"
-  - lib /machine:%VCVARS_PLATFORM% /def:libeac-1.def /out:src\.libs\libeac.lib
+  - bash -c "cat cross/libeac-2_without_patched_openssl.def | sed 's, DATA,,' > libeac-2.def"
+  - lib /machine:%VCVARS_PLATFORM% /def:libeac-2.def /out:src\.libs\libeac.lib
     # now link and install the binaries
   - bash -c "make install"
-    # The import library is overwritten with libeac-1.dll by libtool during
+    # The import library is overwritten with libeac-2.dll by libtool during
     # `make install`. We need to create it by hand, againg!
-  - lib /machine:%VCVARS_PLATFORM% /def:libeac-1.def /out:%OPENPACE_DIR%\lib\libeac.lib
+  - lib /machine:%VCVARS_PLATFORM% /def:libeac-2.def /out:%OPENPACE_DIR%\lib\libeac.lib
     # Copy OpenSSL stuff into binary distribution
   - bash -c "cp    $OPENSSL_CYGDIR/bin/openssl.exe  $DESTDIR/bin"
   - bash -c "cp    $OPENSSL_CYGDIR/bin/libeay32.dll $DESTDIR/bin"
@@ -100,7 +100,7 @@ build_script:
   - bash -c "cp    $OPENSSL_CYGDIR/lib/libeay32.lib $DESTDIR/lib"
   - bash -c "cp    $OPENSSL_CYGDIR/lib/ssleay32.lib $DESTDIR/lib"
   - bash -c "cp -r $OPENSSL_CYGDIR/include/openssl  $DESTDIR/include"
-  - bash -c "mv    $DESTDIR/lib/libeac-1.dll    $DESTDIR/bin"
+  - bash -c "mv    $DESTDIR/lib/libeac-2.dll    $DESTDIR/bin"
   #- bash -c "$DESTDIR/bin/eactest"
 
   # build with plain cl in cmd and statically bound OpenSSL

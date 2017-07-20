@@ -24,7 +24,7 @@ echo Please ensure the following cross compiled files are available:
 echo $(OPENPACE_ROOT)\lib\libeac.lib
 echo $(OPENPACE_ROOT)\lib\libeay32.lib
 echo If you are using the cross compiled binaries, you may create the libs using the following commands:
-echo lib /def:$(OPENPACE_ROOT)\lib\libeac-1.def /OUT:$(OPENPACE_ROOT)\lib\libeac.lib
+echo lib /def:$(OPENPACE_ROOT)\lib\libeac-2.def /OUT:$(OPENPACE_ROOT)\lib\libeac.lib
 echo lib /def:$(OPENPACE_ROOT)\lib\libeay32.def /OUT:$(OPENPACE_ROOT)\lib\libeay32.lib
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\%(Filename)_wrap.c;$(Outdir)%(Filename).py;$(OPENPACE_ROOT)\lib\libeac.lib;$(OPENPACE_ROOT)\lib\libeay32.lib;</Outputs>
@@ -40,7 +40,7 @@ echo Please ensure the following cross compiled files are available:
 echo $(OPENPACE_ROOT)\lib\libeac.lib
 echo $(OPENPACE_ROOT)\lib\libeay32.lib
 echo If you are using the cross compiled binaries, you may create the libs using the following commands:
-echo lib /def:$(OPENPACE_ROOT)\lib\libeac-1.def /OUT:$(OPENPACE_ROOT)\lib\libeac.lib
+echo lib /def:$(OPENPACE_ROOT)\lib\libeac-2.def /OUT:$(OPENPACE_ROOT)\lib\libeac.lib
 echo lib /def:$(OPENPACE_ROOT)\lib\libeay32.def /OUT:$(OPENPACE_ROOT)\lib\libeay32.lib
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\%(Filename)_wrap.c;$(Outdir)%(Filename).py;$(OPENPACE_ROOT)\lib\libeac.lib;$(OPENPACE_ROOT)\lib\libeay32.lib</Outputs>
@@ -106,7 +106,7 @@ echo lib /def:$(OPENPACE_ROOT)\lib\libeay32.def /OUT:$(OPENPACE_ROOT)\lib\libeay
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(PYTHON_LIBD);$(OPENPACE_ROOT)\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(PYTHON_LIB);libeac.lib;libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>libeac-1.dll;libeay32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>libeac-2.dll;libeay32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,7 +123,7 @@ echo lib /def:$(OPENPACE_ROOT)\lib\libeay32.def /OUT:$(OPENPACE_ROOT)\lib\libeay
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(PYTHON_LIBD);$(OPENPACE_ROOT)\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(PYTHON_LIB);libeac.lib;libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>libeac-1.dll;libeay32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>libeac-2.dll;libeay32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
