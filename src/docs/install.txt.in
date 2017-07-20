@@ -170,7 +170,7 @@ bindings.  For this you need to setup your Windows as following:
 
 6. Create OpenPACE's and OpenSSL's import libraries::
 
-    lib /def:"%OPENPACE_ROOT%\lib\libeac-1.def" /OUT:"%OPENPACE_ROOT%\lib\libeac.lib"
+    lib /def:"%OPENPACE_ROOT%\lib\libeac-2.def" /OUT:"%OPENPACE_ROOT%\lib\libeac.lib"
     lib /def:"%OPENPACE_ROOT%\lib\libeay32.def" /OUT:"%OPENPACE_ROOT%\lib\libeay32.lib"
 
 6. Build the Python bindings::

@@ -5,17 +5,18 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Usage of OpenPACE &mdash; OpenPACE 1.0.1 documentation</title>
+    <title>Usage of OpenPACE &#8212; OpenPACE 1.0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.1',
+        VERSION:     '1.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,9 +28,10 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="OpenPACE 1.0.1 documentation" href="index.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="OpenPACE 1.0.2 documentation" href="index.html" />
     <link rel="next" title="Programming with OpenPACE" href="programming.html" />
     <link rel="prev" title="Download OpenPACE" href="install.html" />
 <meta charset='utf-8'>
@@ -66,7 +68,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           OpenPACE</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -84,7 +86,7 @@
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Download OpenPACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html#compiling-and-installing-openpace">Compiling and Installing OpenPACE</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Usage of OpenPACE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage of OpenPACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="protocols.html">Extended Access Control Specification</a></li>
 </ul>
 </ul>
@@ -115,11 +117,11 @@
               
                 
   <li>
-    <a href="install.html" title="Previous Chapter: Download OpenPACE"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Download OpenPAC...</span>
+    <a href="install.html" title="Previous Chapter: Download OpenPACE"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Download OpenPACE</span>
     </a>
   </li>
   <li>
-    <a href="programming.html" title="Next Chapter: Programming with OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Programming with... &raquo;</span>
+    <a href="programming.html" title="Next Chapter: Programming with OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Programming w... &raquo;</span>
     </a>
   </li>
               
@@ -162,7 +164,7 @@ with <code class="docutils literal"><span class="pre">./configure</span> <span c
 <p>If you have chosen to install OpenPACE in a non-standard location you have to
 set up the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal"><span class="pre">LD_LIBRARY_PATH</span></code> environment variable correctly. One way to
 do this on Linux is:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/path/to/libeac
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/path/to/libeac
 </pre></div>
 </div>
 <p>If OpenPACE is compiled for Javascript, it results in a standalone Javascript
@@ -188,7 +190,7 @@ file that can be used without special requirements.</p>
 <p><span class="versionmodified">New in version 0.9: </span><cite>cvc-create</cite> is a command line tool for creating a <abbr title="Extended Access Control">EAC</abbr> PKI of
 Authentication Terminals, Signature Terminals or Inspection Systems.</p>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>cvc-create 1.0.1
+<div class="highlight-text"><div class="highlight"><pre><span></span>cvc-create 1.0.2
 
 Create a card verifiable certificate
 
@@ -326,18 +328,18 @@ Written by Frank Morgner &lt;frankmorgner@gmail.com&gt;
 </pre></div>
 </div>
 <p>Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Create country verifying CA&#39;s private key</span>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Create country verifying CA&#39;s private key</span>
 openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey -param_enc explicit
 openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
-<span class="c"># Create self signed country verifying CA certificate</span>
+<span class="c1"># Create self signed country verifying CA certificate</span>
 cvc-create --role<span class="o">=</span>cvca --type<span class="o">=</span>at --chr<span class="o">=</span>ZZATCVCA00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next year&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATCVCA00001.pkcs8 --scheme<span class="o">=</span>ECDSA_SHA_256 --rid
 
-<span class="c"># Create DVCA certificate signed by CVCA and generate its private key</span>
+<span class="c1"># Create DVCA certificate signed by CVCA and generate its private key</span>
 cvc-create --role<span class="o">=</span>dv_domestic --chr<span class="o">=</span>ZZATDVCA00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next month&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATCVCA00001.pkcs8 --sign-as<span class="o">=</span>ZZATCVCA00001.cvcert --scheme<span class="o">=</span>ECDSA_SHA_256 --rid
 
-<span class="c"># Create plain text description</span>
+<span class="c1"># Create plain text description</span>
 <span class="nb">echo</span> <span class="s2">&quot;whatever&quot;</span> &gt; ZZATTERM00001.txt
-<span class="c"># Create TERM certificate signed by DVCA along with the description and generate its private key</span>
+<span class="c1"># Create TERM certificate signed by DVCA along with the description and generate its private key</span>
 cvc-create --role<span class="o">=</span>terminal --chr<span class="o">=</span>ZZATTERM00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next week&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATDVCA00001.pkcs8 --sign-as<span class="o">=</span>ZZATDVCA00001.cvcert --scheme<span class="o">=</span>ECDSA_SHA_256 --rid --cert-desc<span class="o">=</span>ZZATTERM00001.txt --issuer-name<span class="o">=</span>DVCA --subject-name<span class="o">=</span>TERM
 </pre></div>
 </div>
@@ -350,7 +352,7 @@ all standardized elliptic curves.</p>
 <div class="versionadded">
 <p><span class="versionmodified">New in version 0.8: </span><cite>cvc-print</cite> is a command line tool for printing card verifiable certificates.</p>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>cvc-print 1.0.1
+<div class="highlight-text"><div class="highlight"><pre><span></span>cvc-print 1.0.2
 
 Prints card verifiable certificate and its description
 
@@ -361,6 +363,7 @@ Usage: cvc-print [OPTIONS]...
   -c, --cvc=FILENAME          Card Verifiable Certificate
   -d, --description=FILENAME  Certificate description
   -r, --csr=FILENAME          Certificate request
+      --cvc-dir=DIRECTORY     Directory of trusted CVCs
 
 Report bugs to https://github.com/frankmorgner/openpace/issues
 
@@ -368,7 +371,7 @@ Written by Frank Morgner and Dominik Oepen
 </pre></div>
 </div>
 <p>Below you see of how to print the certificates created in the example above:</p>
-<div class="highlight-sh"><div class="highlight"><pre>cvc-print --cvc ZZATCVCA00001.cvcert
+<div class="highlight-sh"><div class="highlight"><pre><span></span>cvc-print --cvc ZZATCVCA00001.cvcert
 cvc-print --cvc ZZATDVCA00001.cvcert
 cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
 </pre></div>
@@ -380,7 +383,7 @@ cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
 EF.CardAccess.  The standardized domain parameter for <abbr title="Chip Authentication">CA</abbr> (e.g.
 brainpoolP256r1/<code class="docutils literal"><span class="pre">0x0D</span></code>) need to match the key agreement scheme for <abbr title="Chip Authentication">CA</abbr> (e.g.
 ECDH):</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="nv">asn1</span><span class="o">=</span>SET:SecurityInfos
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nv">asn1</span><span class="o">=</span>SET:SecurityInfos
 
 <span class="o">[</span>SecurityInfos<span class="o">]</span>
 <span class="nv">tainfo</span><span class="o">=</span>SEQUENCE:TerminalAuthenticationInfo
@@ -388,64 +391,64 @@ ECDH):</p>
 <span class="nv">chipauthenticationdomainparameterinfo</span><span class="o">=</span>SEQUENCE:ChipAuthenticationDomainParameterInfo
 
 <span class="o">[</span>TerminalAuthenticationInfo<span class="o">]</span>
-<span class="c"># id-TA</span>
+<span class="c1"># id-TA</span>
 <span class="nv">protocol</span><span class="o">=</span>OID:0.4.0.127.0.7.2.2.2
 <span class="nv">version</span><span class="o">=</span>INTEGER:0x02
 
 <span class="o">[</span>ChipAuthenticationInfo<span class="o">]</span>
-<span class="c"># id-CA-ECDH-AES-CBC-CMAC-128</span>
+<span class="c1"># id-CA-ECDH-AES-CBC-CMAC-128</span>
 <span class="hll"><span class="nv">protocol</span><span class="o">=</span>OID:0.4.0.127.0.7.2.2.3.2.2
 </span><span class="nv">version</span><span class="o">=</span>INTEGER:0x02
 
 <span class="o">[</span>ChipAuthenticationDomainParameterInfo<span class="o">]</span>
-<span class="c"># id-CA-ECDH</span>
+<span class="c1"># id-CA-ECDH</span>
 <span class="hll"><span class="nv">protocol</span><span class="o">=</span>OID:0.4.0.127.0.7.2.2.3.2
 </span><span class="nv">aid</span><span class="o">=</span>SEQUENCE:AlgorithmIdentifier
 
 <span class="o">[</span>AlgorithmIdentifier<span class="o">]</span>
-<span class="c"># standardizedDomainParameters</span>
+<span class="c1"># standardizedDomainParameters</span>
 <span class="nv">algorithm</span><span class="o">=</span>OID:0.4.0.127.0.7.1.2
-<span class="c"># brainpoolP256r1</span>
+<span class="c1"># brainpoolP256r1</span>
 <span class="hll"><span class="nv">parameter</span><span class="o">=</span>INTEGER:0x0D
 </span></pre></div>
 </div>
 <p>The above example can be found in <code class="file docutils literal"><span class="pre">doc/efcardaccess_asn1.conf</span></code>. OpenSSL
 can translate this into its ASN.1 represantation, which gives us
 EF.CardAccess:</p>
-<div class="highlight-sh"><div class="highlight"><pre>openssl asn1parse -genconf efcardaccess_asn1.conf -out efcardaccess.dump
+<div class="highlight-sh"><div class="highlight"><pre><span></span>openssl asn1parse -genconf efcardaccess_asn1.conf -out efcardaccess.dump
 </pre></div>
 </div>
 <p>In EF.CardSecurity the data of EF.CardAccess including the <abbr title="Chip Authentication">CA</abbr> public key of
 the chip is signed by the document signer. First we create the <abbr title="Country Signing Certificate Authority">CSCA</abbr> and the
 document signer:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Create the country signing CA&#39;s private key</span>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Create the country signing CA&#39;s private key</span>
 openssl ecparam -out csca_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
-<span class="c"># Create the country verifying CA&#39;s self signed certificate</span>
+<span class="c1"># Create the country verifying CA&#39;s self signed certificate</span>
 openssl req -new -x509 -days <span class="m">5000</span> -key csca_key.pem -out csca_cert.pem
 
-<span class="c"># Create the document signer&#39;s private key</span>
+<span class="c1"># Create the document signer&#39;s private key</span>
 openssl ecparam -out docsigner_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
-<span class="c"># Create the document signer&#39;s certificate (signing request)</span>
+<span class="c1"># Create the document signer&#39;s certificate (signing request)</span>
 openssl req -new -key docsigner_key.pem -out docsigner.csr
 openssl x509 -req -in docsigner.csr -CA csca_cert.pem -CAkey csca_key.pem -CAcreateserial -out docsigner_cert.pem
 </pre></div>
 </div>
 <p>Now generate the chip&#8217;s private key for <abbr title="Chip Authentication">CA</abbr> and print its (public) key:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Create chip&#39;s key</span>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Create chip&#39;s key</span>
 openssl ecparam -out card_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
-<span class="c"># Print the public key and copy it to the clipboard</span>
+<span class="c1"># Print the public key and copy it to the clipboard</span>
 openssl ec -in card_key.pem -text
 </pre></div>
 </div>
 <p>Finally we can create EF.CardSecurity by adding the card&#8217;s public key to the
 last line of our template and signing the content with the document signer&#8217;s
 key:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="c"># Add the public key (without &#39;:&#39; and &#39; &#39;) to the template for EF.CardSecurity</span>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Add the public key (without &#39;:&#39; and &#39; &#39;) to the template for EF.CardSecurity</span>
 cp doc/efcardsecurity_templ_asn1.conf efcardsecurity_asn1.conf <span class="o">&amp;&amp;</span> vi efcardsecurity_asn1.conf
 
-<span class="c"># Create and sign EF.CardSecurity</span>
+<span class="c1"># Create and sign EF.CardSecurity</span>
 openssl asn1parse -genconf efcardsecurity_asn1.conf -out efcardsecurity_content.dump
-openssl cms -sign -nodetach -binary -in efcardsecurity_content.dump -inform DER -signer docsigner_cert.pem -inkey docsigner_key.pem -econtent_type 0.4.0.127.0.7.3.2.1 -noattr -outform DER -out efcardsecurity.dump
+openssl cms -sign -nodetach -binary -in efcardsecurity_content.dump -inform DER -signer docsigner_cert.pem -inkey docsigner_key.pem -econtent_type <span class="m">0</span>.4.0.127.0.7.3.2.1 -noattr -outform DER -out efcardsecurity.dump
 </pre></div>
 </div>
 </div>
@@ -463,7 +466,7 @@ openssl cms -sign -nodetach -binary -in efcardsecurity_content.dump -inform DER 
       
     </p>
     <p>
-        &copy; Copyright 2012-2016 by Frank Morgner and Dominik Oepen.<br/>
+        &copy; Copyright 2012-2017 by Frank Morgner and Dominik Oepen.<br/>
     </p>
   </div>
 </footer>

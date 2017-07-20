@@ -23,8 +23,8 @@ docs: $(DOXYGEN_HTML) $(srcdir)/*.in $(srcdir)/*.txt $(srcdir)/*.txt.in
 	env LD_LIBRARY_PATH=${abs_top_builddir}/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
 		DYLD_LIBRARY_PATH=$${LD_LIBRARY_PATH} SHLIB_PATH=$${LD_LIBRARY_PATH} LIBPATH=$${LD_LIBRARY_PATH} \
 		$(MAKE) -f $(srcdir)/Makefile.sphinx html
-	rm -rf $(top_builddir)/docs
-	mv _build/html $(top_builddir)/docs
+	rm -rf $(top_builddir)/docs/*
+	mv _build/html/* $(top_builddir)/docs
 
 $(DOXYGEN_HTML): $(top_srcdir)/src/eac/*.h $(srcdir)/Doxyfile.in
 	@$(do_subst) < $(srcdir)/Doxyfile.in > Doxyfile

@@ -5,17 +5,18 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Download OpenPACE &mdash; OpenPACE 1.0.1 documentation</title>
+    <title>Download OpenPACE &#8212; OpenPACE 1.0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.1',
+        VERSION:     '1.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,9 +28,10 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="OpenPACE 1.0.1 documentation" href="index.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="OpenPACE 1.0.2 documentation" href="index.html" />
     <link rel="next" title="Usage of OpenPACE" href="usage.html" />
     <link rel="prev" title="Welcome to OpenPACE’s documentation!" href="index.html" />
 <meta charset='utf-8'>
@@ -66,7 +68,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           OpenPACE</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -82,7 +84,7 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Download OpenPACE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Download OpenPACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#compiling-and-installing-openpace">Compiling and Installing OpenPACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage of OpenPACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="protocols.html">Extended Access Control Specification</a></li>
@@ -124,11 +126,11 @@
               
                 
   <li>
-    <a href="index.html" title="Previous Chapter: Welcome to OpenPACE’s documentation!"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Welcome to OpenP...</span>
+    <a href="index.html" title="Previous Chapter: Welcome to OpenPACE’s documentation!"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Welcome to Op...</span>
     </a>
   </li>
   <li>
-    <a href="usage.html" title="Next Chapter: Usage of OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Usage of OpenPAC... &raquo;</span>
+    <a href="usage.html" title="Next Chapter: Usage of OpenPACE"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Usage of OpenPACE &raquo;</span>
     </a>
   </li>
               
@@ -164,7 +166,7 @@
 are still available on <a class="reference external" href="http://sourceforge.net/projects/openpace/files">Sourceforge</a>.</p>
 <p>If you plan to make contribution, you can clone our git repository to later
 make a pull request on Github:</p>
-<div class="highlight-sh"><div class="highlight"><pre>git clone https://github.com/frankmorgner/openpace.git
+<div class="highlight-sh"><div class="highlight"><pre><span></span>git clone https://github.com/frankmorgner/openpace.git
 </pre></div>
 </div>
 <p>Alternatively, the current developement version is available as <a class="reference external" href="https://github.com/frankmorgner/openpace/archive/master.zip">zip file</a> or as
@@ -180,7 +182,7 @@ OpenPACE comes with a Vagrantfile which lets you setup a working
 environment with just one command. To create a Ubuntu based virtual machine,
 install all dependencies and compile OpenPACE, run the following command
 in the OpenPACE directory:</p>
-<div class="highlight-sh"><div class="highlight"><pre>vagrant up
+<div class="highlight-sh"><div class="highlight"><pre><span></span>vagrant up
 </pre></div>
 </div>
 <p>You then need to <code class="docutils literal"><span class="pre">vagrant</span> <span class="pre">ssh</span></code> in order to access the VM. The
@@ -194,12 +196,12 @@ unfamiliar with it, please have a look at <code class="file docutils literal"><s
 it, you are probably working bleeding edge in the repository.  Run the
 following command in <code class="file docutils literal"><span class="pre">openpace</span></code> to get the missing standard
 auxiliary files:</p>
-<div class="highlight-sh"><div class="highlight"><pre>autoreconf --verbose --install
+<div class="highlight-sh"><div class="highlight"><pre><span></span>autoreconf --verbose --install
 </pre></div>
 </div>
 <p>To configure (<code class="docutils literal"><span class="pre">./configure</span> <span class="pre">--help</span></code> lists possible options), build and
 install OpenPACE now do the following:</p>
-<div class="highlight-sh"><div class="highlight"><pre>./configure
+<div class="highlight-sh"><div class="highlight"><pre><span></span>./configure
 make
 make install
 </pre></div>
@@ -230,14 +232,14 @@ be installed along with the language&#8217;s toolchain to build the bindings.</p
 <h3>Cross-Compiling for Windows on Linux<a class="headerlink" href="#cross-compiling-for-windows-on-linux" title="Permalink to this headline">¶</a></h3>
 <p>Our <code class="file docutils literal"><span class="pre">Makefile</span></code> includes scripts for cross compilation for Windows
 on Debian wheezy:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
 ./configure --enable-openssl-install
 make win
 </pre></div>
 </div>
 <p><a class="reference external" href="http://sourceforge.net/p/mingw-w64/wiki2/gendef/">gendef</a> <a class="footnote-reference" href="#id14" id="id15">[7]</a> should be installed to generate the library definitions.
 On successfull compilation, the Windows binaries can be found in
-<code class="file docutils literal"><span class="pre">openpace-1.0.1_win32</span></code>. For customization you
+<code class="file docutils literal"><span class="pre">openpace-1.0.2_win32</span></code>. For customization you
 may pass the following <strong class="command">make</strong> variables:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -286,48 +288,48 @@ bindings.  For this you need to setup your Windows as following:</p>
 </li>
 <li><p class="first">Install <a class="reference external" href="http://www.swig.org/download.html">SWIG</a> <a class="footnote-reference" href="#id10" id="id11">[5]</a> and modify the <span class="target" id="index-2"></span><code class="xref std std-envvar docutils literal"><span class="pre">PATH</span></code> so that <strong class="command">swig.exe</strong>
 can be found:</p>
-<div class="highlight-bat"><div class="highlight"><pre><span class="k">set</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;C:\swig&quot;</span>;<span class="nv">%PATH%</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">PATH</span><span class="p">=</span><span class="s2">&quot;C:\swig&quot;</span>;<span class="nv">%PATH%</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Install <a class="reference external" href="https://www.python.org/downloads/release/python-278/">Python</a> <a class="footnote-reference" href="#id12" id="id13">[6]</a> and set <span class="target" id="index-3"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHON_INCLUDE</span></code> and
 <span class="target" id="index-4"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHON_LIBD</span></code>/<span class="target" id="index-5"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHON_LIB</span></code> accordingly:</p>
-<div class="highlight-bat"><div class="highlight"><pre><span class="k">set</span> <span class="nv">PYTHON_INCLUDE</span><span class="o">=</span><span class="s2">&quot;C:\Python27\include&quot;</span>
-<span class="k">set</span> <span class="nv">PYTHON_LIBD</span><span class="o">=</span><span class="s2">&quot;C:\Python27&quot;</span>
-<span class="k">set</span> <span class="nv">PYTHON_LIB</span><span class="o">=</span><span class="s2">&quot;python278.lib&quot;</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">PYTHON_INCLUDE</span><span class="p">=</span><span class="s2">&quot;C:\Python27\include&quot;</span>
+<span class="k">set</span> <span class="nv">PYTHON_LIBD</span><span class="p">=</span><span class="s2">&quot;C:\Python27&quot;</span>
+<span class="k">set</span> <span class="nv">PYTHON_LIB</span><span class="p">=</span><span class="s2">&quot;python278.lib&quot;</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Copy the cross compiled OpenPACE libraries to Windows and set <span class="target" id="index-6"></span><code class="xref std std-envvar docutils literal"><span class="pre">OPENPACE_ROOT</span></code>:</p>
-<div class="highlight-bat"><div class="highlight"><pre><span class="k">set</span> <span class="nv">OPENPACE_ROOT</span><span class="o">=</span>&quot;C:\openpace\openpace<span class="m">-1</span>.<span class="m">0</span>.<span class="m">0</span>_win<span class="m">32</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">OPENPACE_ROOT</span><span class="p">=</span><span class="s2">&quot;C:\openpace\openpace-1.0.0_win32</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Create OpenPACE&#8217;s and OpenSSL&#8217;s import libraries:</p>
-<div class="highlight-bat"><div class="highlight"><pre>lib <span class="n">/def:&quot;%OPENPACE_ROOT%\lib\libeac-1.def&quot;</span> <span class="n">/OUT:&quot;%OPENPACE_ROOT%\lib\libeac.lib&quot;</span>
-lib <span class="n">/def:&quot;%OPENPACE_ROOT%\lib\libeay32.def&quot;</span> <span class="n">/OUT:&quot;%OPENPACE_ROOT%\lib\libeay32.lib&quot;</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span>lib /def:<span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\lib\libeac-2.def&quot;</span> /OUT:<span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\lib\libeac.lib&quot;</span>
+lib /def:<span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\lib\libeay32.def&quot;</span> /OUT:<span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\lib\libeay32.lib&quot;</span>
 </pre></div>
 </div>
 </li>
 </ol>
 <ol class="arabic" start="6">
 <li><p class="first">Build the Python bindings:</p>
-<div class="highlight-bat"><div class="highlight"><pre><span class="k">cd</span> <span class="s2">&quot;C:\openpace&quot;</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span><span class="k">cd</span> <span class="s2">&quot;C:\openpace&quot;</span>
 msbuild <span class="s2">&quot;bindings\win32\eac.sln&quot;</span>
 </pre></div>
 </div>
 <p>If you can successfully build the solution, you can find the python in
 <code class="file docutils literal"><span class="pre">%OPENPACE_ROOT%\bindings\win32\Release</span></code>. Put them all together
 with the cross compiled OpenPACE library:</p>
-<div class="highlight-bat"><div class="highlight"><pre>copy <span class="s2">&quot;C:\openpace\bindings\win32\Release\_eac.pyd&quot;</span> <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
-copy <span class="s2">&quot;C:\openpace\bindings\win32\Release\eac.py&quot;</span>   <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
-copy <span class="s2">&quot;C:\openpace\bindings\python\chat.py&quot;</span>         <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
-copy <span class="s2">&quot;C:\openpace\bindings\python\pace_entity.py&quot;</span>  <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span><span class="k">copy</span> <span class="s2">&quot;C:\openpace\bindings\win32\Release\_eac.pyd&quot;</span> <span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\bin&quot;</span>
+<span class="k">copy</span> <span class="s2">&quot;C:\openpace\bindings\win32\Release\eac.py&quot;</span>   <span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\bin&quot;</span>
+<span class="k">copy</span> <span class="s2">&quot;C:\openpace\bindings\python\chat.py&quot;</span>         <span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\bin&quot;</span>
+<span class="k">copy</span> <span class="s2">&quot;C:\openpace\bindings\python\pace_entity.py&quot;</span>  <span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\bin&quot;</span>
 </pre></div>
 </div>
 <p>Now for testing, you may try:</p>
-<div class="highlight-bat"><div class="highlight"><pre><span class="k">cd</span> <span class="s2">&quot;%OPENPACE_ROOT%\bin&quot;</span>
-<span class="s2">&quot;%PYTHON_LIBD%\python.exe&quot;</span> <span class="s2">&quot;C:\openpace\bindings\python\example.py&quot;</span>
+<div class="highlight-bat"><div class="highlight"><pre><span></span><span class="k">cd</span> <span class="s2">&quot;</span><span class="nv">%OPENPACE_ROOT%</span><span class="s2">\bin&quot;</span>
+<span class="s2">&quot;</span><span class="nv">%PYTHON_LIBD%</span><span class="s2">\python.exe&quot;</span> <span class="s2">&quot;C:\openpace\bindings\python\example.py&quot;</span>
 </pre></div>
 </div>
 </li>
@@ -339,7 +341,7 @@ copy <span class="s2">&quot;C:\openpace\bindings\python\pace_entity.py&quot;</sp
 <h2>Compiling for Android<a class="headerlink" href="#compiling-for-android" title="Permalink to this headline">¶</a></h2>
 <p>Our <code class="file docutils literal"><span class="pre">Makefile</span></code> includes scripts for cross compilation for Android on
 Debian wheezy:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
 ./configure --enable-openssl-install
 make android
 </pre></div>
@@ -372,14 +374,14 @@ make android
 </tbody>
 </table>
 <p>On successfull compilation, the Android binaries can be found in
-<code class="file docutils literal"><span class="pre">openpace-1.0.1_$</span><em><span class="pre">ANDROID_ARCH</span></em><span class="pre">-linux-androideabi</span></code>.</p>
+<code class="file docutils literal"><span class="pre">openpace-1.0.2_$</span><em><span class="pre">ANDROID_ARCH</span></em><span class="pre">-linux-androideabi</span></code>.</p>
 </div>
 <div class="section" id="compiling-for-javascript">
 <span id="javascript-api"></span><h2>Compiling for Javascript<a class="headerlink" href="#compiling-for-javascript" title="Permalink to this headline">¶</a></h2>
 <p>Technically the process for getting OpenPACE into Javascript is similar to
 cross compiling. With <a class="reference external" href="https://github.com/kripken/emscripten">Emscripten</a> <a class="footnote-reference" href="#id4" id="id5">[2]</a> the library is compiled into LLVM bytecode
 and then translated into Javascript. Use the following command:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nb">test</span> -x configure <span class="o">||</span> autoreconf --verbose --install
 ./configure --enable-openssl-install
 make emscripten
 </pre></div>
@@ -404,10 +406,10 @@ make emscripten
 </tbody>
 </table>
 <p>On successfull compilation, the compiled bitcode files can be found in
-<code class="file docutils literal"><span class="pre">openpace-1.0.1_js</span></code>. You can run our testsuite
+<code class="file docutils literal"><span class="pre">openpace-1.0.2_js</span></code>. You can run our testsuite
 completely in Javascript or <a class="reference external" href="_static/eactest.html">in your browser</a>:</p>
-<div class="highlight-sh"><div class="highlight"><pre>nodejs openpace-1.0.1_js/bin/eactest.js
-firefox openpace-1.0.1_js/eactest.html
+<div class="highlight-sh"><div class="highlight"><pre><span></span>nodejs openpace-1.0.2_js/bin/eactest.js
+firefox openpace-1.0.2_js/eactest.html
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -508,7 +510,7 @@ twice before using the Javascript version of OpenPACE.</p>
       
     </p>
     <p>
-        &copy; Copyright 2012-2016 by Frank Morgner and Dominik Oepen.<br/>
+        &copy; Copyright 2012-2017 by Frank Morgner and Dominik Oepen.<br/>
     </p>
   </div>
 </footer>

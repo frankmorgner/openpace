@@ -245,3 +245,4 @@ bindings/java/*.class
 bindings/ruby/ext/
 docs/.buildinfo
 src/docs/_static/doxygen/
+src/docs/*.txt

@@ -2,7 +2,7 @@
 <tagfile>
   <compound kind="file">
     <name>ca.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>ca_8h</filename>
     <includes id="eac_8h" name="eac.h" local="yes" imported="no">eac.h</includes>
     <member kind="define">
@@ -78,7 +78,7 @@
   </compound>
   <compound kind="file">
     <name>cv_cert.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>cv__cert_8h</filename>
     <includes id="objects_8h" name="objects.h" local="no" imported="no">eac/objects.h</includes>
     <class kind="struct">cvc_chat_seq_st</class>
@@ -253,28 +253,24 @@
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>CVC_Terminal</name>
       <anchorfile>cv__cert_8h.html</anchorfile>
       <anchor>a0203c4d440a0ac1ac0e80963a9c8115aac01726f5220ca8395070e254750af6fd</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>CVC_DV</name>
       <anchorfile>cv__cert_8h.html</anchorfile>
       <anchor>a0203c4d440a0ac1ac0e80963a9c8115aae47e5b251c04c991351d4e1f578d44f4</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>CVC_DocVer</name>
       <anchorfile>cv__cert_8h.html</anchorfile>
       <anchor>a0203c4d440a0ac1ac0e80963a9c8115aae3de1a7addb996e92d516661d2ed5edd</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>CVC_CVCA</name>
       <anchorfile>cv__cert_8h.html</anchorfile>
       <anchor>a0203c4d440a0ac1ac0e80963a9c8115aa9cc622972693e5a5fd3010c23003a931</anchor>
@@ -417,8 +413,8 @@
       <type>int</type>
       <name>CVC_verify_signature</name>
       <anchorfile>cv__cert_8h.html</anchorfile>
-      <anchor>aaba1e78aa4951f1ae9c5b777b3cff977</anchor>
-      <arglist>(const CVC_CERT *cert, EVP_PKEY *key)</arglist>
+      <anchor>aef79738eb6bf92bb7a433e28b1d691ad</anchor>
+      <arglist>(const CVC_CERT *cert, int protocol, EVP_PKEY *key)</arglist>
     </member>
     <member kind="function">
       <type>int</type>
@@ -451,7 +447,7 @@
   </compound>
   <compound kind="file">
     <name>eac.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>eac_8h</filename>
     <includes id="cv__cert_8h" name="cv_cert.h" local="no" imported="no">eac/cv_cert.h</includes>
     <includes id="objects_8h" name="objects.h" local="no" imported="no">eac/objects.h</includes>
@@ -518,10 +514,10 @@
       <arglist></arglist>
     </member>
     <member kind="typedef">
-      <type>const CVC_CERT *(*</type>
+      <type>CVC_CERT *(*</type>
       <name>CVC_lookup_cvca_cert</name>
       <anchorfile>eac_8h.html</anchorfile>
-      <anchor>a8fd953d6eda2a6ef83e4ec23e065fa56</anchor>
+      <anchor>a404028f160f0bacae95e9e1d4da1c1d5</anchor>
       <arglist>)(const unsigned char *chr, size_t car_len)</arglist>
     </member>
     <member kind="typedef">
@@ -535,7 +531,7 @@
       <type>X509_STORE *(*</type>
       <name>X509_lookup_csca_cert</name>
       <anchorfile>eac_8h.html</anchorfile>
-      <anchor>a14e6ca81c4faa924f26f58c7f76fd189</anchor>
+      <anchor>a5a64d8454d78f6afc1e11bd53aff405d</anchor>
       <arglist>)(unsigned long issuer_name_hash)</arglist>
     </member>
     <member kind="typedef">
@@ -560,21 +556,18 @@
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>EAC_TR_VERSION</name>
       <anchorfile>eac_8h.html</anchorfile>
       <anchor>a1071d557ae2c818d130e7479c5f10ddaac61560d4c188f5be4670f235967e38d3</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>EAC_TR_VERSION_2_01</name>
       <anchorfile>eac_8h.html</anchorfile>
       <anchor>a1071d557ae2c818d130e7479c5f10ddaa6216d6b5d2c9d4b0fea9aa9d8a176ec2</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>EAC_TR_VERSION_2_02</name>
       <anchorfile>eac_8h.html</anchorfile>
       <anchor>a1071d557ae2c818d130e7479c5f10ddaa8f9c82a9e23fc2501cdb91e5b53f2bb8</anchor>
@@ -652,16 +645,16 @@
     </member>
     <member kind="function">
       <type>int</type>
-      <name>EAC_CTX_get_cvca_lookup_cert</name>
+      <name>EAC_CTX_get_cvca_lookup</name>
       <anchorfile>group__management.html</anchorfile>
-      <anchor>gaabd3c88e09a47c2513d6c68c0bed7479</anchor>
+      <anchor>gad9f5d402d0fe493969e89e0be354b205</anchor>
       <arglist>(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert)</arglist>
     </member>
     <member kind="function">
       <type>int</type>
-      <name>EAC_CTX_set_cvca_lookup_cert</name>
+      <name>EAC_CTX_set_cvca_lookup</name>
       <anchorfile>group__management.html</anchorfile>
-      <anchor>gad5e131a9130b00ff9e589cd365736e71</anchor>
+      <anchor>ga0470cf461804c29245868a87a7ab629c</anchor>
       <arglist>(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert)</arglist>
     </member>
     <member kind="function">
@@ -814,12 +807,12 @@
   </compound>
   <compound kind="file">
     <name>objects.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>objects_8h</filename>
   </compound>
   <compound kind="file">
     <name>pace.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>pace_8h</filename>
     <includes id="eac_8h" name="eac.h" local="yes" imported="no">eac.h</includes>
     <class kind="struct">pace_sec</class>
@@ -838,42 +831,36 @@
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>PACE_MRZ</name>
       <anchorfile>pace_8h.html</anchorfile>
       <anchor>a02b29cbcf45cfaa2e6df0f59b98b3525a1c7152d3c1a0b7e8543cbf176e38d8f2</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>PACE_CAN</name>
       <anchorfile>pace_8h.html</anchorfile>
       <anchor>a02b29cbcf45cfaa2e6df0f59b98b3525afbbe0ce2ae202cc1837422a10ce487a1</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>PACE_PIN</name>
       <anchorfile>pace_8h.html</anchorfile>
       <anchor>a02b29cbcf45cfaa2e6df0f59b98b3525aaf59d2b47ca6bd89c0db0579bc2ede28</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>PACE_PUK</name>
       <anchorfile>pace_8h.html</anchorfile>
       <anchor>a02b29cbcf45cfaa2e6df0f59b98b3525a4416853caf39bcbb2a967ba2558d3805</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>PACE_RAW</name>
       <anchorfile>pace_8h.html</anchorfile>
       <anchor>a02b29cbcf45cfaa2e6df0f59b98b3525abc55b260a6cc5bdcea0fd496cb847fc4</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumvalue">
-      <type>@</type>
       <name>PACE_SEC_UNDEF</name>
       <anchorfile>pace_8h.html</anchorfile>
       <anchor>a02b29cbcf45cfaa2e6df0f59b98b3525aa771208f20a5aacab35ddb611ecac21b</anchor>
@@ -966,7 +953,7 @@
   </compound>
   <compound kind="file">
     <name>ri.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>ri_8h</filename>
     <includes id="eac_8h" name="eac.h" local="no" imported="no">eac/eac.h</includes>
     <member kind="function">
@@ -1000,7 +987,7 @@
   </compound>
   <compound kind="file">
     <name>ta.h</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
+    <path>/home/fm/work/openpace/src/eac/</path>
     <filename>ta_8h</filename>
     <includes id="eac_8h" name="eac.h" local="no" imported="no">eac/eac.h</includes>
     <member kind="define">
@@ -1058,6 +1045,830 @@
       <anchorfile>group__taproto.html</anchorfile>
       <anchor>ga76fe96c3ba3d1ed684f08e8d486d2f2b</anchor>
       <arglist>(const EAC_CTX *ctx, const BUF_MEM *opp_ta_comp_eph_pubkey, const BUF_MEM *my_pace_comp_eph_pubkey, const BUF_MEM *auxdata, const BUF_MEM *signature)</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>ca_ctx</name>
+    <filename>structca__ctx.html</filename>
+    <member kind="variable">
+      <type>unsigned char</type>
+      <name>version</name>
+      <anchorfile>structca__ctx.html</anchorfile>
+      <anchor>a01f3b87f0a1c8db086aeecb359e22f81</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>protocol</name>
+      <anchorfile>structca__ctx.html</anchorfile>
+      <anchor>a9322acf2acaef458196c3b26e42993d2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>id</name>
+      <anchorfile>structca__ctx.html</anchorfile>
+      <anchor>a0f1a30c4b0548cdb0920e928351964d6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>flags</name>
+      <anchorfile>structca__ctx.html</anchorfile>
+      <anchor>a4b00f374e7f43c90c6799276feb2cf2a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>KA_CTX *</type>
+      <name>ka_ctx</name>
+      <anchorfile>structca__ctx.html</anchorfile>
+      <anchor>ad869c8e99104ace4478a9f5b52a51abc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>X509_lookup_csca_cert</type>
+      <name>lookup_csca_cert</name>
+      <anchorfile>structca__ctx.html</anchorfile>
+      <anchor>ac2999e422c563a94a34746cd2afca8bb</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_cert_authentication_request_seq_st</name>
+    <filename>structcvc__cert__authentication__request__seq__st.html</filename>
+    <member kind="variable">
+      <type>CVC_CERT_REQUEST *</type>
+      <name>request</name>
+      <anchorfile>structcvc__cert__authentication__request__seq__st.html</anchorfile>
+      <anchor>a141aafcff6a4a219520e8be13f1a0a08</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>certificate_authority_reference</name>
+      <anchorfile>structcvc__cert__authentication__request__seq__st.html</anchorfile>
+      <anchor>ad1e127ab86b2f67e3d9d099a18edb150</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>outer_signature</name>
+      <anchorfile>structcvc__cert__authentication__request__seq__st.html</anchorfile>
+      <anchor>ade1fb2b0d00e59d224bc9436ff59935b</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_cert_body_seq_st</name>
+    <filename>structcvc__cert__body__seq__st.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>STACK_OF</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>aa99fc461bb8752e637d87395fec7e4c3</anchor>
+      <arglist>(CVC_DISCRETIONARY_DATA_TEMPLATE) *certificate_extensions</arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_INTEGER *</type>
+      <name>certificate_profile_identifier</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>a225ab4fd481f97ef1c5b4ce84b62cfb1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>certificate_authority_reference</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>ac15201a6078ac2ed976019148c65245a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_PUBKEY *</type>
+      <name>public_key</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>a47a11738c575d5b46499a4efda852c72</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>certificate_holder_reference</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>a2f3ea562a965817ac5c64a8f3c935014</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_CHAT *</type>
+      <name>chat</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>a1f2a4144cdcae0a93da53c59fbd7eb41</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>certificate_effective_date</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>a18649711fa50b4740d406bb3dc6c8b63</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>certificate_expiration_date</name>
+      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
+      <anchor>a74a9b55ba3d5b1f5773372d95cec9dda</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_cert_request_body_seq_st</name>
+    <filename>structcvc__cert__request__body__seq__st.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>STACK_OF</name>
+      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
+      <anchor>af2e645a608af364c35001122698f45a5</anchor>
+      <arglist>(CVC_DISCRETIONARY_DATA_TEMPLATE) *certificate_extensions</arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_INTEGER *</type>
+      <name>certificate_profile_identifier</name>
+      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
+      <anchor>a637aeb87e207fc7075e144290591bfe2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>certificate_authority_reference</name>
+      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
+      <anchor>a600a809bd24cf1461353c31c944acf7a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_PUBKEY *</type>
+      <name>public_key</name>
+      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
+      <anchor>a9c139e9e28e62f8e65d1f67289a11004</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>certificate_holder_reference</name>
+      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
+      <anchor>ae1d0a6791c93906d6ec0da99dcc3f095</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_cert_request_seq_st</name>
+    <filename>structcvc__cert__request__seq__st.html</filename>
+    <member kind="variable">
+      <type>CVC_CERT_REQUEST_BODY *</type>
+      <name>body</name>
+      <anchorfile>structcvc__cert__request__seq__st.html</anchorfile>
+      <anchor>a5301cbf633d82b8b0526135195be32ba</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>inner_signature</name>
+      <anchorfile>structcvc__cert__request__seq__st.html</anchorfile>
+      <anchor>a78f3ce89184e9af12145271bd448691f</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_cert_seq_st</name>
+    <filename>structcvc__cert__seq__st.html</filename>
+    <member kind="variable">
+      <type>CVC_CERT_BODY *</type>
+      <name>body</name>
+      <anchorfile>structcvc__cert__seq__st.html</anchorfile>
+      <anchor>a590a84f99e3ba059e4e5a9d76e58860e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>signature</name>
+      <anchorfile>structcvc__cert__seq__st.html</anchorfile>
+      <anchor>a1d06dc06fc61171b080c49a21514ab00</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_certificate_description_st</name>
+    <filename>structcvc__certificate__description__st.html</filename>
+    <member kind="variable">
+      <type>ASN1_OBJECT *</type>
+      <name>descriptionType</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>a77a981adef7b7b18d7d2fc0dcf0d0eee</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>issuerName</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>aff81a8239e606700ba5cb5d3e9e88dc9</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_PRINTABLESTRING *</type>
+      <name>issuerURL</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>ae07239454cef11745b9d44ce11c04eb4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_UTF8STRING *</type>
+      <name>subjectName</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>ac1be45c1e8ccdbd97486419573586013</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_PRINTABLESTRING *</type>
+      <name>subjectURL</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>a93c4e5528d00e394b001160000f0c537</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>unused</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>a94a14c502bf8dcb3e0b15a7a961c5454</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_TYPE *</type>
+      <name>other</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>ab04f4e9518453a86c40c312c09f5a5f3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>union cvc_certificate_description_st::@0</type>
+      <name>termsOfUsage</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>a0d3dd884537299633d2865130d44cc5b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_PRINTABLESTRING *</type>
+      <name>redirectURL</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>a89df677bee1e9180d083d626785bcf4a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_COMMCERT_SEQ *</type>
+      <name>commCertificates</name>
+      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
+      <anchor>ad89163e798fec8f4b9acef7f6c149755</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_chat_seq_st</name>
+    <filename>structcvc__chat__seq__st.html</filename>
+    <member kind="variable">
+      <type>ASN1_OBJECT *</type>
+      <name>terminal_type</name>
+      <anchorfile>structcvc__chat__seq__st.html</anchorfile>
+      <anchor>ad256b27e8fb8c4390412f175b8630559</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>relative_authorization</name>
+      <anchorfile>structcvc__chat__seq__st.html</anchorfile>
+      <anchor>a7e750c5f8434462ea05c8602ad672011</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_commcert_seq_st</name>
+    <filename>structcvc__commcert__seq__st.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>STACK_OF</name>
+      <anchorfile>structcvc__commcert__seq__st.html</anchorfile>
+      <anchor>ae8a6ff31dce64f77b718032cfe6f25ca</anchor>
+      <arglist>(ASN1_OCTET_STRING) *values</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_discretionary_data_template_seq_st</name>
+    <filename>structcvc__discretionary__data__template__seq__st.html</filename>
+    <member kind="variable">
+      <type>ASN1_OBJECT *</type>
+      <name>type</name>
+      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
+      <anchor>a28bc2f1d46e8feb5ad202b25903f809d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>discretionary_data1</name>
+      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
+      <anchor>a658a921185a7e04cc0b934b357f4b466</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>discretionary_data2</name>
+      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
+      <anchor>a839b632118440ca294586fd82a041ae2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>discretionary_data3</name>
+      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
+      <anchor>a07b6e574f47de38cf02fa8ab77ab2384</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>cvc_pubkey_st</name>
+    <filename>structcvc__pubkey__st.html</filename>
+    <member kind="variable">
+      <type>ASN1_OBJECT *</type>
+      <name>oid</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>a4d257366c407b3b031ffe1dc2ea97ce5</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont1</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>af1146b162c5ac3116d7c38d7519ebe29</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont2</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>a9e3f2ee8ffead450717d46fd481bfa2f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont3</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>ab83ac437168fc16aaa41c7a0b9522395</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont4</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>ad58be5d0a1fbdc86325187d87a0ec7aa</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont5</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>aab4bae046882a2dd7b543def58fee35c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont6</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>a1f6427049f50dc10bd720b756fa8dd8d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ASN1_OCTET_STRING *</type>
+      <name>cont7</name>
+      <anchorfile>structcvc__pubkey__st.html</anchorfile>
+      <anchor>ace297c25e80edbc78986c1e63ddc363b</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>eac_ctx</name>
+    <filename>structeac__ctx.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>STACK_OF</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>aba9bee0f71ee1e7483f6e4ad6a14e173</anchor>
+      <arglist>(PACE_CTX *) pace_ctxs</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>STACK_OF</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a9ef2db2812d568bb5d9518b9143c0613</anchor>
+      <arglist>(RI_CTX *) ri_ctxs</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>STACK_OF</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a23783fc5062b4767f151e13c3eec7e6b</anchor>
+      <arglist>(CA_CTX *) ca_ctxs</arglist>
+    </member>
+    <member kind="variable">
+      <type>enum eac_tr_version</type>
+      <name>tr_version</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>af35b8ee2566fcb58b784d18c6955b044</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BN_CTX *</type>
+      <name>bn_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>aa4689aae53a76259fc0a5b6986beed44</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_MD_CTX *</type>
+      <name>md_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a66f01e318e94ef27f184496c1ee08258</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_CIPHER_CTX *</type>
+      <name>cipher_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>ae4ae226d67fed219a32807c74246f96d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>PACE_CTX *</type>
+      <name>pace_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a932f295824a7c470be10a2399692b14e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>RI_CTX *</type>
+      <name>ri_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>aeba652c7c12edbc1154c329f923e516d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>TA_CTX *</type>
+      <name>ta_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a2d80bb6842313788c23c422d12c81437</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CA_CTX *</type>
+      <name>ca_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a335d8db00b3c531ec2a8bdf70259a487</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>KA_CTX *</type>
+      <name>key_ctx</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>a920e45bffa7ac62240aa98b448286aac</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BIGNUM *</type>
+      <name>ssc</name>
+      <anchorfile>structeac__ctx.html</anchorfile>
+      <anchor>ac5ac966e53d3d76ea6861a7bf8e5ad5b</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>ka_ctx</name>
+    <filename>structka__ctx.html</filename>
+    <member kind="variable">
+      <type>const EVP_MD *</type>
+      <name>md</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a745aa4812acdf1ea3f08549c09ba1a09</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ENGINE *</type>
+      <name>md_engine</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a3706295ac5dda046703d902f883766eb</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CMAC_CTX *</type>
+      <name>cmac_ctx</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>aa2ba5bdac4b20c2b4add9cdcb505cf04</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>const EVP_CIPHER *</type>
+      <name>cipher</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a6249dbb3a4ae07996486bc9b8b36d502</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ENGINE *</type>
+      <name>cipher_engine</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a2802cdc905121995ed131f2964acd2f8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>unsigned char *</type>
+      <name>iv</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>af735a85606610d4d19cf151af4f84acf</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>mac_keylen</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>adb07ad439522dd039b82ab98df682a82</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>enc_keylen</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a44649e3f01e85ba3493a39a8eb2c7412</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *(*</type>
+      <name>generate_key</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a06120a8d1fde292a65389e607817d65e</anchor>
+      <arglist>)(EVP_PKEY *key, BN_CTX *bn_ctx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *(*</type>
+      <name>compute_key</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a8458033d6b809089b516358bd61290a8</anchor>
+      <arglist>)(EVP_PKEY *key, const BUF_MEM *in, BN_CTX *bn_ctx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_PKEY *</type>
+      <name>key</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a67c28ed126bc0cc85b21f854edb1c6bc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>shared_secret</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>aa1bbed50cc0903ae872e4b19ac2c7226</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>k_enc</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a4b9ab1a97367a0a25f4c8fc27520abc7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>k_mac</name>
+      <anchorfile>structka__ctx.html</anchorfile>
+      <anchor>a2fa30aa5aa06ddc90382cdaf904c34a1</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>pace_ctx</name>
+    <filename>structpace__ctx.html</filename>
+    <member kind="variable">
+      <type>int</type>
+      <name>protocol</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>af97dcc517de0fde8e83a7aa40f50da3e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>unsigned char</type>
+      <name>version</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>a1e1c98e8c010ac57c1529d4a7ac7d140</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>id</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>af298b849509aa042d7704348e89d09d7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *(*</type>
+      <name>map_generate_key</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>af4687e2adcb84fec858b4b72c5db67b9</anchor>
+      <arglist>)(const struct pace_ctx *ctx, BN_CTX *bn_ctx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>int(*</type>
+      <name>map_compute_key</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>a7a16d916e2b9b217ee2c664f6d2cc55e</anchor>
+      <arglist>)(struct pace_ctx *ctx, const BUF_MEM *s, const BUF_MEM *in, BN_CTX *bn_ctx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_PKEY *</type>
+      <name>static_key</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>a9e8dc5891a4991d3ee15681959a530f4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>KA_CTX *</type>
+      <name>ka_ctx</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>a13ac5102711cf4fe79065811bff0fb2c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>nonce</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>a01213725b7c8d6e154b9b0d78d4dd2d8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>my_eph_pubkey</name>
+      <anchorfile>structpace__ctx.html</anchorfile>
+      <anchor>a3d6695ce3c69a1b98d33fac739cdc31b</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>pace_sec</name>
+    <filename>structpace__sec.html</filename>
+    <member kind="variable">
+      <type>enum s_type</type>
+      <name>type</name>
+      <anchorfile>structpace__sec.html</anchorfile>
+      <anchor>a4edee42cfb3cbaa2ca7a0612e5bfd70a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>mem</name>
+      <anchorfile>structpace__sec.html</anchorfile>
+      <anchor>a0f6398c39c804664105a8b9595618894</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>encoded</name>
+      <anchorfile>structpace__sec.html</anchorfile>
+      <anchor>ab10cebaa4080f060c6e2be702129a2bf</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>ri_ctx</name>
+    <filename>structri__ctx.html</filename>
+    <member kind="variable">
+      <type>int</type>
+      <name>protocol</name>
+      <anchorfile>structri__ctx.html</anchorfile>
+      <anchor>a26dcc3b24d0be9e786f73da29ac14078</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>id</name>
+      <anchorfile>structri__ctx.html</anchorfile>
+      <anchor>aa02f62fa11872a3ea637b934dca3de9e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>const EVP_MD *</type>
+      <name>md</name>
+      <anchorfile>structri__ctx.html</anchorfile>
+      <anchor>ad6a276a184c01a115b8f6f602aea0bf5</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *(*</type>
+      <name>generate_key</name>
+      <anchorfile>structri__ctx.html</anchorfile>
+      <anchor>af4c3d377c64773708f6fe6c3ae2e7ed4</anchor>
+      <arglist>)(EVP_PKEY *key, BN_CTX *bn_ctx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *(*</type>
+      <name>compute_key</name>
+      <anchorfile>structri__ctx.html</anchorfile>
+      <anchor>a32fa03beeb7e024e91a4b0d593013335</anchor>
+      <arglist>)(EVP_PKEY *key, const BUF_MEM *in, BN_CTX *bn_ctx)</arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_PKEY *</type>
+      <name>static_key</name>
+      <anchorfile>structri__ctx.html</anchorfile>
+      <anchor>a8de84de9b8a818bfc0f6910d2b6d1505</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>ta_ctx</name>
+    <filename>structta__ctx.html</filename>
+    <member kind="variable">
+      <type>unsigned char</type>
+      <name>version</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a6e976bf9c7771c2f06405aa17cd45741</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>protocol</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>aab0b4778bb8406c6dfcae630a7ee953d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ENGINE *</type>
+      <name>key_engine</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a1691c4c8e297c12194f292ec4b9562ef</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_PKEY *</type>
+      <name>priv_key</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a345e76e2dbe501008d567a0394bdc477</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>EVP_PKEY *</type>
+      <name>pub_key</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a003a31cec341cc32c7c8d3020674bdf4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>pk_pcd</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a5024a276b503f26170e0f119ff770e18</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>BUF_MEM *</type>
+      <name>nonce</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a15f1a7fc87648ca8bb8a918d2b8c1d7a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_CERT *</type>
+      <name>trust_anchor</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a5fa8c24d79d367f6573687d2fb98e298</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_CERT *</type>
+      <name>current_cert</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a69786f37170911c75aeb2cad26f287c6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_CERT *</type>
+      <name>new_trust_anchor</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a0158428cd0d0deaf19a7efe00fa75ad7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>flags</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a78ef4b31a6f23f6760214a1fcdaff815</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>CVC_lookup_cvca_cert</type>
+      <name>lookup_cvca_cert</name>
+      <anchorfile>structta__ctx.html</anchorfile>
+      <anchor>a42c4f67266f5489bce3a59d937380c33</anchor>
+      <arglist></arglist>
     </member>
   </compound>
   <compound kind="group">
@@ -1206,16 +2017,16 @@
     </member>
     <member kind="function">
       <type>int</type>
-      <name>EAC_CTX_get_cvca_lookup_cert</name>
+      <name>EAC_CTX_get_cvca_lookup</name>
       <anchorfile>group__management.html</anchorfile>
-      <anchor>gaabd3c88e09a47c2513d6c68c0bed7479</anchor>
+      <anchor>gad9f5d402d0fe493969e89e0be354b205</anchor>
       <arglist>(const EAC_CTX *ctx, CVC_lookup_cvca_cert *lookup_cvca_cert)</arglist>
     </member>
     <member kind="function">
       <type>int</type>
-      <name>EAC_CTX_set_cvca_lookup_cert</name>
+      <name>EAC_CTX_set_cvca_lookup</name>
       <anchorfile>group__management.html</anchorfile>
-      <anchor>gad5e131a9130b00ff9e589cd365736e71</anchor>
+      <anchor>ga0470cf461804c29245868a87a7ab629c</anchor>
       <arglist>(EAC_CTX *ctx, CVC_lookup_cvca_cert lookup_cvca_cert)</arglist>
     </member>
     <member kind="function">
@@ -1677,827 +2488,5 @@
       <anchor>ga5df516d484102e4315a1712be8f8a656</anchor>
       <arglist>(EAC_CTX *ctx, int id)</arglist>
     </member>
-  </compound>
-  <compound kind="struct">
-    <name>ca_ctx</name>
-    <filename>structca__ctx.html</filename>
-    <member kind="variable">
-      <type>unsigned char</type>
-      <name>version</name>
-      <anchorfile>structca__ctx.html</anchorfile>
-      <anchor>a01f3b87f0a1c8db086aeecb359e22f81</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>protocol</name>
-      <anchorfile>structca__ctx.html</anchorfile>
-      <anchor>a9322acf2acaef458196c3b26e42993d2</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>id</name>
-      <anchorfile>structca__ctx.html</anchorfile>
-      <anchor>a0f1a30c4b0548cdb0920e928351964d6</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>flags</name>
-      <anchorfile>structca__ctx.html</anchorfile>
-      <anchor>a4b00f374e7f43c90c6799276feb2cf2a</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>KA_CTX *</type>
-      <name>ka_ctx</name>
-      <anchorfile>structca__ctx.html</anchorfile>
-      <anchor>ad869c8e99104ace4478a9f5b52a51abc</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>X509_lookup_csca_cert</type>
-      <name>lookup_csca_cert</name>
-      <anchorfile>structca__ctx.html</anchorfile>
-      <anchor>ac2999e422c563a94a34746cd2afca8bb</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_cert_authentication_request_seq_st</name>
-    <filename>structcvc__cert__authentication__request__seq__st.html</filename>
-    <member kind="variable">
-      <type>CVC_CERT_REQUEST *</type>
-      <name>request</name>
-      <anchorfile>structcvc__cert__authentication__request__seq__st.html</anchorfile>
-      <anchor>a141aafcff6a4a219520e8be13f1a0a08</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>certificate_authority_reference</name>
-      <anchorfile>structcvc__cert__authentication__request__seq__st.html</anchorfile>
-      <anchor>ad1e127ab86b2f67e3d9d099a18edb150</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>outer_signature</name>
-      <anchorfile>structcvc__cert__authentication__request__seq__st.html</anchorfile>
-      <anchor>ade1fb2b0d00e59d224bc9436ff59935b</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_cert_body_seq_st</name>
-    <filename>structcvc__cert__body__seq__st.html</filename>
-    <member kind="function">
-      <type></type>
-      <name>STACK_OF</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>aa4b3f524d766b4bfdae878faa6dee5b7</anchor>
-      <arglist>(CVC_DISCRETIONARY_DATA_TEMPLATE)*certificate_extensions</arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_INTEGER *</type>
-      <name>certificate_profile_identifier</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>a225ab4fd481f97ef1c5b4ce84b62cfb1</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>certificate_authority_reference</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>ac15201a6078ac2ed976019148c65245a</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_PUBKEY *</type>
-      <name>public_key</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>a47a11738c575d5b46499a4efda852c72</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>certificate_holder_reference</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>a2f3ea562a965817ac5c64a8f3c935014</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_CHAT *</type>
-      <name>chat</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>a1f2a4144cdcae0a93da53c59fbd7eb41</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>certificate_effective_date</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>a18649711fa50b4740d406bb3dc6c8b63</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>certificate_expiration_date</name>
-      <anchorfile>structcvc__cert__body__seq__st.html</anchorfile>
-      <anchor>a74a9b55ba3d5b1f5773372d95cec9dda</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_cert_request_body_seq_st</name>
-    <filename>structcvc__cert__request__body__seq__st.html</filename>
-    <member kind="function">
-      <type></type>
-      <name>STACK_OF</name>
-      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
-      <anchor>ae3f7e3b87885ba742acaad8af6fbcfc7</anchor>
-      <arglist>(CVC_DISCRETIONARY_DATA_TEMPLATE)*certificate_extensions</arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_INTEGER *</type>
-      <name>certificate_profile_identifier</name>
-      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
-      <anchor>a637aeb87e207fc7075e144290591bfe2</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>certificate_authority_reference</name>
-      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
-      <anchor>a600a809bd24cf1461353c31c944acf7a</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_PUBKEY *</type>
-      <name>public_key</name>
-      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
-      <anchor>a9c139e9e28e62f8e65d1f67289a11004</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>certificate_holder_reference</name>
-      <anchorfile>structcvc__cert__request__body__seq__st.html</anchorfile>
-      <anchor>ae1d0a6791c93906d6ec0da99dcc3f095</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_cert_request_seq_st</name>
-    <filename>structcvc__cert__request__seq__st.html</filename>
-    <member kind="variable">
-      <type>CVC_CERT_REQUEST_BODY *</type>
-      <name>body</name>
-      <anchorfile>structcvc__cert__request__seq__st.html</anchorfile>
-      <anchor>a5301cbf633d82b8b0526135195be32ba</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>inner_signature</name>
-      <anchorfile>structcvc__cert__request__seq__st.html</anchorfile>
-      <anchor>a78f3ce89184e9af12145271bd448691f</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_cert_seq_st</name>
-    <filename>structcvc__cert__seq__st.html</filename>
-    <member kind="variable">
-      <type>CVC_CERT_BODY *</type>
-      <name>body</name>
-      <anchorfile>structcvc__cert__seq__st.html</anchorfile>
-      <anchor>a590a84f99e3ba059e4e5a9d76e58860e</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>signature</name>
-      <anchorfile>structcvc__cert__seq__st.html</anchorfile>
-      <anchor>a1d06dc06fc61171b080c49a21514ab00</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_certificate_description_st</name>
-    <filename>structcvc__certificate__description__st.html</filename>
-    <member kind="variable">
-      <type>ASN1_OBJECT *</type>
-      <name>descriptionType</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>a77a981adef7b7b18d7d2fc0dcf0d0eee</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>issuerName</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>aff81a8239e606700ba5cb5d3e9e88dc9</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_PRINTABLESTRING *</type>
-      <name>issuerURL</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>ae07239454cef11745b9d44ce11c04eb4</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_UTF8STRING *</type>
-      <name>subjectName</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>ac1be45c1e8ccdbd97486419573586013</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_PRINTABLESTRING *</type>
-      <name>subjectURL</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>a93c4e5528d00e394b001160000f0c537</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>union cvc_certificate_description_st::@0</type>
-      <name>termsOfUsage</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>a0d3dd884537299633d2865130d44cc5b</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_PRINTABLESTRING *</type>
-      <name>redirectURL</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>a89df677bee1e9180d083d626785bcf4a</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_COMMCERT_SEQ *</type>
-      <name>commCertificates</name>
-      <anchorfile>structcvc__certificate__description__st.html</anchorfile>
-      <anchor>ad89163e798fec8f4b9acef7f6c149755</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_chat_seq_st</name>
-    <filename>structcvc__chat__seq__st.html</filename>
-    <member kind="variable">
-      <type>ASN1_OBJECT *</type>
-      <name>terminal_type</name>
-      <anchorfile>structcvc__chat__seq__st.html</anchorfile>
-      <anchor>ad256b27e8fb8c4390412f175b8630559</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>relative_authorization</name>
-      <anchorfile>structcvc__chat__seq__st.html</anchorfile>
-      <anchor>a7e750c5f8434462ea05c8602ad672011</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_commcert_seq_st</name>
-    <filename>structcvc__commcert__seq__st.html</filename>
-    <member kind="function">
-      <type></type>
-      <name>STACK_OF</name>
-      <anchorfile>structcvc__commcert__seq__st.html</anchorfile>
-      <anchor>a52f90146d3ac5aa2cb2936f107e41d87</anchor>
-      <arglist>(ASN1_OCTET_STRING)*values</arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_discretionary_data_template_seq_st</name>
-    <filename>structcvc__discretionary__data__template__seq__st.html</filename>
-    <member kind="variable">
-      <type>ASN1_OBJECT *</type>
-      <name>type</name>
-      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
-      <anchor>a28bc2f1d46e8feb5ad202b25903f809d</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>discretionary_data1</name>
-      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
-      <anchor>a658a921185a7e04cc0b934b357f4b466</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>discretionary_data2</name>
-      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
-      <anchor>a839b632118440ca294586fd82a041ae2</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>discretionary_data3</name>
-      <anchorfile>structcvc__discretionary__data__template__seq__st.html</anchorfile>
-      <anchor>a07b6e574f47de38cf02fa8ab77ab2384</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>cvc_pubkey_st</name>
-    <filename>structcvc__pubkey__st.html</filename>
-    <member kind="variable">
-      <type>ASN1_OBJECT *</type>
-      <name>oid</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>a4d257366c407b3b031ffe1dc2ea97ce5</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont1</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>af1146b162c5ac3116d7c38d7519ebe29</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont2</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>a9e3f2ee8ffead450717d46fd481bfa2f</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont3</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>ab83ac437168fc16aaa41c7a0b9522395</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont4</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>ad58be5d0a1fbdc86325187d87a0ec7aa</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont5</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>aab4bae046882a2dd7b543def58fee35c</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont6</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>a1f6427049f50dc10bd720b756fa8dd8d</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ASN1_OCTET_STRING *</type>
-      <name>cont7</name>
-      <anchorfile>structcvc__pubkey__st.html</anchorfile>
-      <anchor>ace297c25e80edbc78986c1e63ddc363b</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>eac_ctx</name>
-    <filename>structeac__ctx.html</filename>
-    <member kind="function">
-      <type></type>
-      <name>STACK_OF</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>aba9bee0f71ee1e7483f6e4ad6a14e173</anchor>
-      <arglist>(PACE_CTX *) pace_ctxs</arglist>
-    </member>
-    <member kind="function">
-      <type></type>
-      <name>STACK_OF</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a9ef2db2812d568bb5d9518b9143c0613</anchor>
-      <arglist>(RI_CTX *) ri_ctxs</arglist>
-    </member>
-    <member kind="function">
-      <type></type>
-      <name>STACK_OF</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a23783fc5062b4767f151e13c3eec7e6b</anchor>
-      <arglist>(CA_CTX *) ca_ctxs</arglist>
-    </member>
-    <member kind="variable">
-      <type>enum eac_tr_version</type>
-      <name>tr_version</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>af35b8ee2566fcb58b784d18c6955b044</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BN_CTX *</type>
-      <name>bn_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>aa4689aae53a76259fc0a5b6986beed44</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_MD_CTX *</type>
-      <name>md_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a66f01e318e94ef27f184496c1ee08258</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_CIPHER_CTX *</type>
-      <name>cipher_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>ae4ae226d67fed219a32807c74246f96d</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>PACE_CTX *</type>
-      <name>pace_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a932f295824a7c470be10a2399692b14e</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>RI_CTX *</type>
-      <name>ri_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>aeba652c7c12edbc1154c329f923e516d</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>TA_CTX *</type>
-      <name>ta_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a2d80bb6842313788c23c422d12c81437</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CA_CTX *</type>
-      <name>ca_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a335d8db00b3c531ec2a8bdf70259a487</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>KA_CTX *</type>
-      <name>key_ctx</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>a920e45bffa7ac62240aa98b448286aac</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BIGNUM *</type>
-      <name>ssc</name>
-      <anchorfile>structeac__ctx.html</anchorfile>
-      <anchor>ac5ac966e53d3d76ea6861a7bf8e5ad5b</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>ka_ctx</name>
-    <filename>structka__ctx.html</filename>
-    <member kind="variable">
-      <type>const EVP_MD *</type>
-      <name>md</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a745aa4812acdf1ea3f08549c09ba1a09</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ENGINE *</type>
-      <name>md_engine</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a3706295ac5dda046703d902f883766eb</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CMAC_CTX *</type>
-      <name>cmac_ctx</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>aa2ba5bdac4b20c2b4add9cdcb505cf04</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>const EVP_CIPHER *</type>
-      <name>cipher</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a6249dbb3a4ae07996486bc9b8b36d502</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ENGINE *</type>
-      <name>cipher_engine</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a2802cdc905121995ed131f2964acd2f8</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>unsigned char *</type>
-      <name>iv</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>af735a85606610d4d19cf151af4f84acf</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>mac_keylen</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>adb07ad439522dd039b82ab98df682a82</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>enc_keylen</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a44649e3f01e85ba3493a39a8eb2c7412</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *(*</type>
-      <name>generate_key</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a014527b2e7c2d29b9ea3d696b0f6f27d</anchor>
-      <arglist>)(EVP_PKEY *key, BN_CTX *bn_ctx)</arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *(*</type>
-      <name>compute_key</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a49b570f5c82aeab28d087c8294780031</anchor>
-      <arglist>)(EVP_PKEY *key, const BUF_MEM *in, BN_CTX *bn_ctx)</arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_PKEY *</type>
-      <name>key</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a67c28ed126bc0cc85b21f854edb1c6bc</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>shared_secret</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>aa1bbed50cc0903ae872e4b19ac2c7226</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>k_enc</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a4b9ab1a97367a0a25f4c8fc27520abc7</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>k_mac</name>
-      <anchorfile>structka__ctx.html</anchorfile>
-      <anchor>a2fa30aa5aa06ddc90382cdaf904c34a1</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>pace_ctx</name>
-    <filename>structpace__ctx.html</filename>
-    <member kind="variable">
-      <type>int</type>
-      <name>protocol</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>af97dcc517de0fde8e83a7aa40f50da3e</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>unsigned char</type>
-      <name>version</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a1e1c98e8c010ac57c1529d4a7ac7d140</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>id</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>af298b849509aa042d7704348e89d09d7</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *(*</type>
-      <name>map_generate_key</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a693587f2f0ce3376e02308dd55152bc9</anchor>
-      <arglist>)(const struct pace_ctx *ctx, BN_CTX *bn_ctx)</arglist>
-    </member>
-    <member kind="variable">
-      <type>int(*</type>
-      <name>map_compute_key</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a989c4b5e086fdd04a2efb08a24c70d55</anchor>
-      <arglist>)(struct pace_ctx *ctx, const BUF_MEM *s, const BUF_MEM *in, BN_CTX *bn_ctx)</arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_PKEY *</type>
-      <name>static_key</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a9e8dc5891a4991d3ee15681959a530f4</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>KA_CTX *</type>
-      <name>ka_ctx</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a13ac5102711cf4fe79065811bff0fb2c</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>nonce</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a01213725b7c8d6e154b9b0d78d4dd2d8</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>my_eph_pubkey</name>
-      <anchorfile>structpace__ctx.html</anchorfile>
-      <anchor>a3d6695ce3c69a1b98d33fac739cdc31b</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>pace_sec</name>
-    <filename>structpace__sec.html</filename>
-    <member kind="variable">
-      <type>enum s_type</type>
-      <name>type</name>
-      <anchorfile>structpace__sec.html</anchorfile>
-      <anchor>a4edee42cfb3cbaa2ca7a0612e5bfd70a</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>mem</name>
-      <anchorfile>structpace__sec.html</anchorfile>
-      <anchor>a0f6398c39c804664105a8b9595618894</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>encoded</name>
-      <anchorfile>structpace__sec.html</anchorfile>
-      <anchor>ab10cebaa4080f060c6e2be702129a2bf</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>ri_ctx</name>
-    <filename>structri__ctx.html</filename>
-    <member kind="variable">
-      <type>int</type>
-      <name>protocol</name>
-      <anchorfile>structri__ctx.html</anchorfile>
-      <anchor>a26dcc3b24d0be9e786f73da29ac14078</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>id</name>
-      <anchorfile>structri__ctx.html</anchorfile>
-      <anchor>aa02f62fa11872a3ea637b934dca3de9e</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>const EVP_MD *</type>
-      <name>md</name>
-      <anchorfile>structri__ctx.html</anchorfile>
-      <anchor>ad6a276a184c01a115b8f6f602aea0bf5</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *(*</type>
-      <name>generate_key</name>
-      <anchorfile>structri__ctx.html</anchorfile>
-      <anchor>a0575020ded3354b7de0bcbfb893ec865</anchor>
-      <arglist>)(EVP_PKEY *key, BN_CTX *bn_ctx)</arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *(*</type>
-      <name>compute_key</name>
-      <anchorfile>structri__ctx.html</anchorfile>
-      <anchor>a83529722bfbf8b9071d44380b51abe61</anchor>
-      <arglist>)(EVP_PKEY *key, const BUF_MEM *in, BN_CTX *bn_ctx)</arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_PKEY *</type>
-      <name>static_key</name>
-      <anchorfile>structri__ctx.html</anchorfile>
-      <anchor>a8de84de9b8a818bfc0f6910d2b6d1505</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>ta_ctx</name>
-    <filename>structta__ctx.html</filename>
-    <member kind="variable">
-      <type>unsigned char</type>
-      <name>version</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a6e976bf9c7771c2f06405aa17cd45741</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>protocol</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>aab0b4778bb8406c6dfcae630a7ee953d</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>ENGINE *</type>
-      <name>key_engine</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a1691c4c8e297c12194f292ec4b9562ef</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_PKEY *</type>
-      <name>priv_key</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a345e76e2dbe501008d567a0394bdc477</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>EVP_PKEY *</type>
-      <name>pub_key</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a003a31cec341cc32c7c8d3020674bdf4</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>pk_pcd</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a5024a276b503f26170e0f119ff770e18</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>BUF_MEM *</type>
-      <name>nonce</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a15f1a7fc87648ca8bb8a918d2b8c1d7a</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_CERT *</type>
-      <name>trust_anchor</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a5fa8c24d79d367f6573687d2fb98e298</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_CERT *</type>
-      <name>current_cert</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a69786f37170911c75aeb2cad26f287c6</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_CERT *</type>
-      <name>new_trust_anchor</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a0158428cd0d0deaf19a7efe00fa75ad7</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>flags</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a78ef4b31a6f23f6760214a1fcdaff815</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>CVC_lookup_cvca_cert</type>
-      <name>lookup_cvca_cert</name>
-      <anchorfile>structta__ctx.html</anchorfile>
-      <anchor>a42c4f67266f5489bce3a59d937380c33</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="dir">
-    <name>eac</name>
-    <path>/home/fm/Dokumente/openpace/src/eac/</path>
-    <filename>dir_2beb2c8fad66f6564e9cdda73fb11327.html</filename>
-    <file>ca.h</file>
-    <file>cv_cert.h</file>
-    <file>eac.h</file>
-    <file>objects.h</file>
-    <file>pace.h</file>
-    <file>ri.h</file>
-    <file>ta.h</file>
   </compound>
 </tagfile>
