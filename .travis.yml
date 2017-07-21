@@ -47,9 +47,12 @@ cache:
 before_script:
   - autoreconf -vis
   - if [ -n "${GCOV}" ]; then
-    export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
+      export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
+    else
+      export ENABLE_GO=--enable-go;
+      export GCCGOFLAGS="-static-libgcc $CFLAGS";
     fi
-  - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby --enable-go GCCGOFLAGS="-static-libgcc $CFLAGS" SWIGGOPARAMS=" ";
+  - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby $ENABLE_GO;
 
 addons:
   apt:
