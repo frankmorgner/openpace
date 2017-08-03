@@ -96,6 +96,7 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
     }
 
     if (csr_data && csr_len) {
+        CVC_CERT_REQUEST *request_to_verify = NULL;
         p = csr_data;
         if (d2i_CVC_CERT_REQUEST(&request, &p, csr_len)) {
             puts("Certificate Request:");
@@ -111,8 +112,12 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
             if (!certificate_authentication_request_print(bio_stdout, authentication, 2))
                 err("could not print certificate authentication request");
         }
-        if (1 == CVC_verify_request_signature(request ? request :
-                    authentication->request)) {
+        if (request) {
+            request_to_verify = request;
+        } else if (authentication) {
+            request_to_verify = authentication->request;
+        }
+        if (1 == CVC_verify_request_signature(request_to_verify)) {
             puts("certificate request verified");
         } else {
             puts("certificate request not verified");

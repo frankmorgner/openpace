@@ -632,6 +632,9 @@ int main(int argc, char *argv[])
             request = authentication->request;
         }
     }
+    if (!cmdline.manual_mode_counter
+            && (!request || !request->body))
+        err("bad format of certificate request");
 
 
     /* write profile identifier fixed to 0 ("version 1") */
