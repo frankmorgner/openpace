@@ -998,7 +998,7 @@ BUF_MEM *
 convert_from_plain_sig(const BUF_MEM *plain_sig)
 {
     ECDSA_SIG *ecdsa_sig = NULL;
-    BIGNUM *r, *s;
+    BIGNUM *r = NULL, *s = NULL;
     BUF_MEM *x962_sig = NULL;
     int l;
     unsigned char *p = NULL;
