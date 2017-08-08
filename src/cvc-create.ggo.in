@@ -75,35 +75,35 @@ modeoption "out-key"        -
     optional
 
 section "Options for an Authentication Terminal (AT)"
-option "cert-desc"      -
-    "Certificate description (as *.txt, *.html or *.pdf)"
-    string
-    typestr="FILENAME"
-    optional
 option "out-desc"        -
     "Where to save the encoded certificate description"
     default="CHR.desc"
     string
     typestr="FILENAME"
     optional
+option "cert-desc"      -
+    "Terms of usage as part of the certificate description (*.txt, *.html or *.pdf)"
+    string
+    typestr="FILENAME"
+    optional
 option "issuer-name"      -
-    "Name of the issuer of this certificate"
+    "Name of the issuer of this certificate (certificate description)"
     string
     dependon="cert-desc"
     optional
 option "issuer-url"      -
-    "URL that points to informations about the issuer of this certificate"
+    "URL that points to informations about the issuer of this certificate (certificate description)"
     string
     dependon="cert-desc"
     typestr="URL"
     optional
 option "subject-name"      -
-    "Name of the holder of this certificate"
+    "Name of the holder of this certificate (certificate description)"
     string
     dependon="cert-desc"
     optional
 option "subject-url"      -
-    "URL that points to informations about the subject of this certificate"
+    "URL that points to informations about the subject of this certificate (certificate description)"
     string
     typestr="URL"
     dependon="cert-desc"
