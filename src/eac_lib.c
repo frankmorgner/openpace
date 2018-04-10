@@ -59,6 +59,7 @@ void EAC_init(void)
 
 void EAC_cleanup(void)
 {
+    EAC_remove_all_objects();
     EVP_cleanup();
 }
 

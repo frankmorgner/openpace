@@ -461,9 +461,18 @@ EAC_add_all_objects(void)
         log_err("Error adding objects");
     }
 }
+void
+EAC_remove_all_objects(void)
+{
+    OBJ_cleanup();
+}
 #else
 void
 EAC_add_all_objects(void)
+{
+}
+void
+EAC_remove_all_objects(void)
 {
 }
 #endif

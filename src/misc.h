@@ -95,4 +95,6 @@ const ECDH_METHOD *ECDH_OpenSSL_Point(void);
 
 void
 EAC_add_all_objects(void);
+void
+EAC_remove_all_objects(void);
 #endif
