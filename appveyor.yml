@@ -92,7 +92,7 @@ build_script:
 
   # tests
   - bash -c "                                           $DESTDIR/bin/eactest.exe"
-# - bash -c "for    i in $DESTDIR//etc/eac/cvc/*;    do $DESTDIR/bin/cvc-print --cvc=$i; done"
+  - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;    do $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
 
 # # build python bindings
 # - ps: >-
