@@ -88,11 +88,12 @@ build_script:
   - bash -c "cp    src/eactest.exe                      $DESTDIR/bin"
   - bash -c "cp    src/cvc-create.exe                   $DESTDIR/bin"
   - bash -c "cp    src/cvc-print.exe                    $DESTDIR/bin"
+  - bash -c "cp    -r docs                              $DESTDIR"
   - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >> $DESTDIR/dependencies.txt"
 
   # tests
   - bash -c "                                           $DESTDIR/bin/eactest.exe"
-  - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;    do $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
+  - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;     do $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
 
 # # build python bindings
 # - ps: >-
