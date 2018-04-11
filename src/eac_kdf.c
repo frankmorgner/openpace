@@ -52,7 +52,8 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
     check((key && ka_ctx->md && ka_ctx->cipher), "Invalid arguments");
 
     key_len = EVP_CIPHER_key_length(ka_ctx->cipher);
-    check(key_len <= EVP_MD_size(ka_ctx->md),
+    check(0 < EVP_MD_size(ka_ctx->md)
+            && key_len <= (size_t) EVP_MD_size(ka_ctx->md),
             "Message digest not suitable for cipher");
 
     in = BUF_MEM_new();
