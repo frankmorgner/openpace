@@ -39,7 +39,7 @@ noinst_LTLIBRARIES = libvc.la
 
 libeac_la_SOURCES  = ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c objects.c ssl_compat.c
 libeac_la_CPPFLAGS = $(CRYPTO_CFLAGS) -DCVCDIR=\"@CVCDIR@\" -DX509DIR=\"@X509DIR@\"
-libeac_la_LDFLAGS  = -no-undefined -version-info 2:0:0
+libeac_la_LDFLAGS  = -no-undefined -version-info 2:1:0
 libeac_la_LIBADD   = $(CRYPTO_LIBS)
 if WIN32
 AM_CPPFLAGS        = -DWIN32_LEAN_AND_MEAN
