@@ -6,15 +6,11 @@ platform:
 
 environment:
   PATH: C:\msys64\usr\bin;%PATH%
-  CC:  /C/cccl/cccl
-  CXX: /C/cccl/cccl
-  LD:  /C/cccl/cccl
-  CL_OPTIONS: /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN /GS /MTd
-  CCCL_OPTIONS: --cccl-muffle /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN /GS /MDd
+  CL_OPTIONS: /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN /GS /MTd /DHAVE_CONFIG_H /I%APPVEYOR_BUILD_FOLDER%
   GENGETOPT: /usr/bin/gengetopt.exe --include-getopt
   HELP2MAN: /usr/bin/true # don't generate manual files
-  # AppVeyor comes with OpenSSL 1.1.0 installed
-  OPENSSL_1_1_0_FLAGS: /DHAVE_ASN1_STRING_GET0_DATA=1 /DHAVE_DECL_OPENSSL_ZALLOC=1 /DHAVE_DH_GET0_KEY=1 /DHAVE_DH_GET0_PQG=1 /DHAVE_DH_SET0_KEY=1 /DHAVE_DH_SET0_PQG=1 /DHAVE_ECDSA_SIG_GET0=1 /DHAVE_ECDSA_SIG_SET0=1 /DHAVE_EC_KEY_METHOD=1 /DHAVE_RSA_GET0_KEY=1 /DHAVE_RSA_SET0_KEY=1
+  # If AppVeyor comes with OpenSSL 1.1.0 installed
+  #OPENSSL_1_1_0_FLAGS: /DHAVE_ASN1_STRING_GET0_DATA=1 /DHAVE_DECL_OPENSSL_ZALLOC=1 /DHAVE_DH_GET0_KEY=1 /DHAVE_DH_GET0_PQG=1 /DHAVE_DH_SET0_KEY=1 /DHAVE_DH_SET0_PQG=1 /DHAVE_ECDSA_SIG_GET0=1 /DHAVE_ECDSA_SIG_SET0=1 /DHAVE_EC_KEY_METHOD=1 /DHAVE_RSA_GET0_KEY=1 /DHAVE_RSA_SET0_KEY=1
 
   matrix:
     - VSVER: 14
@@ -25,12 +21,16 @@ install:
       If ($env:Platform -Match "x86") {
         $env:VCVARS_PLATFORM="x86"
         $env:OPENSSL_PLATFORM="Win32"
-        $env:LIBCRYPTO="libcrypto32MTd.lib"
+        # If AppVeyor comes with OpenSSL 1.1.0 installed
+        #$env:LIBCRYPTO="libcrypto32MTd.lib"
+        $env:LIBCRYPTO="libeay32MTd.lib"
         $env:PYTHON_PLATFORM=""
       } Else {
         $env:VCVARS_PLATFORM="amd64"
         $env:OPENSSL_PLATFORM="Win64"
-        $env:LIBCRYPTO="libcrypto64MTd.lib"
+        # If AppVeyor comes with OpenSSL 1.1.0 installed
+        #$env:LIBCRYPTO="libcrypto64MTd.lib"
+        $env:LIBCRYPTO="libeay32MTd.lib"
         $env:PYTHON_PLATFORM="-x64"
       }
   - set PATH=C:\Python27%PYTHON_PLATFORM%;%PATH%
@@ -43,14 +43,11 @@ install:
   - set OPENPACE_DIR=C:\%ARTIFACT%
   - for /f "usebackq tokens=*" %%a in (`cygpath -u %OPENPACE_DIR%`) do set DESTDIR=%%a
   - set CRYPTO_CFLAGS=-I%OPENSSL_CYGDIR%/include
+  - set CRYPTO_LIBS="-L%OPENSSL_CYGDIR%/lib -llibeay32"
 
-# - ps: >-
-#     If(!(Test-Path -Path "C:\cccl" )) {
-#       git clone -q --depth=1 git://github.com/frankmorgner/cccl.git "C:\cccl"
-#     }
 #   # Switch from SF to msys2.org (default, much faster)
-# - bash -c "pacman --noconfirm --sync pacman-mirrors"
-# - bash -c "pacman --noconfirm -S autoconf automake libtool gengetopt swig"
+  - bash -c "pacman --needed --noconfirm --sync pacman-mirrors"
+  - bash -c "pacman --needed --noconfirm --sync autoconf automake libtool gengetopt swig"
 
   - python -V
   - swig -version
@@ -62,45 +59,40 @@ install:
   - call "%VSCOMNTOOLS%\..\..\VC\vcvarsall.bat" %VCVARS_PLATFORM%
 
 build_script:
-# # build with autotools/cccl/cl and dynamically loaded OpenSSL
-# - bash -c "autoreconf -i"
-# - bash -c "touch src/cvc-create.1 src/cvc-print.1"
-#   # copy/rename the libraries to trick libtool
-# - bash -c "cp $OPENSSL_CYGDIR/lib/VC/libeay32MDd.lib src/ink.lib"
-# - bash -c "cp $OPENSSL_CYGDIR/bin/libeay32.dll       /C/Windows/System32/liblibeay32MDd.dll"
-# - bash -c "cp /C/Windows/System32/ws2_32.dll         /C/Windows/System32/libws2_32.dll"
-# - bash -c "(./configure --prefix=/
-#         CRYPTO_LIBS=\"-L$OPENSSL_CYGDIR/lib/VC -llibeay32MDd\"
-#         || cat config.log)
-#       && make || true"
-#   # The import library is not created by libtool. We need to do it by hand!
-# - bash -c "cat cross/libeac-2_without_patched_openssl.def | sed 's, DATA,,' > libeac-2.def"
-# - lib /machine:%VCVARS_PLATFORM% /def:libeac-2.def /out:src\.libs\libeac.lib
-#   # now link and install the binaries
-# - bash -c "make install"
-#   # The import library is overwritten with libeac-2.dll by libtool during
-#   # `make install`. We need to create it by hand, againg!
-# - lib /machine:%VCVARS_PLATFORM% /def:libeac-2.def /out:%OPENPACE_DIR%\lib\libeac.lib
-#   # Copy OpenSSL stuff into binary distribution
-# - bash -c "cp    $OPENSSL_CYGDIR/bin/openssl.exe  $DESTDIR/bin"
-# - bash -c "cp    $OPENSSL_CYGDIR/bin/libeay32.dll $DESTDIR/bin"
-# - bash -c "cp    $OPENSSL_CYGDIR/bin/ssleay32.dll $DESTDIR/bin"
-# - bash -c "cp    $OPENSSL_CYGDIR/lib/libeay32.lib $DESTDIR/lib"
-# - bash -c "cp    $OPENSSL_CYGDIR/lib/ssleay32.lib $DESTDIR/lib"
-# - bash -c "cp -r $OPENSSL_CYGDIR/include/openssl  $DESTDIR/include"
-# - bash -c "mv    $DESTDIR/lib/libeac-2.dll    $DESTDIR/bin"
-# #- bash -c "$DESTDIR/bin/eactest"
+    # build with autotools/MinGW-w64
+  - bash -c "autoreconf -i"
+  - bash -c "touch src/cvc-create.1 src/cvc-print.1"
+  - bash -c "./configure --prefix=/"
+    # linking would fail because the VC libraries are incompatible with MinGW,
+    # so we only create and install what is usable
+  - bash -c "make -C src cvc-print-cmdline.c cvc-create-cmdline.c"
 
-  # build with plain cl in cmd and statically bound OpenSSL
+    # build with plain cl in cmd and statically bound OpenSSL
   - cd src
   - cl /I%OPENSSL_DIR%\include /I. /DX509DIR=\"/\" /DCVCDIR=\"/\" %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% /c ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c objects.c ssl_compat.c
-  - lib /out:libeac_static.lib ws2_32.lib ca_lib.obj cv_cert.obj cvc_lookup.obj x509_lookup.obj eac_asn1.obj eac.obj eac_ca.obj eac_dh.obj eac_ecdh.obj eac_kdf.obj eac_lib.obj eac_print.obj eac_util.obj misc.obj pace.obj pace_lib.obj pace_mappings.obj ri.obj ri_lib.obj ta.obj ta_lib.obj objects.obj ssl_compat.obj
-  - cl /I%OPENSSL_DIR%\include /I. libeac_static.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% eactest.c vc.c ssl_compat.c
-  - eactest.exe
+  - lib /out:libeac.lib ws2_32.lib ca_lib.obj cv_cert.obj cvc_lookup.obj x509_lookup.obj eac_asn1.obj eac.obj eac_ca.obj eac_dh.obj eac_ecdh.obj eac_kdf.obj eac_lib.obj eac_print.obj eac_util.obj misc.obj pace.obj pace_lib.obj pace_mappings.obj ri.obj ri_lib.obj ta.obj ta_lib.obj objects.obj ssl_compat.obj
+  - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% eactest.c vc.c ssl_compat.c
+  # The following has already been performed by make (see above)
+  # gengetopt.exe --include-getopt --file-name=cvc-print-cmdline --input=cvc-print.ggo
+  - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-print.c read_file.c cvc-print-cmdline.c vc.c
+  # The following has already been performed by make (see above)
+  # gengetopt.exe --include-getopt --file-name=cvc-create-cmdline --input= cvc-create.ggo
+  - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-create.c read_file.c cvc-create-cmdline.c vc.c
   - cd ..
 
-  - bash -c "mkdir -p                               $DESTDIR/lib"
-  - bash -c "cp    src/libeac_static.lib            $DESTDIR/lib"
+
+  # package all artifacts
+  - bash -c "make  install-data-recursive"
+  - bash -c "cp    src/libeac.lib                       $DESTDIR/lib"
+  - bash -c "mkdir -p                                   $DESTDIR/bin"
+  - bash -c "cp    src/eactest.exe                      $DESTDIR/bin"
+  - bash -c "cp    src/cvc-create.exe                   $DESTDIR/bin"
+  - bash -c "cp    src/cvc-print.exe                    $DESTDIR/bin"
+  - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >> $DESTDIR/dependencies.txt"
+
+  # tests
+  - bash -c "                                           $DESTDIR/bin/eactest.exe"
+# - bash -c "for    i in $DESTDIR//etc/eac/cvc/*;    do $DESTDIR/bin/cvc-print --cvc=$i; done"
 
 # # build python bindings
 # - ps: >-
@@ -121,4 +113,3 @@ build_script:
 cache:
   - C:\msys64\var\cache\pacman\pkg\gengetopt* -> appveyor.yml
   - C:\msys64\var\cache\pacman\pkg\swig*      -> appveyor.yml
-  - C:\cccl                                   -> appveyor.yml
