@@ -94,14 +94,16 @@ build_script:
   - bash -c "cp    src/cvc-print.exe                     $DESTDIR/bin"
   - bash -c "tail  -n +2 bindings/python/cvc_rehash.in > $DESTDIR/bin/cvc_rehash"
   - bash -c "cp    bindings/python/eac.py                $DESTDIR/bin"
-  - bash -c "cp    bindings/python/_eac.pyd               $DESTDIR/bin"
+  - bash -c "cp    bindings/python/_eac.pyd              $DESTDIR/bin"
+  - bash -c "cp    bindings/python/chat.py               $DESTDIR/bin"
+  - bash -c "cp    bindings/python/pace_entity.py        $DESTDIR/bin"
   - bash -c "cp    -r docs                               $DESTDIR"
   - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >>  $DESTDIR/dependencies.txt"
 
   # tests
-  - bash -c "                                           $DESTDIR/bin/eactest.exe"
-  - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;     do $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
-  - bash -c "python                                     bindings/python/test.py"
+  - bash -c "                                            $DESTDIR/bin/eactest.exe"
+  - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;     do  $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
+  - bash -c "python                                      bindings/python/test.py"
 
 # # build python bindings
 # - ps: >-
