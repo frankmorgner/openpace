@@ -380,7 +380,7 @@ def cvctest():
 def tatest():
     ta = PACEEntity("123456")
 
-    assert eac.EAC_CTX_init_ca(ta.ctx, eac.id_CA_ECDH_AES_CBC_CMAC_128, 11) == 1
+    assert eac.EAC_CTX_init_ca(ta.ctx, eac.OBJ_txt2nid("id-CA-ECDH-AES-CBC-CMAC-128"), 11) == 1
 
     # our certificates aren't up to date
     eac.TA_disable_checks(ta.ctx)
@@ -400,6 +400,5 @@ if __name__ == "__main__":
     pacetest()
     cvctest()
     catest()
-    oidtest()
     tatest()
     eac.EAC_cleanup()
