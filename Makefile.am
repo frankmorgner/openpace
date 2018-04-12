@@ -129,8 +129,12 @@ test-ruby:
 	$(ENV) $(RUBY) $(srcdir)/bindings/ruby/example.rb
 
 install-data-local:
-	$(INSTALL) -d $(DESTDIR)$(CVCDIR)
-	$(INSTALL) -d $(DESTDIR)$(X509DIR)
+	$(INSTALL) -d $(DESTDIR)$(htmldir)
+	cd $(srcdir)/docs && find . -type d -exec $(MKDIR_P) "$(DESTDIR)$(htmldir)/{}" \;
+	cd $(srcdir)/docs && find . -type f -exec $(INSTALL_DATA) "{}" "$(DESTDIR)$(htmldir)/{}" \;
+
+uninstall-local:
+	rm -rf $(DESTDIR)$(htmldir)
 
 # Check whether regular files were deleted except in the docs directory
 distcleancheck_listfiles = find . -path ./docs -prune -o -type f -print
