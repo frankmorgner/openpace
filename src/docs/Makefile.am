@@ -11,8 +11,7 @@ do_subst = $(SED) \
 	   -e 's,[@]srcdir[@],$(srcdir),g' \
 	   -e 's,[@]builddir[@],$(srcdir),g'
 
-DOXYGEN_HTML = doxygen/html/index.html
-
+DOXYGEN_HTML = doxygen/index.html
 
 docs: $(DOXYGEN_HTML) $(srcdir)/*.in $(srcdir)/*.txt $(srcdir)/*.txt.in
 	@$(do_subst) < $(srcdir)/conf.py.in > conf.py
@@ -25,6 +24,7 @@ docs: $(DOXYGEN_HTML) $(srcdir)/*.in $(srcdir)/*.txt $(srcdir)/*.txt.in
 		$(MAKE) -f $(srcdir)/Makefile.sphinx html
 	rm -rf $(top_builddir)/docs/*
 	mv _build/html/* $(top_builddir)/docs
+	mv doxygen $(top_builddir)/docs/_static
 
 $(DOXYGEN_HTML): $(top_srcdir)/src/eac/*.h $(srcdir)/Doxyfile.in
 	@$(do_subst) < $(srcdir)/Doxyfile.in > Doxyfile
@@ -32,4 +32,4 @@ $(DOXYGEN_HTML): $(top_srcdir)/src/eac/*.h $(srcdir)/Doxyfile.in
 
 
 clean-local:
-	rm -rf _build _static/doxygen conf.py index.txt programming.txt install.txt usage.txt Doxyfile
+	rm -rf _build doxygen conf.py index.txt programming.txt install.txt usage.txt Doxyfile
