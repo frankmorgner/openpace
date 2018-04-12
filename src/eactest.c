@@ -3249,7 +3249,7 @@ static_eac_test(struct eac_worked_example *tc)
 err:
     if (debug) {
         bio = BIO_new_fp(stdout, BIO_NOCLOSE|BIO_FP_TEXT);
-        if (bio) {
+        if (bio && tc) {
             CVC_CERT *cert = NULL;
             if (CVC_d2i_CVC_CERT(&cert, (const unsigned char **) &tc->ta_cvca.data, tc->ta_cvca.length)) {
                BIO_printf(bio, "    CVCA:\n");
