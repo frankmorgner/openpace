@@ -10,18 +10,22 @@ env:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "KOfJHBqx3I7GsY6OIiqBMN5iFkTpeGlj+WwXF/ZaGmG7bYtIx1641mH43ECoaxGH6I4Tkdf2VBX3xTSVaCeT8OO0K3Zr84MRqmfjfzTo1uGkwiZD3e/pahPVjOTb+IGPForskeooix6KgCJQfW6skh8EEy7EPnZTNXJw2XLujj4="
+    - COVERITY_SCAN_BRANCH_PATTERN="(master|coverity.*)"
+    - COVERITY_SCAN_NOTIFICATION_EMAIL="frankmorgner@gmail.com"
+    - COVERITY_SCAN_BUILD_COMMAND="make"
+    - COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG"
+    - SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 
 matrix:
   include:
     - compiler: clang
     - compiler: gcc
     - compiler: gcc
-      env: GCOV=1
+      env: DO_CODECOV=yes
+    - env: DO_COVERITY_SCAN=yes
     - env: TARGET=win WIN_TOOL=i686-w64-mingw32
     - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
     - env: TARGET=emscripten
-  exclude:
-    - env: COVERITY_SCAN_BRANCH=1 TARGET!=""
   allow_failures:
     - env: TARGET=win WIN_TOOL=i686-w64-mingw32
     - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
@@ -46,13 +50,16 @@ cache:
 
 before_script:
   - autoreconf -vis
-  - if [ -n "${GCOV}" ]; then
+  - if [ -n "${DO_CODECOV}" ]; then
       export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
     else
       export ENABLE_GO=--enable-go;
       export GCCGOFLAGS="-static-libgcc $CFLAGS";
     fi
   - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby $ENABLE_GO;
+  # Optionally try to upload to Coverity Scan
+  # On error (propably quota is exhausted), just continue
+  - if [ -n "${DO_COVERITY_SCAN}" ]; then curl -s 'https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh' | bash || true; fi
 
 addons:
   apt:
@@ -77,19 +84,10 @@ addons:
       - ruby-dev
       - swig
       - xutils-dev
-  coverity_scan:
-    project:
-      name: "frankmorgner/openpace"
-      description: "Cryptographic library for EAC version 2"
-    notification_email: morgner@informatik.hu-berlin.de
-    build_command: make
-    branch_pattern: coverity_scan
 
 script:
-  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+  - if [ -z "${DO_COVERITY_SCAN}" ]; then
       make $TARGET;
-    fi
-  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
       if [ -z "$TARGET" ]; then
         make check >> /tmp/checkout 2>&1 || (cat /tmp/checkout && false);
       elif [ "${TARGET}" == emscripten ]; then
@@ -98,7 +96,7 @@ script:
     fi
 
 after_success:
-  - if [ -n "$GCOV" ]; then
+  - if [ -n "$DO_CODECOV" ]; then
       lcov --base-directory . --directory src --capture --output-file gcov.info;
       bash <(curl -s https://codecov.io/bash) -X gcov;
     fi
