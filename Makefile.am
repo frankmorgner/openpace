@@ -122,7 +122,7 @@ test-go:
 
 test-java:
 	cd $(builddir)/bindings/java \
-		$(ENV) java Example \
+		&& $(ENV) java Example \
 		&& $(ENV) java JPace
 
 test-ruby:
