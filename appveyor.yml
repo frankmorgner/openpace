@@ -50,44 +50,41 @@ install:
 
   - python -V
   - swig -version
-  - make --version
-  - uname -a
 
   - ps: $env:VSCOMNTOOLS=(Get-Content ("env:VS" + "$env:VSVER" + "0COMNTOOLS"))
   - echo "Using Visual Studio %VSVER%.0 at %VSCOMNTOOLS%"
   - call "%VSCOMNTOOLS%\..\..\VC\vcvarsall.bat" %VCVARS_PLATFORM%
 
 build_script:
-    # build with autotools/MinGW-w64
+    # preparation with Autotools and MinGW-w64
   - bash -c "autoreconf -i"
   - bash -c "touch src/cvc-create.1 src/cvc-print.1"
   - bash -c "./configure --prefix=/"
-    # linking would fail because the VC libraries are incompatible with MinGW,
-    # so we only create and install what is usable
+    # linking would fail because the VC libraries are incompatible with MinGW-w64,
+    # so we only create and install what is usable and needed later
   - bash -c "make -C src cvc-print-cmdline.c cvc-create-cmdline.c"
 
     # build with plain cl in cmd and statically bound OpenSSL
   - cd src
   - cl /I%OPENSSL_DIR%\include /I. /DX509DIR=\"/\" /DCVCDIR=\"/\" %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% /c ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c objects.c ssl_compat.c
-  - lib /out:libeac.lib ws2_32.lib ca_lib.obj cv_cert.obj cvc_lookup.obj x509_lookup.obj eac_asn1.obj eac.obj eac_ca.obj eac_dh.obj eac_ecdh.obj eac_kdf.obj eac_lib.obj eac_print.obj eac_util.obj misc.obj pace.obj pace_lib.obj pace_mappings.obj ri.obj ri_lib.obj ta.obj ta_lib.obj objects.obj ssl_compat.obj
-  - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% eactest.c vc.c ssl_compat.c
+  - lib /out:libeacMT.lib ws2_32.lib ca_lib.obj cv_cert.obj cvc_lookup.obj x509_lookup.obj eac_asn1.obj eac.obj eac_ca.obj eac_dh.obj eac_ecdh.obj eac_kdf.obj eac_lib.obj eac_print.obj eac_util.obj misc.obj pace.obj pace_lib.obj pace_mappings.obj ri.obj ri_lib.obj ta.obj ta_lib.obj objects.obj ssl_compat.obj
+  - cl /I%OPENSSL_DIR%\include /I. libeacMT.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% eactest.c vc.c ssl_compat.c
   # The following has already been performed by make (see above)
   # gengetopt.exe --include-getopt --file-name=cvc-print-cmdline --input=cvc-print.ggo
-  - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-print.c read_file.c cvc-print-cmdline.c vc.c
+  - cl /I%OPENSSL_DIR%\include /I. libeacMT.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-print.c read_file.c cvc-print-cmdline.c vc.c
   # The following has already been performed by make (see above)
   # gengetopt.exe --include-getopt --file-name=cvc-create-cmdline --input= cvc-create.ggo
-  - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-create.c read_file.c cvc-create-cmdline.c vc.c
+  - cl /I%OPENSSL_DIR%\include /I. libeacMT.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-create.c read_file.c cvc-create-cmdline.c vc.c
   - cd ..
   - cd bindings\python\
   - swig -python -outdir . -I.. eac.i
   - cl /I%OPENSSL_DIR%\include /I%PYTHON_INCLUDE% /I..\..\src %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% /c eac_wrap.c ..\..\src\ssl_compat.c ..\..\src\vc.c
-  - link /out:_eac.pyd /dll eac_wrap.obj ssl_compat.obj vc.obj %PYTHON_LIB% ..\..\src\libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib
+  - link /out:_eac.pyd /dll eac_wrap.obj ssl_compat.obj vc.obj %PYTHON_LIB% ..\..\src\libeacMT.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib
   - cd ..\..
-
 
   # package all artifacts
   - bash -c "make  install-data-recursive"
-  - bash -c "cp    src/libeac.lib                        $DESTDIR/lib"
+  - bash -c "cp    src/libeacMT.lib                      $DESTDIR/lib"
   - bash -c "mkdir -p                                    $DESTDIR/bin"
   - bash -c "cp    src/eactest.exe                       $DESTDIR/bin"
   - bash -c "cp    src/cvc-create.exe                    $DESTDIR/bin"
@@ -97,7 +94,6 @@ build_script:
   - bash -c "cp    bindings/python/_eac.pyd              $DESTDIR/bin"
   - bash -c "cp    bindings/python/chat.py               $DESTDIR/bin"
   - bash -c "cp    bindings/python/pace_entity.py        $DESTDIR/bin"
-  - bash -c "cp    -r docs                               $DESTDIR"
   - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >>  $DESTDIR/dependencies.txt"
 
   # tests
@@ -105,20 +101,8 @@ build_script:
   - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;     do  $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
   - bash -c "python                                      bindings/python/test.py"
 
-# # build python bindings
-# - ps: >-
-#     If ($env:Platform -Match "x86") {
-#       msbuild bindings\win32\eac.sln /p:Configuration=Debug /p:Platform=Win32
-#       bash -c "cp bindings/python/pace_entity.py   ${env:DESTDIR}/bin";
-#       bash -c "cp bindings/python/chat.py          ${env:DESTDIR}/bin";
-#       bash -c "cp bindings/python/test.py          ${env:DESTDIR}/bin";
-#       bash -c "cp bindings/win32/Release/_eac.pyd  ${env:DESTDIR}/bin";
-#       bash -c "cp bindings/win32/Release/eac.py    ${env:DESTDIR}/bin";
-#       #bash -c "cd ${env:DESTDIR}/bin && pwd && ls && python test.py";
-#     }
-
   # push the binaries
-  - 7z a %ARTIFACT%.zip %OPENPACE_DIR%
+  - 7z a %ARTIFACT%.zip %OPENPACE_DIR% > nul
   - appveyor PushArtifact %ARTIFACT%.zip
 
 cache:
