@@ -6,7 +6,7 @@ platform:
 
 environment:
   PATH: C:\msys64\usr\bin;%PATH%
-  CL_OPTIONS: /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN /GS /MTd /DHAVE_CONFIG_H /I%APPVEYOR_BUILD_FOLDER%
+  CL_OPTIONS: /W3 /D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN /GS /MT /DHAVE_CONFIG_H /I%APPVEYOR_BUILD_FOLDER%
   GENGETOPT: /usr/bin/gengetopt.exe --include-getopt
   HELP2MAN: /usr/bin/true # don't generate manual files
   # If AppVeyor comes with OpenSSL 1.1.0 installed
@@ -22,21 +22,20 @@ install:
         $env:VCVARS_PLATFORM="x86"
         $env:OPENSSL_PLATFORM="Win32"
         # If AppVeyor comes with OpenSSL 1.1.0 installed
-        #$env:LIBCRYPTO="libcrypto32MTd.lib"
-        $env:LIBCRYPTO="libeay32MTd.lib"
+        #$env:LIBCRYPTO="libcrypto32MT.lib"
+        $env:LIBCRYPTO="libeay32MT.lib"
         $env:PYTHON_PLATFORM=""
       } Else {
         $env:VCVARS_PLATFORM="amd64"
         $env:OPENSSL_PLATFORM="Win64"
         # If AppVeyor comes with OpenSSL 1.1.0 installed
-        #$env:LIBCRYPTO="libcrypto64MTd.lib"
-        $env:LIBCRYPTO="libeay32MTd.lib"
+        #$env:LIBCRYPTO="libcrypto64MT.lib"
+        $env:LIBCRYPTO="libeay32MT.lib"
         $env:PYTHON_PLATFORM="-x64"
       }
   - set PATH=C:\Python27%PYTHON_PLATFORM%;%PATH%
   - set PYTHON_INCLUDE=C:\Python27%PYTHON_PLATFORM%\include
-  - set PYTHON_LIBD=C:\Python27%PYTHON_PLATFORM%\libs
-  - set PYTHON_LIB=python27.lib
+  - set PYTHON_LIB=C:\Python27%PYTHON_PLATFORM%\libs\python27.lib
   - set ARTIFACT=%APPVEYOR_PROJECT_NAME%_%OPENSSL_PLATFORM%-vs%VSVER%
   - set OPENSSL_DIR=C:\OpenSSL-%OPENSSL_PLATFORM%
   - for /f "usebackq tokens=*" %%a in (`cygpath -u %OPENSSL_DIR%`) do set OPENSSL_CYGDIR=%%a
@@ -79,21 +78,30 @@ build_script:
   # gengetopt.exe --include-getopt --file-name=cvc-create-cmdline --input= cvc-create.ggo
   - cl /I%OPENSSL_DIR%\include /I. libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% cvc-create.c read_file.c cvc-create-cmdline.c vc.c
   - cd ..
+  - cd bindings\python\
+  - swig -python -outdir . -I.. eac.i
+  - cl /I%OPENSSL_DIR%\include /I%PYTHON_INCLUDE% /I..\..\src %CL_OPTIONS% %OPENSSL_1_1_0_FLAGS% /c eac_wrap.c ..\..\src\ssl_compat.c ..\..\src\vc.c
+  - link /out:_eac.pyd /dll eac_wrap.obj ssl_compat.obj vc.obj %PYTHON_LIB% ..\..\src\libeac.lib %OPENSSL_DIR%\lib\VC\static\%LIBCRYPTO% user32.lib advapi32.lib crypt32.lib gdi32.lib
+  - cd ..\..
 
 
   # package all artifacts
   - bash -c "make  install-data-recursive"
-  - bash -c "cp    src/libeac.lib                       $DESTDIR/lib"
-  - bash -c "mkdir -p                                   $DESTDIR/bin"
-  - bash -c "cp    src/eactest.exe                      $DESTDIR/bin"
-  - bash -c "cp    src/cvc-create.exe                   $DESTDIR/bin"
-  - bash -c "cp    src/cvc-print.exe                    $DESTDIR/bin"
-  - bash -c "cp    -r docs                              $DESTDIR"
-  - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >> $DESTDIR/dependencies.txt"
+  - bash -c "cp    src/libeac.lib                        $DESTDIR/lib"
+  - bash -c "mkdir -p                                    $DESTDIR/bin"
+  - bash -c "cp    src/eactest.exe                       $DESTDIR/bin"
+  - bash -c "cp    src/cvc-create.exe                    $DESTDIR/bin"
+  - bash -c "cp    src/cvc-print.exe                     $DESTDIR/bin"
+  - bash -c "tail  -n +2 bindings/python/cvc_rehash.in > $DESTDIR/bin/cvc_rehash"
+  - bash -c "cp    bindings/python/eac.py                $DESTDIR/bin"
+  - bash -c "cp    bindings/python/_eac.pyd               $DESTDIR/bin"
+  - bash -c "cp    -r docs                               $DESTDIR"
+  - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >>  $DESTDIR/dependencies.txt"
 
   # tests
   - bash -c "                                           $DESTDIR/bin/eactest.exe"
   - bash -c "for    i in $DESTDIR/etc/eac/cvc/*;     do $DESTDIR/bin/cvc-print --cvc=$i --cvc-dir=$DESTDIR/etc/eac/cvc/; done"
+  - bash -c "python                                     bindings/python/test.py"
 
 # # build python bindings
 # - ps: >-
