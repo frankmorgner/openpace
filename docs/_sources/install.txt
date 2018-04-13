@@ -111,7 +111,7 @@ on Debian wheezy::
 
 gendef_ should be installed to generate the library definitions.
 On successfull compilation, the Windows binaries can be found in
-:file:`openpace-1.0.2_win32`. For customization you
+:file:`openpace-1.0.3_win32`. For customization you
 may pass the following :command:`make` variables:
 
 ====================== ==================== ===========================================================================================
@@ -215,7 +215,7 @@ Make Variable                       Default                                     
 =================================== ================================================================================ =====================================================
 
 On successfull compilation, the Android binaries can be found in
-:file:`openpace-1.0.2_${ANDROID_ARCH}-linux-androideabi`.
+:file:`openpace-1.0.3_${ANDROID_ARCH}-linux-androideabi`.
 
 
 .. _javascript_api:
@@ -239,11 +239,11 @@ Make Variable             Default                            Meaning
 ========================= ================================== =======================================================================
 
 On successfull compilation, the compiled bitcode files can be found in
-:file:`openpace-1.0.2_js`. You can run our testsuite
+:file:`openpace-1.0.3_js`. You can run our testsuite
 completely in Javascript or `in your browser <_static/eactest.html>`_::
 
-    nodejs openpace-1.0.2_js/bin/eactest.js
-    firefox openpace-1.0.2_js/eactest.html
+    nodejs openpace-1.0.3_js/bin/eactest.js
+    firefox openpace-1.0.3_js/eactest.html
 
 .. warning::
     `Javascript cryptography is considered harmful`_. You may want to think
