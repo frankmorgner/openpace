@@ -344,10 +344,60 @@ err:
     return out;
 }
 
+ASN1_OCTET_STRING *get_raw_authorizations(const struct gengetopt_args_info *cmdline)
+{
+    int ok = 0;
+    size_t i, hex_len, binary_len;
+    unsigned char *binary = NULL;
+    char *hex = cmdline->chat_arg;
+    ASN1_OCTET_STRING *out = NULL;
+
+    hex_len = strlen(hex);
+    if (hex_len % 2) {
+        err("hex string needs even number of bytes");
+    }
+    binary_len = hex_len / 2;
+
+    binary = calloc(sizeof *binary, binary_len);
+    if (!binary)
+        goto err;
+
+    for (i = 0; i < hex_len; i++) {
+        char c = *hex;
+        if (c == 0)
+            break;
+        if ((c >= '0') && (c <= '9'))
+            c -= '0';
+        else if ((c >= 'A') && (c <= 'F'))
+            c = c - 'A' + 10;
+        else if ((c >= 'a') && (c <= 'f'))
+            c = c - 'a' + 10;
+        else {
+            err("non-hex digit");
+        }
+        if (i & 1)
+            binary[i / 2] |= c;
+        else
+            binary[i / 2] = (c << 4);
+        hex++;
+    }
+
+    out = ASN1_OCTET_STRING_new();
+    if (!out || !ASN1_OCTET_STRING_set(out,
+                binary, binary_len))
+        goto err;
+
+err:
+    free(binary);
+
+    return out;
+}
+
 static CVC_CHAT *get_chat(const struct gengetopt_args_info *cmdline, CVC_CERT *signer)
 {
     CVC_CHAT *chat = NULL;
     int terminal_type = NID_undef;
+    size_t type_arg_len = strlen(cmdline->type_arg);
 
     if (!cmdline)
         goto err;
@@ -356,38 +406,45 @@ static CVC_CHAT *get_chat(const struct gengetopt_args_info *cmdline, CVC_CERT *s
     if (!chat)
         goto err;
 
-    switch (cmdline->type_arg) {
-        case type_arg_at:
-            terminal_type = NID_id_AT;
-            break;
-        case type_arg_is:
+    if (strlen("at") == type_arg_len
+            && 0 == strcmp(cmdline->type_arg, "at")) {
+        terminal_type = NID_id_AT;
+        chat->terminal_type = OBJ_nid2obj(NID_id_AT);
+    } else if (strlen("is") == type_arg_len
+            && 0 == strcmp(cmdline->type_arg, "is")) {
             terminal_type = NID_id_IS;
-            break;
-        case type_arg_st:
+            chat->terminal_type = OBJ_nid2obj(NID_id_IS);
+    } else if (strlen("st") == type_arg_len
+            && 0 == strcmp(cmdline->type_arg, "st")) {
             terminal_type = NID_id_ST;
-            break;
-        case type_arg_derived_from_signer:
-            if (!signer || !signer->body || !signer->body->chat
-                    || !signer->body->chat->terminal_type)
-                err("type of signer is missing");
-            terminal_type = OBJ_obj2nid(signer->body->chat->terminal_type);
-            break;
-        default:
-            err("unhandled type of terminal");
+            chat->terminal_type = OBJ_nid2obj(NID_id_ST);
+    } else if (strlen("derived_from_signer") == type_arg_len
+            && 0 == strcmp(cmdline->type_arg, "derived_from_signer")) {
+        if (!signer || !signer->body || !signer->body->chat
+                || !signer->body->chat->terminal_type)
+            err("type of signer is missing");
+        terminal_type = OBJ_obj2nid(signer->body->chat->terminal_type);
+        chat->terminal_type = OBJ_dup(signer->body->chat->terminal_type);
+    } else {
+        terminal_type = OBJ_txt2nid(cmdline->type_arg);
+        chat->terminal_type = OBJ_txt2obj(cmdline->type_arg, 0);
     }
 
     if        (terminal_type == NID_id_AT) {
         chat->relative_authorization = get_at_authorizations(cmdline);
     } else if (terminal_type == NID_id_IS) {
-            chat->relative_authorization = get_is_authorizations(cmdline);
+        chat->relative_authorization = get_is_authorizations(cmdline);
     } else if (terminal_type == NID_id_ST) {
         chat->relative_authorization = get_st_authorizations(cmdline);
-    } else {
-        err("unhandled type of terminal");
     }
-    chat->terminal_type = OBJ_nid2obj(terminal_type);
-    if (!chat->terminal_type)
-        goto err;
+
+    if (cmdline->chat_arg) {
+        if (chat->relative_authorization) {
+            ASN1_OCTET_STRING_free(chat->relative_authorization);
+            chat->relative_authorization = get_raw_authorizations(cmdline);
+        }
+    }
+
 
 err:
     return chat;

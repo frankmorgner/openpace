@@ -12,10 +12,14 @@ option "role"           -
     values="cvca","dv_domestic","dv_foreign","terminal"
     enum
 option "type"           -
-    "Type of the terminal (Authentication Terminal, Inspection System or Signature Terminal)"
+    "Type of the terminal. Known values are \"at\" (Authentication Terminal), \"is\" (Inspection System), \"st\" (Signature Terminal), \"derived_from_signer\" (uses the the signer's CVC type), any other value is interpreted as object identifier."
     default="derived_from_signer"
-    values="at","is","st","derived_from_signer"
-    enum
+    string
+    optional
+option "chat"           -
+    "Raw Card Holder Authorization Template (CHAT). This option will overwrite any terminal specific effective authorization (see options for AT/IS/ST)."
+    string
+    typestr="HEXSTRING"
     optional
 option "issued"            -
     "Date the certificate was issued"
