@@ -33,7 +33,7 @@
 #include "misc.h"
 #include <limits.h>
 #include <openssl/ecdh.h>
-#include <openssl/engine.h>
+#include <openssl/ecdsa.h>
 #include <openssl/ossl_typ.h>
 #include <stdint.h>
 #include <string.h>
