@@ -397,10 +397,11 @@ static CVC_CHAT *get_chat(const struct gengetopt_args_info *cmdline, CVC_CERT *s
 {
     CVC_CHAT *chat = NULL;
     int terminal_type = NID_undef;
-    size_t type_arg_len = strlen(cmdline->type_arg);
+    size_t type_arg_len;
 
     if (!cmdline)
         goto err;
+    type_arg_len = strlen(cmdline->type_arg);
 
     chat = CVC_CHAT_new();
     if (!chat)
