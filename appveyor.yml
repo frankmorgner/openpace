@@ -21,6 +21,7 @@ install:
       If ($env:Platform -Match "x86") {
         $env:VCVARS_PLATFORM="x86"
         $env:OPENSSL_PLATFORM="Win32"
+        $env:OPENPACE_PLATFORM="win64"
         # If AppVeyor comes with OpenSSL 1.1.0 installed
         #$env:LIBCRYPTO="libcrypto32MT.lib"
         $env:LIBCRYPTO="libeay32MT.lib"
@@ -28,6 +29,7 @@ install:
       } Else {
         $env:VCVARS_PLATFORM="amd64"
         $env:OPENSSL_PLATFORM="Win64"
+        $env:OPENPACE_PLATFORM="win64"
         # If AppVeyor comes with OpenSSL 1.1.0 installed
         #$env:LIBCRYPTO="libcrypto64MT.lib"
         $env:LIBCRYPTO="libeay32MT.lib"
@@ -36,7 +38,7 @@ install:
   - set PATH=C:\Python27%PYTHON_PLATFORM%;%PATH%
   - set PYTHON_INCLUDE=C:\Python27%PYTHON_PLATFORM%\include
   - set PYTHON_LIB=C:\Python27%PYTHON_PLATFORM%\libs\python27.lib
-  - set ARTIFACT=%APPVEYOR_PROJECT_NAME%_%OPENSSL_PLATFORM%-vs%VSVER%
+  - set ARTIFACT=%APPVEYOR_PROJECT_NAME%_%OPENPACE_PLATFORM%-vs%VSVER%
   - set OPENSSL_DIR=C:\OpenSSL-%OPENSSL_PLATFORM%
   - for /f "usebackq tokens=*" %%a in (`cygpath -u %OPENSSL_DIR%`) do set OPENSSL_CYGDIR=%%a
   - set OPENPACE_DIR=C:\%ARTIFACT%
