@@ -740,7 +740,7 @@ int main(int argc, char *argv[])
                 || !ASN1_OCTET_STRING_set(body->certificate_holder_reference,
                     (unsigned char *) cmdline.chr_arg, strlen(cmdline.chr_arg)))
             goto err;
-        strncpy(basename, cmdline.chr_arg, sizeof basename);
+        strncpy(basename, cmdline.chr_arg, (sizeof basename) - 1);
         basename[sizeof basename - 1] = '\0';
     } else {
         body->certificate_holder_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_holder_reference);

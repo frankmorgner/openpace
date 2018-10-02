@@ -44,7 +44,7 @@ static char x509_default_dir[PATH_MAX];
 void EAC_set_x509_default_dir(const char *default_dir)
 {
     if (default_dir) {
-        strncpy(x509_default_dir, default_dir, sizeof x509_default_dir);
+        strncpy(x509_default_dir, default_dir, (sizeof x509_default_dir) - 1);
         x509_default_dir[(sizeof x509_default_dir) - 1] = '\0';
     }
 }
