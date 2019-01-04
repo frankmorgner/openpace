@@ -49,7 +49,7 @@ emscripten:
 	cd $(top_builddir) && emconfigure ./configure \
 		--prefix=/ \
 		--enable-openssl-install --disable-shared \
-		CFLAGS=-O3 LDFLAGS=-O3 \
+		CFLAGS="-Wno-warn-absolute-paths -O3" LDFLAGS=-O3 \
 		OPENSSL_CONFIGURE_FLAGS="no-asm no-shared no-hw no-threads no-dso --prefix=/ BSD-x86 -I$(EMSCRIPTEN)/system/include/libc -O3"
 	emmake $(MAKE) -C $(top_builddir) install DESTDIR=$(EMSCRIPTEN_TARGETDIR)
 	for i in $(EMSCRIPTEN_TARGETDIR)/lib/*.a	; do mv $$i $${i%.a}.bc	; done

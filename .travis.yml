@@ -1,6 +1,16 @@
 language: C
 
-sudo: false
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+      env: TARGET=osx
+    - compiler: gcc
+      env: DO_CODECOV=yes
+    - env: DO_COVERITY_SCAN=yes
+    - env: TARGET=win WIN_TOOL=i686-w64-mingw32
+    - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
+    - env: TARGET=emscripten
 
 env:
   global:
@@ -16,51 +26,6 @@ env:
     - COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG"
     - SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 
-matrix:
-  include:
-    - compiler: clang
-    - compiler: gcc
-    - compiler: gcc
-      env: DO_CODECOV=yes
-    - env: DO_COVERITY_SCAN=yes
-    - env: TARGET=win WIN_TOOL=i686-w64-mingw32
-    - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
-    - env: TARGET=emscripten
-  allow_failures:
-    - env: TARGET=win WIN_TOOL=i686-w64-mingw32
-    - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
-
-install:
-  - date
-  - if [ "${TARGET}" == emscripten ]; then
-      wget -P /tmp/j2me.js -N https://ftp.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip;
-      unzip -d /tmp/js /tmp/j2me.js/jsshell-linux-x86_64.zip;
-      export PATH=$PATH;
-      git clone --recursive https://github.com/marco-c/emscripten-sdk.git;
-      cd emscripten-sdk && ./emsdk activate latest && cd ..;
-      source emscripten-sdk/emsdk_env.sh;
-    fi
-  - make --version
-  - uname -a
-
-cache:
-  directories:
-    - emscripten-sdk
-    - src/openssl
-
-before_script:
-  - autoreconf -vis
-  - if [ -n "${DO_CODECOV}" ]; then
-      export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
-    else
-      export ENABLE_GO=--enable-go;
-      export GCCGOFLAGS="-static-libgcc $CFLAGS";
-    fi
-  - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby $ENABLE_GO;
-  # Optionally try to upload to Coverity Scan
-  # On error (propably quota is exhausted), just continue
-  - if [ -n "${DO_COVERITY_SCAN}" ]; then curl -s 'https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh' | bash || true; fi
-
 addons:
   apt:
     sources:
@@ -68,7 +33,6 @@ addons:
     packages:
       - binutils-mingw-w64-i686
       - binutils-mingw-w64-x86-64
-      - g++-4.9
       - gcc-mingw-w64-i686
       - gcc-mingw-w64-x86-64
       - gccgo
@@ -85,6 +49,37 @@ addons:
       - swig
       - xutils-dev
 
+before_install:
+  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+        brew update;
+        brew uninstall libtool;
+        brew install libtool;
+        brew install gengetopt help2man swig ccache;
+        export PATH="/usr/local/opt/ccache/libexec:$PATH";
+    fi
+
+install:
+  - if [ "${TARGET}" == emscripten ]; then
+      wget -P /tmp/j2me.js -N https://ftp.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip;
+      unzip -d /tmp/js /tmp/j2me.js/jsshell-linux-x86_64.zip;
+      git clone --recursive https://github.com/marco-c/emscripten-sdk.git;
+      cd emscripten-sdk && ./emsdk activate latest && cd ..;
+      source emscripten-sdk/emsdk_env.sh;
+    fi
+
+before_script:
+  - autoreconf -vis
+  - if [ -n "${DO_CODECOV}" ]; then
+      export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
+    elif [ "${TRAVIS_OS_NAME}" != "osx" ]; then
+      export ENABLE_GO=--enable-go;
+      export GCCGOFLAGS="-static-libgcc $CFLAGS";
+    fi
+  - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby $ENABLE_GO;
+  # Optionally try to upload to Coverity Scan
+  # On error (propably quota is exhausted), just continue
+  - if [ -n "${DO_COVERITY_SCAN}" ]; then curl -s 'https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh' | bash || true; fi
+
 script:
   - if [ -z "${DO_COVERITY_SCAN}" ]; then
       make $TARGET;
@@ -100,6 +95,15 @@ after_success:
       lcov --base-directory . --directory src --capture --output-file gcov.info;
       bash <(curl -s https://codecov.io/bash) -X gcov;
     fi
+
+cache:
+  apt: true
+  ccache: true
+  directories:
+     - $HOME/Library/Caches/Homebrew
+
+before_cache:
+    - brew cleanup
 
 notifications:
   email:
