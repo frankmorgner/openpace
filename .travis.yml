@@ -26,6 +26,8 @@ env:
     - COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG"
     - SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 
+sudo: false
+
 addons:
   apt:
     sources:
