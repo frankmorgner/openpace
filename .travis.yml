@@ -35,6 +35,7 @@ addons:
     packages:
       - binutils-mingw-w64-i686
       - binutils-mingw-w64-x86-64
+      - g++-4.9
       - gcc-mingw-w64-i686
       - gcc-mingw-w64-x86-64
       - gccgo
