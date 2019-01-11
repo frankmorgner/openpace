@@ -60,10 +60,10 @@ struct eac_ctx;
 enum cvc_terminal_role {
     /** @brief Terminal (inspection system/authentication terminal/signature terminal) */
     CVC_Terminal = 0,
-    /** @brief Document Verifier (official domestic) */
-    CVC_DV,
     /** @brief Document Verifier (non-official/foreign) */
     CVC_DocVer, /* XXX Ugly */
+    /** @brief Document Verifier (official domestic) */
+    CVC_DV,
     /** @brief Country Verifying Certificate Authority */
     CVC_CVCA
 };
