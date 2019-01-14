@@ -27,7 +27,6 @@ OpenPACE
 """
 
 import eac
-from binascii import b2a_hex
 
 class OpenPACEException(Exception):
     def __init__(self, value):
