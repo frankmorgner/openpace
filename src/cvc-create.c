@@ -658,7 +658,7 @@ int main(int argc, char *argv[])
     unsigned char *body_p = NULL, *cert_buf = NULL, *term_key_buf = NULL, *desc_buf = NULL;
     size_t car_len = 0, cert_len = 0;
     time_t loc;
-    const struct tm *utc_tm;
+    struct tm utc_tm;
     char string[80];
     const char *out = NULL;
     char basename[70];
@@ -817,17 +817,23 @@ int main(int argc, char *argv[])
     /* write effective date */
     if (!cmdline.issued_given) {
         time(&loc);
-        utc_tm = gmtime(&loc);
-        if (!utc_tm || utc_tm->tm_year < 100 || utc_tm->tm_year > 2000
-                || utc_tm->tm_mon < 0 || utc_tm->tm_mon > 11
-                || utc_tm->tm_mday < 0 || utc_tm->tm_mday > 31)
+#ifdef _WIN32
+		if (0 != gmtime_s(&utc_tm, &loc))
+			goto err;
+#else
+		if (NULL == gmtime_r(&loc, &utc_tm))
+			goto err;
+#endif
+        if (utc_tm.tm_year < 100 || utc_tm.tm_year > 2000
+                || utc_tm.tm_mon < 0 || utc_tm.tm_mon > 11
+                || utc_tm.tm_mday < 0 || utc_tm.tm_mday > 31)
             goto err;
-        string[0] = (char) (utc_tm->tm_year-100)/10;
-        string[1] = (char) utc_tm->tm_year%10;
-        string[2] = (char) (utc_tm->tm_mon+1)/10;
-        string[3] = (char) (utc_tm->tm_mon+1)%10;
-        string[4] = (char) utc_tm->tm_mday/10;
-        string[5] = (char) utc_tm->tm_mday%10;
+        string[0] = (char) (utc_tm.tm_year-100)/10;
+        string[1] = (char) utc_tm.tm_year%10;
+        string[2] = (char) (utc_tm.tm_mon+1)/10;
+        string[3] = (char) (utc_tm.tm_mon+1)%10;
+        string[4] = (char) utc_tm.tm_mday/10;
+        string[5] = (char) utc_tm.tm_mday%10;
     } else {
         if (!to_bcd(cmdline.issued_arg, (unsigned char *) string, 6))
             goto err;
