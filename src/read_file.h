@@ -23,7 +23,11 @@
  * @author Frank Morgner <frankmorgner@gmail.com>
  */
 
-/* FIXME correct header for size_t */
+#ifndef READ_FILE_H_
+#define READ_FILE_H_
+
 #include <stdlib.h>
 
 int read_file(const char *filename, unsigned char **out, size_t *outlen);
+
+#endif
