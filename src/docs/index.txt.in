@@ -79,6 +79,10 @@ for:
     :target: https://codecov.io/gh/frankmorgner/openpace/branch/master
     :alt: Codecov Status
 
+.. image:: https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg?logo=lgtm&logoWidth=18
+    :target: https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp
+    :alt: Language grade: C/C++
+
 .. note::
     OpenPACE only implements the cryptographic protocols of the |EAC|. If you
     actually want to exchange data with a smart card, you need to take care of
