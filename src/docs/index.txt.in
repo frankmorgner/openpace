@@ -79,7 +79,7 @@ for:
     :target: https://codecov.io/gh/frankmorgner/openpace/branch/master
     :alt: Codecov Status
 
-.. image:: https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg?logo=lgtm&logoWidth=18
+.. image:: https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg
     :target: https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp
     :alt: Language grade: C/C++
 
