@@ -55,12 +55,14 @@ int read_file(const char *filename, unsigned char **out, size_t *outlen)
     }
     fseek(fp, 0L, SEEK_SET);
 
-    p = (unsigned char*) realloc(*out, filesize);
-    if (!p) {
-        puts("Failed to allocate memory");
-        goto err;
+    if (0 != filesize) {
+        p = (unsigned char*) realloc(*out, filesize);
+        if (!p) {
+            puts("Failed to allocate memory");
+            goto err;
+        }
+        *out = p;
     }
-    *out = p;
     *outlen = filesize;
 
     if (filesize != fread(p, sizeof(unsigned char), filesize, fp)) {

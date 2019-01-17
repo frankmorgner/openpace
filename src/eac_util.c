@@ -462,11 +462,13 @@ int update_iv(KA_CTX *ctx, EVP_CIPHER_CTX *cipher_ctx, const BIGNUM *ssc)
             ctx->cipher = oldcipher;
             if (!ivbuf)
                 goto err;
-            p = OPENSSL_realloc(ctx->iv, ivbuf->length);
-            if (!p)
-                goto err;
-            ctx->iv = p;
-            memcpy(ctx->iv, ivbuf->data, ivbuf->length);
+            if (0 != ivbuf->length) {
+                p = OPENSSL_realloc(ctx->iv, ivbuf->length);
+                if (!p)
+                    goto err;
+                ctx->iv = p;
+                memcpy(ctx->iv, ivbuf->data, ivbuf->length);
+            }
             break;
 
         case NID_des_ede_cbc:
