@@ -62,13 +62,13 @@ int read_file(const char *filename, unsigned char **out, size_t *outlen)
             goto err;
         }
         *out = p;
+
+        if (filesize != fread(p, sizeof(unsigned char), filesize, fp)) {
+            perror("Failed to read file");
+            goto err;
+        }
     }
     *outlen = filesize;
-
-    if (filesize != fread(p, sizeof(unsigned char), filesize, fp)) {
-        perror("Failed to read file");
-        goto err;
-    }
 
     fail = 0;
 
