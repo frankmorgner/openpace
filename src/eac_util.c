@@ -770,6 +770,7 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx)
 
     check((key && pub), "Invalid arguments");
 
+    BN_CTX_start(bn_ctx);
     switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
             out = hash(EVP_sha1(), md_ctx, NULL, pub);
@@ -808,10 +809,7 @@ err:
      * structure */
     if (ec)
         EC_KEY_free(ec);
-    if (x)
-        BN_free(x);
-    if (y)
-        BN_free(y);
+    BN_CTX_end(bn_ctx);
 
     return out;
 }

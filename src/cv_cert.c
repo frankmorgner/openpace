@@ -1266,6 +1266,7 @@ static int CVC_eckey2pubkey(int all_parameters,
 
     check(out && key && bn_ctx, "Invalid Arguments");
 
+    BN_CTX_start(bn_ctx);
     ec = EVP_PKEY_get1_EC_KEY(key);
     check(ec, "Could not get EC key");
 
@@ -1329,16 +1330,11 @@ static int CVC_eckey2pubkey(int all_parameters,
 err:
     if (ec)
         EC_KEY_free(ec);
-    if (bn)
-        BN_free(bn);
-    if (a_bn)
-        BN_free(a_bn);
-    if (b_bn)
-        BN_free(b_bn);
     if (Y_buf)
         BUF_MEM_free(Y_buf);
     if (G_buf)
         BUF_MEM_free(G_buf);
+    BN_CTX_end(bn_ctx);
 
     return ok;
 }
