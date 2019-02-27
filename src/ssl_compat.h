@@ -43,10 +43,18 @@ int ECDSA_SIG_set0(ECDSA_SIG *sig, BIGNUM *r, BIGNUM *s);
 void ECDSA_SIG_get0(const ECDSA_SIG *sig, const BIGNUM **pr, const BIGNUM **ps);
 #endif
 
-#ifndef HAVE_ASN1_STRING_get0_data
+#ifndef HAVE_ASN1_STRING_GET0_DATA
 const unsigned char *ASN1_STRING_get0_data(const ASN1_STRING *x);
 #endif
 
 #if !defined(HAVE_DECL_OPENSSL_ZALLOC) || HAVE_DECL_OPENSSL_ZALLOC == 0
 void *OPENSSL_zalloc(size_t num);
+#endif
+
+#ifndef HAVE_EC_POINT_GET_AFFINE_COORDINATES
+int EC_POINT_get_affine_coordinates(const EC_GROUP *group, const EC_POINT *p, BIGNUM *x, BIGNUM *y, BN_CTX *ctx);
+#endif
+
+#ifndef HAVE_EC_POINT_SET_AFFINE_COORDINATES
+int EC_POINT_set_affine_coordinates(const EC_GROUP *group, EC_POINT *p, const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx);
 #endif

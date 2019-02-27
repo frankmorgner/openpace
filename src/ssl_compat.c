@@ -7,6 +7,7 @@
 #include <openssl/ecdsa.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
+#include <openssl/ec.h>
 #include <string.h>
 
 #ifndef HAVE_DH_SET0_KEY
@@ -166,5 +167,19 @@ void *OPENSSL_zalloc(size_t num)
         memset(out, 0, num);
 
     return out;
+}
+#endif
+
+#ifndef HAVE_EC_POINT_GET_AFFINE_COORDINATES
+int EC_POINT_get_affine_coordinates(const EC_GROUP *group, const EC_POINT *p, BIGNUM *x, BIGNUM *y, BN_CTX *ctx)
+{
+    return EC_POINT_get_affine_coordinates_GF2m(group, p, x, y, ctx);
+}
+#endif
+
+#ifndef HAVE_EC_POINT_SET_AFFINE_COORDINATES
+int EC_POINT_set_affine_coordinates(const EC_GROUP *group, EC_POINT *p, const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx)
+{
+    return EC_POINT_set_affine_coordinates_GFp(group, p, x, y, ctx);
 }
 #endif
