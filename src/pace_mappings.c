@@ -447,7 +447,7 @@ ecdh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     g = EC_POINT_new(EC_KEY_get0_group(ephemeral_key));
     if (!g)
         goto err;
-    if (!EC_POINT_set_affine_coordinates_GFp(EC_KEY_get0_group(ephemeral_key), g,
+    if (!EC_POINT_set_affine_coordinates(EC_KEY_get0_group(ephemeral_key), g,
             x, y, bn_ctx))
         goto err;
 

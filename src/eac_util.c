@@ -789,7 +789,7 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx)
             if(!ecp || !x || !y
                     || !EC_POINT_oct2point(group, ecp,
                         (unsigned char *) pub->data, pub->length, bn_ctx)
-                    || !EC_POINT_get_affine_coordinates_GF2m(group, ecp, x, y, bn_ctx))
+                    || !EC_POINT_get_affine_coordinates(group, ecp, x, y, bn_ctx))
                 goto err;
 
             out = BUF_MEM_create(BN_num_bytes(x));
