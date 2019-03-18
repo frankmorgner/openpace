@@ -80,9 +80,6 @@ int main(int argc, char *argv[])
 
     EAC_cleanup();
 
-    EAC_CTX_clear_free(pcd_ctx);
-    EAC_CTX_clear_free(picc_ctx);
-    PACE_SEC_clear_free(secret);
     if (bio)
         BIO_free_all(bio);
     if (enc_nonce)
