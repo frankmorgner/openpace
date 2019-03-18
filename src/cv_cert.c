@@ -1425,6 +1425,8 @@ CVC_pkey2pubkey(int all_parameters, int protocol, EVP_PKEY *key,
 
     if (!bn_ctx) {
         tmp_ctx = BN_CTX_new();
+        if (!tmp_ctx)
+            goto err;
         bn_ctx = tmp_ctx;
     }
 
