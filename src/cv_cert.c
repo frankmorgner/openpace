@@ -1461,7 +1461,7 @@ CVC_pkey2pubkey(int all_parameters, int protocol, EVP_PKEY *key,
     out = pubkey;
 
 err:
-    if (!tmp_ctx)
+    if (tmp_ctx)
         BN_CTX_free(tmp_ctx);
     if (!out && !in && pubkey)
         CVC_PUBKEY_free(pubkey);

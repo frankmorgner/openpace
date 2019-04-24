@@ -431,6 +431,9 @@ static CVC_CHAT *get_chat(const struct gengetopt_args_info *cmdline, CVC_CERT *s
         chat->terminal_type = OBJ_txt2obj(cmdline->type_arg, 0);
     }
 
+    if (chat->relative_authorization)
+        ASN1_OCTET_STRING_free(chat->relative_authorization);
+
     if        (terminal_type == NID_id_AT) {
         chat->relative_authorization = get_at_authorizations(cmdline);
     } else if (terminal_type == NID_id_IS) {
@@ -590,14 +593,16 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
                 goto err;
         }
 #else
-        desc->termsOfUsage.other = ASN1_TYPE_new();
+        if (!desc->termsOfUsage.other)
+            desc->termsOfUsage.other = ASN1_TYPE_new();
         if (!desc->termsOfUsage.other)
             goto err;
         ASN1_TYPE_set(desc->termsOfUsage.other, V_ASN1_SEQUENCE, asn1);
 #endif
 
         if (cmdline->issuer_name_arg) {
-            desc->issuerName = ASN1_UTF8STRING_new();
+            if (!desc->issuerName)
+                desc->issuerName = ASN1_UTF8STRING_new();
             if (!desc->issuerName
                     || !ASN1_OCTET_STRING_set(desc->issuerName,
                          (const unsigned char *) cmdline->issuer_name_arg,
@@ -647,7 +652,6 @@ int main(int argc, char *argv[])
 {
     CVC_CERT *cert = NULL;
     CVC_CERT *sign_as_cert = NULL;
-    CVC_CERT_BODY *body = NULL;
     CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
     CVC_CERT_REQUEST *request = NULL;
     CVC_CERT_AUTHENTICATION_REQUEST *authentication = NULL;
@@ -673,11 +677,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    body = CVC_CERT_BODY_new();
     cert = CVC_CERT_new();
-    if (!cert || !body)
+    if (!cert)
         goto err;
-    cert->body = body;
+    if (!cert->body) {
+        cert->body = CVC_CERT_BODY_new();
+        if (!cert->body)
+            goto err;
+    }
 
 
     /* read certificate signing request */
@@ -696,9 +703,10 @@ int main(int argc, char *argv[])
 
 
     /* write profile identifier fixed to 0 ("version 1") */
-    body->certificate_profile_identifier = ASN1_INTEGER_new();
-    if (!body->certificate_profile_identifier
-            || !ASN1_INTEGER_set(body->certificate_profile_identifier, 0))
+    if (!cert->body->certificate_profile_identifier)
+        cert->body->certificate_profile_identifier = ASN1_INTEGER_new();
+    if (!cert->body->certificate_profile_identifier
+            || !ASN1_INTEGER_set(cert->body->certificate_profile_identifier, 0))
         goto err;
 
 
@@ -722,29 +730,31 @@ int main(int argc, char *argv[])
                 car_len = request->body->certificate_holder_reference->length;
             }
         }
-        body->certificate_authority_reference = ASN1_UTF8STRING_new();
-        if (!body->certificate_authority_reference
-                || !ASN1_OCTET_STRING_set(body->certificate_authority_reference, car, car_len))
+        if (!cert->body->certificate_authority_reference)
+            cert->body->certificate_authority_reference = ASN1_UTF8STRING_new();
+        if (!cert->body->certificate_authority_reference
+                || !ASN1_OCTET_STRING_set(cert->body->certificate_authority_reference, car, car_len))
             goto err;
     } else {
-        body->certificate_authority_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_authority_reference);
-        if (!body->certificate_authority_reference)
+        cert->body->certificate_authority_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_authority_reference);
+        if (!cert->body->certificate_authority_reference)
             goto err;
     }
 
 
     /* write CHR */
     if (cmdline.manual_mode_counter) {
-        body->certificate_holder_reference = ASN1_UTF8STRING_new();
-        if (!body->certificate_holder_reference
-                || !ASN1_OCTET_STRING_set(body->certificate_holder_reference,
+        if (!cert->body->certificate_holder_reference)
+            cert->body->certificate_holder_reference = ASN1_UTF8STRING_new();
+        if (!cert->body->certificate_holder_reference
+                || !ASN1_OCTET_STRING_set(cert->body->certificate_holder_reference,
                     (unsigned char *) cmdline.chr_arg, strlen(cmdline.chr_arg)))
             goto err;
         strncpy(basename, cmdline.chr_arg, (sizeof basename) - 1);
         basename[sizeof basename - 1] = '\0';
     } else {
-        body->certificate_holder_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_holder_reference);
-        if (!body->certificate_holder_reference)
+        cert->body->certificate_holder_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_holder_reference);
+        if (!cert->body->certificate_holder_reference)
             goto err;
         memcpy(basename, (char *) request->body->certificate_holder_reference->data,
                 sizeof basename < request->body->certificate_holder_reference->length ?
@@ -805,12 +815,16 @@ int main(int argc, char *argv[])
 
 
         /* write public key */
-        body->public_key = get_cvc_pubkey(&cmdline, term_key);
+        if (cert->body->public_key)
+            CVC_PUBKEY_free(cert->body->public_key);
+        cert->body->public_key = get_cvc_pubkey(&cmdline, term_key);
     } else {
         /* write public key */
-        body->public_key = CVC_PUBKEY_dup(request->body->public_key);
+        if (cert->body->public_key)
+            CVC_PUBKEY_free(cert->body->public_key);
+        cert->body->public_key = CVC_PUBKEY_dup(request->body->public_key);
     }
-    if (!body->public_key)
+    if (!cert->body->public_key)
         goto err;
 
 
@@ -838,25 +852,29 @@ int main(int argc, char *argv[])
         if (!to_bcd(cmdline.issued_arg, (unsigned char *) string, 6))
             goto err;
     }
-    body->certificate_effective_date = ASN1_OCTET_STRING_new();
-    if (!body->certificate_effective_date
-            || !ASN1_OCTET_STRING_set(body->certificate_effective_date,
+    if (!cert->body->certificate_effective_date)
+        cert->body->certificate_effective_date = ASN1_OCTET_STRING_new();
+    if (!cert->body->certificate_effective_date
+            || !ASN1_OCTET_STRING_set(cert->body->certificate_effective_date,
                 (unsigned char *) string, 6))
         goto err;
 
 
     /* write expiration date */
-    body->certificate_expiration_date = ASN1_OCTET_STRING_new();
-    if (!body->certificate_expiration_date
+    if (!cert->body->certificate_expiration_date)
+        cert->body->certificate_expiration_date = ASN1_OCTET_STRING_new();
+    if (!cert->body->certificate_expiration_date
             || !to_bcd(cmdline.expires_arg, (unsigned char *) string, 6)
-            || !ASN1_OCTET_STRING_set(body->certificate_expiration_date,
+            || !ASN1_OCTET_STRING_set(cert->body->certificate_expiration_date,
                 (unsigned char *) string, 6))
         goto err;
 
 
     /* write chat */
-    body->chat = get_chat(&cmdline, sign_as_cert);
-    if (!body->chat)
+    if (cert->body->chat)
+        CVC_CHAT_free(cert->body->chat);
+    cert->body->chat = get_chat(&cmdline, sign_as_cert);
+    if (!cert->body->chat)
         goto err;
 
 
@@ -893,7 +911,7 @@ int main(int argc, char *argv[])
 
 
     /* sign body */
-    body_len = i2d_CVC_CERT_BODY(body, &body_p);
+    body_len = i2d_CVC_CERT_BODY(cert->body, &body_p);
     if (body_len <= 0)
         goto err;
     body_buf = BUF_MEM_create_init(body_p, (size_t) body_len);
@@ -911,7 +929,8 @@ int main(int argc, char *argv[])
 
 
     /* assamble everything */
-    cert->signature = ASN1_OCTET_STRING_new();
+    if (!cert->signature)
+        cert->signature = ASN1_OCTET_STRING_new();
     if (!cert->signature
             || !ASN1_OCTET_STRING_set(cert->signature,
                 (unsigned char *) signature->data, signature->length))
@@ -939,9 +958,6 @@ err:
     cmdline_parser_free (&cmdline);
     if (cert) {
         CVC_CERT_free(cert);
-    } else {
-        if (body)
-            CVC_CERT_BODY_free(body);
     }
     if (sign_as_cert)
         CVC_CERT_free(sign_as_cert);
