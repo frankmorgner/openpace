@@ -11,6 +11,7 @@ OSX_TOOLS_DIR = "$(shell xcode-select -p)/Platforms/MacOSX.platform/Developer/SD
 OSX_TOOL_DIR ?= "$(OSX_TOOLS_DIR)/$(shell ls -1 $(OSX_TOOLS_DIR) | sort -n -k2 -t. -r | head -1)/usr"
 OSX_TARGETDIR = $(abs_top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx
 osx:
+	rm -rf $(OSX_TARGETDIR) OpenPACE-install.pkg dmg $(top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 	(cd $(top_builddir)/src/openssl && git clean -xfd && git reset --hard HEAD) || true
 	cd $(top_builddir) && ./configure --enable-openssl-install
 	$(MAKE) -C $(top_builddir)/src patch_openssl
@@ -20,9 +21,8 @@ osx:
 	cd $(top_builddir) && ./configure --prefix=/Library/OpenPACE \
 		PKG_CONFIG_SYSROOT_DIR=$(OSX_TARGETDIR) \
 		PKG_CONFIG_PATH=$(OSX_TARGETDIR)/Library/OpenPACE/lib/pkgconfig \
-		--enable-python CFLAGS="-arch x86_64" LIBS="-arch x86_64"
+		--enable-python CFLAGS="-arch x86_64" LIBS="-arch x86_64" --disable-shared
 	make -C $(top_builddir) install DESTDIR=$(OSX_TARGETDIR)
-	rm -rf $(OSX_TARGETDIR) OpenPACE-install.pkg dmg $(top_builddir)/$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_osx.dmg
 	pkgbuild --root $(OSX_TARGETDIR) --scripts MacOSX_install --identifier com.openpace.mac --version $(PACKAGE_VERSION) --install-location / OpenPACE-$(PACKAGE_VERSION)_install.pkg
 	pkgbuild --nopayload --identifier com.openpace.mac.uninstall --scripts MacOSX_uninstall Uninstall_OpenPACE.pkg
 	mkdir dmg
