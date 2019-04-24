@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Extended Access Control Specification &#8212; OpenPACE 1.0.3 documentation</title>
-    
-    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <title>Extended Access Control Specification &#8212; OpenPACE 1.1.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/breathe.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Python API to OpenPACE" href="python_api.html" />
@@ -38,8 +25,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
   
   <a href="https://github.com/frankmorgner/openpace"
      class="visible-desktop hidden-xs"><img
@@ -67,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           OpenPACE</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -164,8 +150,8 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <span class="target" id="protocols"></span><div class="section" id="extended-access-control-specification">
-<h1>Extended Access Control Specification<a class="headerlink" href="#extended-access-control-specification" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="extended-access-control-specification">
+<span id="protocols"></span><h1>Extended Access Control Specification<a class="headerlink" href="#extended-access-control-specification" title="Permalink to this headline">¶</a></h1>
 <p>Extended Access Control version 2 (EAC) defined by the <a class="reference external" href="https://www.bsi.bund.de">Federal Office for
 Information Security (BSI)</a> <a class="footnote-reference" href="#id5" id="id6">[1]</a> in the <a class="reference external" href="https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html">Technical Guideline TR-03110</a> <a class="footnote-reference" href="#id7" id="id8">[2]</a>.  It is
 designed to be compatible and submitted to be standardized with <a class="reference external" href="http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx">ICAO Machine
@@ -184,50 +170,50 @@ parties involved in <abbr title="Extended Access Control">EAC</abbr>.</p>
 <p>The PACE Protocol is a password authenticated Diffie-Hellman key agreement
 protocol that provides secure communication and explicit password-based
 authentication of the MRTD chip and the terminal (i.e. MRTD chip and terminal
-share the same password <span class="math">\(\pi\)</span>).</p>
+share the same password <span class="math notranslate nohighlight">\(\pi\)</span>).</p>
 <div class="section" id="protocol-specification">
 <h3>Protocol Specification<a class="headerlink" href="#protocol-specification" title="Permalink to this headline">¶</a></h3>
 <p>The following steps are performed by the terminal and the MRTD chip:</p>
 <ol class="arabic">
-<li><p class="first">The MRTD chip randomly and uniformly chooses a nonce <span class="math">\(s\)</span>, encrypts the
-nonce to <span class="math">\(z=\operatorname{E} ( K_\pi , s)\)</span>, where
-<span class="math">\(K_\pi=\operatorname{KDF}_\pi(\pi)\)</span> is derived from the shared
-password <span class="math">\(\pi\)</span>, and sends the ciphertext <span class="math">\(z\)</span> together with the
-static domain parameters <span class="math">\(D_{\text{PICC}}\)</span> to the terminal.</p>
+<li><p class="first">The MRTD chip randomly and uniformly chooses a nonce <span class="math notranslate nohighlight">\(s\)</span>, encrypts the
+nonce to <span class="math notranslate nohighlight">\(z=\operatorname{E} ( K_\pi , s)\)</span>, where
+<span class="math notranslate nohighlight">\(K_\pi=\operatorname{KDF}_\pi(\pi)\)</span> is derived from the shared
+password <span class="math notranslate nohighlight">\(\pi\)</span>, and sends the ciphertext <span class="math notranslate nohighlight">\(z\)</span> together with the
+static domain parameters <span class="math notranslate nohighlight">\(D_{\text{PICC}}\)</span> to the terminal.</p>
 </li>
-<li><p class="first">The terminal recovers the plaintext <span class="math">\(s=\operatorname{D}( K_\pi , z )\)</span>
-with the help of the shared password <span class="math">\(\pi\)</span>.</p>
+<li><p class="first">The terminal recovers the plaintext <span class="math notranslate nohighlight">\(s=\operatorname{D}( K_\pi , z )\)</span>
+with the help of the shared password <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
 </li>
 <li><p class="first">Both the MRTD chip and the terminal perform the following steps:</p>
 <ol class="loweralpha">
-<li><p class="first">They compute the ephemeral domain parameters <span class="math">\(\widetilde{D}
+<li><p class="first">They compute the ephemeral domain parameters <span class="math notranslate nohighlight">\(\widetilde{D}
 =\operatorname{Map}( D_{\text{PICC}} , s )\)</span>.</p>
 </li>
 <li><p class="first">They perform an anonymous Diffie-Hellman key agreement based on the
 ephemeral domain parameters and generate the shared secret.</p>
 <blockquote>
 <div><blockquote>
-<div><div class="math">
+<div><div class="math notranslate nohighlight">
 \[K =\operatorname{KA} ( \widetilde{SK_{\text{PICC}}} ,
 \widetilde{PK_{\text{PCD}}} , \widetilde{D}) =\operatorname{KA} (
 \widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PICC}}} ,
 \widetilde{D} )\]</div>
 </div></blockquote>
 <p>During Diffie-Hellman key agreement, each party SHOULD check that the
-two public keys <span class="math">\(\widetilde{PK_{\text{PICC}}}\)</span> and
-<span class="math">\(\widetilde{PK_{\text{PCD}}}\)</span> differ.</p>
+two public keys <span class="math notranslate nohighlight">\(\widetilde{PK_{\text{PICC}}}\)</span> and
+<span class="math notranslate nohighlight">\(\widetilde{PK_{\text{PCD}}}\)</span> differ.</p>
 </div></blockquote>
 </li>
 <li><p class="first">They derive session keys.</p>
 <blockquote>
-<div><div class="math">
+<div><div class="math notranslate nohighlight">
 \[K_{\text{MAC}} =\operatorname{KDF}_{\text{MAC}} ( K )\text{ and }
 K_{\text{Enc}}=\operatorname{KDF}_{\text{Enc}} ( K )\]</div>
 </div></blockquote>
 </li>
 <li><p class="first">They exchange and verify the authentication token.</p>
 <blockquote>
-<div><div class="math">
+<div><div class="math notranslate nohighlight">
 \[T_{\text{PCD}} =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
 \widetilde{PK_{\text{PICC}}} )\text{ and }T_{\text{PICC}}
 =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
@@ -240,13 +226,13 @@ K_{\text{Enc}}=\operatorname{KDF}_{\text{Enc}} ( K )\]</div>
 </div>
 <div class="section" id="ecdh-mapping">
 <h3>ECDH Mapping<a class="headerlink" href="#ecdh-mapping" title="Permalink to this headline">¶</a></h3>
-<p>Let <span class="math">\(G\)</span> and <span class="math">\(\widetilde{G}\)</span> be the static and an ephemeral base
+<p>Let <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(\widetilde{G}\)</span> be the static and an ephemeral base
 point on the elliptic curve.</p>
 <div class="section" id="generic-mapping">
 <h4>Generic Mapping<a class="headerlink" href="#generic-mapping" title="Permalink to this headline">¶</a></h4>
-<p>The function <span class="math">\(\operatorname{Map}:G \mapsto \widetilde{G}\)</span> is defined as
-<span class="math">\(\widetilde{G} =s\cdot G+H\)</span>, where <span class="math">\(H \in \langle G \rangle\)</span> is
-chosen s.th. <span class="math">\(\log_G H\)</span> is unknown. The point <span class="math">\(H\)</span> SHALL be
+<p>The function <span class="math notranslate nohighlight">\(\operatorname{Map}:G \mapsto \widetilde{G}\)</span> is defined as
+<span class="math notranslate nohighlight">\(\widetilde{G} =s\cdot G+H\)</span>, where <span class="math notranslate nohighlight">\(H \in \langle G \rangle\)</span> is
+chosen s.th. <span class="math notranslate nohighlight">\(\log_G H\)</span> is unknown. The point <span class="math notranslate nohighlight">\(H\)</span> SHALL be
 calculated by an anonymous Diffie-Hellman Key Agreement.</p>
 <p>Note: The key agreement algorithm ECKA prevents small subgroup attacks by using
 compatible cofactor multiplication.</p>
@@ -258,13 +244,13 @@ compatible cofactor multiplication.</p>
 </div>
 <div class="section" id="dh-mapping">
 <h3>DH Mapping<a class="headerlink" href="#dh-mapping" title="Permalink to this headline">¶</a></h3>
-<p>Let <span class="math">\(g\)</span> and <span class="math">\(\widetilde{g}\)</span> be the static and an ephemeral
+<p>Let <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(\widetilde{g}\)</span> be the static and an ephemeral
 generator.</p>
 <div class="section" id="id1">
 <h4>Generic Mapping<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
-<p>The function <span class="math">\(\operatorname{Map}: g \mapsto \widetilde{g}\)</span> is defined as
-<span class="math">\(\widetilde{g} =g^s \cdot h\)</span>, where <span class="math">\(h \in \langle g \rangle\)</span> is
-chosen s.th. <span class="math">\(\log_g h\)</span> is unknown.  The group element <span class="math">\(h\)</span> SHALL be
+<p>The function <span class="math notranslate nohighlight">\(\operatorname{Map}: g \mapsto \widetilde{g}\)</span> is defined as
+<span class="math notranslate nohighlight">\(\widetilde{g} =g^s \cdot h\)</span>, where <span class="math notranslate nohighlight">\(h \in \langle g \rangle\)</span> is
+chosen s.th. <span class="math notranslate nohighlight">\(\log_g h\)</span> is unknown.  The group element <span class="math notranslate nohighlight">\(h\)</span> SHALL be
 calculated by an anonymous Diffie-Hellman Key Agreement.</p>
 <p>Note: The public key validation method described in RFC 2631 MUST be used to
 prevent small subgroup attacks.</p>
@@ -279,12 +265,12 @@ prevent small subgroup attacks.</p>
 <h2>Terminal Authentication<a class="headerlink" href="#terminal-authentication" title="Permalink to this headline">¶</a></h2>
 <p>The Terminal Authentication Protocol is a two move challenge-response
 protocol that provides explicit unilateral authentication of the terminal.</p>
-<p>In this protocol <span class="math">\(ID_{\text{PICC}}\)</span> is an identifier of the MRTD chip:</p>
+<p>In this protocol <span class="math notranslate nohighlight">\(ID_{\text{PICC}}\)</span> is an identifier of the MRTD chip:</p>
 <ul class="simple">
-<li>If BAC is used <span class="math">\(ID_{\text{PICC}}\)</span> is the MRTD chip’s Document Number as
+<li>If BAC is used <span class="math notranslate nohighlight">\(ID_{\text{PICC}}\)</span> is the MRTD chip’s Document Number as
 contained in the MRZ including the check digit.</li>
-<li>If PACE is used <span class="math">\(ID_{\text{PICC}}\)</span> is computed using the MRTD chip’s
-ephemeral PACE public key, i.e. <span class="math">\(ID_{\text{PICC}} =\operatorname{Comp}
+<li>If PACE is used <span class="math notranslate nohighlight">\(ID_{\text{PICC}}\)</span> is computed using the MRTD chip’s
+ephemeral PACE public key, i.e. <span class="math notranslate nohighlight">\(ID_{\text{PICC}} =\operatorname{Comp}
 (\widetilde{PK_{\text{PICC}}})\)</span></li>
 </ul>
 <p>Note: All messages MUST be transmitted with Secure Messaging in
@@ -299,24 +285,24 @@ with a certificate verifiable with the CVCA public key stored on the chip
 and ends with the Terminal Certificate.</p>
 </li>
 <li><p class="first">The MRTD chip verifies the certificates and extracts the terminal’s public
-key <span class="math">\(PK_{\text{PCD}}\)</span>.</p>
+key <span class="math notranslate nohighlight">\(PK_{\text{PCD}}\)</span>.</p>
 </li>
 <li><p class="first">Version 2 only:</p>
 <ol class="loweralpha simple">
 <li>The terminal generates an ephemeral Diffie-Hellman key pair
-<span class="math">\((\widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PCD}}} ,
+<span class="math notranslate nohighlight">\((\widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PCD}}} ,
 D_{\text{PICC}} )\)</span>, and sends the compressed ephemeral public key
-<span class="math">\(\operatorname{Comp}( \widetilde{PK_{\text{PCD}}})\)</span> to the MRTD chip.</li>
-<li>The terminal may send auxiliary data <span class="math">\(A_{\text{PCD}}\)</span> to the MRTD
+<span class="math notranslate nohighlight">\(\operatorname{Comp}( \widetilde{PK_{\text{PCD}}})\)</span> to the MRTD chip.</li>
+<li>The terminal may send auxiliary data <span class="math notranslate nohighlight">\(A_{\text{PCD}}\)</span> to the MRTD
 chip.</li>
 </ol>
 </li>
-<li><p class="first">The MRTD chip randomly chooses a challenge <span class="math">\(r_{\text{PICC}}\)</span> and sends
+<li><p class="first">The MRTD chip randomly chooses a challenge <span class="math notranslate nohighlight">\(r_{\text{PICC}}\)</span> and sends
 it to the terminal.</p>
 </li>
 <li><p class="first">The terminal responds with the signature.</p>
 <blockquote>
-<div><div class="math">
+<div><div class="math notranslate nohighlight">
 \[s_{\text{PCD}} =\operatorname{Sign}( SK_{\text{PCD}} , ID_{\text{PICC}}
 \parallel r_{\text{PICC}} \parallel
 \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
@@ -325,7 +311,7 @@ A_{\text{PCD}} )\]</div>
 </li>
 <li><p class="first">The MRTD chip checks that</p>
 <blockquote>
-<div><div class="math">
+<div><div class="math notranslate nohighlight">
 \[\operatorname{Verify} ( PK_{\text{PCD}} , s_{\text{PCD}} ,
 ID_{\text{PICC}}\parallel r_{\text{PICC}}\parallel
 \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
@@ -346,47 +332,47 @@ performing Secure Messaging using the new session keys.</p>
 <div class="section" id="id4">
 <h3>Protocol Specification<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>In this version Terminal Authentication MUST be performed before Chip
-Authentication, as the terminal&#8217;s ephemeral key pair
-<span class="math">\((\widetilde{SK_{\text{PCD}}}, \widetilde{PK_{\text{PCD}}},
+Authentication, as the terminal’s ephemeral key pair
+<span class="math notranslate nohighlight">\((\widetilde{SK_{\text{PCD}}}, \widetilde{PK_{\text{PCD}}},
 \widetilde{D_{\text{PICC}}})\)</span> is generated as part of Terminal Authentication.</p>
 <ol class="arabic">
 <li><p class="first">The MRTD chip sends its static Diffie-Hellman public key
-<span class="math">\(PK_{\text{PICC}}\)</span> and the domain parameters <span class="math">\(D_{\text{PICC}}\)</span>
+<span class="math notranslate nohighlight">\(PK_{\text{PICC}}\)</span> and the domain parameters <span class="math notranslate nohighlight">\(D_{\text{PICC}}\)</span>
 to the terminal.</p>
 </li>
 <li><p class="first">The terminal sends the ephemeral public key
-<span class="math">\(\widetilde{PK_{\text{PCD}}}\)</span> to the MRTD chip.</p>
+<span class="math notranslate nohighlight">\(\widetilde{PK_{\text{PCD}}}\)</span> to the MRTD chip.</p>
 </li>
 <li><p class="first">The MRTD chip computes the terminal’s compressed ephemeral public key
-<span class="math">\(\operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\)</span> and compares this
+<span class="math notranslate nohighlight">\(\operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\)</span> and compares this
 to the compressed public key received in Terminal Authentication.</p>
 </li>
 <li><p class="first">Both the MRTD chip and the terminal compute the shared
 secret.</p>
 <blockquote>
-<div><div class="math">
+<div><div class="math notranslate nohighlight">
 \[K=\operatorname{KA}(SK_{\text{PICC}}, \widetilde{PK_{\text{PCD}}},
 D_{\text{PICC}})=\operatorname{KA}(\widetilde{SK_{\text{PCD}}},
 PK_{\text{PICC}}, D_{\text{PICC}})\]</div>
 </div></blockquote>
 </li>
-<li><p class="first">The MRTD chip randomly chooses a nonce <span class="math">\(r_{\text{PICC}}\)</span>, derives
-session keys <span class="math">\(K_{\text{MAC}}=\operatorname{KDF}_{\text{MAC}}(K,
-r_{\text{PICC}})\)</span> and <span class="math">\(K_{\text{Enc}} =
+<li><p class="first">The MRTD chip randomly chooses a nonce <span class="math notranslate nohighlight">\(r_{\text{PICC}}\)</span>, derives
+session keys <span class="math notranslate nohighlight">\(K_{\text{MAC}}=\operatorname{KDF}_{\text{MAC}}(K,
+r_{\text{PICC}})\)</span> and <span class="math notranslate nohighlight">\(K_{\text{Enc}} =
 \operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}} )\)</span> for Secure
-Messaging from <span class="math">\(K\)</span> and <span class="math">\(r_{\text{PICC}}\)</span>, computes the
-authentication token <span class="math">\(T_{\text{PICC}} =\operatorname{\text{MAC}}(
+Messaging from <span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(r_{\text{PICC}}\)</span>, computes the
+authentication token <span class="math notranslate nohighlight">\(T_{\text{PICC}} =\operatorname{\text{MAC}}(
 K_{\text{MAC}} , \widetilde{PK_{\text{PCD}}})\)</span> and sends
-<span class="math">\(r_{\text{PICC}}\)</span> and <span class="math">\(T_{\text{PICC}}\)</span> to the terminal.</p>
+<span class="math notranslate nohighlight">\(r_{\text{PICC}}\)</span> and <span class="math notranslate nohighlight">\(T_{\text{PICC}}\)</span> to the terminal.</p>
 </li>
-<li><p class="first">The terminal derives session keys <span class="math">\(K_{\text{MAC}}
+<li><p class="first">The terminal derives session keys <span class="math notranslate nohighlight">\(K_{\text{MAC}}
 =\operatorname{KDF}_{\text{MAC}} ( K , r_{\text{PICC}})\)</span> and
-<span class="math">\(K_{\text{Enc}} =\operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}}
-)\)</span> for Secure Messaging from <span class="math">\(K\)</span> and <span class="math">\(r_{\text{PICC}}\)</span> and
-verifies the authentication token <span class="math">\(T_{\text{PICC}}\)</span>.</p>
+<span class="math notranslate nohighlight">\(K_{\text{Enc}} =\operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}}
+)\)</span> for Secure Messaging from <span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(r_{\text{PICC}}\)</span> and
+verifies the authentication token <span class="math notranslate nohighlight">\(T_{\text{PICC}}\)</span>.</p>
 </li>
 </ol>
-<p>To verify the authenticity of the <span class="math">\(PK_{\text{PICC}}\)</span> the terminal SHALL
+<p>To verify the authenticity of the <span class="math notranslate nohighlight">\(PK_{\text{PICC}}\)</span> the terminal SHALL
 perform Passive Authentication.</p>
 <table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
@@ -422,7 +408,7 @@ perform Passive Authentication.</p>
       
     </p>
     <p>
-        &copy; Copyright 2012-2018 by Frank Morgner and Dominik Oepen.<br/>
+        &copy; Copyright 2012-2019 by Frank Morgner and Dominik Oepen.<br/>
     </p>
   </div>
 </footer>

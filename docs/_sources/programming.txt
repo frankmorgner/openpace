@@ -19,11 +19,11 @@ Using OpenPACE in C/C++
 
 Here we have a small example in C:
 
-.. literalinclude:: ../src/example.c
+.. literalinclude:: ../../src/example.c
     :language: c
 
 .. seealso::
-    Have a look at the `nPA Smart Card Library`_ for a more complex project
+    Have a look at the `OpenSC Project`_ for a more complex project
     that uses the C Interface from OpenPACE.
 
 
@@ -40,7 +40,7 @@ environment variable.
 
 Here is a sample script that shows how OpenPACE is accessed from Python:
 
-.. literalinclude:: ../bindings/python/example.py
+.. literalinclude:: ../../bindings/python/example.py
     :language: python
 
 .. seealso::
@@ -66,7 +66,7 @@ SWIG and Ruby.
 
 Here is a sample script that shows how OpenPACE is accessed from Ruby:
 
-.. literalinclude:: ../bindings/ruby/example.rb
+.. literalinclude:: ../../bindings/ruby/example.rb
     :language: ruby
 
 .. versionadded:: 0.9
@@ -82,7 +82,7 @@ and ``gccgo``.
 
 Here is a sample program that shows how OpenPACE is accessed from Go:
 
-.. literalinclude:: ../bindings/go/example.go
+.. literalinclude:: ../../bindings/go/example.go
     :language: go
 
 .. versionadded:: 0.9
@@ -99,7 +99,7 @@ SWIG, a java compiler and the JNI developement headers. You may set the
 
 Here is a sample program that shows how OpenPACE is accessed from Java:
 
-.. literalinclude:: ../bindings/java/Example.java
+.. literalinclude:: ../../bindings/java/Example.java
     :language: java
 
 
@@ -115,5 +115,5 @@ cross compiling. It is covered in :ref:`javascript_api`
 
 .. _`SWIG`: http://swig.org
 .. _`pyPACE`: http://pypace.sourceforge.net
-.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/npa/README.html
+.. _`OpenSC Project`: https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c
 .. _`Emulator for the German Identity Card`: https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html

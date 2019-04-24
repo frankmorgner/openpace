@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Usage of OpenPACE &#8212; OpenPACE 1.0.3 documentation</title>
-    
-    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <title>Usage of OpenPACE &#8212; OpenPACE 1.1.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/breathe.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Programming with OpenPACE" href="programming.html" />
@@ -39,8 +26,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
   
   <a href="https://github.com/frankmorgner/openpace"
      class="visible-desktop hidden-xs"><img
@@ -68,7 +54,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           OpenPACE</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -102,9 +88,9 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Usage of OpenPACE</a><ul>
-<li><a class="reference internal" href="#using-libeac">Using <code class="docutils literal"><span class="pre">libeac</span></code></a></li>
-<li><a class="reference internal" href="#using-cvc-create-to-create-the-eac-pki">Using <code class="docutils literal"><span class="pre">cvc-create</span></code> to Create the EAC PKI</a></li>
-<li><a class="reference internal" href="#using-cvc-print">Using <code class="docutils literal"><span class="pre">cvc-print</span></code></a></li>
+<li><a class="reference internal" href="#using-libeac">Using <code class="docutils literal notranslate"><span class="pre">libeac</span></code></a></li>
+<li><a class="reference internal" href="#using-cvc-create-to-create-the-eac-pki">Using <code class="docutils literal notranslate"><span class="pre">cvc-create</span></code> to Create the EAC PKI</a></li>
+<li><a class="reference internal" href="#using-cvc-print">Using <code class="docutils literal notranslate"><span class="pre">cvc-print</span></code></a></li>
 <li><a class="reference internal" href="#creating-the-document-pki-and-ef-cardaccess-ef-cardsecurity">Creating the Document PKI and EF.CardAccess/EF.CardSecurity</a></li>
 </ul>
 </li>
@@ -154,17 +140,17 @@
   <div class="section" id="usage-of-openpace">
 <h1>Usage of OpenPACE<a class="headerlink" href="#usage-of-openpace" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="using-libeac">
-<h2>Using <code class="docutils literal"><span class="pre">libeac</span></code><a class="headerlink" href="#using-libeac" title="Permalink to this headline">¶</a></h2>
+<h2>Using <code class="docutils literal notranslate"><span class="pre">libeac</span></code><a class="headerlink" href="#using-libeac" title="Permalink to this headline">¶</a></h2>
 <p>OpenPACE is a native C library on top of OpenSSL. If you want to know how to
 use OpenPACE from C/C++, have a look at our <a class="reference external" href="_static/doxygen/modules.html">API documentation</a>.</p>
 <p>OpenPACE uses <a class="reference external" href="http://swig.org">SWIG</a> to offer bindings in some more
 programming languages. The bindings are easily portable to lots of different
 languages. Currently, native language bindings need to be explicitly turned on
-with <code class="docutils literal"><span class="pre">./configure</span> <span class="pre">--enable-...</span></code></p>
+with <code class="docutils literal notranslate"><span class="pre">./configure</span> <span class="pre">--enable-...</span></code></p>
 <p>If you have chosen to install OpenPACE in a non-standard location you have to
-set up the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal"><span class="pre">LD_LIBRARY_PATH</span></code> environment variable correctly. One way to
+set up the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> environment variable correctly. One way to
 do this on Linux is:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/path/to/libeac
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/path/to/libeac
 </pre></div>
 </div>
 <p>If OpenPACE is compiled for Javascript, it results in a standalone Javascript
@@ -183,14 +169,17 @@ file that can be used without special requirements.</p>
 </li>
 </ul>
 </div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.0: </span>Added support for certificate signing requests
+(<cite>CVC_verify_request_signature()</cite>,
+<cite>CVC_verify_authentication_request_signatures()</cite>,
+<cite>certificate_request_print()</cite>,
+<cite>certificate_authentication_request_print()</cite>)</p>
+</div>
 </div>
 <div class="section" id="using-cvc-create-to-create-the-eac-pki">
-<h2>Using <code class="docutils literal"><span class="pre">cvc-create</span></code> to Create the EAC PKI<a class="headerlink" href="#using-cvc-create-to-create-the-eac-pki" title="Permalink to this headline">¶</a></h2>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.9: </span><cite>cvc-create</cite> is a command line tool for creating a <abbr title="Extended Access Control">EAC</abbr> PKI of
-Authentication Terminals, Signature Terminals or Inspection Systems.</p>
-</div>
-<div class="highlight-text"><div class="highlight"><pre><span></span>cvc-create 1.0.3
+<h2>Using <code class="docutils literal notranslate"><span class="pre">cvc-create</span></code> to Create the EAC PKI<a class="headerlink" href="#using-cvc-create-to-create-the-eac-pki" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cvc-create 1.1.0
 
 Create a card verifiable certificate
 
@@ -202,11 +191,17 @@ Usage: cvc-create [OPTIONS]...
                                (default=`CHR.cvcert&#39;)
       --role=ENUM            The terminal&#39;s role  (possible values=&quot;cvca&quot;,
                                &quot;dv_domestic&quot;, &quot;dv_foreign&quot;, &quot;terminal&quot;)
-      --type=ENUM            Type of the terminal (Authentication Terminal,
-                               Inspection System or Signature Terminal)
-                               (possible values=&quot;at&quot;, &quot;is&quot;, &quot;st&quot;,
-                               &quot;derived_from_signer&quot;
-                               default=`derived_from_signer&#39;)
+      --type=STRING          Type of the terminal. Known values are &quot;at&quot;
+                               (Authentication Terminal), &quot;is&quot; (Inspection
+                               System), &quot;st&quot; (Signature Terminal),
+                               &quot;derived_from_signer&quot; (uses the the signer&#39;s
+                               CVC type), any other value is interpreted as
+                               object identifier.
+                               (default=`derived_from_signer&#39;)
+      --chat=HEXSTRING       Raw Card Holder Authorization Template (CHAT).
+                               This option will overwrite any terminal specific
+                               effective authorization (see options for
+                               AT/IS/ST).
       --issued=YYMMDD        Date the certificate was issued  (default=`today&#39;)
       --expires=YYMMDD       Date until the certicate is valid
       --sign-with=FILENAME   Private key for signing the new certificate
@@ -330,7 +325,7 @@ Written by Frank Morgner &lt;frankmorgner@gmail.com&gt;
 </pre></div>
 </div>
 <p>Below you see an example of how to create a certificate chain of CVCA, DVCA and a Terminal:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Create country verifying CA&#39;s private key</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create country verifying CA&#39;s private key</span>
 openssl ecparam -out ZZATCVCA00001.pem -name prime192v1 -genkey -param_enc explicit
 openssl pkcs8 -topk8 -nocrypt -in ZZATCVCA00001.pem -outform DER -out ZZATCVCA00001.pkcs8
 <span class="c1"># Create self signed country verifying CA certificate</span>
@@ -345,16 +340,25 @@ cvc-create --role<span class="o">=</span>dv_domestic --chr<span class="o">=</spa
 cvc-create --role<span class="o">=</span>terminal --chr<span class="o">=</span>ZZATTERM00001 --expires<span class="o">=</span><span class="sb">`</span>date --date<span class="o">=</span><span class="s2">&quot;next week&quot;</span> <span class="s2">&quot;+%^y%^m%^d&quot;</span><span class="sb">`</span> --sign-with<span class="o">=</span>ZZATDVCA00001.pkcs8 --sign-as<span class="o">=</span>ZZATDVCA00001.cvcert --scheme<span class="o">=</span>ECDSA_SHA_256 --rid --cert-desc<span class="o">=</span>ZZATTERM00001.txt --issuer-name<span class="o">=</span>DVCA --subject-name<span class="o">=</span>TERM
 </pre></div>
 </div>
-<p>The script <code class="file docutils literal"><span class="pre">generate-eac-pki.sh</span></code> generates a set of
+<p>The script <code class="file docutils literal notranslate"><span class="pre">generate-eac-pki.sh</span></code> generates a set of
 authentication terminals and signature terminals for all signature schemes in
 all standardized elliptic curves.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.1.0: </span>Added support for arbitrary terminal types and CHATs</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.0: </span>- Added support for certificate signing requests (<code class="xref std std-option docutils literal notranslate"><span class="pre">--csr</span></code>)
+- Renamed <code class="xref std std-option docutils literal notranslate"><span class="pre">--out</span></code> to <code class="xref std std-option docutils literal notranslate"><span class="pre">--out-cert</span></code> and added
+  <code class="xref std std-option docutils literal notranslate"><span class="pre">--out-desc</span></code>, <code class="xref std std-option docutils literal notranslate"><span class="pre">--out-key</span></code></p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.9: </span>Created <cite>cvc-create</cite> for generating a <abbr title="Extended Access Control">EAC</abbr> PKI of
+Authentication Terminals, Signature Terminals or Inspection Systems.</p>
+</div>
 </div>
 <div class="section" id="using-cvc-print">
-<h2>Using <code class="docutils literal"><span class="pre">cvc-print</span></code><a class="headerlink" href="#using-cvc-print" title="Permalink to this headline">¶</a></h2>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.8: </span><cite>cvc-print</cite> is a command line tool for printing card verifiable certificates.</p>
-</div>
-<div class="highlight-text"><div class="highlight"><pre><span></span>cvc-print 1.0.3
+<h2>Using <code class="docutils literal notranslate"><span class="pre">cvc-print</span></code><a class="headerlink" href="#using-cvc-print" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cvc-print 1.1.0
 
 Prints card verifiable certificate and its description
 
@@ -373,19 +377,28 @@ Written by Frank Morgner and Dominik Oepen
 </pre></div>
 </div>
 <p>Below you see of how to print the certificates created in the example above:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span>cvc-print --cvc ZZATCVCA00001.cvcert
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cvc-print --cvc ZZATCVCA00001.cvcert
 cvc-print --cvc ZZATDVCA00001.cvcert
 cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
 </pre></div>
 </div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.0.2: </span>Added <code class="xref std std-option docutils literal notranslate"><span class="pre">--cvc-dir</span></code></p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.0: </span>Added support for certificate signing requests (<code class="xref std std-option docutils literal notranslate"><span class="pre">--csr</span></code>)</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.8: </span>Created <cite>cvc-print</cite> for printing card verifiable certificates.</p>
+</div>
 </div>
 <div class="section" id="creating-the-document-pki-and-ef-cardaccess-ef-cardsecurity">
 <h2>Creating the Document PKI and EF.CardAccess/EF.CardSecurity<a class="headerlink" href="#creating-the-document-pki-and-ef-cardaccess-ef-cardsecurity" title="Permalink to this headline">¶</a></h2>
-<p>The card&#8217;s key agreement capabilities can be read by the terminal from
+<p>The card’s key agreement capabilities can be read by the terminal from
 EF.CardAccess.  The standardized domain parameter for <abbr title="Chip Authentication">CA</abbr> (e.g.
-brainpoolP256r1/<code class="docutils literal"><span class="pre">0x0D</span></code>) need to match the key agreement scheme for <abbr title="Chip Authentication">CA</abbr> (e.g.
+brainpoolP256r1/<code class="docutils literal notranslate"><span class="pre">0x0D</span></code>) need to match the key agreement scheme for <abbr title="Chip Authentication">CA</abbr> (e.g.
 ECDH):</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="nv">asn1</span><span class="o">=</span>SET:SecurityInfos
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">asn1</span><span class="o">=</span>SET:SecurityInfos
 
 <span class="o">[</span>SecurityInfos<span class="o">]</span>
 <span class="nv">tainfo</span><span class="o">=</span>SEQUENCE:TerminalAuthenticationInfo
@@ -414,16 +427,16 @@ ECDH):</p>
 <span class="hll"><span class="nv">parameter</span><span class="o">=</span>INTEGER:0x0D
 </span></pre></div>
 </div>
-<p>The above example can be found in <code class="file docutils literal"><span class="pre">doc/efcardaccess_asn1.conf</span></code>. OpenSSL
+<p>The above example can be found in <code class="file docutils literal notranslate"><span class="pre">doc/efcardaccess_asn1.conf</span></code>. OpenSSL
 can translate this into its ASN.1 represantation, which gives us
 EF.CardAccess:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span>openssl asn1parse -genconf efcardaccess_asn1.conf -out efcardaccess.dump
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>openssl asn1parse -genconf efcardaccess_asn1.conf -out efcardaccess.dump
 </pre></div>
 </div>
 <p>In EF.CardSecurity the data of EF.CardAccess including the <abbr title="Chip Authentication">CA</abbr> public key of
 the chip is signed by the document signer. First we create the <abbr title="Country Signing Certificate Authority">CSCA</abbr> and the
 document signer:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Create the country signing CA&#39;s private key</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the country signing CA&#39;s private key</span>
 openssl ecparam -out csca_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
 <span class="c1"># Create the country verifying CA&#39;s self signed certificate</span>
 openssl req -new -x509 -days <span class="m">5000</span> -key csca_key.pem -out csca_cert.pem
@@ -435,17 +448,17 @@ openssl req -new -key docsigner_key.pem -out docsigner.csr
 openssl x509 -req -in docsigner.csr -CA csca_cert.pem -CAkey csca_key.pem -CAcreateserial -out docsigner_cert.pem
 </pre></div>
 </div>
-<p>Now generate the chip&#8217;s private key for <abbr title="Chip Authentication">CA</abbr> and print its (public) key:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Create chip&#39;s key</span>
+<p>Now generate the chip’s private key for <abbr title="Chip Authentication">CA</abbr> and print its (public) key:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create chip&#39;s key</span>
 openssl ecparam -out card_key.pem -name brainpoolP256r1 -genkey -param_enc explicit
 <span class="c1"># Print the public key and copy it to the clipboard</span>
 openssl ec -in card_key.pem -text
 </pre></div>
 </div>
-<p>Finally we can create EF.CardSecurity by adding the card&#8217;s public key to the
-last line of our template and signing the content with the document signer&#8217;s
+<p>Finally we can create EF.CardSecurity by adding the card’s public key to the
+last line of our template and signing the content with the document signer’s
 key:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="c1"># Add the public key (without &#39;:&#39; and &#39; &#39;) to the template for EF.CardSecurity</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add the public key (without &#39;:&#39; and &#39; &#39;) to the template for EF.CardSecurity</span>
 cp doc/efcardsecurity_templ_asn1.conf efcardsecurity_asn1.conf <span class="o">&amp;&amp;</span> vi efcardsecurity_asn1.conf
 
 <span class="c1"># Create and sign EF.CardSecurity</span>
@@ -468,7 +481,7 @@ openssl cms -sign -nodetach -binary -in efcardsecurity_content.dump -inform DER 
       
     </p>
     <p>
-        &copy; Copyright 2012-2018 by Frank Morgner and Dominik Oepen.<br/>
+        &copy; Copyright 2012-2019 by Frank Morgner and Dominik Oepen.<br/>
     </p>
   </div>
 </footer>

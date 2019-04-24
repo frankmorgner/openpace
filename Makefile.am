@@ -82,8 +82,7 @@ test-cvcutils:
 		&& ln -s ZZATDVCA00001.cvcert ZZATDVCA00001 \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATCVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATDVCA00001.cvcert \
-		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc \
-		|| (rm -f ZZATTERM00001.txt ZZATCVCA00001 ZZATCVCA00001.pem ZZATCVCA00001.pkcs8 ZZATCVCA00001.cvcert ZZATDVCA00001 ZZATDVCA00001.cvcert ZZATDVCA00001.pkcs8 ZZATTERM00001.cvcert ZZATTERM00001.pkcs8 ZZATTERM00001.desc && false)
+		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
 	rm -f ZZATTERM00001.txt ZZATCVCA00001 ZZATCVCA00001.pem ZZATCVCA00001.pkcs8 ZZATCVCA00001.cvcert ZZATDVCA00001 ZZATDVCA00001.cvcert ZZATDVCA00001.pkcs8 ZZATTERM00001.cvcert ZZATTERM00001.pkcs8 ZZATTERM00001.desc
 	openssl genrsa -out ZZISCVCA00001.pem 2048 \
 		&& openssl pkcs8 -topk8 -nocrypt -in ZZISCVCA00001.pem -outform DER -out ZZISCVCA00001.pkcs8 \

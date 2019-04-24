@@ -79,12 +79,16 @@ for:
     :target: https://codecov.io/gh/frankmorgner/openpace/branch/master
     :alt: Codecov Status
 
+.. image:: https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg
+    :target: https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp
+    :alt: Language grade: C/C++
+
 .. note::
     OpenPACE only implements the cryptographic protocols of the |EAC|. If you
     actually want to exchange data with a smart card, you need to take care of
     formatting and sending the data in the form of APDUs. If this is what
     you're trying to do, you should have a look at the :command:`npa-tool` of
-    the `nPA Smart Card Library`_.
+    the `OpenSC Project`_.
 
 
 *******************************************************************************
@@ -113,4 +117,4 @@ more than welcome! You can contact us through our `GitHub
 .. target-notes::
 
 .. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
-.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/
+.. _`OpenSC Project`: https://github.com/OpenSC/OpenSC/

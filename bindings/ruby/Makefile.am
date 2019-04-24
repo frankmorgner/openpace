@@ -41,7 +41,7 @@ ext/eac.so: ext/Makefile
 all-local: ext/eac.so
 
 clean-local:
-	$(MAKE) clean -C ext
+	$(MAKE) clean -C ext || true
 
 distclean-local:
 	rm -rf ext

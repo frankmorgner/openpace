@@ -41,13 +41,16 @@ More details and a number of examples for using the library are covered here:
 
     programming
 
+.. versionadded:: 1.0
+    Added support for certificate signing requests
+    (`CVC_verify_request_signature()`,
+    `CVC_verify_authentication_request_signatures()`,
+    `certificate_request_print()`,
+    `certificate_authentication_request_print()`)
+
 ===============================================================================
 Using ``cvc-create`` to Create the EAC PKI
 ===============================================================================
-
-.. versionadded:: 0.9
-    `cvc-create` is a command line tool for creating a |EAC| PKI of
-    Authentication Terminals, Signature Terminals or Inspection Systems.
 
 .. program-output:: cvc-create --help
 
@@ -71,12 +74,21 @@ The script :file:`generate-eac-pki.sh` generates a set of
 authentication terminals and signature terminals for all signature schemes in
 all standardized elliptic curves.
 
+.. versionadded:: 1.1.0
+    Added support for arbitrary terminal types and CHATs
+
+.. versionadded:: 1.0
+    - Added support for certificate signing requests (:option:`--csr`)
+    - Renamed :option:`--out` to :option:`--out-cert` and added
+      :option:`--out-desc`, :option:`--out-key`
+
+.. versionadded:: 0.9
+    Created `cvc-create` for generating a |EAC| PKI of
+    Authentication Terminals, Signature Terminals or Inspection Systems.
+
 ===============================================================================
 Using ``cvc-print``
 ===============================================================================
-
-.. versionadded:: 0.8
-    `cvc-print` is a command line tool for printing card verifiable certificates.
 
 .. program-output:: cvc-print --help
 
@@ -85,6 +97,15 @@ Below you see of how to print the certificates created in the example above::
     cvc-print --cvc ZZATCVCA00001.cvcert
     cvc-print --cvc ZZATDVCA00001.cvcert
     cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
+
+.. versionadded:: 1.0.2
+    Added :option:`--cvc-dir`
+
+.. versionadded:: 1.0
+    Added support for certificate signing requests (:option:`--csr`)
+
+.. versionadded:: 0.8
+    Created `cvc-print` for printing card verifiable certificates.
 
 ===============================================================================
 Creating the Document PKI and EF.CardAccess/EF.CardSecurity

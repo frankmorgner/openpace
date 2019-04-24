@@ -131,66 +131,25 @@ wasting too much time on setting up the development environment would be to
 compile the library by hand in the :menuselection:`Visual Studio Tools -->
 Developer Command Prompt` with installed `OpenSSL Windows binaries`_:
 
-.. literalinclude:: ../appveyor.yml
-    :lines: 106-112
+.. literalinclude:: ../../appveyor.yml
+    :lines: 69-79
 
-The |correct (TM)| process combines Visual Studio, MSYS2_ with cccl_ and allows
-using the same procedure and features that we are used to when `Compiling on
-Linux, Unix and similar`_. We will not depict it here. If you're interested,
-have a look at our `Windows CI script
-<https://github.com/frankmorgner/openpace/blob/master/appveyor.yml>`_ which
-includes all steps of this procedure.
+The setup of the environment variables can be found in our `Windows CI script
+<https://github.com/frankmorgner/openpace/blob/master/appveyor.yml#L7-L47>`_
+which includes all steps of this procedure.
 
 Compiling the Python Bindings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-With the cross compiled or native binaries you may now compile the Python
-bindings.  For this you need to setup your Windows as following:
+Again, without further ado, we compile the bindings with the Developer Command
+prompt with installed `Python`_:
 
-1. Check out the git repository to the directory :file:`C:\\openpace`
+.. literalinclude:: ../../appveyor.yml
+    :lines: 81-85
 
-2. Install `Visual Studio 2013`_ and open :menuselection:`Visual Studio Tools
-   --> Developer Command Prompt`
-
-3. Install `SWIG`_ and modify the :envvar:`PATH` so that :command:`swig.exe`
-   can be found::
-
-    set PATH="C:\swig";%PATH%
-
-4. Install `Python`_ and set :envvar:`PYTHON_INCLUDE` and
-   :envvar:`PYTHON_LIBD`/:envvar:`PYTHON_LIB` accordingly::
-
-    set PYTHON_INCLUDE="C:\Python27\include"
-    set PYTHON_LIBD="C:\Python27"
-    set PYTHON_LIB="python278.lib"
-
-5. Copy the cross compiled OpenPACE libraries to Windows and set :envvar:`OPENPACE_ROOT`::
-   
-    set OPENPACE_ROOT="C:\openpace\openpace-1.0.0_win32
-
-6. Create OpenPACE's and OpenSSL's import libraries::
-
-    lib /def:"%OPENPACE_ROOT%\lib\libeac-2.def" /OUT:"%OPENPACE_ROOT%\lib\libeac.lib"
-    lib /def:"%OPENPACE_ROOT%\lib\libeay32.def" /OUT:"%OPENPACE_ROOT%\lib\libeay32.lib"
-
-6. Build the Python bindings::
-
-    cd "C:\openpace"
-    msbuild "bindings\win32\eac.sln"
-
-   If you can successfully build the solution, you can find the python in
-   :file:`%OPENPACE_ROOT%\\bindings\\win32\\Release`. Put them all together
-   with the cross compiled OpenPACE library::
-   
-    copy "C:\openpace\bindings\win32\Release\_eac.pyd" "%OPENPACE_ROOT%\bin"
-    copy "C:\openpace\bindings\win32\Release\eac.py"   "%OPENPACE_ROOT%\bin"
-    copy "C:\openpace\bindings\python\chat.py"         "%OPENPACE_ROOT%\bin"
-    copy "C:\openpace\bindings\python\pace_entity.py"  "%OPENPACE_ROOT%\bin"
-   
-   Now for testing, you may try::
-
-    cd "%OPENPACE_ROOT%\bin"
-    "%PYTHON_LIBD%\python.exe" "C:\openpace\bindings\python\example.py"
+The setup of the environment variables can be found in our `Windows CI script
+<https://github.com/frankmorgner/openpace/blob/master/appveyor.yml#L7-L47>`_
+which includes all steps of this procedure.
 
 
 =====================
