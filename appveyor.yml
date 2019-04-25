@@ -21,7 +21,7 @@ install:
       If ($env:Platform -Match "x86") {
         $env:VCVARS_PLATFORM="x86"
         $env:OPENSSL_PLATFORM="Win32"
-        $env:OPENPACE_PLATFORM="win64"
+        $env:OPENPACE_PLATFORM="win32"
         # If AppVeyor comes with OpenSSL 1.1.0 installed
         #$env:LIBCRYPTO="libcrypto32MT.lib"
         $env:LIBCRYPTO="libeay32MT.lib"
