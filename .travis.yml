@@ -21,7 +21,7 @@ env:
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "KOfJHBqx3I7GsY6OIiqBMN5iFkTpeGlj+WwXF/ZaGmG7bYtIx1641mH43ECoaxGH6I4Tkdf2VBX3xTSVaCeT8OO0K3Zr84MRqmfjfzTo1uGkwiZD3e/pahPVjOTb+IGPForskeooix6KgCJQfW6skh8EEy7EPnZTNXJw2XLujj4="
     - COVERITY_SCAN_BRANCH_PATTERN="(master|coverity.*)"
-    - COVERITY_SCAN_NOTIFICATION_EMAIL="frankmorgner@gmail.com"
+    - COVERITY_SCAN_NOTIFICATION_EMAIL="uri@mit.edu"
     - COVERITY_SCAN_BUILD_COMMAND="make"
     - COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG"
     - SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
