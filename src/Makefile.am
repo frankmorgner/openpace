@@ -102,6 +102,7 @@ cvc-create.1: cvc-create.ggo.in
 	$(ENV) $(HELP2MAN) \
 		--output=$@ \
 		--no-info \
+		--no-discard-stderr \
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-create$(EXEEXT)
 
@@ -110,6 +111,7 @@ cvc-print.1: cvc-print.ggo.in
 	$(ENV) $(HELP2MAN) \
 		--output=$@ \
 		--no-info \
+		--no-discard-stderr \
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-print$(EXEEXT)
 
