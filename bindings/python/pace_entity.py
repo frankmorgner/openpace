@@ -28,9 +28,9 @@ and related methods from OpenPACE
 import eac
 import string, binascii
 
-EF_CARD_ACCESS = "\x31\x81\x82\x30\x0D\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x02\x02\x01\x02\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x02\x02\x01\x02\x02\x01\x41\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x04\x02\x02\x02\x01\x02\x02\x01\x0D\x30\x1C\x06\x09\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x30\x0C\x06\x07\x04\x00\x7F\x00\x07\x01\x02\x02\x01\x0D\x02\x01\x41\x30\x2B\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x06\x16\x1F\x65\x50\x41\x20\x2D\x20\x42\x44\x72\x20\x47\x6D\x62\x48\x20\x2D\x20\x54\x65\x73\x74\x6B\x61\x72\x74\x65\x20\x76\x32\x2E\x30\x04\x49\x17\x15\x41\x19\x28\x80\x0A\x01\xB4\x21\xFA\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\x10\x10\x29\x10\x10"
+EF_CARD_ACCESS = b"\x31\x81\x82\x30\x0D\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x02\x02\x01\x02\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x02\x02\x01\x02\x02\x01\x41\x30\x12\x06\x0A\x04\x00\x7F\x00\x07\x02\x02\x04\x02\x02\x02\x01\x02\x02\x01\x0D\x30\x1C\x06\x09\x04\x00\x7F\x00\x07\x02\x02\x03\x02\x30\x0C\x06\x07\x04\x00\x7F\x00\x07\x01\x02\x02\x01\x0D\x02\x01\x41\x30\x2B\x06\x08\x04\x00\x7F\x00\x07\x02\x02\x06\x16\x1F\x65\x50\x41\x20\x2D\x20\x42\x44\x72\x20\x47\x6D\x62\x48\x20\x2D\x20\x54\x65\x73\x74\x6B\x61\x72\x74\x65\x20\x76\x32\x2E\x30\x04\x49\x17\x15\x41\x19\x28\x80\x0A\x01\xB4\x21\xFA\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20\x10\x10\x29\x10\x10"
 
-_myprintable = " " + string.letters + string.digits + string.punctuation
+_myprintable = " " + string.ascii_letters + string.digits + string.punctuation
 def hexdump(data, indent = 0, short = False, linelen = 16, offset = 0):
     """Generates a nice hexdump of data and returns it. Consecutive lines will
     be indented with indent spaces. When short is true, will instead generate
@@ -131,7 +131,7 @@ class PACEEntity(object):
         """
         enc = eac.EAC_encrypt(self.ctx, data)
         if not enc or not eac.EAC_increment_ssc(self.ctx):
-            raise PACEException("Failed to encrypt the following data: " + data)
+            raise PACEException("Failed to encrypt the following data: " + data.decode("utf-8"))
         return enc
 
     def decrypt(self, data):
@@ -140,7 +140,7 @@ class PACEEntity(object):
         """
         dec = eac.EAC_decrypt(self.ctx, data)
         if not dec or not eac.EAC_increment_ssc(self.ctx):
-            raise PACEException("Failed to decrypt the following data: " + data)
+            raise PACEException("Failed to decrypt the following data: " + data.decode("utf-8"))
         return dec
 
     def authenticate(self, data):
@@ -150,7 +150,7 @@ class PACEEntity(object):
         """
         auth = eac.EAC_authenticate(self.ctx, data)
         if not auth or not eac.EAC_increment_ssc(self.ctx):
-            raise PACEException("Failed to compute MAC for: " + data)
+            raise PACEException("Failed to compute MAC for: " + data.decode("utf-8"))
         return auth
 
     def EAC_CTX_set_encryption_ctx(self):
@@ -169,7 +169,7 @@ class PICC(PACEEntity):
         super(PICC, self).__init__(pin)
 
     def __str__(self):
-        return "PICC:\n" + super(PICC, self).__str__()
+        return "PICC:\n" + super(PICC, self).__str__().decode("utf-8")
 
     def generate_nonce(self):
         self._enc_nonce = eac.PACE_STEP1_enc_nonce(self.ctx, self.sec)
@@ -195,7 +195,7 @@ class PCD(PACEEntity):
         super(PCD, self).__init__(pin)
 
     def __str__(self):
-        return "PCD:\n" + super(PCD, self).__str__()
+        return "PCD:\n" + super(PCD, self).__str__().decode("utf-8")
 
     def decrypt_nonce(self, enc_nonce):
         self._enc_nonce = enc_nonce

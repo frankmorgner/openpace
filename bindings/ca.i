@@ -175,8 +175,8 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token);
 
         /* In python3 the following functions must be replace with their
            PyBytes counterparts. */
-        nonce_str = PyString_FromStringAndSize(nonce->data, nonce->length);
-        token_str = PyString_FromStringAndSize(token->data, token->length);
+        nonce_str = PyBytes_FromStringAndSize(nonce->data, nonce->length);
+        token_str = PyBytes_FromStringAndSize(token->data, token->length);
         if (!nonce_str || !token_str)
             goto err;
 

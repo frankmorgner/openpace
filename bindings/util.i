@@ -38,6 +38,9 @@ extern BUF_MEM *BUF_MEM_create_init(const void *buf, size_t len);
 %delobject BUF_MEM_clear_free;
 void BUF_MEM_clear_free(BUF_MEM *b);
 
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 int OBJ_txt2nid(char *in);
 
 void EAC_init(void);

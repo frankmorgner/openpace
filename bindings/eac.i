@@ -130,6 +130,10 @@ EAC_CTX_init_pace(EAC_CTX *ctx, int protocol, int curve);
 
 #if !defined(SWIGGO) && !defined(SWIGJAVA)
 
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
+
 %rename(EAC_encrypt) eac_encrypt;
 %inline %{
     static void eac_encrypt(char **out, size_t *out_len, const EAC_CTX *ctx,
@@ -225,6 +229,10 @@ err:
 
 #else
 
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
+
 BUF_MEM *
 EAC_encrypt(const EAC_CTX *ctx, const BUF_MEM *data);
 
@@ -249,6 +257,10 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
     const unsigned char *cert, size_t cert_len);
 
 #endif
+
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 
 %rename(EAC_CTX_init_ef_cardaccess) eac_ctx_init_ef_cardaccess;
 %inline %{
@@ -278,6 +290,10 @@ EAC_CTX_init_ta(const EAC_CTX *ctx,
 %}
 
 #else
+
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 
 BUF_MEM *
 EAC_encrypt(const EAC_CTX *ctx, const BUF_MEM *data);
