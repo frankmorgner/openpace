@@ -215,6 +215,9 @@ BUF_MEM_create(size_t len)
     if (!out)
         return NULL;
 
+    if (len == 0)
+        return out;
+
     if (!BUF_MEM_grow(out, len)) {
         BUF_MEM_free(out);
         return NULL;
