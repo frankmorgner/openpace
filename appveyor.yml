@@ -14,7 +14,6 @@ environment:
 
   matrix:
     - VSVER: 14
-    - VSVER: 12
 
 install:
   - ps: >-
@@ -35,10 +34,10 @@ install:
         $env:LIBCRYPTO="libeay32MT.lib"
         $env:PYTHON_PLATFORM="-x64"
       }
-  - set PATH=C:\Python27%PYTHON_PLATFORM%;%PATH%
-  - set PYTHON_INCLUDE=C:\Python27%PYTHON_PLATFORM%\include
-  - set PYTHON_LIB=C:\Python27%PYTHON_PLATFORM%\libs\python27.lib
-  - set ARTIFACT=%APPVEYOR_PROJECT_NAME%_%OPENPACE_PLATFORM%-vs%VSVER%
+  - set PATH=C:\Python38%PYTHON_PLATFORM%;%PATH%
+  - set PYTHON_INCLUDE=C:\Python38%PYTHON_PLATFORM%\include
+  - set PYTHON_LIB=C:\Python38%PYTHON_PLATFORM%\libs\python38.lib
+  - set ARTIFACT=%APPVEYOR_PROJECT_NAME%_%OPENPACE_PLATFORM%-vs%VSVER%-python3
   - set OPENSSL_DIR=C:\OpenSSL-%OPENSSL_PLATFORM%
   - for /f "usebackq tokens=*" %%a in (`cygpath -u %OPENSSL_DIR%`) do set OPENSSL_CYGDIR=%%a
   - set OPENPACE_DIR=C:\%ARTIFACT%
@@ -94,6 +93,7 @@ build_script:
   - bash -c "tail  -n +2 bindings/python/cvc_rehash.in > $DESTDIR/bin/cvc_rehash"
   - bash -c "cp    bindings/python/eac.py                $DESTDIR/bin"
   - bash -c "cp    bindings/python/_eac.pyd              $DESTDIR/bin"
+  - bash -c "cp    bindings/python/example.py            $DESTDIR/bin"
   - bash -c "cp    bindings/python/chat.py               $DESTDIR/bin"
   - bash -c "cp    bindings/python/pace_entity.py        $DESTDIR/bin"
   - bash -c "$OPENSSL_CYGDIR/bin/openssl.exe version >>  $DESTDIR/dependencies.txt"

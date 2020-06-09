@@ -86,6 +86,10 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
 
 #if !defined(SWIG_CSTRING_UNIMPL) || defined(SWIGGO) || defined(SWIGJAVA)
 
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
+
 %newobject CVC_d2i_CVC_CERT;
 %rename (CVC_d2i_CVC_CERT) cvc_d2i_cvc_cert;
 %inline %{ /* typemap applied */
@@ -224,6 +228,10 @@ err:
 %}
 
 #endif
+
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 
 %newobject d2i_CVC_CHAT;
 %rename (d2i_CVC_CHAT) d2i_cvc_chat;

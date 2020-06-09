@@ -43,6 +43,10 @@ enum s_type {
  * @defgroup manage              Data Managment
  * @{ ************************************************************************/
 
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
+
 %newobject PACE_SEC_new;
 PACE_SEC *
 PACE_SEC_new(char *in, size_t in_len, enum s_type type); /* typemap applied */
@@ -52,6 +56,10 @@ void
 PACE_SEC_clear_free(PACE_SEC *s);
 
 #if !defined(SWIG_CSTRING_UNIMPL)
+
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 
 %rename (PACE_SEC_print_private) pace_sec_print_private;
 %inline %{
@@ -94,6 +102,10 @@ err:
  * @{ ************************************************************************/
 
 #if !defined(SWIG_CSTRING_UNIMPL)
+
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 
 %rename(PACE_STEP1_enc_nonce) pace_step1_enc_nonce;
 %inline %{
@@ -220,6 +232,10 @@ err:
 
 #else
 
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
+
 BUF_MEM *
 PACE_STEP1_enc_nonce(const EAC_CTX * ctx, const PACE_SEC * pi);
 
@@ -246,6 +262,10 @@ int
 PACE_STEP3D_verify_authentication_token(const EAC_CTX *ctx, const BUF_MEM *token);
 
 #endif
+
+%begin %{
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
+%}
 
 int
 PACE_STEP3C_derive_keys(const EAC_CTX *ctx);

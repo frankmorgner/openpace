@@ -37,7 +37,7 @@ class OpenPACEException(Exception):
 
 class CHAT(object):
     def __init__(self, chat):
-        if (type(chat) == str):
+        if (type(chat) == bytes):
             self.asn1_string = chat
             self.chat = eac.d2i_CVC_CHAT(chat)
         elif (type(chat).__name__ == 'SwigPyObject'):
@@ -50,7 +50,7 @@ class CHAT(object):
         eac.CVC_CHAT_free(self.chat)
 
     def __str__(self):
-        ret = eac.get_chat_repr(self.chat)
+        ret = eac.get_chat_repr(self.chat).decode("utf-8")
 
         if ret is None:
             raise OpenPACEException("Failed to parse CHAT")
@@ -94,7 +94,7 @@ class CVC(object):
         eac.CVC_CERT_free(self.cvc)
 
     def __str__(self):
-        ret = eac.get_cvc_repr(self.cvc)
+        ret = eac.get_cvc_repr(self.cvc).decode("utf-8")
 
         if ret is None:
             raise OpenPACEException("Failed to parse CV certificate")
@@ -102,7 +102,7 @@ class CVC(object):
         return ret
 
     def get_car(self):
-        ret = eac.CVC_get_car(self.cvc)
+        ret = eac.CVC_get_car(self.cvc).decode("utf-8")
 
         if ret is None:
             raise OpenPACEException("Failed to extract CAR")
@@ -110,7 +110,7 @@ class CVC(object):
         return ret
 
     def get_chr(self):
-        ret = eac.CVC_get_chr(self.cvc)
+        ret = eac.CVC_get_chr(self.cvc).decode("utf-8")
 
         if ret is None:
             raise OpenPACEException("Failed to extract CHR")
