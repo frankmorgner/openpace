@@ -822,7 +822,43 @@ int main(int argc, char *argv[])
         /* write public key */
         if (cert->body->public_key)
             CVC_PUBKEY_free(cert->body->public_key);
-        cert->body->public_key = CVC_PUBKEY_dup(request->body->public_key);
+        if (cmdline.role_arg == role_arg_cvca) {
+            cert->body->public_key = CVC_PUBKEY_dup(request->body->public_key);
+        } else {
+            int nid = OBJ_obj2nid(request->body->public_key->oid);
+            if (       nid == NID_id_TA_ECDSA_SHA_1
+                    || nid == NID_id_TA_ECDSA_SHA_224
+                    || nid == NID_id_TA_ECDSA_SHA_256
+                    || nid == NID_id_TA_ECDSA_SHA_384
+                    || nid == NID_id_TA_ECDSA_SHA_512) {
+                cert->body->public_key = CVC_PUBKEY_new();
+                if (!cert->body->public_key)
+                    goto err;
+                /* copy only the public key without explicit parameters */
+                cert->body->public_key->oid = OBJ_dup(request->body->public_key->oid);
+                cert->body->public_key->cont6 = ASN1_OCTET_STRING_dup(request->body->public_key->cont6);
+                if (!cert->body->public_key->oid
+                        || !cert->body->public_key->cont6)
+                    goto err;
+            } else if (nid == NID_id_TA_RSA_v1_5_SHA_1
+                    || nid == NID_id_TA_RSA_v1_5_SHA_256
+                    || nid == NID_id_TA_RSA_v1_5_SHA_512
+                    || nid == NID_id_TA_RSA_PSS_SHA_1
+                    || nid == NID_id_TA_RSA_PSS_SHA_256
+                    || nid == NID_id_TA_RSA_PSS_SHA_512) {
+                /* copy only the public key without explicit parameters */
+                cert->body->public_key->oid = OBJ_dup(request->body->public_key->oid);
+                cert->body->public_key->cont1 = ASN1_OCTET_STRING_dup(request->body->public_key->cont1);
+                cert->body->public_key->cont2 = ASN1_OCTET_STRING_dup(request->body->public_key->cont2);
+                if (!cert->body->public_key->oid
+                        || !cert->body->public_key->cont1
+                        || !cert->body->public_key->cont2)
+                    goto err;
+            } else {
+                /* unknown mechanism, just copy everything */
+                cert->body->public_key = CVC_PUBKEY_dup(request->body->public_key);
+            }
+        }
     }
     if (!cert->body->public_key)
         goto err;
