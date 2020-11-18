@@ -1447,6 +1447,7 @@ CVC_pkey2pubkey(int all_parameters, int protocol, EVP_PKEY *key,
                 goto err;
             break;
         case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
             if (!CVC_dh2pubkey(all_parameters, key, bn_ctx, pubkey))
                 goto err;
             break;

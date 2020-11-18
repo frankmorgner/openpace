@@ -598,6 +598,7 @@ EVP_PKEY_dup(EVP_PKEY *key)
 
     switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
             dh_in = EVP_PKEY_get1_DH(key);
             if (!dh_in)
                 goto err;
@@ -773,6 +774,7 @@ Comp(EVP_PKEY *key, const BUF_MEM *pub, BN_CTX *bn_ctx, EVP_MD_CTX *md_ctx)
     BN_CTX_start(bn_ctx);
     switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
             out = hash(EVP_sha1(), md_ctx, NULL, pub);
             break;
 
@@ -912,6 +914,7 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
             break;
 
         case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
             dh = EVP_PKEY_get1_DH(evp_pkey);
             if (!dh)
                 goto err;
@@ -932,7 +935,7 @@ EVP_PKEY_set_keys(EVP_PKEY *evp_pkey,
             break;
 
         default:
-            log_err("Unknown type of key");
+            log_err("Unknown type of key %d", EVP_PKEY_base_id(evp_pkey));
             goto err;
             break;
     }
@@ -965,6 +968,7 @@ get_pubkey(EVP_PKEY *key, BN_CTX *bn_ctx)
 
     switch (EVP_PKEY_base_id(key)) {
         case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
             dh = EVP_PKEY_get1_DH(key);
             check_return(dh, "no DH key");
 

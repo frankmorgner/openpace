@@ -2473,6 +2473,7 @@ check_generator(EVP_PKEY *evp_pkey, const BUF_MEM generator, BN_CTX *bn_ctx)
                 goto err;
             break;
         case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
             dh = EVP_PKEY_get1_DH(evp_pkey);
             bn = BN_bin2bn((unsigned char *) generator.data, generator.length, bn);
             DH_get0_pqg(dh, NULL, NULL, &g);
