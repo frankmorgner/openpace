@@ -118,12 +118,6 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
     static void get_termsOfUsage(CVC_CERTIFICATE_DESCRIPTION *desc, char **out,
             size_t *out_len) {
     
-        const unsigned char *p;
-        int l;
-#ifndef HAVE_PATCHED_OPENSSL
-        ASN1_UTF8STRING *s = NULL;
-#endif
-
         *out = NULL;
         *out_len = 0;
 
@@ -131,39 +125,19 @@ CVC_CERTIFICATE_DESCRIPTION_free(CVC_CERTIFICATE_DESCRIPTION *a);
             goto err;
 
         /* TODO check for OID */
-#ifndef HAVE_PATCHED_OPENSSL
-        if (!desc->termsOfUsage.other || desc->termsOfUsage.other->type != V_ASN1_SEQUENCE) {
-            return;
-        }
-        p = desc->termsOfUsage.other->value.sequence->data;
-        if (!d2i_ASN1_UTF8STRING(&s, &p,
-                    desc->termsOfUsage.other->value.sequence->length)) {
-            return;
-        }
-        p = s->data;
-        l = s->length;
-#else
-        if (!desc->termsOfUsage.plainTerms) {
+        if (!desc->termsOfUsage) {
             goto err;
         }
-        p = desc->termsOfUsage.plainTerms->data;
-        l = desc->termsOfUsage.plainTerms->length;
-#endif
 
-        *out = (char *) malloc(l);
+        *out = (char *) malloc(desc->termsOfUsage->length);
         if (!*out)
             goto err;
-        *out_len = l;
-        memcpy(*out, p, *out_len);
+        *out_len = desc->termsOfUsage->length;
+        memcpy(*out, desc->termsOfUsage->data, *out_len);
 
 err:
-#ifndef HAVE_PATCHED_OPENSSL
-        if (s)
-            ASN1_UTF8STRING_free(s);
-#else
         /* need to have something behind a label */
         ;
-#endif
     }
 %}
 
