@@ -537,7 +537,6 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
     unsigned char *desc_data = NULL;
     size_t len = 0, ext_len = 0, desc_data_len = 0;
     int desc_type = NID_undef;
-    void *asn1 = NULL;
 
     if (cmdline->cert_desc_arg) {
         len = strlen(cmdline->cert_desc_arg);
@@ -568,37 +567,10 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
         if (0 != read_file(cmdline->cert_desc_arg, &desc_data, &desc_data_len)) {
             goto err;
         }
-        if        (desc_type == NID_id_plainFormat) {
-                asn1 = ASN1_UTF8STRING_new();
-        } else if (desc_type == NID_id_htmlFormat) {
-            asn1 = ASN1_IA5STRING_new();
-        } else {
-            /* desc_type == NID_id_pdfFormat */
-            asn1 = ASN1_OCTET_STRING_new();
-        }
-        if (!asn1 || !ASN1_OCTET_STRING_set(asn1, desc_data, desc_data_len))
+        desc->termsOfUsage = ASN1_OCTET_STRING_new();
+        if (!desc->termsOfUsage || !ASN1_OCTET_STRING_set(
+                    desc->termsOfUsage, desc_data, desc_data_len))
             goto err;
-#ifdef HAVE_PATCHED_OPENSSL
-        switch (desc_type) {
-            case NID_id_plainFormat:
-                desc->termsOfUsage.plainTerms = asn1;
-                break;
-            case NID_id_htmlFormat:
-                desc->termsOfUsage.htmlTerms = asn1;
-                break;
-            case NID_id_pdfFormat:
-                desc->termsOfUsage.pdfTerms = asn1;
-                break;
-            default:
-                goto err;
-        }
-#else
-        if (!desc->termsOfUsage.other)
-            desc->termsOfUsage.other = ASN1_TYPE_new();
-        if (!desc->termsOfUsage.other)
-            goto err;
-        ASN1_TYPE_set(desc->termsOfUsage.other, V_ASN1_SEQUENCE, asn1);
-#endif
 
         if (cmdline->issuer_name_arg) {
             if (!desc->issuerName)

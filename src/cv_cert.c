@@ -224,18 +224,6 @@ ASN1_ITEM_TEMPLATE(CVC_CERT) =
 ASN1_ITEM_TEMPLATE_END(CVC_CERT)
 IMPLEMENT_ASN1_FUNCTIONS(CVC_CERT)
 
-ASN1_ADB_TEMPLATE(cert_def) = ASN1_SIMPLE(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.other, ASN1_ANY);
-
-ASN1_ADB(CVC_CERTIFICATE_DESCRIPTION) = {
-#ifdef HAVE_PATCHED_OPENSSL
-        ADB_ENTRY(NID_id_plainFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.plainTerms, ASN1_UTF8STRING, 0x05)),
-        ADB_ENTRY(NID_id_htmlFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.htmlTerms, ASN1_IA5STRING, 0x05)),
-        ADB_ENTRY(NID_id_pdfFormat, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.pdfTerms, ASN1_OCTET_STRING, 0x05))
-#else
-        ADB_ENTRY(NID_undef, ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage.unused, ASN1_OCTET_STRING, 0x05))
-#endif
-} ASN1_ADB_END(CVC_CERTIFICATE_DESCRIPTION, 0, descriptionType, 0, &cert_def_tt, NULL);
-
 ASN1_SEQUENCE(CVC_COMMCERT_SEQ) = {
         ASN1_SET_OF(CVC_COMMCERT_SEQ, values, ASN1_OCTET_STRING),
 } ASN1_SEQUENCE_END(CVC_COMMCERT_SEQ)
@@ -245,7 +233,7 @@ ASN1_SEQUENCE(CVC_CERTIFICATE_DESCRIPTION) = {
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, issuerURL, ASN1_PRINTABLESTRING, 0x02),
         ASN1_IMP(CVC_CERTIFICATE_DESCRIPTION, subjectName, ASN1_UTF8STRING, 0x03),
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, subjectURL, ASN1_PRINTABLESTRING, 0x04),
-        ASN1_ADB_OBJECT(CVC_CERTIFICATE_DESCRIPTION),
+        ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, termsOfUsage, ASN1_OCTET_STRING, 0x05),
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, redirectURL, ASN1_PRINTABLESTRING, 0x06),
         ASN1_IMP_OPT(CVC_CERTIFICATE_DESCRIPTION, commCertificates, CVC_COMMCERT_SEQ, 0x07),
 } ASN1_SEQUENCE_END(CVC_CERTIFICATE_DESCRIPTION)
@@ -1076,7 +1064,6 @@ certificate_description_print(BIO *bio,
         const CVC_CERTIFICATE_DESCRIPTION *desc, int indent)
 {
     ASN1_OCTET_STRING *s;
-    const unsigned char *p;
     int ret, nid, count, i;
 
     if (desc == NULL)
@@ -1125,25 +1112,10 @@ certificate_description_print(BIO *bio,
 
     nid = OBJ_obj2nid(desc->descriptionType);
     if (nid == NID_id_plainFormat) {
-#ifndef HAVE_PATCHED_OPENSSL
-            ASN1_UTF8STRING *s = NULL;
-            if (desc->termsOfUsage.other->type != V_ASN1_SEQUENCE)
-                return 0;
-            p = desc->termsOfUsage.other->value.sequence->data;
-            if (!d2i_ASN1_UTF8STRING(&s, &p,
-                        desc->termsOfUsage.other->value.sequence->length))
-                return 0;
-            p = s->data;
-#else
-            p = desc->termsOfUsage.plainTerms->data;
-#endif
             if (!BIO_indent(bio, indent, 80)
-                    || !BIO_printf(bio, "%s\n%s\n", cert_desc_field_strings[5],
-                        p))
+                    || !BIO_printf(bio, "%s\n%.*s\n", cert_desc_field_strings[5],
+                        desc->termsOfUsage->length, desc->termsOfUsage->data))
                 return 0;
-#ifndef HAVE_PATCHED_OPENSSL
-            ASN1_UTF8STRING_free(s);
-#endif
             ret = 1;
     } else if (nid == NID_id_htmlFormat) {
         ret = 2;

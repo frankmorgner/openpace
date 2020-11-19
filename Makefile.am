@@ -78,8 +78,8 @@ test-cvcutils:
 		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=at --chr=ZZATCVCA00001 --issued=170101 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --scheme=ECDSA_SHA_512 --write-dg17 --write-dg18 --write-dg19 --write-dg20 --write-dg21 --at-rfu32 --at-rfu31 --at-rfu30 --at-rfu29 --read-dg1 --read-dg2 --read-dg3 --read-dg4 --read-dg5 --read-dg6 --read-dg7 --read-dg8 --read-dg9 --read-dg10 --read-dg11 --read-dg12 --read-dg13 --read-dg14 --read-dg15 --read-dg16 --read-dg17 --read-dg18 --read-dg19 --read-dg20 --read-dg21 --install-qual-cert --install-cert --pin-management --can-allowed --privileged --rid --verify-community --verify-age \
 		&& $(ENV) $(builddir)/src/cvc-create --role=dv_domestic --chr=ZZATDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZATCVCA00001.pkcs8 --sign-as=ZZATCVCA00001.cvcert --scheme=ECDSA_SHA_256 --rid \
 		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZATTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZATDVCA00001.pkcs8 --sign-as=ZZATDVCA00001.cvcert --scheme=ECDSA_SHA_1 --rid --cert-desc=ZZATTERM00001.txt --issuer-name=DVCA --issuer-url=http://dv.ca --subject-name=TERM --subject-url=http://term.ca \
-		&& ln -s ZZATCVCA00001.cvcert ZZATCVCA00001 \
-		&& ln -s ZZATDVCA00001.cvcert ZZATDVCA00001 \
+		&& ln -fs ZZATCVCA00001.cvcert ZZATCVCA00001 \
+		&& ln -fs ZZATDVCA00001.cvcert ZZATDVCA00001 \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATCVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATDVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
@@ -89,8 +89,8 @@ test-cvcutils:
 		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=is --chr=ZZISCVCA00001 --issued=170101 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZISCVCA00001.pkcs8 --scheme=RSA_v1_5_SHA_512 --read-eid --is-rfu4 --is-rfu3 --is-rfu2 --read-iris --read-finger \
 		&& $(ENV) $(builddir)/src/cvc-create --role=dv_foreign --chr=ZZISDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZISCVCA00001.pkcs8 --sign-as=ZZISCVCA00001.cvcert --scheme=RSA_v1_5_SHA_256 --read-eid \
 		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZISTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZISDVCA00001.pkcs8 --sign-as=ZZISDVCA00001.cvcert --scheme=RSA_v1_5_SHA_1 --read-eid \
-		&& ln -s ZZISCVCA00001.cvcert ZZISCVCA00001 \
-		&& ln -s ZZISDVCA00001.cvcert ZZISDVCA00001 \
+		&& ln -fs ZZISCVCA00001.cvcert ZZISCVCA00001 \
+		&& ln -fs ZZISDVCA00001.cvcert ZZISDVCA00001 \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZISCVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZISDVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZISTERM00001.cvcert \
@@ -101,8 +101,8 @@ test-cvcutils:
 		&& $(ENV) $(builddir)/src/cvc-create --role=cvca --type=st --chr=ZZSTCVCA00001 --issued=170101 --expires=`date --date="next year" "+%^y%^m%^d"` --sign-with=ZZSTCVCA00001.pkcs8 --scheme=RSA_PSS_SHA_512 --st-rfu5 --st-rfu4 --st-rfu3 --st-rfu2 --gen-qualified-sig --gen-sig \
 		&& $(ENV) $(builddir)/src/cvc-create --role=dv_domestic --chr=ZZSTDVCA00001 --expires=`date --date="next month" "+%^y%^m%^d"` --sign-with=ZZSTCVCA00001.pkcs8 --sign-as=ZZSTCVCA00001.cvcert --scheme=RSA_PSS_SHA_256 --gen-sig \
 		&& $(ENV) $(builddir)/src/cvc-create --role=terminal --chr=ZZSTTERM00001 --expires=`date --date="next week" "+%^y%^m%^d"` --sign-with=ZZSTDVCA00001.pkcs8 --sign-as=ZZSTDVCA00001.cvcert --scheme=RSA_PSS_SHA_1 --gen-sig \
-		&& ln -s ZZSTCVCA00001.cvcert ZZSTCVCA00001 \
-		&& ln -s ZZSTDVCA00001.cvcert ZZSTDVCA00001 \
+		&& ln -fs ZZSTCVCA00001.cvcert ZZSTCVCA00001 \
+		&& ln -fs ZZSTDVCA00001.cvcert ZZSTDVCA00001 \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZSTCVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZSTDVCA00001.cvcert \
 		&& $(ENV) $(builddir)/src/cvc-print --cvc-dir=. --cvc ZZSTTERM00001.cvcert \

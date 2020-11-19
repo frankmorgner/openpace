@@ -227,22 +227,7 @@ typedef struct cvc_commcert_seq_st {
     ASN1_PRINTABLESTRING *subjectURL;
      /** @brief Terms of Usage of the Service holding the certificate. May be
      *  formatted as either plain text, HTML or PDF */
-    union {
-#ifdef HAVE_PATCHED_OPENSSL
-        /** @brief Plain text Terms of Usage */
-        ASN1_UTF8STRING *plainTerms;
-        /** @brief HTML formatted Terms of Usage */
-        ASN1_IA5STRING *htmlTerms;
-        /** @brief PDF formatted Terms of Usage */
-        ASN1_OCTET_STRING *pdfTerms;
-#else
-        /** @brief just a placeholder */
-        ASN1_OCTET_STRING *unused;
-#endif
-        /** @brief Otherwise formatted Terms of Usage (not specified) */
-        ASN1_TYPE *other;
-    } termsOfUsage;
-
+    ASN1_OCTET_STRING *termsOfUsage;
     /** @brief Not used */
     ASN1_PRINTABLESTRING *redirectURL;
     /** @brief Contains hash values of admissible X.509 certificates of the remote
