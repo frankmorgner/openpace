@@ -370,9 +370,7 @@ aid2pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
 
     } else {
         OBJ_obj2txt(obj_txt, sizeof obj_txt, aid->algorithm, 0);
-        log_err("Unknown Identifier (%s) for %s",
-                OBJ_nid2sn(nid),
-                obj_txt);
+        debug("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid), obj_txt);
     }
 
     ret = tmp_key;
@@ -682,8 +680,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
 
         } else {
             OBJ_obj2txt(obj_txt, sizeof obj_txt, oid, 0);
-            log_err("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid),
-                    obj_txt);
+            debug("Unknown Identifier (%s) for %s", OBJ_nid2sn(nid), obj_txt);
         }
 
         /* if we have created the first PACE context, use it as default */
