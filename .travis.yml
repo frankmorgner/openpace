@@ -6,11 +6,16 @@ matrix:
       compiler: clang
       env: TARGET=osx
     - compiler: gcc
+      dist: trusty
       env: DO_CODECOV=yes
     - env: DO_COVERITY_SCAN=yes
+      dist: trusty
     - env: TARGET=win WIN_TOOL=i686-w64-mingw32
+      dist: trusty
     - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
+      dist: trusty
     - env: TARGET=emscripten
+      dist: trusty
 
 env:
   global:
