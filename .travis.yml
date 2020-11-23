@@ -59,10 +59,18 @@ addons:
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
-        brew update;
-        brew uninstall libtool;
-        brew install libtool;
-        brew install gengetopt help2man swig ccache;
+        curl https://ftp.gnu.org/gnu/gengetopt/gengetopt-2.23.tar.xz -L --output gengetopt-2.23.tar.xz;
+        tar xfj gengetopt-2.23.tar.xz;
+        pushd gengetopt-2.23;
+        ./configure && make;
+        sudo make install;
+        popd;
+        curl https://ftp.gnu.org/gnu/help2man/help2man-1.47.16.tar.xz -L --output help2man-1.47.16.tar.xz;
+        tar xjf help2man-1.47.16.tar.xz;
+        pushd help2man-1.47.16;
+        ./configure && make;
+        sudo make install;
+        popd;
         export PATH="/usr/local/opt/ccache/libexec:$PATH";
     fi
 
@@ -80,10 +88,10 @@ before_script:
   - if [ -n "${DO_CODECOV}" ]; then
       export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
     elif [ "${TRAVIS_OS_NAME}" != "osx" ]; then
-      export ENABLE_GO=--enable-go;
+      export ENABLE_BINDINGS="--enable-python --enable-java --enable-ruby --enable-go";
       export GCCGOFLAGS="-static-libgcc $CFLAGS";
     fi
-  - ./configure --enable-openssl-install --enable-python --enable-java --enable-ruby $ENABLE_GO;
+  - ./configure --enable-openssl-install $ENABLE_BINDINGS;
   # Optionally try to upload to Coverity Scan
   # On error (propably quota is exhausted), just continue
   - if [ -n "${DO_COVERITY_SCAN}" ]; then curl -s 'https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh' | bash || true; fi
@@ -107,11 +115,6 @@ after_success:
 cache:
   apt: true
   ccache: true
-  directories:
-     - $HOME/Library/Caches/Homebrew
-
-before_cache:
-    - brew cleanup
 
 notifications:
   email:
