@@ -1019,7 +1019,7 @@ cvc_get_reference_string(ASN1_OCTET_STRING *ref)
     check(ref, "Invalid input");
     check(is_chr(ref->data, ref->length), "Invalid certificate reference");
 
-    ret = OPENSSL_malloc(ref->length + 1);
+    ret = malloc(ref->length + 1);
     check(ret, "Not enough memory");
 
     memcpy(ret, ref->data, ref->length);
@@ -1039,7 +1039,7 @@ cvc_get_date_string(ASN1_OCTET_STRING *date)
             || !is_bcd(date->data, date->length))
         return NULL;
 
-    ret = OPENSSL_malloc(11);
+    ret = malloc(11);
     if (!ret)
         return NULL;
 
