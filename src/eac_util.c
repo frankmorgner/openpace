@@ -153,6 +153,8 @@ cipher(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl,
             goto err;
     }
 
+    if (!EVP_CIPHER_CTX_cipher(tmp_ctx))
+        goto err;
     flags = EVP_CIPHER_flags(EVP_CIPHER_CTX_cipher(tmp_ctx));
 
     if (flags & EVP_CIPH_NO_PADDING) {
