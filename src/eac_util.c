@@ -654,6 +654,8 @@ err:
         EC_KEY_free(ec_in);
     if (rsa_in)
         RSA_free(rsa_in);
+    if (!out)
+        EVP_PKEY_free(out);
 
     return NULL;
 }

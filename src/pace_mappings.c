@@ -99,6 +99,7 @@ dh_gm_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
 
     if (!DH_set0_pqg(ephemeral_key, BN_dup(p), BN_dup(q), new_g))
         goto err;
+    new_g = NULL;
 
     /* Copy ephemeral key to context structure */
     if (!EVP_PKEY_set1_DH(ctx->ka_ctx->key, ephemeral_key))
@@ -121,6 +122,8 @@ err:
     if (ephemeral_key)
         DH_free(ephemeral_key);
     BN_CTX_end(bn_ctx);
+    if (new_g)
+        BN_clear_free(new_g);
 
     return ret;
 }
@@ -182,6 +185,8 @@ dh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     check((!BN_is_one(g_new)), "Bad DH generator");
 
     DH_set0_pqg(ephemeral_key, BN_dup(p), q, g_new);
+    g_new = NULL;
+    q = NULL;
 
     /* Copy ephemeral key to context structure */
     if (!EVP_PKEY_set1_DH(ctx->ka_ctx->key, ephemeral_key))
@@ -190,12 +195,10 @@ dh_im_compute_key(PACE_CTX * ctx, const BUF_MEM * s, const BUF_MEM * in,
     ret = 1;
 
 err:
-    if (!ret) {
-        if (q)
-            BN_clear_free(q);
-        if (g_new)
-            BN_clear_free(g_new);
-    }
+    if (q)
+        BN_clear_free(q);
+    if (g_new)
+        BN_clear_free(g_new);
     if (p_1)
         BN_clear_free(p_1);
     if (x_bn)

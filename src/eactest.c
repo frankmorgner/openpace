@@ -2429,6 +2429,8 @@ generate_signature_key(int curve)
     return key;
 
 err:
+    if (bn)
+        BN_clear_free(bn);
     if (rsa)
         RSA_free(rsa);
     if (dh)
