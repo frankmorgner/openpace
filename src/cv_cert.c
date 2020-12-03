@@ -669,14 +669,10 @@ CVC_print(BIO *bio, const CVC_CERT *cv, int indent)
     r = 1;
 
 err:
-    if (effective_date)
-        OPENSSL_free(effective_date);
-    if (expiration_date)
-        OPENSSL_free(expiration_date);
-    if (car)
-        OPENSSL_free(car);
-    if (chr)
-        OPENSSL_free(chr);
+    free(effective_date);
+    free(expiration_date);
+    free(car);
+    free(chr);
 
     return r;
 }
@@ -849,10 +845,8 @@ int certificate_request_print(BIO *bio,
     r = 1;
 
 err:
-    if (car)
-        OPENSSL_free(car);
-    if (chr)
-        OPENSSL_free(chr);
+    free(car);
+    free(chr);
 
     return r;
 }
@@ -881,8 +875,7 @@ int certificate_authentication_request_print(BIO *bio,
     r = 1;
 
 err:
-    if (car)
-        OPENSSL_free(car);
+    free(car);
 
     return r;
 }
