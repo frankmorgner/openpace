@@ -1472,7 +1472,7 @@ EAC_ec_key_from_asn1(EC_KEY **key, ASN1_OCTET_STRING *p, ASN1_OCTET_STRING *a,
     order_bn = BN_CTX_get(lcl_bn_ctx);
     cofactor_bn = BN_CTX_get(lcl_bn_ctx);
 
-    if (!cofactor_bn)
+    if (!p_bn || !a_bn || !b_bn || !order_bn || !cofactor_bn)
         goto err;
 
     /* Copy field and curve */
