@@ -374,7 +374,8 @@ aid2pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
     }
 
     ret = tmp_key;
-    *key = tmp_key;
+    if (key)
+        *key = tmp_key;
 
 err:
     if (tmp_key && tmp_key != ret) {
