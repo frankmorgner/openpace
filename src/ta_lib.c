@@ -149,6 +149,7 @@ TA_CTX_set_parameters(TA_CTX *ctx, const CVC_CERT *cert,
     /* Extract the public key of the terminal and overwrite the current key. */
     if (ctx->priv_key) {
         pub = EVP_PKEY_dup(ctx->priv_key);
+        check(pub, "Failed to create public key");
         check(CVC_pubkey2pkey(cert, bn_ctx, pub),
                 "Failed to extract public key");
     } else {
