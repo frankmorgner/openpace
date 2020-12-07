@@ -237,7 +237,7 @@ err:
         CVC_CHAT_PRINT(chat, 0);
 
         /* Free memory */
-        CRYPTO_free(chat);
+        OPENSSL_free(chat);
         return;
     }
 %}
