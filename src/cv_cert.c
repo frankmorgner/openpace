@@ -364,8 +364,7 @@ CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len)
         check(ret->body->public_key->cont1 && ret->body->public_key->cont2,
                 "public key missing");
     } else {
-        log_err("unknown credentials in certificate");
-        goto err;
+        debug("unknown credentials in certificate");
     }
 
     return ret;
