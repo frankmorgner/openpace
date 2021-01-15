@@ -281,6 +281,9 @@ EC_POINT_point2mem(const EC_KEY * ecdh, BN_CTX * bn_ctx, const EC_POINT * ecp)
     size_t len;
     BUF_MEM * out;
 
+    if (!ecp)
+        return NULL;
+
     len = EC_POINT_point2oct(EC_KEY_get0_group(ecdh), ecp,
             EC_KEY_get_conv_form(ecdh), NULL, 0, bn_ctx);
     if (len == 0)
