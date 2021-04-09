@@ -9,7 +9,7 @@
  * any later version.
  *
  * OpenPACE is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY = NID_undef; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
