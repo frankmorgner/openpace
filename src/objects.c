@@ -34,6 +34,8 @@
 
 #ifndef HAVE_PATCHED_OPENSSL
 
+int objects_initialized = 0;
+
 int NID_standardizedDomainParameters = NID_undef;
 int NID_id_PK_DH = NID_undef;
 int NID_id_PK_ECDH = NID_undef;
@@ -119,265 +121,428 @@ int NID_id_CommunityID = NID_undef;
 void
 EAC_add_all_objects(void)
 {
+    int obj;
+
+    if (objects_initialized)
+        return;
+
     /* derived from a patched obj_mac.h with the power of regex */
 #define ASC_bsi_de		"0.4.0.127.0.7"
 
 #define ASC_standardizedDomainParameters		ASC_bsi_de".1.2"
-    NID_standardizedDomainParameters = OBJ_create(ASC_standardizedDomainParameters	, SN_standardizedDomainParameters	, SN_standardizedDomainParameters	);
+    obj = OBJ_create(ASC_standardizedDomainParameters	, SN_standardizedDomainParameters	, SN_standardizedDomainParameters	);
+    if (obj != NID_undef)
+        NID_standardizedDomainParameters = obj;
 
 #define ASC_id_PK		ASC_bsi_de".2.2.1"
 
 #define ASC_id_PK_DH		ASC_id_PK".1"
-    NID_id_PK_DH = OBJ_create(ASC_id_PK_DH	, SN_id_PK_DH	, SN_id_PK_DH	);
+    obj = OBJ_create(ASC_id_PK_DH	, SN_id_PK_DH	, SN_id_PK_DH	);
+    if (obj != NID_undef)
+        NID_id_PK_DH = obj;
 
 #define ASC_id_PK_ECDH		ASC_id_PK".2"
-    NID_id_PK_ECDH = OBJ_create(ASC_id_PK_ECDH	, SN_id_PK_ECDH	, SN_id_PK_ECDH	);
+    obj = OBJ_create(ASC_id_PK_ECDH	, SN_id_PK_ECDH	, SN_id_PK_ECDH	);
+    if (obj != NID_undef)
+        NID_id_PK_ECDH = obj;
 
 #define ASC_id_TA		ASC_bsi_de".2.2.2"
-    NID_id_TA = OBJ_create(ASC_id_TA	, SN_id_TA	, SN_id_TA	);
+    obj = OBJ_create(ASC_id_TA	, SN_id_TA	, SN_id_TA	);
+    if (obj != NID_undef)
+        NID_id_TA = obj;
 
 #define ASC_id_TA_RSA		ASC_id_TA".1"
-    NID_id_TA_RSA = OBJ_create(ASC_id_TA_RSA	, SN_id_TA_RSA	, SN_id_TA_RSA	);
+    obj = OBJ_create(ASC_id_TA_RSA	, SN_id_TA_RSA	, SN_id_TA_RSA	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA = obj;
 
 #define ASC_id_TA_RSA_v1_5_SHA_1		ASC_id_TA_RSA".1"
-    NID_id_TA_RSA_v1_5_SHA_1 = OBJ_create(ASC_id_TA_RSA_v1_5_SHA_1	, SN_id_TA_RSA_v1_5_SHA_1	, SN_id_TA_RSA_v1_5_SHA_1	);
+    obj = OBJ_create(ASC_id_TA_RSA_v1_5_SHA_1	, SN_id_TA_RSA_v1_5_SHA_1	, SN_id_TA_RSA_v1_5_SHA_1	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA_v1_5_SHA_1 = obj;
 
 #define ASC_id_TA_RSA_v1_5_SHA_256		ASC_id_TA_RSA".2"
-    NID_id_TA_RSA_v1_5_SHA_256 = OBJ_create(ASC_id_TA_RSA_v1_5_SHA_256	, SN_id_TA_RSA_v1_5_SHA_256	, SN_id_TA_RSA_v1_5_SHA_256	);
+    obj = OBJ_create(ASC_id_TA_RSA_v1_5_SHA_256	, SN_id_TA_RSA_v1_5_SHA_256	, SN_id_TA_RSA_v1_5_SHA_256	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA_v1_5_SHA_256 = obj;
 
 #define ASC_id_TA_RSA_PSS_SHA_1		ASC_id_TA_RSA".3"
-    NID_id_TA_RSA_PSS_SHA_1 = OBJ_create(ASC_id_TA_RSA_PSS_SHA_1	, SN_id_TA_RSA_PSS_SHA_1	, SN_id_TA_RSA_PSS_SHA_1	);
+    obj = OBJ_create(ASC_id_TA_RSA_PSS_SHA_1	, SN_id_TA_RSA_PSS_SHA_1	, SN_id_TA_RSA_PSS_SHA_1	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA_PSS_SHA_1 = obj;
 
 #define ASC_id_TA_RSA_PSS_SHA_256		ASC_id_TA_RSA".4"
-    NID_id_TA_RSA_PSS_SHA_256 = OBJ_create(ASC_id_TA_RSA_PSS_SHA_256	, SN_id_TA_RSA_PSS_SHA_256	, SN_id_TA_RSA_PSS_SHA_256	);
+    obj = OBJ_create(ASC_id_TA_RSA_PSS_SHA_256	, SN_id_TA_RSA_PSS_SHA_256	, SN_id_TA_RSA_PSS_SHA_256	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA_PSS_SHA_256 = obj;
 
 #define ASC_id_TA_RSA_v1_5_SHA_512		ASC_id_TA_RSA".5"
-    NID_id_TA_RSA_v1_5_SHA_512 = OBJ_create(ASC_id_TA_RSA_v1_5_SHA_512	, SN_id_TA_RSA_v1_5_SHA_512	, SN_id_TA_RSA_v1_5_SHA_512	);
+    obj = OBJ_create(ASC_id_TA_RSA_v1_5_SHA_512	, SN_id_TA_RSA_v1_5_SHA_512	, SN_id_TA_RSA_v1_5_SHA_512	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA_v1_5_SHA_512 = obj;
 
 #define ASC_id_TA_RSA_PSS_SHA_512		ASC_id_TA_RSA".6"
-    NID_id_TA_RSA_PSS_SHA_512 = OBJ_create(ASC_id_TA_RSA_PSS_SHA_512	, SN_id_TA_RSA_PSS_SHA_512	, SN_id_TA_RSA_PSS_SHA_512	);
+    obj = OBJ_create(ASC_id_TA_RSA_PSS_SHA_512	, SN_id_TA_RSA_PSS_SHA_512	, SN_id_TA_RSA_PSS_SHA_512	);
+    if (obj != NID_undef)
+        NID_id_TA_RSA_PSS_SHA_512 = obj;
 
 #define ASC_id_TA_ECDSA		ASC_id_TA".2"
-    NID_id_TA_ECDSA = OBJ_create(ASC_id_TA_ECDSA	, SN_id_TA_ECDSA	, SN_id_TA_ECDSA	);
+    obj = OBJ_create(ASC_id_TA_ECDSA	, SN_id_TA_ECDSA	, SN_id_TA_ECDSA	);
+    if (obj != NID_undef)
+        NID_id_TA_ECDSA = obj;
 
 #define ASC_id_TA_ECDSA_SHA_1		ASC_id_TA_ECDSA".1"
-    NID_id_TA_ECDSA_SHA_1 = OBJ_create(ASC_id_TA_ECDSA_SHA_1	, SN_id_TA_ECDSA_SHA_1	, SN_id_TA_ECDSA_SHA_1	);
+    obj = OBJ_create(ASC_id_TA_ECDSA_SHA_1	, SN_id_TA_ECDSA_SHA_1	, SN_id_TA_ECDSA_SHA_1	);
+    if (obj != NID_undef)
+        NID_id_TA_ECDSA_SHA_1 = obj;
 
 #define ASC_id_TA_ECDSA_SHA_224		ASC_id_TA_ECDSA".2"
-    NID_id_TA_ECDSA_SHA_224 = OBJ_create(ASC_id_TA_ECDSA_SHA_224	, SN_id_TA_ECDSA_SHA_224	, SN_id_TA_ECDSA_SHA_224	);
+    obj = OBJ_create(ASC_id_TA_ECDSA_SHA_224	, SN_id_TA_ECDSA_SHA_224	, SN_id_TA_ECDSA_SHA_224	);
+    if (obj != NID_undef)
+        NID_id_TA_ECDSA_SHA_224 = obj;
 
 #define ASC_id_TA_ECDSA_SHA_256		ASC_id_TA_ECDSA".3"
-    NID_id_TA_ECDSA_SHA_256 = OBJ_create(ASC_id_TA_ECDSA_SHA_256	, SN_id_TA_ECDSA_SHA_256	, SN_id_TA_ECDSA_SHA_256	);
+    obj = OBJ_create(ASC_id_TA_ECDSA_SHA_256	, SN_id_TA_ECDSA_SHA_256	, SN_id_TA_ECDSA_SHA_256	);
+    if (obj != NID_undef)
+        NID_id_TA_ECDSA_SHA_256 = obj;
 
 #define ASC_id_TA_ECDSA_SHA_384		ASC_id_TA_ECDSA".4"
-    NID_id_TA_ECDSA_SHA_384 = OBJ_create(ASC_id_TA_ECDSA_SHA_384	, SN_id_TA_ECDSA_SHA_384	, SN_id_TA_ECDSA_SHA_384	);
+    obj = OBJ_create(ASC_id_TA_ECDSA_SHA_384	, SN_id_TA_ECDSA_SHA_384	, SN_id_TA_ECDSA_SHA_384	);
+    if (obj != NID_undef)
+        NID_id_TA_ECDSA_SHA_384 = obj;
 
 #define ASC_id_TA_ECDSA_SHA_512		ASC_id_TA_ECDSA".5"
-    NID_id_TA_ECDSA_SHA_512 = OBJ_create(ASC_id_TA_ECDSA_SHA_512	, SN_id_TA_ECDSA_SHA_512	, SN_id_TA_ECDSA_SHA_512	);
+    obj = OBJ_create(ASC_id_TA_ECDSA_SHA_512	, SN_id_TA_ECDSA_SHA_512	, SN_id_TA_ECDSA_SHA_512	);
+    if (obj != NID_undef)
+        NID_id_TA_ECDSA_SHA_512 = obj;
 
 #define ASC_id_CA		ASC_bsi_de".2.2.3"
 
 #define ASC_id_CA_DH		ASC_id_CA".1"
-    NID_id_CA_DH = OBJ_create(ASC_id_CA_DH	, SN_id_CA_DH	, SN_id_CA_DH	);
+    obj = OBJ_create(ASC_id_CA_DH	, SN_id_CA_DH	, SN_id_CA_DH	);
+    if (obj != NID_undef)
+        NID_id_CA_DH = obj;
 
 #define ASC_id_CA_DH_3DES_CBC_CBC		ASC_id_CA_DH".1"
-    NID_id_CA_DH_3DES_CBC_CBC = OBJ_create(ASC_id_CA_DH_3DES_CBC_CBC	, SN_id_CA_DH_3DES_CBC_CBC	, SN_id_CA_DH_3DES_CBC_CBC	);
+    obj = OBJ_create(ASC_id_CA_DH_3DES_CBC_CBC	, SN_id_CA_DH_3DES_CBC_CBC	, SN_id_CA_DH_3DES_CBC_CBC	);
+    if (obj != NID_undef)
+        NID_id_CA_DH_3DES_CBC_CBC = obj;
 
 #define ASC_id_CA_DH_AES_CBC_CMAC_128		ASC_id_CA_DH".2"
-    NID_id_CA_DH_AES_CBC_CMAC_128 = OBJ_create(ASC_id_CA_DH_AES_CBC_CMAC_128	, SN_id_CA_DH_AES_CBC_CMAC_128	, SN_id_CA_DH_AES_CBC_CMAC_128	);
+    obj = OBJ_create(ASC_id_CA_DH_AES_CBC_CMAC_128	, SN_id_CA_DH_AES_CBC_CMAC_128	, SN_id_CA_DH_AES_CBC_CMAC_128	);
+    if (obj != NID_undef)
+        NID_id_CA_DH_AES_CBC_CMAC_128 = obj;
 
 #define ASC_id_CA_DH_AES_CBC_CMAC_192		ASC_id_CA_DH".3"
-    NID_id_CA_DH_AES_CBC_CMAC_192 = OBJ_create(ASC_id_CA_DH_AES_CBC_CMAC_192	, SN_id_CA_DH_AES_CBC_CMAC_192	, SN_id_CA_DH_AES_CBC_CMAC_192	);
+    obj = OBJ_create(ASC_id_CA_DH_AES_CBC_CMAC_192	, SN_id_CA_DH_AES_CBC_CMAC_192	, SN_id_CA_DH_AES_CBC_CMAC_192	);
+    if (obj != NID_undef)
+        NID_id_CA_DH_AES_CBC_CMAC_192 = obj;
 
 #define ASC_id_CA_DH_AES_CBC_CMAC_256		ASC_id_CA_DH".4"
-    NID_id_CA_DH_AES_CBC_CMAC_256 = OBJ_create(ASC_id_CA_DH_AES_CBC_CMAC_256	, SN_id_CA_DH_AES_CBC_CMAC_256	, SN_id_CA_DH_AES_CBC_CMAC_256	);
+    obj = OBJ_create(ASC_id_CA_DH_AES_CBC_CMAC_256	, SN_id_CA_DH_AES_CBC_CMAC_256	, SN_id_CA_DH_AES_CBC_CMAC_256	);
+    if (obj != NID_undef)
+        NID_id_CA_DH_AES_CBC_CMAC_256 = obj;
 
 #define ASC_id_CA_ECDH		ASC_id_CA".2"
-    NID_id_CA_ECDH = OBJ_create(ASC_id_CA_ECDH	, SN_id_CA_ECDH	, SN_id_CA_ECDH	);
+    obj = OBJ_create(ASC_id_CA_ECDH	, SN_id_CA_ECDH	, SN_id_CA_ECDH	);
+    if (obj != NID_undef)
+        NID_id_CA_ECDH = obj;
 
 #define ASC_id_CA_ECDH_3DES_CBC_CBC		ASC_id_CA_ECDH".1"
-    NID_id_CA_ECDH_3DES_CBC_CBC = OBJ_create(ASC_id_CA_ECDH_3DES_CBC_CBC	, SN_id_CA_ECDH_3DES_CBC_CBC	, SN_id_CA_ECDH_3DES_CBC_CBC	);
+    obj = OBJ_create(ASC_id_CA_ECDH_3DES_CBC_CBC	, SN_id_CA_ECDH_3DES_CBC_CBC	, SN_id_CA_ECDH_3DES_CBC_CBC	);
+    if (obj != NID_undef)
+        NID_id_CA_ECDH_3DES_CBC_CBC = obj;
 
 #define ASC_id_CA_ECDH_AES_CBC_CMAC_128		ASC_id_CA_ECDH".2"
-    NID_id_CA_ECDH_AES_CBC_CMAC_128 = OBJ_create(ASC_id_CA_ECDH_AES_CBC_CMAC_128	, SN_id_CA_ECDH_AES_CBC_CMAC_128	, SN_id_CA_ECDH_AES_CBC_CMAC_128	);
+    obj = OBJ_create(ASC_id_CA_ECDH_AES_CBC_CMAC_128	, SN_id_CA_ECDH_AES_CBC_CMAC_128	, SN_id_CA_ECDH_AES_CBC_CMAC_128	);
+    if (obj != NID_undef)
+        NID_id_CA_ECDH_AES_CBC_CMAC_128 = obj;
 
 #define ASC_id_CA_ECDH_AES_CBC_CMAC_192		ASC_id_CA_ECDH".3"
-    NID_id_CA_ECDH_AES_CBC_CMAC_192 = OBJ_create(ASC_id_CA_ECDH_AES_CBC_CMAC_192	, SN_id_CA_ECDH_AES_CBC_CMAC_192	, SN_id_CA_ECDH_AES_CBC_CMAC_192	);
+    obj = OBJ_create(ASC_id_CA_ECDH_AES_CBC_CMAC_192	, SN_id_CA_ECDH_AES_CBC_CMAC_192	, SN_id_CA_ECDH_AES_CBC_CMAC_192	);
+    if (obj != NID_undef)
+        NID_id_CA_ECDH_AES_CBC_CMAC_192 = obj;
 
 #define ASC_id_CA_ECDH_AES_CBC_CMAC_256		ASC_id_CA_ECDH".4"
-    NID_id_CA_ECDH_AES_CBC_CMAC_256 = OBJ_create(ASC_id_CA_ECDH_AES_CBC_CMAC_256	, SN_id_CA_ECDH_AES_CBC_CMAC_256	, SN_id_CA_ECDH_AES_CBC_CMAC_256	);
+    obj = OBJ_create(ASC_id_CA_ECDH_AES_CBC_CMAC_256	, SN_id_CA_ECDH_AES_CBC_CMAC_256	, SN_id_CA_ECDH_AES_CBC_CMAC_256	);
+    if (obj != NID_undef)
+        NID_id_CA_ECDH_AES_CBC_CMAC_256 = obj;
 
 #define ASC_id_PACE		ASC_bsi_de".2.2.4"
 
 #define ASC_id_PACE_DH_GM		ASC_id_PACE".1"
-    NID_id_PACE_DH_GM = OBJ_create(ASC_id_PACE_DH_GM	, SN_id_PACE_DH_GM	, SN_id_PACE_DH_GM	);
+    obj = OBJ_create(ASC_id_PACE_DH_GM	, SN_id_PACE_DH_GM	, SN_id_PACE_DH_GM	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_GM = obj;
 
 #define ASC_id_PACE_DH_GM_3DES_CBC_CBC		ASC_id_PACE_DH_GM".1"
-    NID_id_PACE_DH_GM_3DES_CBC_CBC = OBJ_create(ASC_id_PACE_DH_GM_3DES_CBC_CBC	, SN_id_PACE_DH_GM_3DES_CBC_CBC	, SN_id_PACE_DH_GM_3DES_CBC_CBC	);
+    obj = OBJ_create(ASC_id_PACE_DH_GM_3DES_CBC_CBC	, SN_id_PACE_DH_GM_3DES_CBC_CBC	, SN_id_PACE_DH_GM_3DES_CBC_CBC	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_GM_3DES_CBC_CBC = obj;
 
 #define ASC_id_PACE_DH_GM_AES_CBC_CMAC_128		ASC_id_PACE_DH_GM".2"
-    NID_id_PACE_DH_GM_AES_CBC_CMAC_128 = OBJ_create(ASC_id_PACE_DH_GM_AES_CBC_CMAC_128	, SN_id_PACE_DH_GM_AES_CBC_CMAC_128	, SN_id_PACE_DH_GM_AES_CBC_CMAC_128	);
+    obj = OBJ_create(ASC_id_PACE_DH_GM_AES_CBC_CMAC_128	, SN_id_PACE_DH_GM_AES_CBC_CMAC_128	, SN_id_PACE_DH_GM_AES_CBC_CMAC_128	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_GM_AES_CBC_CMAC_128 = obj;
 
 #define ASC_id_PACE_DH_GM_AES_CBC_CMAC_192		ASC_id_PACE_DH_GM".3"
-    NID_id_PACE_DH_GM_AES_CBC_CMAC_192 = OBJ_create(ASC_id_PACE_DH_GM_AES_CBC_CMAC_192	, SN_id_PACE_DH_GM_AES_CBC_CMAC_192	, SN_id_PACE_DH_GM_AES_CBC_CMAC_192	);
+    obj = OBJ_create(ASC_id_PACE_DH_GM_AES_CBC_CMAC_192	, SN_id_PACE_DH_GM_AES_CBC_CMAC_192	, SN_id_PACE_DH_GM_AES_CBC_CMAC_192	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_GM_AES_CBC_CMAC_192 = obj;
 
 #define ASC_id_PACE_DH_GM_AES_CBC_CMAC_256		ASC_id_PACE_DH_GM".4"
-    NID_id_PACE_DH_GM_AES_CBC_CMAC_256 = OBJ_create(ASC_id_PACE_DH_GM_AES_CBC_CMAC_256	, SN_id_PACE_DH_GM_AES_CBC_CMAC_256	, SN_id_PACE_DH_GM_AES_CBC_CMAC_256	);
+    obj = OBJ_create(ASC_id_PACE_DH_GM_AES_CBC_CMAC_256	, SN_id_PACE_DH_GM_AES_CBC_CMAC_256	, SN_id_PACE_DH_GM_AES_CBC_CMAC_256	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_GM_AES_CBC_CMAC_256 = obj;
 
 #define ASC_id_PACE_ECDH_GM		ASC_id_PACE".2"
-    NID_id_PACE_ECDH_GM = OBJ_create(ASC_id_PACE_ECDH_GM	, SN_id_PACE_ECDH_GM	, SN_id_PACE_ECDH_GM	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_GM	, SN_id_PACE_ECDH_GM	, SN_id_PACE_ECDH_GM	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_GM = obj;
 
 #define ASC_id_PACE_ECDH_GM_3DES_CBC_CBC		ASC_id_PACE_ECDH_GM".1"
-    NID_id_PACE_ECDH_GM_3DES_CBC_CBC = OBJ_create(ASC_id_PACE_ECDH_GM_3DES_CBC_CBC	, SN_id_PACE_ECDH_GM_3DES_CBC_CBC	, SN_id_PACE_ECDH_GM_3DES_CBC_CBC	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_GM_3DES_CBC_CBC	, SN_id_PACE_ECDH_GM_3DES_CBC_CBC	, SN_id_PACE_ECDH_GM_3DES_CBC_CBC	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_GM_3DES_CBC_CBC = obj;
 
 #define ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_128		ASC_id_PACE_ECDH_GM".2"
-    NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128 = OBJ_create(ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_128	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128 = obj;
 
 #define ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_192		ASC_id_PACE_ECDH_GM".3"
-    NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192 = OBJ_create(ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_192	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_192 = obj;
 
 #define ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_256		ASC_id_PACE_ECDH_GM".4"
-    NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 = OBJ_create(ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_GM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_GM_AES_CBC_CMAC_256	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_GM_AES_CBC_CMAC_256 = obj;
 
 #define ASC_id_PACE_DH_IM		ASC_id_PACE".3"
-    NID_id_PACE_DH_IM = OBJ_create(ASC_id_PACE_DH_IM	, SN_id_PACE_DH_IM	, SN_id_PACE_DH_IM	);
+    obj = OBJ_create(ASC_id_PACE_DH_IM	, SN_id_PACE_DH_IM	, SN_id_PACE_DH_IM	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_IM = obj;
 
 #define ASC_id_PACE_DH_IM_3DES_CBC_CBC		ASC_id_PACE_DH_IM".1"
-    NID_id_PACE_DH_IM_3DES_CBC_CBC = OBJ_create(ASC_id_PACE_DH_IM_3DES_CBC_CBC	, SN_id_PACE_DH_IM_3DES_CBC_CBC	, SN_id_PACE_DH_IM_3DES_CBC_CBC	);
+    obj = OBJ_create(ASC_id_PACE_DH_IM_3DES_CBC_CBC	, SN_id_PACE_DH_IM_3DES_CBC_CBC	, SN_id_PACE_DH_IM_3DES_CBC_CBC	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_IM_3DES_CBC_CBC = obj;
 
 #define ASC_id_PACE_DH_IM_AES_CBC_CMAC_128		ASC_id_PACE_DH_IM".2"
-    NID_id_PACE_DH_IM_AES_CBC_CMAC_128 = OBJ_create(ASC_id_PACE_DH_IM_AES_CBC_CMAC_128	, SN_id_PACE_DH_IM_AES_CBC_CMAC_128	, SN_id_PACE_DH_IM_AES_CBC_CMAC_128	);
+    obj = OBJ_create(ASC_id_PACE_DH_IM_AES_CBC_CMAC_128	, SN_id_PACE_DH_IM_AES_CBC_CMAC_128	, SN_id_PACE_DH_IM_AES_CBC_CMAC_128	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_IM_AES_CBC_CMAC_128 = obj;
 
 #define ASC_id_PACE_DH_IM_AES_CBC_CMAC_192		ASC_id_PACE_DH_IM".3"
-    NID_id_PACE_DH_IM_AES_CBC_CMAC_192 = OBJ_create(ASC_id_PACE_DH_IM_AES_CBC_CMAC_192	, SN_id_PACE_DH_IM_AES_CBC_CMAC_192	, SN_id_PACE_DH_IM_AES_CBC_CMAC_192	);
+    obj = OBJ_create(ASC_id_PACE_DH_IM_AES_CBC_CMAC_192	, SN_id_PACE_DH_IM_AES_CBC_CMAC_192	, SN_id_PACE_DH_IM_AES_CBC_CMAC_192	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_IM_AES_CBC_CMAC_192 = obj;
 
 #define ASC_id_PACE_DH_IM_AES_CBC_CMAC_256		ASC_id_PACE_DH_IM".4"
-    NID_id_PACE_DH_IM_AES_CBC_CMAC_256 = OBJ_create(ASC_id_PACE_DH_IM_AES_CBC_CMAC_256	, SN_id_PACE_DH_IM_AES_CBC_CMAC_256	, SN_id_PACE_DH_IM_AES_CBC_CMAC_256	);
+    obj = OBJ_create(ASC_id_PACE_DH_IM_AES_CBC_CMAC_256	, SN_id_PACE_DH_IM_AES_CBC_CMAC_256	, SN_id_PACE_DH_IM_AES_CBC_CMAC_256	);
+    if (obj != NID_undef)
+        NID_id_PACE_DH_IM_AES_CBC_CMAC_256 = obj;
 
 #define ASC_id_PACE_ECDH_IM		ASC_id_PACE".4"
-    NID_id_PACE_ECDH_IM = OBJ_create(ASC_id_PACE_ECDH_IM	, SN_id_PACE_ECDH_IM	, SN_id_PACE_ECDH_IM	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_IM	, SN_id_PACE_ECDH_IM	, SN_id_PACE_ECDH_IM	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_IM = obj;
 
 #define ASC_id_PACE_ECDH_IM_3DES_CBC_CBC		ASC_id_PACE_ECDH_IM".1"
-    NID_id_PACE_ECDH_IM_3DES_CBC_CBC = OBJ_create(ASC_id_PACE_ECDH_IM_3DES_CBC_CBC	, SN_id_PACE_ECDH_IM_3DES_CBC_CBC	, SN_id_PACE_ECDH_IM_3DES_CBC_CBC	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_IM_3DES_CBC_CBC	, SN_id_PACE_ECDH_IM_3DES_CBC_CBC	, SN_id_PACE_ECDH_IM_3DES_CBC_CBC	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_IM_3DES_CBC_CBC = obj;
 
 #define ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_128		ASC_id_PACE_ECDH_IM".2"
-    NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128 = OBJ_create(ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_128	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_128 = obj;
 
 #define ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_192		ASC_id_PACE_ECDH_IM".3"
-    NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192 = OBJ_create(ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_192	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_192 = obj;
 
 #define ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_256		ASC_id_PACE_ECDH_IM".4"
-    NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256 = OBJ_create(ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256	);
+    obj = OBJ_create(ASC_id_PACE_ECDH_IM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256	, SN_id_PACE_ECDH_IM_AES_CBC_CMAC_256	);
+    if (obj != NID_undef)
+        NID_id_PACE_ECDH_IM_AES_CBC_CMAC_256 = obj;
 
 #define ASC_id_RI		ASC_bsi_de".2.2.5"
 
 #define ASC_id_RI_DH		ASC_id_RI".1"
-    NID_id_RI_DH = OBJ_create(ASC_id_RI_DH	, SN_id_RI_DH	, SN_id_RI_DH	);
+    obj = OBJ_create(ASC_id_RI_DH	, SN_id_RI_DH	, SN_id_RI_DH	);
+    if (obj != NID_undef)
+        NID_id_RI_DH = obj;
 
 #define ASC_id_RI_DH_SHA_1		ASC_id_RI_DH".1"
-    NID_id_RI_DH_SHA_1 = OBJ_create(ASC_id_RI_DH_SHA_1	, SN_id_RI_DH_SHA_1	, SN_id_RI_DH_SHA_1	);
+    obj = OBJ_create(ASC_id_RI_DH_SHA_1	, SN_id_RI_DH_SHA_1	, SN_id_RI_DH_SHA_1	);
+    if (obj != NID_undef)
+        NID_id_RI_DH_SHA_1 = obj;
 
 #define ASC_id_RI_DH_SHA_224		ASC_id_RI_DH".2"
-    NID_id_RI_DH_SHA_224 = OBJ_create(ASC_id_RI_DH_SHA_224	, SN_id_RI_DH_SHA_224	, SN_id_RI_DH_SHA_224	);
+    obj = OBJ_create(ASC_id_RI_DH_SHA_224	, SN_id_RI_DH_SHA_224	, SN_id_RI_DH_SHA_224	);
+    if (obj != NID_undef)
+        NID_id_RI_DH_SHA_224 = obj;
 
 #define ASC_id_RI_DH_SHA_256		ASC_id_RI_DH".3"
-    NID_id_RI_DH_SHA_256 = OBJ_create(ASC_id_RI_DH_SHA_256	, SN_id_RI_DH_SHA_256	, SN_id_RI_DH_SHA_256	);
+    obj = OBJ_create(ASC_id_RI_DH_SHA_256	, SN_id_RI_DH_SHA_256	, SN_id_RI_DH_SHA_256	);
+    if (obj != NID_undef)
+        NID_id_RI_DH_SHA_256 = obj;
 
 #define ASC_id_RI_DH_SHA_384		ASC_id_RI_DH".4"
-    NID_id_RI_DH_SHA_384 = OBJ_create(ASC_id_RI_DH_SHA_384	, SN_id_RI_DH_SHA_384	, SN_id_RI_DH_SHA_384	);
+    obj = OBJ_create(ASC_id_RI_DH_SHA_384	, SN_id_RI_DH_SHA_384	, SN_id_RI_DH_SHA_384	);
+    if (obj != NID_undef)
+        NID_id_RI_DH_SHA_384 = obj;
 
 #define ASC_id_RI_DH_SHA_512		ASC_id_RI_DH".5"
-    NID_id_RI_DH_SHA_512 = OBJ_create(ASC_id_RI_DH_SHA_512	, SN_id_RI_DH_SHA_512	, SN_id_RI_DH_SHA_512	);
+    obj = OBJ_create(ASC_id_RI_DH_SHA_512	, SN_id_RI_DH_SHA_512	, SN_id_RI_DH_SHA_512	);
+    if (obj != NID_undef)
+        NID_id_RI_DH_SHA_512 = obj;
 
 #define ASC_id_RI_ECDH		ASC_id_RI".2"
-    NID_id_RI_ECDH = OBJ_create(ASC_id_RI_ECDH	, SN_id_RI_ECDH	, SN_id_RI_ECDH	);
+    obj = OBJ_create(ASC_id_RI_ECDH	, SN_id_RI_ECDH	, SN_id_RI_ECDH	);
+    if (obj != NID_undef)
+        NID_id_RI_ECDH = obj;
 
 #define ASC_id_RI_ECDH_SHA_1		ASC_id_RI_ECDH".1"
-    NID_id_RI_ECDH_SHA_1 = OBJ_create(ASC_id_RI_ECDH_SHA_1	, SN_id_RI_ECDH_SHA_1	, SN_id_RI_ECDH_SHA_1	);
+    obj = OBJ_create(ASC_id_RI_ECDH_SHA_1	, SN_id_RI_ECDH_SHA_1	, SN_id_RI_ECDH_SHA_1	);
+    if (obj != NID_undef)
+        NID_id_RI_ECDH_SHA_1 = obj;
 
 #define ASC_id_RI_ECDH_SHA_224		ASC_id_RI_ECDH".2"
-    NID_id_RI_ECDH_SHA_224 = OBJ_create(ASC_id_RI_ECDH_SHA_224	, SN_id_RI_ECDH_SHA_224	, SN_id_RI_ECDH_SHA_224	);
+    obj = OBJ_create(ASC_id_RI_ECDH_SHA_224	, SN_id_RI_ECDH_SHA_224	, SN_id_RI_ECDH_SHA_224	);
+    if (obj != NID_undef)
+        NID_id_RI_ECDH_SHA_224 = obj;
 
 #define ASC_id_RI_ECDH_SHA_256		ASC_id_RI_ECDH".3"
-    NID_id_RI_ECDH_SHA_256 = OBJ_create(ASC_id_RI_ECDH_SHA_256	, SN_id_RI_ECDH_SHA_256	, SN_id_RI_ECDH_SHA_256	);
+    obj = OBJ_create(ASC_id_RI_ECDH_SHA_256	, SN_id_RI_ECDH_SHA_256	, SN_id_RI_ECDH_SHA_256	);
+    if (obj != NID_undef)
+        NID_id_RI_ECDH_SHA_256 = obj;
 
 #define ASC_id_RI_ECDH_SHA_384		ASC_id_RI_ECDH".4"
-    NID_id_RI_ECDH_SHA_384 = OBJ_create(ASC_id_RI_ECDH_SHA_384	, SN_id_RI_ECDH_SHA_384	, SN_id_RI_ECDH_SHA_384	);
+    obj = OBJ_create(ASC_id_RI_ECDH_SHA_384	, SN_id_RI_ECDH_SHA_384	, SN_id_RI_ECDH_SHA_384	);
+    if (obj != NID_undef)
+        NID_id_RI_ECDH_SHA_384 = obj;
 
 #define ASC_id_RI_ECDH_SHA_512		ASC_id_RI_ECDH".5"
-    NID_id_RI_ECDH_SHA_512 = OBJ_create(ASC_id_RI_ECDH_SHA_512	, SN_id_RI_ECDH_SHA_512	, SN_id_RI_ECDH_SHA_512	);
+    obj = OBJ_create(ASC_id_RI_ECDH_SHA_512	, SN_id_RI_ECDH_SHA_512	, SN_id_RI_ECDH_SHA_512	);
+    if (obj != NID_undef)
+        NID_id_RI_ECDH_SHA_512 = obj;
 
 #define ASC_id_CI		ASC_bsi_de".2.2.6"
-    NID_id_CI = OBJ_create(ASC_id_CI	, SN_id_CI	, SN_id_CI	);
+    obj = OBJ_create(ASC_id_CI	, SN_id_CI	, SN_id_CI	);
+    if (obj != NID_undef)
+        NID_id_CI = obj;
 
 #define ASC_id_eIDSecurity		ASC_bsi_de".2.2.7"
-    NID_id_eIDSecurity = OBJ_create(ASC_id_eIDSecurity	, SN_id_eIDSecurity	, SN_id_eIDSecurity	);
+    obj = OBJ_create(ASC_id_eIDSecurity	, SN_id_eIDSecurity	, SN_id_eIDSecurity	);
+    if (obj != NID_undef)
+        NID_id_eIDSecurity = obj;
 
 #define ASC_id_PT		ASC_bsi_de".2.2.8"
-    NID_id_PT = OBJ_create(ASC_id_PT	, SN_id_PT	, SN_id_PT	);
+    obj = OBJ_create(ASC_id_PT	, SN_id_PT	, SN_id_PT	);
+    if (obj != NID_undef)
+        NID_id_PT = obj;
 
 #define ASC_id_ecc		ASC_bsi_de".1.1"
 
 #define ASC_ecka_dh		ASC_id_ecc".5.2"
 
 #define ASC_ecka_dh_SessionKDF		ASC_ecka_dh".2"
-    NID_ecka_dh_SessionKDF = OBJ_create(ASC_ecka_dh_SessionKDF	, SN_ecka_dh_SessionKDF	, SN_ecka_dh_SessionKDF	);
+    obj = OBJ_create(ASC_ecka_dh_SessionKDF	, SN_ecka_dh_SessionKDF	, SN_ecka_dh_SessionKDF	);
+    if (obj != NID_undef)
+        NID_ecka_dh_SessionKDF = obj;
 
 #define ASC_ecka_dh_SessionKDF_DES3		ASC_ecka_dh".2.1"
-    NID_ecka_dh_SessionKDF_DES3 = OBJ_create(ASC_ecka_dh_SessionKDF_DES3	, SN_ecka_dh_SessionKDF_DES3	, SN_ecka_dh_SessionKDF_DES3	);
+    obj = OBJ_create(ASC_ecka_dh_SessionKDF_DES3	, SN_ecka_dh_SessionKDF_DES3	, SN_ecka_dh_SessionKDF_DES3	);
+    if (obj != NID_undef)
+        NID_ecka_dh_SessionKDF_DES3 = obj;
 
 #define ASC_ecka_dh_SessionKDF_AES128		ASC_ecka_dh".2.2"
-    NID_ecka_dh_SessionKDF_AES128 = OBJ_create(ASC_ecka_dh_SessionKDF_AES128	, SN_ecka_dh_SessionKDF_AES128	, SN_ecka_dh_SessionKDF_AES128	);
+    obj = OBJ_create(ASC_ecka_dh_SessionKDF_AES128	, SN_ecka_dh_SessionKDF_AES128	, SN_ecka_dh_SessionKDF_AES128	);
+    if (obj != NID_undef)
+        NID_ecka_dh_SessionKDF_AES128 = obj;
 
 #define ASC_ecka_dh_SessionKDF_AES192		ASC_ecka_dh".2.3"
-    NID_ecka_dh_SessionKDF_AES192 = OBJ_create(ASC_ecka_dh_SessionKDF_AES192	, SN_ecka_dh_SessionKDF_AES192	, SN_ecka_dh_SessionKDF_AES192	);
+    obj = OBJ_create(ASC_ecka_dh_SessionKDF_AES192	, SN_ecka_dh_SessionKDF_AES192	, SN_ecka_dh_SessionKDF_AES192	);
+    if (obj != NID_undef)
+        NID_ecka_dh_SessionKDF_AES192 = obj;
 
 #define ASC_ecka_dh_SessionKDF_AES256		ASC_ecka_dh".2.4"
-    NID_ecka_dh_SessionKDF_AES256 = OBJ_create(ASC_ecka_dh_SessionKDF_AES256	, SN_ecka_dh_SessionKDF_AES256	, SN_ecka_dh_SessionKDF_AES256	);
+    obj = OBJ_create(ASC_ecka_dh_SessionKDF_AES256	, SN_ecka_dh_SessionKDF_AES256	, SN_ecka_dh_SessionKDF_AES256	);
+    if (obj != NID_undef)
+        NID_ecka_dh_SessionKDF_AES256 = obj;
 
 #define ASC_id_roles		ASC_bsi_de".3.1.2"
 
 #define ASC_id_IS		ASC_id_roles".1"
-    NID_id_IS = OBJ_create(ASC_id_IS	, SN_id_IS	, SN_id_IS	);
+    obj = OBJ_create(ASC_id_IS	, SN_id_IS	, SN_id_IS	);
+    if (obj != NID_undef)
+        NID_id_IS = obj;
 
 #define ASC_id_AT		ASC_id_roles".2"
-    NID_id_AT = OBJ_create(ASC_id_AT	, SN_id_AT	, SN_id_AT	);
+    obj = OBJ_create(ASC_id_AT	, SN_id_AT	, SN_id_AT	);
+    if (obj != NID_undef)
+        NID_id_AT = obj;
 
 #define ASC_id_ST		ASC_id_roles".3"
-    NID_id_ST = OBJ_create(ASC_id_ST	, SN_id_ST	, SN_id_ST	);
+    obj = OBJ_create(ASC_id_ST	, SN_id_ST	, SN_id_ST	);
+    if (obj != NID_undef)
+        NID_id_ST = obj;
 
 #define ASC_id_extensions		ASC_bsi_de".3.1.3"
 
 #define ASC_id_description		ASC_id_extensions".1"
-    NID_id_description = OBJ_create(ASC_id_description	, SN_id_description	, SN_id_description	);
+    obj = OBJ_create(ASC_id_description	, SN_id_description	, SN_id_description	);
+    if (obj != NID_undef)
+        NID_id_description = obj;
 
 #define ASC_id_plainFormat		ASC_id_description".1"
-    NID_id_plainFormat = OBJ_create(ASC_id_plainFormat	, SN_id_plainFormat	, SN_id_plainFormat	);
+    obj = OBJ_create(ASC_id_plainFormat	, SN_id_plainFormat	, SN_id_plainFormat	);
+    if (obj != NID_undef)
+        NID_id_plainFormat = obj;
 
 #define ASC_id_htmlFormat		ASC_id_description".2"
-    NID_id_htmlFormat = OBJ_create(ASC_id_htmlFormat	, SN_id_htmlFormat	, SN_id_htmlFormat	);
+    obj = OBJ_create(ASC_id_htmlFormat	, SN_id_htmlFormat	, SN_id_htmlFormat	);
+    if (obj != NID_undef)
+        NID_id_htmlFormat = obj;
 
 #define ASC_id_pdfFormat		ASC_id_description".3"
-    NID_id_pdfFormat = OBJ_create(ASC_id_pdfFormat	, SN_id_pdfFormat	, SN_id_pdfFormat	);
+    obj = OBJ_create(ASC_id_pdfFormat	, SN_id_pdfFormat	, SN_id_pdfFormat	);
+    if (obj != NID_undef)
+        NID_id_pdfFormat = obj;
 
 #define ASC_id_sector		ASC_id_extensions".2"
-    NID_id_sector = OBJ_create(ASC_id_sector	, SN_id_sector	, SN_id_sector	);
+    obj = OBJ_create(ASC_id_sector	, SN_id_sector	, SN_id_sector	);
+    if (obj != NID_undef)
+        NID_id_sector = obj;
 
 #define ASC_id_eID		ASC_bsi_de".3.2"
 
 #define ASC_id_SecurityObject		ASC_id_eID".1"
-    NID_id_SecurityObject = OBJ_create(ASC_id_SecurityObject	, SN_id_SecurityObject	, SN_id_SecurityObject	);
+    obj = OBJ_create(ASC_id_SecurityObject	, SN_id_SecurityObject	, SN_id_SecurityObject	);
+    if (obj != NID_undef)
+        NID_id_SecurityObject = obj;
 
 #define ASC_id_AuxiliaryData		ASC_bsi_de".3.1.4"
 
 #define ASC_id_DateOfBirth		ASC_id_AuxiliaryData".1"
-    NID_id_DateOfBirth = OBJ_create(ASC_id_DateOfBirth	, SN_id_DateOfBirth	, SN_id_DateOfBirth	);
+    obj = OBJ_create(ASC_id_DateOfBirth	, SN_id_DateOfBirth	, SN_id_DateOfBirth	);
+    if (obj != NID_undef)
+        NID_id_DateOfBirth = obj;
 
 #define ASC_id_DateOfExpiry		ASC_id_AuxiliaryData".2"
-    NID_id_DateOfExpiry = OBJ_create(ASC_id_DateOfExpiry	, SN_id_DateOfExpiry	, SN_id_DateOfExpiry	);
+    obj = OBJ_create(ASC_id_DateOfExpiry	, SN_id_DateOfExpiry	, SN_id_DateOfExpiry	);
+    if (obj != NID_undef)
+        NID_id_DateOfExpiry = obj;
 
 #define ASC_id_CommunityID		ASC_id_AuxiliaryData".3"
-    NID_id_CommunityID = OBJ_create(ASC_id_CommunityID	, SN_id_CommunityID	, SN_id_CommunityID	);
+    obj = OBJ_create(ASC_id_CommunityID	, SN_id_CommunityID	, SN_id_CommunityID	);
+    if (obj != NID_undef)
+        NID_id_CommunityID = obj;
 
     if (NID_undef == NID_standardizedDomainParameters
             || NID_undef == NID_id_PK_DH
@@ -460,11 +625,16 @@ EAC_add_all_objects(void)
             || NID_undef == NID_id_CommunityID) {
         log_err("Error adding objects");
     }
+
+    objects_initialized = 1;
 }
 void
 EAC_remove_all_objects(void)
 {
-    OBJ_cleanup();
+    if (objects_initialized)
+        OBJ_cleanup();
+
+    objects_initialized = 0;
 }
 #else
 void
