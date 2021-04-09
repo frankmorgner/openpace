@@ -6,22 +6,22 @@ matrix:
       compiler: clang
       env: TARGET=osx
     - compiler: gcc
-      dist: trusty
+      dist: focal
       env: DO_CODECOV=yes
+      addons:
+        apt:
     - env: DO_COVERITY_SCAN=yes
-      dist: trusty
+      dist: focal
+      addons:
+        apt:
     - env: TARGET=win WIN_TOOL=i686-w64-mingw32
-      dist: trusty
+      dist: focal
     - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
-      dist: trusty
-    - env: TARGET=emscripten
-      dist: trusty
+      dist: focal
 
 env:
   global:
     - ac_cv_func_malloc_0_nonnull=yes
-    - PATH=$PATH:/tmp/js
-    - EMSCRIPTEN_ROOT=$TRAVIS_BUILD_DIR/emscripten-sdk/emscripten/master
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "KOfJHBqx3I7GsY6OIiqBMN5iFkTpeGlj+WwXF/ZaGmG7bYtIx1641mH43ECoaxGH6I4Tkdf2VBX3xTSVaCeT8OO0K3Zr84MRqmfjfzTo1uGkwiZD3e/pahPVjOTb+IGPForskeooix6KgCJQfW6skh8EEy7EPnZTNXJw2XLujj4="
@@ -31,16 +31,11 @@ env:
     - COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG"
     - SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 
-sudo: false
-
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
       - binutils-mingw-w64-i686
       - binutils-mingw-w64-x86-64
-      - g++-4.9
       - gcc-mingw-w64-i686
       - gcc-mingw-w64-x86-64
       - gccgo
@@ -50,8 +45,8 @@ addons:
       - lcov
       - mingw-w64
       - mingw-w64-tools
-      - openjdk-7-jdk
-      - openjdk-7-jre-headless
+      - openjdk-8-jdk
+      - openjdk-8-jre-headless
       - python-dev
       - ruby-dev
       - swig
@@ -74,24 +69,21 @@ before_install:
         export PATH="/usr/local/opt/ccache/libexec:$PATH";
     fi
 
-install:
-  - if [ "${TARGET}" == emscripten ]; then
-      wget -P /tmp/j2me.js -N https://ftp.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip;
-      unzip -d /tmp/js /tmp/j2me.js/jsshell-linux-x86_64.zip;
-      git clone --recursive https://github.com/marco-c/emscripten-sdk.git;
-      cd emscripten-sdk && ./emsdk activate latest && cd ..;
-      source emscripten-sdk/emsdk_env.sh;
-    fi
-
 before_script:
   - autoreconf -vis
   - if [ -n "${DO_CODECOV}" ]; then
       export CFLAGS="-O0 -fprofile-arcs -ftest-coverage" LDFLAGS="-fprofile-arcs -ftest-coverage";
+      ENABLE_BINDINGS="";
+      ENABLE_OPENSSL_INSTALL="";
     elif [ "${TRAVIS_OS_NAME}" != "osx" ]; then
-      export ENABLE_BINDINGS="--enable-python --enable-java --enable-ruby --enable-go";
       export GCCGOFLAGS="-static-libgcc $CFLAGS";
+      ENABLE_BINDINGS="--enable-python --enable-java --enable-ruby --enable-go";
+      ENABLE_OPENSSL_INSTALL="";
+    else
+      ENABLE_BINDINGS="";
+      ENABLE_OPENSSL_INSTALL="--enable-openssl-install";
     fi
-  - ./configure --enable-openssl-install $ENABLE_BINDINGS;
+  - ./configure $ENABLE_OPENSSL_INSTALL $ENABLE_BINDINGS;
   # Optionally try to upload to Coverity Scan
   # On error (propably quota is exhausted), just continue
   - if [ -n "${DO_COVERITY_SCAN}" ]; then curl -s 'https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh' | bash || true; fi
@@ -101,8 +93,6 @@ script:
       make $TARGET;
       if [ -z "$TARGET" ]; then
         make check >> /tmp/checkout 2>&1 || (cat /tmp/checkout && false);
-      elif [ "${TARGET}" == emscripten ]; then
-        cd openpace-*_js/bin && js eactest.js && cd -;
       fi
     fi
 
