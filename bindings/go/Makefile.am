@@ -18,7 +18,7 @@ libgeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS)
 libgeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
 
 $(BUILT_SOURCES): $(INTERFACES)
-	$(SWIG) $(SWIGGOPARAMS) -go -gccgo -outdir $(builddir) -o eac_wrap.c -I$(srcdir)/.. $(srcdir)/../eac.i
+	$(SWIG) $(SWIGGOPARAMS) -go -no-cgo -gccgo -outdir $(builddir) -o eac_wrap.c -I$(srcdir)/.. $(srcdir)/../eac.i
 
 eac.o: $(BUILT_SOURCES)
 	$(GCCGO) -c eac.go $(GCCGOFLAGS)
