@@ -47,11 +47,7 @@ Here is a sample script that shows how OpenPACE is accessed from Python:
     Have a look at the `Emulator for the German Identity Card`_ for a more
     complex project that uses the Python Interface from OpenPACE.
 
-Unfortunately, OpenPACE's Python bindings are currently poorly documented:
-
-.. toctree::
-
-    python_api.txt
+Unfortunately, OpenPACE's Python bindings are currently poorly documented.
 
 .. versionadded:: 0.8
     The SWIG bindings from `pyPACE`_ have been integrated into OpenPACE.

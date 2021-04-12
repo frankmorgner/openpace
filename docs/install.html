@@ -4,10 +4,9 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Download OpenPACE &#8212; OpenPACE 1.1.0 documentation</title>
+    <title>Download OpenPACE &#8212; OpenPACE 1.1.1 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/breathe.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
@@ -54,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           OpenPACE</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -225,7 +224,7 @@ make win
 </div>
 <p><a class="reference external" href="http://sourceforge.net/p/mingw-w64/wiki2/gendef/">gendef</a> <a class="footnote-reference" href="#id13" id="id14">[6]</a> should be installed to generate the library definitions.
 On successfull compilation, the Windows binaries can be found in
-<code class="file docutils literal notranslate"><span class="pre">openpace-1.1.0_win32</span></code>. For customization you
+<code class="file docutils literal notranslate"><span class="pre">openpace-1.1.1_win32</span></code>. For customization you
 may pass the following <strong class="command">make</strong> variables:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -257,8 +256,7 @@ may pass the following <strong class="command">make</strong> variables:</p>
 wasting too much time on setting up the development environment would be to
 compile the library by hand in the <span class="menuselection">Visual Studio Tools ‣
 Developer Command Prompt</span> with installed <a class="reference external" href="https://slproweb.com/products/Win32OpenSSL.html">OpenSSL Windows binaries</a> <a class="footnote-reference" href="#id19" id="id20">[9]</a>:</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>    # build with plain cl in cmd and statically bound OpenSSL
-  - cd src
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>  - cd src
   - cl /I<span class="nv">%OPENSSL_DIR%</span>\include /I. /DX509DIR=\<span class="s2">&quot;/\&quot;</span> /DCVCDIR=\<span class="s2">&quot;/\&quot;</span> <span class="nv">%CL_OPTIONS%</span> <span class="nv">%OPENSSL_1_1_0_FLAGS%</span> /c ca_lib.c cv_cert.c cvc_lookup.c x509_lookup.c eac_asn1.c eac.c eac_ca.c eac_dh.c eac_ecdh.c eac_kdf.c eac_lib.c eac_print.c eac_util.c misc.c pace.c pace_lib.c pace_mappings.c ri.c ri_lib.c ta.c ta_lib.c objects.c ssl_compat.c
   - lib /out:libeacMT.lib ws2_32.lib ca_lib.obj cv_cert.obj cvc_lookup.obj x509_lookup.obj eac_asn1.obj eac.obj eac_ca.obj eac_dh.obj eac_ecdh.obj eac_kdf.obj eac_lib.obj eac_print.obj eac_util.obj misc.obj pace.obj pace_lib.obj pace_mappings.obj ri.obj ri_lib.obj ta.obj ta_lib.obj objects.obj ssl_compat.obj
   - cl /I<span class="nv">%OPENSSL_DIR%</span>\include /I. libeacMT.lib <span class="nv">%OPENSSL_DIR%</span>\lib\VC\static\<span class="nv">%LIBCRYPTO%</span> user32.lib advapi32.lib crypt32.lib gdi32.lib <span class="nv">%CL_OPTIONS%</span> <span class="nv">%OPENSSL_1_1_0_FLAGS%</span> eactest.c vc.c ssl_compat.c
@@ -268,6 +266,7 @@ Developer Command Prompt</span> with installed <a class="reference external" hre
   # The following has already been performed by make (see above)
   # gengetopt.exe --include-getopt --file-name=cvc-create-cmdline --input= cvc-create.ggo
   - cl /I<span class="nv">%OPENSSL_DIR%</span>\include /I. libeacMT.lib <span class="nv">%OPENSSL_DIR%</span>\lib\VC\static\<span class="nv">%LIBCRYPTO%</span> user32.lib advapi32.lib crypt32.lib gdi32.lib <span class="nv">%CL_OPTIONS%</span> <span class="nv">%OPENSSL_1_1_0_FLAGS%</span> cvc-create.c read_file.c cvc-create-cmdline.c vc.c
+  - cd ..
 </pre></div>
 </div>
 <p>The setup of the environment variables can be found in our <a class="reference external" href="https://github.com/frankmorgner/openpace/blob/master/appveyor.yml#L7-L47">Windows CI script</a>
@@ -276,8 +275,7 @@ which includes all steps of this procedure.</p>
 <h4>Compiling the Python Bindings<a class="headerlink" href="#compiling-the-python-bindings" title="Permalink to this headline">¶</a></h4>
 <p>Again, without further ado, we compile the bindings with the Developer Command
 prompt with installed <a class="reference external" href="https://www.python.org/downloads/release/python-278/">Python</a> <a class="footnote-reference" href="#id11" id="id12">[5]</a>:</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>  - cd bindings\python\
-  - swig -python -outdir . -I.. eac.i
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>  - swig -python -outdir . -I.. eac.i
   - cl /I<span class="nv">%OPENSSL_DIR%</span>\include /I<span class="nv">%PYTHON_INCLUDE%</span> /I..\..\src <span class="nv">%CL_OPTIONS%</span> <span class="nv">%OPENSSL_1_1_0_FLAGS%</span> /c eac_wrap.c ..\..\src\ssl_compat.c ..\..\src\vc.c
   - link /out:_eac.pyd /dll eac_wrap.obj ssl_compat.obj vc.obj <span class="nv">%PYTHON_LIB%</span> ..\..\src\libeacMT.lib <span class="nv">%OPENSSL_DIR%</span>\lib\VC\static\<span class="nv">%LIBCRYPTO%</span> user32.lib advapi32.lib crypt32.lib gdi32.lib
   - cd ..\..
@@ -325,7 +323,7 @@ make android
 </tbody>
 </table>
 <p>On successfull compilation, the Android binaries can be found in
-<code class="file docutils literal notranslate"><span class="pre">openpace-1.1.0_$</span><em><span class="pre">ANDROID_ARCH</span></em><span class="pre">-linux-androideabi</span></code>.</p>
+<code class="file docutils literal notranslate"><span class="pre">openpace-1.1.1_$</span><em><span class="pre">ANDROID_ARCH</span></em><span class="pre">-linux-androideabi</span></code>.</p>
 </div>
 <div class="section" id="compiling-for-javascript">
 <span id="javascript-api"></span><h2>Compiling for Javascript<a class="headerlink" href="#compiling-for-javascript" title="Permalink to this headline">¶</a></h2>
@@ -357,10 +355,10 @@ make emscripten
 </tbody>
 </table>
 <p>On successfull compilation, the compiled bitcode files can be found in
-<code class="file docutils literal notranslate"><span class="pre">openpace-1.1.0_js</span></code>. You can run our testsuite
+<code class="file docutils literal notranslate"><span class="pre">openpace-1.1.1_js</span></code>. You can run our testsuite
 completely in Javascript or <a class="reference external" href="_static/eactest.html">in your browser</a>:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodejs openpace-1.1.0_js/bin/eactest.js
-firefox openpace-1.1.0_js/eactest.html
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodejs openpace-1.1.1_js/bin/eactest.js
+firefox openpace-1.1.1_js/eactest.html
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -437,7 +435,7 @@ twice before using the Javascript version of OpenPACE.</p>
       
     </p>
     <p>
-        &copy; Copyright 2012-2019 by Frank Morgner and Dominik Oepen.<br/>
+        &copy; Copyright 2012-2021 by Frank Morgner and Dominik Oepen.<br/>
     </p>
   </div>
 </footer>

@@ -1,6 +1,6 @@
 SUBDIRS = _static
 
-EXTRA_DIST = Doxyfile.in conf.py.in index.txt.in index.txt protocols.txt programming.txt.in programming.txt install.txt install.txt.in usage.txt.in python_api.txt efcardaccess_asn1.conf efcardsecurity_templ_asn1.conf Makefile.sphinx
+EXTRA_DIST = Doxyfile.in conf.py.in index.txt.in index.txt protocols.txt programming.txt.in programming.txt install.txt install.txt.in usage.txt.in efcardaccess_asn1.conf efcardsecurity_templ_asn1.conf Makefile.sphinx
 
 do_subst = $(SED) \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g' \
