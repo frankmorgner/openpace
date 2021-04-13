@@ -131,7 +131,7 @@ wasting too much time on setting up the development environment would be to
 compile the library by hand in the :menuselection:`Visual Studio Tools -->
 Developer Command Prompt` with installed `OpenSSL Windows binaries`_:
 
-.. literalinclude:: ../../appveyor.yml
+.. literalinclude:: @srcdir@/../../appveyor.yml
     :lines: 69-79
 
 The setup of the environment variables can be found in our `Windows CI script
@@ -144,7 +144,7 @@ Compiling the Python Bindings
 Again, without further ado, we compile the bindings with the Developer Command
 prompt with installed `Python`_:
 
-.. literalinclude:: ../../appveyor.yml
+.. literalinclude:: @srcdir@/../../appveyor.yml
     :lines: 81-85
 
 The setup of the environment variables can be found in our `Windows CI script

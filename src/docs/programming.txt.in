@@ -19,7 +19,7 @@ Using OpenPACE in C/C++
 
 Here we have a small example in C:
 
-.. literalinclude:: ../../src/example.c
+.. literalinclude:: @srcdir@/../../src/example.c
     :language: c
 
 .. seealso::
@@ -40,7 +40,7 @@ environment variable.
 
 Here is a sample script that shows how OpenPACE is accessed from Python:
 
-.. literalinclude:: ../../bindings/python/example.py
+.. literalinclude:: @srcdir@/../../bindings/python/example.py
     :language: python
 
 .. seealso::
@@ -62,7 +62,7 @@ SWIG and Ruby.
 
 Here is a sample script that shows how OpenPACE is accessed from Ruby:
 
-.. literalinclude:: ../../bindings/ruby/example.rb
+.. literalinclude:: @srcdir@/../../bindings/ruby/example.rb
     :language: ruby
 
 .. versionadded:: 0.9
@@ -78,7 +78,7 @@ and ``gccgo``.
 
 Here is a sample program that shows how OpenPACE is accessed from Go:
 
-.. literalinclude:: ../../bindings/go/example.go
+.. literalinclude:: @srcdir@/../../bindings/go/example.go
     :language: go
 
 .. versionadded:: 0.9
@@ -95,7 +95,7 @@ SWIG, a java compiler and the JNI developement headers. You may set the
 
 Here is a sample program that shows how OpenPACE is accessed from Java:
 
-.. literalinclude:: ../../bindings/java/Example.java
+.. literalinclude:: @srcdir@/../../bindings/java/Example.java
     :language: java
 
 

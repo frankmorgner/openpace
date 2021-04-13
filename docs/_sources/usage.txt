@@ -117,7 +117,7 @@ brainpoolP256r1/``0x0D``) need to match the key agreement scheme for |CA| (e.g.
 ECDH):
 
 
-.. literalinclude:: efcardaccess_asn1.conf
+.. literalinclude:: ./efcardaccess_asn1.conf
     :emphasize-lines: 15,20,27
 
 

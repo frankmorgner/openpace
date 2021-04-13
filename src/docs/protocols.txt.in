@@ -1,0 +1,245 @@
+.. _protocols:
+
+.. |PACE| replace:: :abbr:`PACE (Password Authenticated Connection Establishment)`
+.. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
+.. |CA| replace:: :abbr:`CA (Chip Authentication)`
+.. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
+
+#####################################
+Extended Access Control Specification
+#####################################
+
+Extended Access Control version 2 (EAC) defined by the `Federal Office for
+Information Security (BSI)`_ in the `Technical Guideline TR-03110`_.  It is
+designed to be compatible and submitted to be standardized with `ICAO Machine
+Readable Travel Documents Doc 9303`_.  |EAC| consists of three subsequent
+steps:
+
+1. `Password Authenticated Connection Establishment`_ (PACE)
+2. `Terminal Authentication`_ (TA)
+3. `Chip Authentication`_ (CA)
+
+The following description of |PACE|, |TA| and |CA| is cited from BSI TR-03110
+(Version 2.05). With Terminal or PCD and MRTD chip or PICC we denote the two
+parties involved in |EAC|.
+
+
+***********************************************
+Password Authenticated Connection Establishment
+***********************************************
+
+The PACE Protocol is a password authenticated Diffie-Hellman key agreement
+protocol that provides secure communication and explicit password-based
+authentication of the MRTD chip and the terminal (i.e. MRTD chip and terminal
+share the same password :math:`\pi`).
+
+Protocol Specification
+======================
+
+The following steps are performed by the terminal and the MRTD chip:
+
+1. The MRTD chip randomly and uniformly chooses a nonce :math:`s`, encrypts the
+   nonce to :math:`z=\operatorname{E} ( K_\pi , s)`, where
+   :math:`K_\pi=\operatorname{KDF}_\pi(\pi)` is derived from the shared
+   password :math:`\pi`, and sends the ciphertext :math:`z` together with the
+   static domain parameters :math:`D_{\text{PICC}}` to the terminal.
+2. The terminal recovers the plaintext :math:`s=\operatorname{D}( K_\pi , z )`
+   with the help of the shared password :math:`\pi`.
+3. Both the MRTD chip and the terminal perform the following steps:
+
+   a. They compute the ephemeral domain parameters :math:`\widetilde{D}
+      =\operatorname{Map}( D_{\text{PICC}} , s )`.
+   b. They perform an anonymous Diffie-Hellman key agreement based on the
+      ephemeral domain parameters and generate the shared secret.
+          
+        .. math::
+
+           K =\operatorname{KA} ( \widetilde{SK_{\text{PICC}}} ,
+           \widetilde{PK_{\text{PCD}}} , \widetilde{D}) =\operatorname{KA} (
+           \widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PICC}}} ,
+           \widetilde{D} )
+              
+       During Diffie-Hellman key agreement, each party SHOULD check that the
+       two public keys :math:`\widetilde{PK_{\text{PICC}}}` and
+       :math:`\widetilde{PK_{\text{PCD}}}` differ.
+
+   c. They derive session keys.
+   
+        .. math::
+
+            K_{\text{MAC}} =\operatorname{KDF}_{\text{MAC}} ( K )\text{ and }
+            K_{\text{Enc}}=\operatorname{KDF}_{\text{Enc}} ( K )
+
+   d. They exchange and verify the authentication token.
+   
+        .. math::
+
+            T_{\text{PCD}} =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
+            \widetilde{PK_{\text{PICC}}} )\text{ and }T_{\text{PICC}}
+            =\operatorname{\text{MAC}}( K_{\text{MAC}} ,
+            \widetilde{PK_{\text{PCD}}} )
+
+ECDH Mapping
+============
+
+Let :math:`G` and :math:`\widetilde{G}` be the static and an ephemeral base
+point on the elliptic curve.
+
+Generic Mapping
+---------------
+
+The function :math:`\operatorname{Map}:G \mapsto \widetilde{G}` is defined as
+:math:`\widetilde{G} =s\cdot G+H`, where :math:`H \in \langle G \rangle` is
+chosen s.th. :math:`\log_G H` is unknown. The point :math:`H` SHALL be
+calculated by an anonymous Diffie-Hellman Key Agreement.
+
+Note: The key agreement algorithm ECKA prevents small subgroup attacks by using
+compatible cofactor multiplication.
+
+Integrated Mapping
+------------------
+
+The Integrated ECDH Mapping is specified by ICAO.
+
+DH Mapping
+==========
+
+Let :math:`g` and :math:`\widetilde{g}` be the static and an ephemeral
+generator.
+
+Generic Mapping
+---------------
+
+The function :math:`\operatorname{Map}: g \mapsto \widetilde{g}` is defined as
+:math:`\widetilde{g} =g^s \cdot h`, where :math:`h \in \langle g \rangle` is
+chosen s.th. :math:`\log_g h` is unknown.  The group element :math:`h` SHALL be
+calculated by an anonymous Diffie-Hellman Key Agreement.
+
+Note: The public key validation method described in RFC 2631 MUST be used to
+prevent small subgroup attacks.
+
+Integrated Mapping
+------------------
+
+The Integrated DH Mapping is specified by ICAO.
+
+
+***********************
+Terminal Authentication
+***********************
+
+The Terminal Authentication Protocol is a two move challenge-response
+protocol that provides explicit unilateral authentication of the terminal.
+
+In this protocol :math:`ID_{\text{PICC}}` is an identifier of the MRTD chip:
+
+- If BAC is used :math:`ID_{\text{PICC}}` is the MRTD chip’s Document Number as
+  contained in the MRZ including the check digit.
+- If PACE is used :math:`ID_{\text{PICC}}` is computed using the MRTD chip’s
+  ephemeral PACE public key, i.e. :math:`ID_{\text{PICC}} =\operatorname{Comp}
+  (\widetilde{PK_{\text{PICC}}})`
+
+Note: All messages MUST be transmitted with Secure Messaging in
+Encrypt-then-Authenticate mode using session keys derived from PACE or Chip
+Authentication.
+
+Protocol Specification
+======================
+
+The following steps are performed by the terminal and the MRTD chip.
+
+1. The terminal sends a certificate chain to the MRTD chip. The chain starts
+   with a certificate verifiable with the CVCA public key stored on the chip
+   and ends with the Terminal Certificate.
+2. The MRTD chip verifies the certificates and extracts the terminal’s public
+   key :math:`PK_{\text{PCD}}`.
+3. Version 2 only:
+
+   a. The terminal generates an ephemeral Diffie-Hellman key pair
+      :math:`(\widetilde{SK_{\text{PCD}}} , \widetilde{PK_{\text{PCD}}} ,
+      D_{\text{PICC}} )`, and sends the compressed ephemeral public key
+      :math:`\operatorname{Comp}( \widetilde{PK_{\text{PCD}}})` to the MRTD chip. 
+   b. The terminal may send auxiliary data :math:`A_{\text{PCD}}` to the MRTD
+      chip.
+
+4. The MRTD chip randomly chooses a challenge :math:`r_{\text{PICC}}` and sends
+   it to the terminal.
+5. The terminal responds with the signature.
+  
+    .. math::
+
+        s_{\text{PCD}} =\operatorname{Sign}( SK_{\text{PCD}} , ID_{\text{PICC}}
+        \parallel r_{\text{PICC}} \parallel
+        \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
+        A_{\text{PCD}} )
+
+6. The MRTD chip checks that
+   
+    .. math::
+
+        \operatorname{Verify} ( PK_{\text{PCD}} , s_{\text{PCD}} ,
+        ID_{\text{PICC}}\parallel r_{\text{PICC}}\parallel
+        \operatorname{Comp}(\widetilde{PK_{\text{PCD}}})\parallel
+        A_{\text{PCD}} ) = \operatorname{true}
+
+
+*******************
+Chip Authentication
+*******************
+
+The Chip Authentication Protocol is an ephemeral-static Diffie-Hellman key
+agreement protocol that provides secure communication and unilateral
+authentication of the MRTD chip.
+
+The protocol provides explicit authentication of the MRTD chip by verifying
+the authentication token and implicit authentication of the stored data by
+performing Secure Messaging using the new session keys.
+
+Protocol Specification
+======================
+
+In this version Terminal Authentication MUST be performed before Chip
+Authentication, as the terminal's ephemeral key pair
+:math:`(\widetilde{SK_{\text{PCD}}}, \widetilde{PK_{\text{PCD}}},
+\widetilde{D_{\text{PICC}}})` is generated as part of Terminal Authentication.
+
+1. The MRTD chip sends its static Diffie-Hellman public key
+   :math:`PK_{\text{PICC}}` and the domain parameters :math:`D_{\text{PICC}}`
+   to the terminal.
+2. The terminal sends the ephemeral public key
+   :math:`\widetilde{PK_{\text{PCD}}}` to the MRTD chip.
+3. The MRTD chip computes the terminal’s compressed ephemeral public key
+   :math:`\operatorname{Comp}(\widetilde{PK_{\text{PCD}}})` and compares this
+   to the compressed public key received in Terminal Authentication.
+4. Both the MRTD chip and the terminal compute the shared
+   secret.
+   
+    .. math::
+
+        K=\operatorname{KA}(SK_{\text{PICC}}, \widetilde{PK_{\text{PCD}}},
+        D_{\text{PICC}})=\operatorname{KA}(\widetilde{SK_{\text{PCD}}},
+        PK_{\text{PICC}}, D_{\text{PICC}})
+
+5. The MRTD chip randomly chooses a nonce :math:`r_{\text{PICC}}`, derives
+   session keys :math:`K_{\text{MAC}}=\operatorname{KDF}_{\text{MAC}}(K,
+   r_{\text{PICC}})` and :math:`K_{\text{Enc}} =
+   \operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}} )` for Secure
+   Messaging from :math:`K` and :math:`r_{\text{PICC}}`, computes the
+   authentication token :math:`T_{\text{PICC}} =\operatorname{\text{MAC}}(
+   K_{\text{MAC}} , \widetilde{PK_{\text{PCD}}})` and sends
+   :math:`r_{\text{PICC}}` and :math:`T_{\text{PICC}}` to the terminal.
+6. The terminal derives session keys :math:`K_{\text{MAC}}
+   =\operatorname{KDF}_{\text{MAC}} ( K , r_{\text{PICC}})` and
+   :math:`K_{\text{Enc}} =\operatorname{KDF}_{\text{Enc}} ( K , r_{\text{PICC}}
+   )` for Secure Messaging from :math:`K` and :math:`r_{\text{PICC}}` and
+   verifies the authentication token :math:`T_{\text{PICC}}`.
+
+To verify the authenticity of the :math:`PK_{\text{PICC}}` the terminal SHALL
+perform Passive Authentication.
+
+
+.. target-notes::
+
+.. _`Federal Office for Information Security (BSI)`: https://www.bsi.bund.de
+.. _`Technical Guideline TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`ICAO Machine Readable Travel Documents Doc 9303`: http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx
