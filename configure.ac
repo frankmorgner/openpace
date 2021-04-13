@@ -243,12 +243,12 @@ then
     then
         AC_MSG_ERROR([go tools required to build bindings.])
     fi
-    if test -z "${SWIGGOPARAMS}"
-    then
-        SWIGGOPARAMS="-intgosize 32"
-    fi
 fi
 AM_CONDITIONAL(GO_ENABLED, [test x"$enable_go" = "xyes"])
+if test -z "${SWIGGOPARAMS}"
+then
+    SWIGGOPARAMS="-intgosize 32"
+fi
 
 
 AC_ARG_ENABLE(cvcdir,
