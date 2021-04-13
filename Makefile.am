@@ -69,7 +69,7 @@ ENV = env \
 	  RUBYLIB=$(abs_top_builddir)/bindings/ruby/ext
 
 test-eactest:
-	$(ENV) $(builddir)/src/eactest -d
+	$(ENV) $(builddir)/src/eactest
 
 test-cvcutils:
 	echo "whatever" > ZZATTERM00001.txt
