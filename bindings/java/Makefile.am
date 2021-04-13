@@ -37,20 +37,15 @@ CLASSES_SWIG = SWIGTYPE_p_BUF_MEM.class \
 			   s_type.class \
 			   eac.class
 
-CLASSES_JPACE = JPace.class \
-				PACEEntity.class \
-				PCD.class \
-				PICC.class
-
 CLASSES_EXAMPLE = Example.class
 
-EXTRA_DIST = JPace.java Example.java
-CLEANFILES = $(CLASSES_SWIG) $(CLASSES_JPACE) $(CLASSES_EXAMPLE) $(BUILT_SOURCES_SWIG)
+EXTRA_DIST = Example.java
+CLEANFILES = $(CLASSES_SWIG) $(CLASSES_EXAMPLE) $(BUILT_SOURCES_SWIG)
 
 lib_LTLIBRARIES = libjeac.la
 
 openpace_javadir = $(pkgdatadir)/java
-openpace_java_DATA = Example.java $(CLASSES_EXAMPLE) $(CLASSES_JPACE) $(CLASSES_SWIG)
+openpace_java_DATA = Example.java $(CLASSES_EXAMPLE) $(CLASSES_SWIG)
 
 libjeac_la_SOURCES = eac_wrap.c
 libjeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS) $(JAVA_CFLAGS)
@@ -61,10 +56,7 @@ $(BUILT_SOURCES_SWIG): $(INTERFACES)
 
 libjeac_la-local: $(BUILT_SOURCES_SWIG)
 
-all-local: $(CLASSES_JPACE) $(CLASSES_EXAMPLE)
-
-$(CLASSES_JPACE): $(srcdir)/JPace.java $(BUILT_SOURCES_SWIG)
-	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/JPace.java
+all-local: $(CLASSES_EXAMPLE)
 
 $(CLASSES_EXAMPLE): $(srcdir)/Example.java $(BUILT_SOURCES_SWIG)
 	$(JAVAC) $(JAVACFLAGS) -d $(builddir) -sourcepath $(builddir) $(srcdir)/Example.java
