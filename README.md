@@ -32,7 +32,7 @@ for:
 - Java
 - Go
 
-[![TravisCI Build Status Image](https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build)](https://travis-ci.org/frankmorgner/openpace) [![AppVeyor CI Build Status Image](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan Status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan)](https://scan.coverity.com/projects/1789) [![Codecov Status](https://img.shields.io/codecov/c/github/frankmorgner/openpace/master.svg)](https://codecov.io/gh/frankmorgner/openpace/branch/master) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg)](https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp)
+[![TravisCI Build Status Image](https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build)](https://travis-ci.org/frankmorgner/openpace) [![AppVeyor CI Build Status Image](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan Status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan)](https://scan.coverity.com/projects/1789) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg)](https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp)
 
 Please refer to [our project's website](http://frankmorgner.github.io/openpace/) for more information.
 

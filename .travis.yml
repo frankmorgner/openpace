@@ -5,15 +5,8 @@ matrix:
     - os: osx
       compiler: clang
       env: TARGET=osx
-    - compiler: gcc
-      dist: focal
-      env: DO_CODECOV=yes
-      addons:
-        apt:
     - env: DO_COVERITY_SCAN=yes
       dist: focal
-      addons:
-        apt:
     - env: TARGET=win WIN_TOOL=i686-w64-mingw32
       dist: focal
     - env: TARGET=win WIN_TOOL=x86_64-w64-mingw32
