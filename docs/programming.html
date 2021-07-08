@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Programming with OpenPACE &#8212; OpenPACE 1.1.1 documentation</title>
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Programming with OpenPACE &#8212; OpenPACE 1.1.2 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Extended Access Control Specification" href="protocols.html" />
     <link rel="prev" title="Usage of OpenPACE" href="usage.html" />
@@ -24,6 +18,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
   
@@ -53,7 +51,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           OpenPACE</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -136,15 +134,15 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="programming-with-openpace">
 <span id="bindings"></span><h1>Programming with OpenPACE<a class="headerlink" href="#programming-with-openpace" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="using-openpace-in-c-c">
 <h2>Using OpenPACE in C/C++<a class="headerlink" href="#using-openpace-in-c-c" title="Permalink to this headline">¶</a></h2>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last">The <a class="reference external" href="_static/doxygen/modules.html">OpenPACE API documentation</a>
+<p class="admonition-title">See also</p>
+<p>The <a class="reference external" href="_static/doxygen/modules.html">OpenPACE API documentation</a>
 has all details of the native C/C++ interface.</p>
 </div>
 <p>Here we have a small example in C:</p>
@@ -255,8 +253,8 @@ has all details of the native C/C++ interface.</p>
 </pre></div>
 </div>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last">Have a look at the <a class="reference external" href="https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c">OpenSC Project</a> <a class="footnote-reference" href="#id3" id="id4">[2]</a> for a more complex project
+<p class="admonition-title">See also</p>
+<p>Have a look at the <a class="reference external" href="https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c">OpenSC Project</a> <a class="footnote-reference brackets" href="#id3" id="id4">2</a> for a more complex project
 that uses the C Interface from OpenPACE.</p>
 </div>
 </div>
@@ -334,13 +332,13 @@ environment variable.</p>
 </pre></div>
 </div>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last">Have a look at the <a class="reference external" href="https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html">Emulator for the German Identity Card</a> <a class="footnote-reference" href="#id5" id="id6">[3]</a> for a more
+<p class="admonition-title">See also</p>
+<p>Have a look at the <a class="reference external" href="https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html">Emulator for the German Identity Card</a> <a class="footnote-reference brackets" href="#id5" id="id6">3</a> for a more
 complex project that uses the Python Interface from OpenPACE.</p>
 </div>
 <p>Unfortunately, OpenPACE’s Python bindings are currently poorly documented.</p>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 0.8: </span>The SWIG bindings from <a class="reference external" href="http://pypace.sourceforge.net">pyPACE</a> <a class="footnote-reference" href="#id1" id="id2">[1]</a> have been integrated into OpenPACE.</p>
+<p><span class="versionmodified added">New in version 0.8: </span>The SWIG bindings from <a class="reference external" href="http://pypace.sourceforge.net">pyPACE</a> <a class="footnote-reference brackets" href="#id1" id="id2">1</a> have been integrated into OpenPACE.</p>
 </div>
 </div>
 <div class="section" id="using-openpace-in-ruby">
@@ -415,7 +413,7 @@ SWIG and Ruby.</p>
 </pre></div>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 0.9: </span>Added Ruby bindings.</p>
+<p><span class="versionmodified added">New in version 0.9: </span>Added Ruby bindings.</p>
 </div>
 </div>
 <div class="section" id="using-openpace-in-go">
@@ -500,7 +498,7 @@ and <code class="docutils literal notranslate"><span class="pre">gccgo</span></c
 </pre></div>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 0.9: </span>Added Go bindings.</p>
+<p><span class="versionmodified added">New in version 0.9: </span>Added Go bindings.</p>
 </div>
 </div>
 <div class="section" id="using-openpace-in-java">
@@ -594,24 +592,17 @@ SWIG, a java compiler and the JNI developement headers. You may set the
 <h2>Using OpenPACE in Javascript<a class="headerlink" href="#using-openpace-in-javascript" title="Permalink to this headline">¶</a></h2>
 <p>Technically the process for getting OpenPACE into Javascript is similar to
 cross compiling. It is covered in <a class="reference internal" href="install.html#javascript-api"><span class="std std-ref">Compiling for Javascript</span></a></p>
-<table class="docutils footnote" frame="void" id="id1" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://pypace.sourceforge.net">http://pypace.sourceforge.net</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td><a class="reference external" href="https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c">https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td><a class="reference external" href="https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html">https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html</a></td></tr>
-</tbody>
-</table>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p><a class="reference external" href="http://pypace.sourceforge.net">http://pypace.sourceforge.net</a></p>
+</dd>
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
+<dd><p><a class="reference external" href="https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c">https://github.com/OpenSC/OpenSC/blob/master/src/sm/sm-eac.c</a></p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id6">3</a></span></dt>
+<dd><p><a class="reference external" href="https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html">https://frankmorgner.github.io/vsmartcard/virtualsmartcard/README.html</a></p>
+</dd>
+</dl>
 </div>
 </div>
 

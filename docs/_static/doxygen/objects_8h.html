@@ -44,6 +44,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">objects.h File Reference</div>  </div>
@@ -52,7 +53,8 @@ $(function() {
 
 <p>Definitions of object identifiers.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;openssl/obj_mac.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;openssl/objects.h&gt;</code><br />
+<code>#include &lt;openssl/obj_mac.h&gt;</code><br />
 </div>
 <p><a href="objects_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -566,6 +568,29 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>OBJ_id_CommunityID</b>&#160;&#160;&#160;OBJ_id_AuxiliaryData,3L</td></tr>
 <tr class="separator:aea5f6ff956bb0b905ee0fbfc0cc9312d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a243ed9566c4a00761c8adf0a6b0d9a6b"><td class="memItemLeft" align="right" valign="top">ASN1_OBJECT *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="objects_8h.html#a243ed9566c4a00761c8adf0a6b0d9a6b">EAC_OBJ_nid2obj</a> (int n)</td></tr>
+<tr class="separator:a243ed9566c4a00761c8adf0a6b0d9a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dbe20013b87deafed05c0c545cbb470"><td class="memItemLeft" align="right" valign="top"><a id="a4dbe20013b87deafed05c0c545cbb470"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>EAC_OBJ_nid2ln</b> (int n)</td></tr>
+<tr class="separator:a4dbe20013b87deafed05c0c545cbb470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87774231493d0e2d08b351336c49bcf9"><td class="memItemLeft" align="right" valign="top"><a id="a87774231493d0e2d08b351336c49bcf9"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>EAC_OBJ_nid2sn</b> (int n)</td></tr>
+<tr class="separator:a87774231493d0e2d08b351336c49bcf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b9865535fd72ede811a594f4d57205"><td class="memItemLeft" align="right" valign="top"><a id="aa5b9865535fd72ede811a594f4d57205"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>EAC_OBJ_obj2nid</b> (const ASN1_OBJECT *o)</td></tr>
+<tr class="separator:aa5b9865535fd72ede811a594f4d57205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489ab6b4b866dcb8d11c30930e1285cc"><td class="memItemLeft" align="right" valign="top"><a id="a489ab6b4b866dcb8d11c30930e1285cc"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>EAC_OBJ_txt2nid</b> (const char *s)</td></tr>
+<tr class="separator:a489ab6b4b866dcb8d11c30930e1285cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab98f8a07ecc8be99a9983ea01c701ce3"><td class="memItemLeft" align="right" valign="top"><a id="ab98f8a07ecc8be99a9983ea01c701ce3"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>EAC_OBJ_ln2nid</b> (const char *s)</td></tr>
+<tr class="separator:ab98f8a07ecc8be99a9983ea01c701ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c0d9f3a63fbe973ac536590c3ee1423"><td class="memItemLeft" align="right" valign="top"><a id="a8c0d9f3a63fbe973ac536590c3ee1423"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>EAC_OBJ_sn2nid</b> (const char *s)</td></tr>
+<tr class="separator:a8c0d9f3a63fbe973ac536590c3ee1423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a50a96ff6db3d7f4fbc03825442a9284b"><td class="memItemLeft" align="right" valign="top"><a id="a50a96ff6db3d7f4fbc03825442a9284b"></a>
@@ -811,7 +836,28 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>NID_id_CommunityID</b>
 <dl class="section author"><dt>Author</dt><dd>Frank Morgner <a href="#" onclick="location.href='mai'+'lto:'+'fra'+'nk'+'mor'+'gn'+'er@'+'gm'+'ail'+'.c'+'om'; return false;">frank<span style="display: none;">.nosp@m.</span>morg<span style="display: none;">.nosp@m.</span>ner@g<span style="display: none;">.nosp@m.</span>mail<span style="display: none;">.nosp@m.</span>.com</a> </dd></dl>
 
 <p class="definition">Definition in file <a class="el" href="objects_8h_source.html">objects.h</a>.</p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a243ed9566c4a00761c8adf0a6b0d9a6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a243ed9566c4a00761c8adf0a6b0d9a6b">&#9670;&nbsp;</a></span>EAC_OBJ_nid2obj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ASN1_OBJECT* EAC_OBJ_nid2obj </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Wrappers for OpenSSL's OBJ_* functions.</p>
+<p>These wrappers are needed to access the possibly hidden table of OpenPACE's dynamically created object identifiers. If OpenPACE is linked statically, this table is not visible to the calling application's OpenSSL, so that PACE/CA/TA NIDs cannot be mapped to ASN1_OBJECTs. Using the wrappers below, OpenPACE returns its internal objects. So that the calling application can use this ASN1_OBJECT directly. </p>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
