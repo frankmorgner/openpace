@@ -49,7 +49,24 @@
 extern "C" {
 #endif
 
+#include <openssl/objects.h>
 #include <openssl/obj_mac.h>
+
+/** Wrappers for OpenSSL's OBJ_* functions.
+ *
+ * These wrappers are needed to access the possibly hidden table of OpenPACE's
+ * dynamically created object identifiers.  If OpenPACE is linked statically,
+ * this table is not visible to the calling application's OpenSSL, so that
+ * PACE/CA/TA NIDs cannot be mapped to ASN1_OBJECTs. Using the wrappers below,
+ * OpenPACE returns its internal objects. So that the calling application can
+ * use this ASN1_OBJECT directly. */
+ASN1_OBJECT *EAC_OBJ_nid2obj(int n);
+const char *EAC_OBJ_nid2ln(int n);
+const char *EAC_OBJ_nid2sn(int n);
+int EAC_OBJ_obj2nid(const ASN1_OBJECT *o);
+int EAC_OBJ_txt2nid(const char *s);
+int EAC_OBJ_ln2nid(const char *s);
+int EAC_OBJ_sn2nid(const char *s);
 
 #ifdef NID_id_PACE_ECDH_GM_AES_CBC_CMAC_128
 #define HAVE_PATCHED_OPENSSL 1

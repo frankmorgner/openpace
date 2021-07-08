@@ -50,6 +50,35 @@
 #include <eac/objects.h>
 #include "eac_err.h"
 
+ASN1_OBJECT *EAC_OBJ_nid2obj(int n)
+{
+    return OBJ_nid2obj(n);
+}
+const char *EAC_OBJ_nid2ln(int n)
+{
+    return EAC_OBJ_nid2ln(n);
+}
+const char *EAC_OBJ_nid2sn(int n)
+{
+    return EAC_OBJ_nid2sn(n);
+}
+int EAC_OBJ_obj2nid(const ASN1_OBJECT *o)
+{
+    return EAC_OBJ_obj2nid(o);
+}
+int EAC_OBJ_txt2nid(const char *s)
+{
+    return EAC_OBJ_txt2nid(s);
+}
+int EAC_OBJ_ln2nid(const char *s)
+{
+    return EAC_OBJ_ln2nid(s);
+}
+int EAC_OBJ_sn2nid(const char *s)
+{
+    return EAC_OBJ_sn2nid(s);
+}
+
 #ifndef HAVE_PATCHED_OPENSSL
 
 int objects_initialized = 0;
