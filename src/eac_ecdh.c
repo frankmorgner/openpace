@@ -88,7 +88,7 @@ init_ecdh(EC_KEY ** ecdh, int standardizedDomainParameters)
             tmp = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
             break;
         case 14:
-            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP512r1);
+            tmp = EC_KEY_new_by_curve_name(NID_brainpoolP320r1);
             break;
         case 15:
             tmp = EC_KEY_new_by_curve_name(NID_secp384r1);
