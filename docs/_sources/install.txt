@@ -25,9 +25,9 @@ make a pull request on Github::
 Alternatively, the current developement version is available as `zip file
 <https://github.com/frankmorgner/openpace/archive/master.zip>`_ or as
 precompiled Windows `32 bit binaries
-<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win32-vs12.zip?branch=master&job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x86>`_
+<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_win32-vs14-python3.zip?branch=master&job=Environment:%20VSVER=14;%20Platform:%20x86>`_
 and `64 bit binaries
-<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win64-vs12.zip?branch=master&job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x64>`_.
+<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_win64-vs14-python3.zip?branch=master&job=Environment:%20VSVER=14;%20Platform:%20x64>`_.
 
 
 
