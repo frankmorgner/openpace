@@ -128,8 +128,8 @@ test-ruby:
 
 install-data-local:
 	$(INSTALL) -d $(DESTDIR)$(htmldir)
-	cd $(srcdir)/docs && find . -type d -exec $(MKDIR_P) "$(DESTDIR)$(htmldir)/{}" \;
-	cd $(srcdir)/docs && find . -type f -exec $(INSTALL_DATA) "{}" "$(DESTDIR)$(htmldir)/{}" \;
+	find $(srcdir)/docs -type d -exec sh -c 'for f in $$@; do $(MKDIR_P)            "$(DESTDIR)$(htmldir)/$${f##$(srcdir)/docs/}"; done' {} +
+	find $(srcdir)/docs -type f -exec sh -c 'for f in $$@; do $(INSTALL_DATA) "$$f" "$(DESTDIR)$(htmldir)/$${f##$(srcdir)/docs/}"; done' {} +
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(htmldir)
