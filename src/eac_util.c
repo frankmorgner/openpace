@@ -321,6 +321,8 @@ err:
     return NULL;
 }
 
+#include <openssl/provider.h>
+
 BUF_MEM *
 retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
 {
@@ -330,6 +332,11 @@ retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
     size_t len;
 
     check(key, "Invalid arguments");
+
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    OSSL_PROVIDER *legacy;
+    legacy = OSSL_PROVIDER_load(NULL, "legacy");
+#endif
 
     len = EVP_CIPHER_block_size(EVP_des_cbc());
     check(key->length >= 2*len, "Key too short");
@@ -369,6 +376,9 @@ retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
     BUF_MEM_free(c_tmp);
     BUF_MEM_free(d_tmp);
     EVP_CIPHER_CTX_free(ctx);
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    OSSL_PROVIDER_unload(legacy);
+#endif
 
     return mac;
 
@@ -381,6 +391,10 @@ err:
         BUF_MEM_free(d_tmp);
     if (ctx)
         EVP_CIPHER_CTX_free(ctx);
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    if (legacy)
+        OSSL_PROVIDER_unload(legacy);
+#endif
 
     return NULL;
 }

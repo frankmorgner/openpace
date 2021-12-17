@@ -341,7 +341,11 @@ CVC_CERT *CVC_d2i_CVC_CERT(CVC_CERT **cert, const unsigned char **in, long len);
  * @return Number of bytes successfully encoded or a negative value if an
  * error occured.
  */
-int i2d_CVC_CERT(CVC_CERT *a, unsigned char **out);
+int i2d_CVC_CERT(
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+  const
+#endif
+  CVC_CERT *a, unsigned char **out);
 
 /**
  * @brief Duplicate a CV certificate
