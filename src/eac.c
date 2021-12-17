@@ -105,7 +105,9 @@ int EAC_reset_ssc(const EAC_CTX *ctx)
     if (!ctx)
         return 0;
 
-    return BN_zero(ctx->ssc);
+    BN_zero(ctx->ssc);
+
+    return 1;
 }
 
 int EAC_set_ssc(const EAC_CTX *ctx, unsigned long ssc)
