@@ -321,7 +321,9 @@ err:
     return NULL;
 }
 
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
 #include <openssl/provider.h>
+#endif
 
 BUF_MEM *
 retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
