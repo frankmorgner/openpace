@@ -56,27 +56,27 @@ ASN1_OBJECT *EAC_OBJ_nid2obj(int n)
 }
 const char *EAC_OBJ_nid2ln(int n)
 {
-    return EAC_OBJ_nid2ln(n);
+    return OBJ_nid2ln(n);
 }
 const char *EAC_OBJ_nid2sn(int n)
 {
-    return EAC_OBJ_nid2sn(n);
+    return OBJ_nid2sn(n);
 }
 int EAC_OBJ_obj2nid(const ASN1_OBJECT *o)
 {
-    return EAC_OBJ_obj2nid(o);
+    return OBJ_obj2nid(o);
 }
 int EAC_OBJ_txt2nid(const char *s)
 {
-    return EAC_OBJ_txt2nid(s);
+    return OBJ_txt2nid(s);
 }
 int EAC_OBJ_ln2nid(const char *s)
 {
-    return EAC_OBJ_ln2nid(s);
+    return OBJ_ln2nid(s);
 }
 int EAC_OBJ_sn2nid(const char *s)
 {
-    return EAC_OBJ_sn2nid(s);
+    return OBJ_sn2nid(s);
 }
 
 #ifndef HAVE_PATCHED_OPENSSL
