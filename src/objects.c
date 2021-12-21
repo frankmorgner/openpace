@@ -66,6 +66,10 @@ int EAC_OBJ_obj2nid(const ASN1_OBJECT *o)
 {
     return OBJ_obj2nid(o);
 }
+ASN1_OBJECT *EAC_OBJ_txt2obj(const char *s, int no_name)
+{
+    return OBJ_txt2obj(s, no_name);
+}
 int EAC_OBJ_txt2nid(const char *s)
 {
     return OBJ_txt2nid(s);

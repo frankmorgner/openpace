@@ -2566,7 +2566,7 @@ static void
 print_desc(int protocol, int curve)
 {
     const char *sn;
-    sn = OBJ_nid2sn(protocol);
+    sn = EAC_OBJ_nid2sn(protocol);
     if (curve > 31) {
         if (verbose)
             printf("  Testing RSA %d Parameters with %s\n", curve, sn);

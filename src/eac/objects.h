@@ -64,6 +64,7 @@ ASN1_OBJECT *EAC_OBJ_nid2obj(int n);
 const char *EAC_OBJ_nid2ln(int n);
 const char *EAC_OBJ_nid2sn(int n);
 int EAC_OBJ_obj2nid(const ASN1_OBJECT *o);
+ASN1_OBJECT *EAC_OBJ_txt2obj(const char *s, int no_name);
 int EAC_OBJ_txt2nid(const char *s);
 int EAC_OBJ_ln2nid(const char *s);
 int EAC_OBJ_sn2nid(const char *s);

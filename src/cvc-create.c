@@ -54,6 +54,7 @@
 #include "ssl_compat.h"
 #include <eac/eac.h>
 #include <eac/cv_cert.h>
+#include <eac/objects.h>
 #include <openssl/asn1.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
@@ -428,25 +429,25 @@ static CVC_CHAT *get_chat(const struct gengetopt_args_info *cmdline, CVC_CERT *s
     if (strlen("at") == type_arg_len
             && 0 == strcmp(cmdline->type_arg, "at")) {
         terminal_type = NID_id_AT;
-        chat->terminal_type = OBJ_nid2obj(NID_id_AT);
+        chat->terminal_type = EAC_OBJ_nid2obj(NID_id_AT);
     } else if (strlen("is") == type_arg_len
             && 0 == strcmp(cmdline->type_arg, "is")) {
             terminal_type = NID_id_IS;
-            chat->terminal_type = OBJ_nid2obj(NID_id_IS);
+            chat->terminal_type = EAC_OBJ_nid2obj(NID_id_IS);
     } else if (strlen("st") == type_arg_len
             && 0 == strcmp(cmdline->type_arg, "st")) {
             terminal_type = NID_id_ST;
-            chat->terminal_type = OBJ_nid2obj(NID_id_ST);
+            chat->terminal_type = EAC_OBJ_nid2obj(NID_id_ST);
     } else if (strlen("derived_from_signer") == type_arg_len
             && 0 == strcmp(cmdline->type_arg, "derived_from_signer")) {
         if (!signer || !signer->body || !signer->body->chat
                 || !signer->body->chat->terminal_type)
             err("type of signer is missing");
-        terminal_type = OBJ_obj2nid(signer->body->chat->terminal_type);
+        terminal_type = EAC_OBJ_obj2nid(signer->body->chat->terminal_type);
         chat->terminal_type = OBJ_dup(signer->body->chat->terminal_type);
     } else {
-        terminal_type = OBJ_txt2nid(cmdline->type_arg);
-        chat->terminal_type = OBJ_txt2obj(cmdline->type_arg, 0);
+        terminal_type = EAC_OBJ_txt2nid(cmdline->type_arg);
+        chat->terminal_type = EAC_OBJ_txt2obj(cmdline->type_arg, 0);
     }
 
     if (chat->relative_authorization)
@@ -580,7 +581,7 @@ CVC_CERTIFICATE_DESCRIPTION *create_certificate_description(const struct gengeto
         desc = CVC_CERTIFICATE_DESCRIPTION_new();
         if (!desc)
             goto err;
-        desc->descriptionType = OBJ_nid2obj(desc_type);
+        desc->descriptionType = EAC_OBJ_nid2obj(desc_type);
 
         if (0 != read_file(cmdline->cert_desc_arg, &desc_data, &desc_data_len)) {
             goto err;
@@ -815,7 +816,7 @@ int main(int argc, char *argv[])
         if (cmdline.role_arg == role_arg_cvca) {
             cert->body->public_key = CVC_PUBKEY_dup(request->body->public_key);
         } else {
-            int nid = OBJ_obj2nid(request->body->public_key->oid);
+            int nid = EAC_OBJ_obj2nid(request->body->public_key->oid);
             if (       nid == NID_id_TA_ECDSA_SHA_1
                     || nid == NID_id_TA_ECDSA_SHA_224
                     || nid == NID_id_TA_ECDSA_SHA_256
@@ -916,7 +917,7 @@ int main(int argc, char *argv[])
         template = CVC_DISCRETIONARY_DATA_TEMPLATE_new();
         if (!desc_hash || !cert->body->certificate_extensions || !template)
             goto err;
-        template->type = OBJ_nid2obj(NID_id_description);
+        template->type = EAC_OBJ_nid2obj(NID_id_description);
         template->discretionary_data1 = ASN1_OCTET_STRING_new();
         if (!template->type || !template->discretionary_data1
                 || !ASN1_OCTET_STRING_set(template->discretionary_data1,
@@ -944,10 +945,10 @@ int main(int argc, char *argv[])
     if (cmdline.sign_as_given) {
         if (!sign_as_cert)
             err("no valid certificate found");
-        signature = EAC_sign(OBJ_obj2nid(sign_as_cert->body->public_key->oid),
+        signature = EAC_sign(EAC_OBJ_obj2nid(sign_as_cert->body->public_key->oid),
                 signer_key, body_buf);
     } else {
-        signature = EAC_sign(OBJ_obj2nid(cert->body->public_key->oid),
+        signature = EAC_sign(EAC_OBJ_obj2nid(cert->body->public_key->oid),
                 signer_key, body_buf);
     }
     if (!signature)
