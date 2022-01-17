@@ -1,0 +1,20 @@
+name: Coverity CI
+
+# We only want to test master or explicitly via coverity branch
+on:
+  push:
+    branches: [master, coverity]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - run: .github/build.sh coverity
+    - uses: vapier/coverity-scan-action@v0
+      with:
+        project: frankmorgner%2Fopenpace
+        token: ${{ secrets.COVERITY_SCAN_TOKEN }}
+        email: 'frankmorgner@gmail.com'
+        command: 'make'

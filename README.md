@@ -32,7 +32,7 @@ for:
 - Java
 - Go
 
-[![TravisCI Build Status Image](https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build)](https://travis-ci.org/frankmorgner/openpace) [![AppVeyor CI Build Status Image](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan Status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan)](https://scan.coverity.com/projects/1789) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg)](https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp)
+[![GitHub Ubuntu CI status](https://img.shields.io/github/workflow/status/frankmorgner/openpace/Ubuntu%20CI/master?label=Ubuntu&logo=github)](https://github.com/frankmorgner/openpace/actions/workflows/ubuntu.yml?branch=master) [![GitHub macOS CI status](https://img.shields.io/github/workflow/status/frankmorgner/openpace/macOS%20CI/master?label=macOS&logo=github)](https://github.com/frankmorgner/openpace/actions/workflows/macos.yml?branch=master) [![AppVeyor Windows CI status](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=Windows&logo=appveyor)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan CI Status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20Scan)](https://scan.coverity.com/projects/1789) [![LGTM CI status](https://img.shields.io/lgtm/grade/cpp/github/frankmorgner/openpace?logo=lgtm)](https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp)
 
 Please refer to [our project's website](http://frankmorgner.github.io/openpace/) for more information.
 
