@@ -1,0 +1,30 @@
+name: Ubuntu CI
+
+on:
+  pull_request:
+    paths:
+      - '**.c'
+      - '**.h'
+      - .github/workflows/ubuntu.yml
+  push:
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: apt-get install
+      run: sudo apt-get install -y binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 gccgo gengetopt golang-go help2man lcov mingw-w64 mingw-w64-tools openjdk-8-jdk openjdk-8-jre-headless python-dev ruby-dev swig xutils-dev
+    - name: autoreconf
+      run: autoreconf -vis
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
