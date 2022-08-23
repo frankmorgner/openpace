@@ -7,7 +7,7 @@ EXTRA_DIST = bsi_objects.txt cvc-print.ggo.in cvc-create.ggo.in cvc-create.ggo c
 do_subst = $(SED) \
 	   -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g'
 
-dist_man1_MANS		= $(builddir)/cvc-create.1 $(builddir)/cvc-print.1
+dist_man1_MANS		= cvc-create.1 cvc-print.1
 
 MAINTAINERCLEANFILES = $(BUILT_SOURCES) cvc-create.ggo cvc-print.ggo $(dist_man1_MANS)
 
@@ -97,16 +97,16 @@ ENV = env \
 
 endif
 
-cvc-create.1: cvc-create$(EXEEXT)
+cvc-create.1: cvc-create.ggo.in
 	$(ENV) $(HELP2MAN) \
-		--output=$@ \
+		--output=$(builddir)/$@ \
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-create$(EXEEXT)
 
-cvc-print.1: cvc-print$(EXEEXT)
+cvc-print.1: cvc-print.ggo.in
 	$(ENV) $(HELP2MAN) \
-		--output=$@ \
+		--output=$(builddir)/$@ \
 		--no-info \
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-print$(EXEEXT)
