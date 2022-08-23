@@ -123,7 +123,7 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
         } else {
             /* try using an authentication request */
             p = csr_data;
-            if (!d2i_CVC_CERT_AUTHENTICATION_REQUEST(&authentication, &p, desc_len))
+            if (!d2i_CVC_CERT_AUTHENTICATION_REQUEST(&authentication, &p, csr_len))
                 err("could not parse certificate request");
 
             puts("Certificate Authentication Request:");
