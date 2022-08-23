@@ -2215,6 +2215,34 @@ static unsigned char MY_cvreq[] = {
    0xf0, 0x97, 0x2a, 0x43, 0xac, 0x4d, 0xed, 0x42, 0xcc, 0x87, 0xcc, 0x56,                         /* ..*C.M.B...V */
 };
 
+/* https://github.com/frankmorgner/openpace/issues/59 */
+static unsigned char csr_with_outer_sig[] = {
+   0x67, 0x82, 0x01, 0x70, 0x7f, 0x21, 0x82, 0x01, 0x2f, 0x7f, 0x4e, 0x81, 0xf8, 0x5f, 0x29, 0x01,
+   0x00, 0x42, 0x07, 0x48, 0x53, 0x4d, 0x43, 0x56, 0x43, 0x41, 0x7f, 0x49, 0x81, 0xdd, 0x06, 0x0a,
+   0x04, 0x00, 0x7f, 0x00, 0x07, 0x02, 0x02, 0x02, 0x02, 0x03, 0x81, 0x18, 0xff, 0xff, 0xff, 0xff,
+   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff, 0xff,
+   0xff, 0xff, 0xff, 0xff, 0x82, 0x18, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+   0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfc, 0x83, 0x18,
+   0x64, 0x21, 0x05, 0x19, 0xe5, 0x9c, 0x80, 0xe7, 0x0f, 0xa7, 0xe9, 0xab, 0x72, 0x24, 0x30, 0x49,
+   0xfe, 0xb8, 0xde, 0xec, 0xc1, 0x46, 0xb9, 0xb1, 0x84, 0x31, 0x04, 0x18, 0x8d, 0xa8, 0x0e, 0xb0,
+   0x30, 0x90, 0xf6, 0x7c, 0xbf, 0x20, 0xeb, 0x43, 0xa1, 0x88, 0x00, 0xf4, 0xff, 0x0a, 0xfd, 0x82,
+   0xff, 0x10, 0x12, 0x07, 0x19, 0x2b, 0x95, 0xff, 0xc8, 0xda, 0x78, 0x63, 0x10, 0x11, 0xed, 0x6b,
+   0x24, 0xcd, 0xd5, 0x73, 0xf9, 0x77, 0xa1, 0x1e, 0x79, 0x48, 0x11, 0x85, 0x18, 0xff, 0xff, 0xff,
+   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x99, 0xde, 0xf8, 0x36, 0x14, 0x6b, 0xc9,
+   0xb1, 0xb4, 0xd2, 0x28, 0x31, 0x86, 0x31, 0x04, 0x5c, 0x8c, 0x7f, 0xb3, 0xd2, 0xd1, 0x7e, 0x37,
+   0x01, 0x77, 0x8b, 0xea, 0x42, 0xa8, 0x60, 0xe9, 0x7b, 0x81, 0x3f, 0xcc, 0x83, 0xb8, 0x0c, 0xa4,
+   0x06, 0xb7, 0xca, 0x17, 0x3a, 0xd8, 0xbf, 0x90, 0x72, 0x83, 0xaa, 0xd4, 0x73, 0x53, 0xe7, 0x50,
+   0x0b, 0x48, 0x24, 0x2d, 0x5f, 0x84, 0x8a, 0xe5, 0x87, 0x01, 0x01, 0x5f, 0x20, 0x07, 0x48, 0x53,
+   0x4d, 0x43, 0x56, 0x43, 0x41, 0x5f, 0x37, 0x30, 0x61, 0xb9, 0x06, 0xbe, 0x5b, 0xc6, 0x35, 0x13,
+   0x70, 0x64, 0x8c, 0x53, 0x9e, 0x64, 0x8e, 0x63, 0xe2, 0xe8, 0xbd, 0xbe, 0x38, 0x0f, 0x43, 0xf7,
+   0xce, 0xdb, 0x20, 0x34, 0xce, 0xea, 0x0a, 0x42, 0x73, 0xcb, 0x44, 0x90, 0x2e, 0x6a, 0x7d, 0x32,
+   0x82, 0x53, 0x77, 0x1d, 0x81, 0x57, 0x1f, 0x54, 0x42, 0x07, 0x48, 0x53, 0x4d, 0x43, 0x56, 0x43,
+   0x41, 0x5f, 0x37, 0x30, 0x11, 0xfd, 0xec, 0x74, 0xfc, 0x6d, 0x9c, 0x75, 0xc0, 0x61, 0x61, 0x26,
+   0xce, 0xd4, 0x90, 0x14, 0xf2, 0x6d, 0xdc, 0xc8, 0x8f, 0xda, 0xc0, 0xf3, 0xd6, 0x51, 0xc5, 0x39,
+   0xed, 0x73, 0xe8, 0x6a, 0xea, 0x60, 0xbb, 0x68, 0xed, 0xc4, 0xf2, 0x21, 0xf3, 0x68, 0xe7, 0xe0,
+   0x21, 0x8f, 0xa2, 0x5b,
+};
+
 
 struct cv_cert {
     const unsigned char *cv_cert;
@@ -2223,33 +2251,36 @@ struct cv_cert {
     const size_t cv_cert_desc_len;
     const unsigned char *cv_cert_request;
     const size_t cv_cert_request_len;
+    const unsigned char *cv_cert_authentication_request;
+    const size_t cv_cert_authentication_request_len;
 };
 
 static const struct cv_cert cv_certs[] = {
-    {cvc1, sizeof cvc1, cvc1_desc, sizeof cvc1_desc, NULL, 0},
-    {cvc2, sizeof cvc2, NULL, 0, NULL, 0},
-    {wrong_tc_ecdh_cvca, sizeof wrong_tc_ecdh_cvca, NULL, 0, NULL, 0},
-    {kba_dvca_cert, sizeof kba_dvca_cert, NULL, 0, NULL, 0},
-    {kba_cert, sizeof kba_cert, kba_cert_desc, sizeof kba_cert_desc, NULL, 0},
-    {kba_dvca_cert_2, sizeof kba_dvca_cert_2, NULL, 0, NULL, 0},
-    {kba_cert_2, sizeof kba_cert_2, kba_cert_desc_2, sizeof kba_cert_desc_2, NULL, 0},
-    {kba_cert_3, sizeof kba_cert_3, kba_cert_desc_2, sizeof kba_cert_desc_2, NULL, 0},
-    {kba_cert_4, sizeof kba_cert_4, kba_cert_desc_2, sizeof kba_cert_desc_2, NULL, 0},
-    {schufa_dvcert, sizeof schufa_dvcert, NULL, 0, NULL, 0},
-    {schufa_cert, sizeof schufa_cert, schufa_desc, sizeof schufa_desc, NULL, 0},
-    {schufa_dvcert, sizeof schufa_dvcert, NULL, 0, NULL, 0},
-    {schufa_cert, sizeof schufa_cert, schufa_desc, sizeof schufa_desc, NULL, 0},
-    {mein_cockpit_dvcert, sizeof mein_cockpit_dvcert, NULL, 0, NULL, 0},
-    {mein_cockpit_cert, sizeof mein_cockpit_cert, mein_cockpit_desc, sizeof mein_cockpit_desc, NULL, 0},
-    {allianz_dvcert, sizeof allianz_dvcert, NULL, 0, NULL, 0},
-    {allianz_cert, sizeof allianz_cert, allianz_desc, sizeof allianz_desc, NULL, 0},
-    {service_bw_dvcert, sizeof service_bw_dvcert, NULL, 0, NULL, 0},
-    {service_bw_cert, sizeof service_bw_cert, NULL, 0, NULL, 0},
-    {service_bw_cert_2, sizeof service_bw_cert_2, NULL, 0, NULL, 0},
-    {service_bw_cert_3, sizeof service_bw_cert_3, NULL, 0, NULL, 0},
-    {service_bw_cert_4, sizeof service_bw_cert_4, NULL, 0, NULL, 0},
-    {NULL, 0, NULL, 0, req_18102010_csr, sizeof req_18102010_csr},
-    {NULL, 0, NULL, 0, MY_cvreq, sizeof MY_cvreq},
+    {cvc1, sizeof cvc1, cvc1_desc, sizeof cvc1_desc, NULL, 0, NULL, 0},
+    {cvc2, sizeof cvc2, NULL, 0, NULL, 0, NULL, 0},
+    {wrong_tc_ecdh_cvca, sizeof wrong_tc_ecdh_cvca, NULL, 0, NULL, 0, NULL, 0},
+    {kba_dvca_cert, sizeof kba_dvca_cert, NULL, 0, NULL, 0, NULL, 0},
+    {kba_cert, sizeof kba_cert, kba_cert_desc, sizeof kba_cert_desc, NULL, 0, NULL, 0},
+    {kba_dvca_cert_2, sizeof kba_dvca_cert_2, NULL, 0, NULL, 0, NULL, 0},
+    {kba_cert_2, sizeof kba_cert_2, kba_cert_desc_2, sizeof kba_cert_desc_2, NULL, 0, NULL, 0},
+    {kba_cert_3, sizeof kba_cert_3, kba_cert_desc_2, sizeof kba_cert_desc_2, NULL, 0, NULL, 0},
+    {kba_cert_4, sizeof kba_cert_4, kba_cert_desc_2, sizeof kba_cert_desc_2, NULL, 0, NULL, 0},
+    {schufa_dvcert, sizeof schufa_dvcert, NULL, 0, NULL, 0, NULL, 0},
+    {schufa_cert, sizeof schufa_cert, schufa_desc, sizeof schufa_desc, NULL, 0, NULL, 0},
+    {schufa_dvcert, sizeof schufa_dvcert, NULL, 0, NULL, 0, NULL, 0},
+    {schufa_cert, sizeof schufa_cert, schufa_desc, sizeof schufa_desc, NULL, 0, NULL, 0},
+    {mein_cockpit_dvcert, sizeof mein_cockpit_dvcert, NULL, 0, NULL, 0, NULL, 0},
+    {mein_cockpit_cert, sizeof mein_cockpit_cert, mein_cockpit_desc, sizeof mein_cockpit_desc, NULL, 0, NULL, 0},
+    {allianz_dvcert, sizeof allianz_dvcert, NULL, 0, NULL, 0, NULL, 0},
+    {allianz_cert, sizeof allianz_cert, allianz_desc, sizeof allianz_desc, NULL, 0, NULL, 0},
+    {service_bw_dvcert, sizeof service_bw_dvcert, NULL, 0, NULL, 0, NULL, 0},
+    {service_bw_cert, sizeof service_bw_cert, NULL, 0, NULL, 0, NULL, 0},
+    {service_bw_cert_2, sizeof service_bw_cert_2, NULL, 0, NULL, 0, NULL, 0},
+    {service_bw_cert_3, sizeof service_bw_cert_3, NULL, 0, NULL, 0, NULL, 0},
+    {service_bw_cert_4, sizeof service_bw_cert_4, NULL, 0, NULL, 0, NULL, 0},
+    {NULL, 0, NULL, 0, req_18102010_csr, sizeof req_18102010_csr, NULL, 0},
+    {NULL, 0, NULL, 0, MY_cvreq, sizeof MY_cvreq, NULL, 0},
+    {NULL, 0, NULL, 0, NULL, 0, csr_with_outer_sig, sizeof csr_with_outer_sig},
 };
 
 
@@ -3658,6 +3689,7 @@ test_cv_cert_parsing(const struct cv_cert tc)
     CVC_CERT *cvc_cert = NULL;
     CVC_CERTIFICATE_DESCRIPTION *desc = NULL;
     CVC_CERT_REQUEST *request = NULL;
+    CVC_CERT_AUTHENTICATION_REQUEST *authentication_request = NULL;
     const unsigned char *p;
     int failed = 1;
 
@@ -3689,6 +3721,13 @@ test_cv_cert_parsing(const struct cv_cert tc)
                 "certificate request verified");
     }
 
+    if (tc.cv_cert_authentication_request && tc.cv_cert_authentication_request_len) {
+        p = tc.cv_cert_authentication_request;
+        authentication_request = d2i_CVC_CERT_AUTHENTICATION_REQUEST(NULL, &p, tc.cv_cert_authentication_request_len);
+        CHECK(1, authentication_request,
+                "Parsed Certificate Authentication Request");
+    }
+
     failed = 0;
 
 err:
@@ -3709,6 +3748,8 @@ err:
         CVC_CERT_free(cvc_cert);
     if (request)
         CVC_CERT_REQUEST_free(request);
+    if (authentication_request)
+        CVC_CERT_AUTHENTICATION_REQUEST_free(authentication_request);
     if (bio)
         BIO_free_all(bio);
 
