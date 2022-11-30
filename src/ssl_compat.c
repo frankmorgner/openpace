@@ -183,3 +183,84 @@ int EC_POINT_set_affine_coordinates(const EC_GROUP *group, EC_POINT *p, const BI
     return EC_POINT_set_affine_coordinates_GFp(group, p, x, y, ctx);
 }
 #endif
+
+#ifndef HAVE_EVP_PKEY_DUP
+EVP_PKEY *
+EVP_PKEY_dup(EVP_PKEY *key)
+{
+    EVP_PKEY *out = NULL;
+    DH *dh_in = NULL, *dh_out = NULL;
+    EC_KEY *ec_in = NULL, *ec_out = NULL;
+    RSA *rsa_in = NULL, *rsa_out = NULL;
+
+    check(key, "Invalid arguments");
+
+    out = EVP_PKEY_new();
+
+    if (!out)
+        goto err;
+
+    switch (EVP_PKEY_base_id(key)) {
+        case EVP_PKEY_DH:
+        case EVP_PKEY_DHX:
+            dh_in = EVP_PKEY_get1_DH(key);
+            if (!dh_in)
+                goto err;
+
+            dh_out = DHparams_dup_with_q(dh_in);
+            if (!dh_out)
+                goto err;
+
+            EVP_PKEY_set1_DH(out, dh_out);
+            DH_free(dh_out);
+            DH_free(dh_in);
+            break;
+
+        case EVP_PKEY_EC:
+            ec_in = EVP_PKEY_get1_EC_KEY(key);
+            if (!ec_in)
+                goto err;
+
+            ec_out = EC_KEY_dup(ec_in);
+            if (!ec_out)
+                goto err;
+
+            EVP_PKEY_set1_EC_KEY(out, ec_out);
+            EC_KEY_free(ec_out);
+            EC_KEY_free(ec_in);
+            break;
+
+        case EVP_PKEY_RSA:
+            rsa_in = EVP_PKEY_get1_RSA(key);
+            if (!rsa_in)
+                goto err;
+
+            rsa_out = RSAPrivateKey_dup(rsa_in);
+            if (!rsa_out)
+                goto err;
+
+            EVP_PKEY_set1_RSA(out, rsa_out);
+            RSA_free(rsa_out);
+            RSA_free(rsa_in);
+            break;
+
+        default:
+            log_err("Unknown protocol");
+            goto err;
+    }
+
+    return out;
+
+err:
+    if (dh_in)
+        DH_free(dh_in);
+    if (ec_in)
+        EC_KEY_free(ec_in);
+    if (rsa_in)
+        RSA_free(rsa_in);
+    if (out)
+        EVP_PKEY_free(out);
+
+    return NULL;
+}
+#endif
