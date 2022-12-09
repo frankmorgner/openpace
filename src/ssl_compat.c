@@ -2,12 +2,13 @@
 #include "config.h"
 #endif
 
+#include "eac_dh.h"
 #include <openssl/crypto.h>
 #include <openssl/dh.h>
+#include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
-#include <openssl/ec.h>
 #include <string.h>
 
 #ifndef HAVE_DH_SET0_KEY
@@ -193,11 +194,9 @@ EVP_PKEY_dup(EVP_PKEY *key)
     EC_KEY *ec_in = NULL, *ec_out = NULL;
     RSA *rsa_in = NULL, *rsa_out = NULL;
 
-    check(key, "Invalid arguments");
-
     out = EVP_PKEY_new();
 
-    if (!out)
+    if (!key || !out)
         goto err;
 
     switch (EVP_PKEY_base_id(key)) {
@@ -245,7 +244,6 @@ EVP_PKEY_dup(EVP_PKEY *key)
             break;
 
         default:
-            log_err("Unknown protocol");
             goto err;
     }
 
