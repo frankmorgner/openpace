@@ -612,7 +612,7 @@ CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
         check(EVP_PKEY_base_id(key) == EVP_PKEY_EC,
                "Incorrect domain parameters");
 
-        ec = (EC_KEY *) EVP_PKEY_get0(key);
+        ec = EVP_PKEY_get0_EC_KEY(key);
         check(ec, "Failed to extract domain parameters");
 
         group = EC_KEY_get0_group(ec);
