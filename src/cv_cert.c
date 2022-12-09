@@ -589,13 +589,11 @@ CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
                     public_key->cont6,
                     public_key->cont7,
                     bn_ctx)) {
-            EC_KEY_free(ec);
             log_err("Internal error");
             goto err;
         }
 
         ok = EVP_PKEY_set1_EC_KEY(key, ec);
-        EC_KEY_free(ec);
     } else {
         /* If cert is not a CVCA certificate it MUST NOT contain any domain
          * parameters. We take the domain parameters from the domainParameters
@@ -612,7 +610,7 @@ CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
         check(EVP_PKEY_base_id(key) == EVP_PKEY_EC,
                "Incorrect domain parameters");
 
-        ec = EVP_PKEY_get0_EC_KEY(key);
+        ec = EVP_PKEY_get1_EC_KEY(key);
         check(ec, "Failed to extract domain parameters");
 
         group = EC_KEY_get0_group(ec);
@@ -632,6 +630,8 @@ CVC_pubkey2eckey(int all_parameters, const CVC_PUBKEY *public_key,
 err:
     if (point)
         EC_POINT_free(point);
+    if (ec)
+        EC_KEY_free(ec);
 
     return ok;
 }
