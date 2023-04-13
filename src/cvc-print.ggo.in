@@ -25,6 +25,10 @@ option "cvc-dir"        -
     typestr="DIRECTORY"
     optional
 
+option "disable-cvc-verification"   -
+    "Disable verification of CV certificates"
+    flag off
+
 text "
 Report bugs to @PACKAGE_BUGREPORT@
 

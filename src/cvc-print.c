@@ -59,7 +59,8 @@
 
 #define err(s) { puts(s); ERR_print_errors_fp(stdout); goto err; }
 
-static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
+static int print_cvc(int disable_verification,
+        const unsigned char *cvc_data, const size_t cvc_len,
         const unsigned char *desc_data, const size_t desc_len,
         const unsigned char *csr_data, const size_t csr_len)
 {
@@ -87,10 +88,12 @@ static int print_cvc(const unsigned char *cvc_data, const size_t cvc_len,
             err("could not print card verifiable certificate");
 
         ctx = EAC_CTX_new();
-        if (!TA_STEP2_import_certificate(ctx, cvc_data, cvc_len)) {
-            puts("certificate not verified");
-        } else {
-            puts("certificate verified");
+        if (!disable_verification) {
+            if (!TA_STEP2_import_certificate(ctx, cvc_data, cvc_len)) {
+                puts("certificate not verified");
+            } else {
+                puts("certificate verified");
+            }
         }
         EAC_CTX_clear_free(ctx);
     }
@@ -199,7 +202,7 @@ int main(int argc, char *argv[])
     if (cmdline.cvc_dir_arg) {
         EAC_set_cvc_default_dir(cmdline.cvc_dir_arg);
     }
-    fail = print_cvc(cvc_data, cvc_len, desc_data, desc_len, csr_data, csr_len);
+    fail = print_cvc(cmdline.disable_cvc_verification_flag, cvc_data, cvc_len, desc_data, desc_len, csr_data, csr_len);
 
 err:
     cmdline_parser_free (&cmdline);
