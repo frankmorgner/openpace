@@ -241,5 +241,5 @@ perform Passive Authentication.
 .. target-notes::
 
 .. _`Federal Office for Information Security (BSI)`: https://www.bsi.bund.de
-.. _`Technical Guideline TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
-.. _`ICAO Machine Readable Travel Documents Doc 9303`: http://www.icao.int/Security/mrtd/Pages/Doc9393.aspx
+.. _`Technical Guideline TR-03110`: https://www.bsi.bund.de/dok/TR-03110-en
+.. _`ICAO Machine Readable Travel Documents Doc 9303`: https://www.icao.int/publications/pages/publication.aspx?docnum=9303

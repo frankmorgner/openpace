@@ -41,6 +41,10 @@ More details and a number of examples for using the library are covered here:
 
     programming
 
+.. versionadded:: 1.1.2
+    Added wrappers for OpenSSL's OBJ_* functions
+
+
 .. versionadded:: 1.0
     Added support for certificate signing requests
     (`CVC_verify_request_signature()`,
@@ -75,7 +79,10 @@ authentication terminals and signature terminals for all signature schemes in
 all standardized elliptic curves.
 
 .. versionadded:: 1.1.0
-    Added support for arbitrary terminal types and CHATs
+    Added support for arbitrary terminal types (:option:`--type`)
+
+.. versionadded:: 1.1.0
+    Added support for arbitrary CHATs (:option:`--chat`)
 
 .. versionadded:: 1.0
     - Added support for certificate signing requests (:option:`--csr`)
@@ -97,6 +104,9 @@ Below you see of how to print the certificates created in the example above::
     cvc-print --cvc ZZATCVCA00001.cvcert
     cvc-print --cvc ZZATDVCA00001.cvcert
     cvc-print --cvc ZZATTERM00001.cvcert --description ZZATTERM00001.desc
+
+.. versionadded:: 1.1.3
+    Added :option:`--disable-cvc-validity-check`
 
 .. versionadded:: 1.0.2
     Added :option:`--cvc-dir`

@@ -233,84 +233,88 @@ $(function() {
 <div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160; </div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *<a class="code" href="group__management.html#ga59de291be2953ebf60bce12225fed74f">CVC_d2i_CVC_CERT</a>(<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> **cert, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> **in, <span class="keywordtype">long</span> len);</div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__management.html#ga63dd3f2ebdc39d4a9e0b0af8d12ec655">i2d_CVC_CERT</a>(<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *a, <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> **out);</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
-<div class="line"><a name="l00353"></a><span class="lineno"><a class="line" href="group__management.html#gaf8df0122e9d69243120b62033c4b9474">  353</a></span>&#160;<span class="preprocessor">#define CVC_CERT_dup(x) ASN1_dup_of(CVC_CERT, i2d_CVC_CERT, CVC_d2i_CVC_CERT, x)</span></div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160; </div>
-<div class="line"><a name="l00362"></a><span class="lineno"><a class="line" href="group__management.html#ga3c3f5a64d45ed99d9c5cfd0a0c61b869">  362</a></span>&#160;<span class="preprocessor">#define CVC_PUBKEY_dup(x) ASN1_dup_of(CVC_PUBKEY, i2d_CVC_PUBKEY, d2i_CVC_PUBKEY, x)</span></div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160; </div>
-<div class="line"><a name="l00371"></a><span class="lineno"><a class="line" href="group__management.html#gadf010f3a63a21336d1025a3f7814c322">  371</a></span>&#160;<span class="preprocessor">#define CVC_CHAT_dup(x) ASN1_dup_of(CVC_CHAT, i2d_CVC_CHAT, d2i_CVC_CHAT, x)</span></div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160; </div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *<a class="code" href="group__management.html#ga90b0e7ddb7b193cbc414f8d88cd9e6cc">CVC_CERT_new</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__management.html#ga24e6f1a7b4eff8f8379ca5eed3f20b8c">CVC_CERT_free</a>(<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *a);</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160; </div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *<a class="code" href="group__management.html#ga19aa7bd7c16a19d41536c674283d1457">d2i_CVC_CERT_bio</a>(BIO *bp, <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> **cvc);</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;EVP_PKEY *</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<a class="code" href="group__management.html#ga84dfe7c3da5df6756c92eeca501c87fe">CVC_pubkey2pkey</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert, BN_CTX *bn_ctx, EVP_PKEY *out);</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160; </div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<a class="code" href="structcvc__pubkey__st.html">CVC_PUBKEY</a> *</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;CVC_pkey2pubkey(<span class="keywordtype">int</span> all_parameters, <span class="keywordtype">int</span> protocol, EVP_PKEY *key,</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        BN_CTX *bn_ctx, <a class="code" href="structcvc__pubkey__st.html">CVC_PUBKEY</a> *out);</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__management.html#ga63dd3f2ebdc39d4a9e0b0af8d12ec655">i2d_CVC_CERT</a>(</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;#<span class="keywordflow">if</span> OPENSSL_VERSION_NUMBER &gt;= 0x30000000L</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="keyword">const</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;#endif</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *a, <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> **out);</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160; </div>
+<div class="line"><a name="l00357"></a><span class="lineno"><a class="line" href="group__management.html#gaf8df0122e9d69243120b62033c4b9474">  357</a></span>&#160;<span class="preprocessor">#define CVC_CERT_dup(x) ASN1_dup_of(CVC_CERT, i2d_CVC_CERT, CVC_d2i_CVC_CERT, x)</span></div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160; </div>
+<div class="line"><a name="l00366"></a><span class="lineno"><a class="line" href="group__management.html#ga3c3f5a64d45ed99d9c5cfd0a0c61b869">  366</a></span>&#160;<span class="preprocessor">#define CVC_PUBKEY_dup(x) ASN1_dup_of(CVC_PUBKEY, i2d_CVC_PUBKEY, d2i_CVC_PUBKEY, x)</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160; </div>
+<div class="line"><a name="l00375"></a><span class="lineno"><a class="line" href="group__management.html#gadf010f3a63a21336d1025a3f7814c322">  375</a></span>&#160;<span class="preprocessor">#define CVC_CHAT_dup(x) ASN1_dup_of(CVC_CHAT, i2d_CVC_CHAT, d2i_CVC_CHAT, x)</span></div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *<a class="code" href="group__management.html#ga90b0e7ddb7b193cbc414f8d88cd9e6cc">CVC_CERT_new</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__management.html#ga24e6f1a7b4eff8f8379ca5eed3f20b8c">CVC_CERT_free</a>(<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *a);</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160; </div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;<a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *<a class="code" href="group__management.html#ga19aa7bd7c16a19d41536c674283d1457">d2i_CVC_CERT_bio</a>(BIO *bp, <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> **cvc);</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;EVP_PKEY *</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<a class="code" href="group__management.html#ga84dfe7c3da5df6756c92eeca501c87fe">CVC_pubkey2pkey</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert, BN_CTX *bn_ctx, EVP_PKEY *out);</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160; </div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160; </div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160; </div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__printing.html#ga4d2388a9e59f0494a7fc8b8bf5cd5538">certificate_description_print</a>(BIO *bio,</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__certificate__description__st.html">CVC_CERTIFICATE_DESCRIPTION</a> *desc, <span class="keywordtype">int</span> indent);</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160; </div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;<a class="code" href="group__printing.html#ga6cbe7fccc3b3c50761efc05f43a00c3a">cvc_chat_print</a>(BIO *bio, <span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *chat, <span class="keywordtype">int</span> indent);</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160; </div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;<a class="code" href="group__printing.html#gacdda7b257013c199ce6ff92793fa6767">cvc_chat_print_authorizations</a>(BIO *bio, <span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *chat, <span class="keywordtype">int</span> indent);</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160; </div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;<a class="code" href="group__printing.html#ga33515c2eb1aa44b1a85f7d9e9fa9c15e">CVC_print</a>(BIO *bio, <span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cv, <span class="keywordtype">int</span> indent);</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160; </div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__printing.html#ga9e8c6ae74ee9d904c252fbb84842561e">certificate_request_print</a>(BIO *bio,</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__cert__request__seq__st.html">CVC_CERT_REQUEST</a> *request, <span class="keywordtype">int</span> indent);</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160; </div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__printing.html#ga24eac0cd08d21e122f93fe8e59f598e7">certificate_authentication_request_print</a>(BIO *bio,</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__cert__authentication__request__seq__st.html">CVC_CERT_AUTHENTICATION_REQUEST</a> *authentication, <span class="keywordtype">int</span> indent);</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160; </div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;<a class="code" href="cv__cert_8h.html#a604835f44c2197c1c9c7f8f8498e3112">cvc_get_chat</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cvc);</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160; </div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;<span class="keyword">enum</span> <a class="code" href="cv__cert_8h.html#a0203c4d440a0ac1ac0e80963a9c8115a">cvc_terminal_role</a></div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;<a class="code" href="cv__cert_8h.html#a5455c36dff717cd86b76e66e5745f26e">CVC_get_role</a>(<span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *chat);</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160; </div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;<span class="keywordtype">short</span></div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;<a class="code" href="cv__cert_8h.html#ab7320b3c4d18c2a60eeca9fc6b64d974">CVC_get_profile_identifier</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;<span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;<a class="code" href="cv__cert_8h.html#a74f1735bfd33173942bdfb997e2a2678">CVC_get_car</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;<span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;<a class="code" href="cv__cert_8h.html#a9ab545b897f4f23279c2ba7189495e64">CVC_get_chr</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;<span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;<a class="code" href="cv__cert_8h.html#a2ff4c4e407f45866eaa658bb53b05514">CVC_get_effective_date</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;<span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;<a class="code" href="cv__cert_8h.html#a20c200f0130936fab4501481cb119253">CVC_get_expiration_date</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160; </div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;<a class="code" href="cv__cert_8h.html#aef79738eb6bf92bb7a433e28b1d691ad">CVC_verify_signature</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert, <span class="keywordtype">int</span> protocol, EVP_PKEY *key);</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160; </div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;<a class="code" href="cv__cert_8h.html#a552794e00fda445f91610dad02ac5803">CVC_verify_request_signature</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__request__seq__st.html">CVC_CERT_REQUEST</a> *request);</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160; </div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;<a class="code" href="cv__cert_8h.html#aa2938141330b9c7096a0273b89bde955">CVC_verify_authentication_request_signatures</a>(<span class="keyword">struct</span> <a class="code" href="structeac__ctx.html">eac_ctx</a> *ctx,</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__cert__authentication__request__seq__st.html">CVC_CERT_AUTHENTICATION_REQUEST</a> *authentication);</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160; </div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;<a class="code" href="cv__cert_8h.html#a6f758242008190302811e2249ce4125d">CVC_check_description</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cv, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *cert_desc_in,</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cert_desc_in_len);</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160; </div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;BUF_MEM *<a class="code" href="cv__cert_8h.html#ac3041c6df1ce54acce6adad2f2b20273">CVC_hash_description</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cv,</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *cert_desc, <span class="keywordtype">size_t</span> cert_desc_len);</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160; </div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;}</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CVC_CERT_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;<a class="code" href="structcvc__pubkey__st.html">CVC_PUBKEY</a> *</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;CVC_pkey2pubkey(<span class="keywordtype">int</span> all_parameters, <span class="keywordtype">int</span> protocol, EVP_PKEY *key,</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        BN_CTX *bn_ctx, <a class="code" href="structcvc__pubkey__st.html">CVC_PUBKEY</a> *out);</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160; </div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160; </div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__printing.html#ga4d2388a9e59f0494a7fc8b8bf5cd5538">certificate_description_print</a>(BIO *bio,</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__certificate__description__st.html">CVC_CERTIFICATE_DESCRIPTION</a> *desc, <span class="keywordtype">int</span> indent);</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160; </div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;<a class="code" href="group__printing.html#ga6cbe7fccc3b3c50761efc05f43a00c3a">cvc_chat_print</a>(BIO *bio, <span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *chat, <span class="keywordtype">int</span> indent);</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160; </div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;<a class="code" href="group__printing.html#gacdda7b257013c199ce6ff92793fa6767">cvc_chat_print_authorizations</a>(BIO *bio, <span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *chat, <span class="keywordtype">int</span> indent);</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160; </div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;<a class="code" href="group__printing.html#ga33515c2eb1aa44b1a85f7d9e9fa9c15e">CVC_print</a>(BIO *bio, <span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cv, <span class="keywordtype">int</span> indent);</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160; </div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__printing.html#ga9e8c6ae74ee9d904c252fbb84842561e">certificate_request_print</a>(BIO *bio,</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__cert__request__seq__st.html">CVC_CERT_REQUEST</a> *request, <span class="keywordtype">int</span> indent);</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160; </div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;<span class="keywordtype">int</span> <a class="code" href="group__printing.html#ga24eac0cd08d21e122f93fe8e59f598e7">certificate_authentication_request_print</a>(BIO *bio,</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__cert__authentication__request__seq__st.html">CVC_CERT_AUTHENTICATION_REQUEST</a> *authentication, <span class="keywordtype">int</span> indent);</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160; </div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;<span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;<a class="code" href="cv__cert_8h.html#a604835f44c2197c1c9c7f8f8498e3112">cvc_get_chat</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cvc);</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160; </div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;<span class="keyword">enum</span> <a class="code" href="cv__cert_8h.html#a0203c4d440a0ac1ac0e80963a9c8115a">cvc_terminal_role</a></div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;<a class="code" href="cv__cert_8h.html#a5455c36dff717cd86b76e66e5745f26e">CVC_get_role</a>(<span class="keyword">const</span> <a class="code" href="structcvc__chat__seq__st.html">CVC_CHAT</a> *chat);</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160; </div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;<span class="keywordtype">short</span></div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;<a class="code" href="cv__cert_8h.html#ab7320b3c4d18c2a60eeca9fc6b64d974">CVC_get_profile_identifier</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;<span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;<a class="code" href="cv__cert_8h.html#a74f1735bfd33173942bdfb997e2a2678">CVC_get_car</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;<span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;<a class="code" href="cv__cert_8h.html#a9ab545b897f4f23279c2ba7189495e64">CVC_get_chr</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;<span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;<a class="code" href="cv__cert_8h.html#a2ff4c4e407f45866eaa658bb53b05514">CVC_get_effective_date</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;<span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;<a class="code" href="cv__cert_8h.html#a20c200f0130936fab4501481cb119253">CVC_get_expiration_date</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert);</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160; </div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;<a class="code" href="cv__cert_8h.html#aef79738eb6bf92bb7a433e28b1d691ad">CVC_verify_signature</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cert, <span class="keywordtype">int</span> protocol, EVP_PKEY *key);</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160; </div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;<a class="code" href="cv__cert_8h.html#a552794e00fda445f91610dad02ac5803">CVC_verify_request_signature</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__request__seq__st.html">CVC_CERT_REQUEST</a> *request);</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160; </div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;<a class="code" href="cv__cert_8h.html#aa2938141330b9c7096a0273b89bde955">CVC_verify_authentication_request_signatures</a>(<span class="keyword">struct</span> <a class="code" href="structeac__ctx.html">eac_ctx</a> *ctx,</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;        <span class="keyword">const</span> <a class="code" href="structcvc__cert__authentication__request__seq__st.html">CVC_CERT_AUTHENTICATION_REQUEST</a> *authentication);</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160; </div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;<a class="code" href="cv__cert_8h.html#a6f758242008190302811e2249ce4125d">CVC_check_description</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cv, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *cert_desc_in,</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cert_desc_in_len);</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160; </div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;BUF_MEM *<a class="code" href="cv__cert_8h.html#ac3041c6df1ce54acce6adad2f2b20273">CVC_hash_description</a>(<span class="keyword">const</span> <a class="code" href="structcvc__cert__seq__st.html">CVC_CERT</a> *cv,</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *cert_desc, <span class="keywordtype">size_t</span> cert_desc_len);</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160; </div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;}</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CVC_CERT_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="acv__cert_8h_html_abe371a2ae62d66c4b6ade8a5bbbddf42"><div class="ttname"><a href="cv__cert_8h.html#abe371a2ae62d66c4b6ade8a5bbbddf42">CVC_CERT_BODY_SEQ</a></div><div class="ttdeci">struct cvc_cert_body_seq_st CVC_CERT_BODY_SEQ</div><div class="ttdoc">The body of the CV certificate (without signature)</div></div>
 <div class="ttc" id="acv__cert_8h_html_a9ab545b897f4f23279c2ba7189495e64"><div class="ttname"><a href="cv__cert_8h.html#a9ab545b897f4f23279c2ba7189495e64">CVC_get_chr</a></div><div class="ttdeci">char * CVC_get_chr(const CVC_CERT *cert)</div><div class="ttdoc">Return the CAR of a CV certificate as a string.</div></div>

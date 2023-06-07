@@ -63,25 +63,21 @@ for:
 - Java
 - Go
 
-.. image:: https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build
-    :target: https://travis-ci.org/frankmorgner/openpace
-    :alt: Travis CI Build Status Image
+.. image:: https://img.shields.io/github/actions/workflow/status/frankmorgner/openpace/ubuntu.yml?branch=master&label=Ubuntu&logo=github
+    :target: https://github.com/frankmorgner/openpace/actions/workflows/ubuntu.yml?branch=master
+    :alt: GitHub Ubuntu CI status
 
-.. image:: https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build
+.. image:: https://img.shields.io/github/actions/workflow/status/frankmorgner/openpace/macos.yml?branch=master&label=macOS&logo=github
+    :target: https://github.com/frankmorgner/openpace/actions/workflows/macos.yml?branch=master
+    :alt: GitHub macOS CI status
+
+.. image:: https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=Windows&logo=appveyor
     :target: https://ci.appveyor.com/project/frankmorgner/openpace
-    :alt: AppVeyor CI Build Status Image
+    :alt: AppVeyor CI status
 
-.. image:: https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan
+.. image:: https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20Scan
     :target: https://scan.coverity.com/projects/1789
-    :alt: Coverity Scan Status
-
-.. image:: https://img.shields.io/codecov/c/github/frankmorgner/openpace/master.svg
-    :target: https://codecov.io/gh/frankmorgner/openpace/branch/master
-    :alt: Codecov Status
-
-.. image:: https://img.shields.io/lgtm/grade/cpp/g/frankmorgner/openpace.svg
-    :target: https://lgtm.com/projects/g/frankmorgner/openpace/context:cpp
-    :alt: Language grade: C/C++
+    :alt: Coverity Scan status
 
 .. note::
     OpenPACE only implements the cryptographic protocols of the |EAC|. If you
@@ -116,5 +112,5 @@ more than welcome! You can contact us through our `GitHub
 
 .. target-notes::
 
-.. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`BSI TR-03110`: https://www.bsi.bund.de/dok/TR-03110-en
 .. _`OpenSC Project`: https://github.com/OpenSC/OpenSC/
