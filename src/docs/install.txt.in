@@ -205,15 +205,15 @@ completely in Javascript or `in your browser <_static/eactest.html>`_::
     firefox @PACKAGE_TARNAME@-@PACKAGE_VERSION@_js/eactest.html
 
 .. warning::
-    `Javascript cryptography is considered harmful`_. You may want to think
-    twice before using the Javascript version of OpenPACE.
+    Emscripten compiles OpenPACE to a pure Javascript implementation, that does
+    **not** utilze any Web Cryptography API. You may want to think twice before
+    using the Javascript version of OpenPACE.
 
 
 .. target-notes::
 
 .. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
 .. _`Emscripten`: https://github.com/kripken/emscripten
-.. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
 .. _`OpenSSL`: http://openssl.org
 .. _`SWIG`: http://www.swig.org/download.html
 .. _`Python`: https://www.python.org/downloads/release/python-278/
