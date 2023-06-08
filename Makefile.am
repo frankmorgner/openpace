@@ -66,6 +66,7 @@ ENV = env \
 	  SHLIB_PATH=$${SHLIB_PATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
 	  LIBPATH=$${LIBPATH}:$(abs_top_builddir)/bindings/ruby/ext:$(abs_top_builddir)/bindings/java/.libs:$(abs_top_builddir)/bindings/python:$(abs_top_builddir)/src/.libs:$(abs_top_builddir)/src/openssl \
 	  PYTHONPATH=$(abs_top_builddir)/bindings/python \
+	  PYTHONDONTWRITEBYTECODE=1 \
 	  RUBYLIB=$(abs_top_builddir)/bindings/ruby/ext
 
 test-eactest:
