@@ -99,28 +99,6 @@ be installed along with the language's toolchain to build the bindings.
 Compiling for Windows
 =====================
 
-Cross-Compiling for Windows on Linux
-------------------------------------
-
-Our :file:`Makefile` includes scripts for cross compilation for Windows
-on Debian wheezy::
-
-    test -x configure || autoreconf --verbose --install
-    ./configure --enable-openssl-install
-    make win
-
-gendef_ should be installed to generate the library definitions.
-On successfull compilation, the Windows binaries can be found in
-:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_win32`. For customization you
-may pass the following :command:`make` variables:
-
-====================== ==================== ===========================================================================================
-Make Variable          Default              Meaning
-====================== ==================== ===========================================================================================
-:envvar:`WIN_TOOL`     ``i686-w64-mingw32`` cross compiler
-:envvar:`WIN_TOOL_DIR` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
-====================== ==================== ===========================================================================================
-
 Compiling with Visual Studio
 ----------------------------
 
@@ -150,64 +128,6 @@ prompt with installed `Python`_:
 The setup of the environment variables can be found in our `Windows CI script
 <https://github.com/frankmorgner/openpace/blob/master/appveyor.yml#L7-L47>`_
 which includes all steps of this procedure.
-
-
-=====================
-Compiling for Android
-=====================
-
-.. highlight:: sh
-
-Our :file:`Makefile` includes scripts for cross compilation for Android on
-Debian wheezy::
-
-    test -x configure || autoreconf --verbose --install
-    ./configure --enable-openssl-install
-    make android
-
-=================================== ================================================================================ =====================================================
-Make Variable                       Default                                                                          Meaning
-=================================== ================================================================================ =====================================================
-:envvar:`ANDROID_ARCH`              ``arm``                                                                          target Architecture
-:envvar:`ANDROID_TOOL`              ``${ANDROID_ARCH}-linux-androideabi``                                            cross compiler
-:envvar:`MAKE_STANDALONE_TOOLCHAIN` ``${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
-=================================== ================================================================================ =====================================================
-
-On successfull compilation, the Android binaries can be found in
-:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_${ANDROID_ARCH}-linux-androideabi`.
-
-
-.. _javascript_api:
-
-========================
-Compiling for Javascript
-========================
-
-Technically the process for getting OpenPACE into Javascript is similar to
-cross compiling. With Emscripten_ the library is compiled into LLVM bytecode
-and then translated into Javascript. Use the following command::
-
-    test -x configure || autoreconf --verbose --install
-    ./configure --enable-openssl-install
-    make emscripten
-
-========================= ================================== =======================================================================
-Make Variable             Default                            Meaning
-========================= ================================== =======================================================================
-:envvar:`EMSCRIPTEN_ROOT` ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc`
-========================= ================================== =======================================================================
-
-On successfull compilation, the compiled bitcode files can be found in
-:file:`@PACKAGE_TARNAME@-@PACKAGE_VERSION@_js`. You can run our testsuite
-completely in Javascript or `in your browser <_static/eactest.html>`_::
-
-    nodejs @PACKAGE_TARNAME@-@PACKAGE_VERSION@_js/bin/eactest.js
-    firefox @PACKAGE_TARNAME@-@PACKAGE_VERSION@_js/eactest.html
-
-.. warning::
-    Emscripten compiles OpenPACE to a pure Javascript implementation, that does
-    **not** utilze any Web Cryptography API. You may want to think twice before
-    using the Javascript version of OpenPACE.
 
 
 .. target-notes::

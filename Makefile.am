@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src cross bindings
+SUBDIRS = src bindings
 
 EXTRA_DIST = libeac.pc.in bootstrap generate-eac-pki.sh docs appveyor.yml
 DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-python --disable-openssl-install
@@ -25,18 +25,6 @@ pkgconfig_DATA = libeac.pc
 
 libeac.pc: libeac.pc.in
 	@$(do_subst) < $(srcdir)/libeac.pc.in > libeac.pc
-
-win:
-	$(MAKE) -C cross $@
-
-android:
-	$(MAKE) -C cross $@
-
-emscripten:
-	$(MAKE) -C cross $@
-
-osx:
-	$(MAKE) -C cross $@
 
 .PHONY: docs libeac.pc
 docs:
