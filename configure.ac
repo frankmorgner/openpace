@@ -78,87 +78,51 @@ else
 fi
 
 # Checks for libcrypto.
-AC_ARG_ENABLE([openssl-install],
-              [AS_HELP_STRING([--enable-openssl-install],[enable installation of a patched version of OpenSSL @<:@default=no@:>@])],
-              ,
-              [enable_openssl_install="no"])
+PKG_CHECK_EXISTS([libcrypto],
+                 [PKG_CHECK_MODULES([CRYPTO], [libcrypto >= 1.0.2])],
+                 [AC_MSG_WARN([libcrypto >= 1.0.2 not found by pkg-config])])
 
-if test "${enable_openssl_install}" = "yes"
+if test -z "$CRYPTO_LIBS"
 then
-    INSTALL_OPENSSL=yes
-
-    AC_ARG_VAR([GIT],
-               [absolute path to git used for checking out OpenSSL])
-    AC_PATH_PROG([GIT],
-                 [git],
-                 [not found])
-    if test "${GIT}" = "not found"
-    then
-        AC_MSG_ERROR([Need git to build OpenSSL])
-    fi
-
-    AC_ARG_VAR([OPENSSL_CONFIGURE_FLAGS],
-               [options for configuring OpenSSL])
-    if test -z "$OPENSSL_CONFIGURE_FLAGS"
-    then
-        my_prefix=`test "$prefix" = NONE && echo \"$ac_default_prefix\" || echo \"${prefix}\"`
-        OPENSSL_CONFIGURE_FLAGS="no-asm shared --prefix=${my_prefix} `${srcdir}/cross/gentoo.config-1.0.0 ${host}` -DPURIFY ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-    fi
-
-    builddir=`pwd`
-    CRYPTO_CFLAGS="-I${builddir}/src/openssl/include"
-    CRYPTO_LIBS="-L${builddir}/src/openssl -lcrypto"
-
-else
-    INSTALL_OPENSSL=no
-
-    PKG_CHECK_EXISTS([libcrypto],
-                     [PKG_CHECK_MODULES([CRYPTO], [libcrypto >= 1.0.2])],
-                     [AC_MSG_WARN([libcrypto >= 1.0.2 not found by pkg-config])])
-
-    if test -z "$CRYPTO_LIBS"
-    then
-        CRYPTO_LIBS="-lcrypto"
-    fi
-
-    saved_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$CRYPTO_CFLAGS $CPPFLAGS"
-    AC_CHECK_HEADERS([openssl/obj_mac.h openssl/buffer.h openssl/bio.h \
-                      openssl/ecdh.h openssl/dh.h openssl/evp.h openssl/cmac.h \
-                      openssl/sha.h openssl/aes.h openssl/des.h], [],
-                     [AC_MSG_ERROR([Required OpenSSL headers not found])])
-    AC_CHECK_DECL(NID_brainpoolP512r1,
-                  ,
-                  [AC_MSG_ERROR([OpenSSL 1.0.2 not found])],
-                  [#include <openssl/obj_mac.h>])
-    # check for declarations of OpenSSL 1.1.0 and later
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <openssl/ec.h>],
-                      [const EC_KEY_METHOD *default_method = EC_KEY_get_default_method();])],
-                      [AC_DEFINE([HAVE_EC_KEY_METHOD], [1],
-                                 [Define to 1 if you have the `EC_KEY_METHOD' type.])])
-    AC_CHECK_DECLS([OPENSSL_zalloc], [], [], [[#include <openssl/crypto.h>]])
-
-    CPPFLAGS="$saved_CPPFLAGS"
-
-    # avoid test when compiling in visual studio
-    if test "${WIN32}" != "yes";
-    then
-        saved_LIBS="$LIBS"
-        LIBS="$CRYPTO_LIBS $LIBS"
-        AC_MSG_CHECKING([for OPENSSL_cleanse])
-        AC_TRY_LINK_FUNC(OPENSSL_cleanse,
-                         [AC_MSG_RESULT([yes])],
-                         [AC_MSG_ERROR([Cannot link against libcrypto])])
-        AC_MSG_CHECKING([for EVP_sha256])
-        AC_TRY_LINK_FUNC(EVP_sha256,
-                         [AC_MSG_RESULT([yes])],
-                         [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
-        # check for functions of OpenSSL 1.1.0 and later
-        AC_CHECK_FUNCS(RSA_set0_key RSA_get0_key DH_set0_key DH_get0_key DH_set0_pqg DH_get0_pqg ECDSA_SIG_set0 ECDSA_SIG_get0 ASN1_STRING_get0_data EC_POINT_get_affine_coordinates EC_POINT_set_affine_coordinates EVP_PKEY_dup)
-        LIBS="$saved_LIBS"
-    fi
+    CRYPTO_LIBS="-lcrypto"
 fi
-AM_CONDITIONAL([INSTALL_OPENSSL], [test "${INSTALL_OPENSSL}" = "yes"])
+
+saved_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CRYPTO_CFLAGS $CPPFLAGS"
+AC_CHECK_HEADERS([openssl/obj_mac.h openssl/buffer.h openssl/bio.h \
+                  openssl/ecdh.h openssl/dh.h openssl/evp.h openssl/cmac.h \
+                  openssl/sha.h openssl/aes.h openssl/des.h], [],
+                 [AC_MSG_ERROR([Required OpenSSL headers not found])])
+AC_CHECK_DECL(NID_brainpoolP512r1,
+              ,
+              [AC_MSG_ERROR([OpenSSL 1.0.2 not found])],
+              [#include <openssl/obj_mac.h>])
+# check for declarations of OpenSSL 1.1.0 and later
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <openssl/ec.h>],
+                  [const EC_KEY_METHOD *default_method = EC_KEY_get_default_method();])],
+                  [AC_DEFINE([HAVE_EC_KEY_METHOD], [1],
+                             [Define to 1 if you have the `EC_KEY_METHOD' type.])])
+AC_CHECK_DECLS([OPENSSL_zalloc], [], [], [[#include <openssl/crypto.h>]])
+
+CPPFLAGS="$saved_CPPFLAGS"
+
+# avoid test when compiling in visual studio
+if test "${WIN32}" != "yes";
+then
+    saved_LIBS="$LIBS"
+    LIBS="$CRYPTO_LIBS $LIBS"
+    AC_MSG_CHECKING([for OPENSSL_cleanse])
+    AC_TRY_LINK_FUNC(OPENSSL_cleanse,
+                     [AC_MSG_RESULT([yes])],
+                     [AC_MSG_ERROR([Cannot link against libcrypto])])
+    AC_MSG_CHECKING([for EVP_sha256])
+    AC_TRY_LINK_FUNC(EVP_sha256,
+                     [AC_MSG_RESULT([yes])],
+                     [AC_MSG_ERROR([Need OpenSSL with SHA-256 support])])
+    # check for functions of OpenSSL 1.1.0 and later
+    AC_CHECK_FUNCS(RSA_set0_key RSA_get0_key DH_set0_key DH_get0_key DH_set0_pqg DH_get0_pqg ECDSA_SIG_set0 ECDSA_SIG_get0 ASN1_STRING_get0_data EC_POINT_get_affine_coordinates EC_POINT_set_affine_coordinates EVP_PKEY_dup)
+    LIBS="$saved_LIBS"
+fi
 
 
 AC_ARG_ENABLE([python],AS_HELP_STRING([--enable-python],[Enable python interface generation.]),[enable_python=$enableval],[enable_python="no"])
@@ -298,7 +262,6 @@ AC_CONFIG_FILES([
                  bindings/python/Makefile
                  bindings/ruby/Makefile
                  bindings/go/Makefile
-                 cross/Makefile
                  ])
 AC_OUTPUT
 
@@ -321,10 +284,6 @@ CRYPTO_LIBS:             ${CRYPTO_LIBS}
 
 HELP2MAN:                ${HELP2MAN}
 GENGETOPT:               ${GENGETOPT}
-
-Install patched OpenSSL: ${INSTALL_OPENSSL}
-GIT:                     ${GIT}
-OPENSSL_CONFIGURE_FLAGS: ${OPENSSL_CONFIGURE_FLAGS}
 
 SWIG:                    ${SWIG}
 Python Bindings:         ${enable_python}

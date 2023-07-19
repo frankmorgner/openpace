@@ -61,10 +61,10 @@ case "$1" in
         ./configure --enable-python --enable-java --enable-ruby --enable-go
         ;;
     mingw-32)
-        ./configure --host=i686-w64-mingw32   CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-I$PWD/openssl -lcrypto"
+        ./configure --host=i686-w64-mingw32   CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto" LDFLAGS=""
         ;;
     mingw-64)
-        ./configure --host=x86_64-w64-mingw32 CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-I$PWD/openssl -lcrypto"
+        ./configure --host=x86_64-w64-mingw32 CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto"
         ;;
     macos)
         ./configure
