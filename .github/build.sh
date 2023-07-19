@@ -42,6 +42,7 @@ case "$1" in
         ./configure --enable-python --enable-java --enable-ruby --enable-go
         ;;
     mingw-32|mingw-64|macos)
+        export GNUMAKEFLAGS=-j1
         ./configure --enable-openssl-install
         ;;
 esac
