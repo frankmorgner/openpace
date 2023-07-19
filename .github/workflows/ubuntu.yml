@@ -29,7 +29,7 @@ jobs:
           openpace*.tar.gz
 
   build-mingw-64:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - run: .github/build.sh mingw-64
@@ -40,7 +40,7 @@ jobs:
           openpace*_win32
 
   build-mingw-32:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - run: .github/build.sh mingw-32
