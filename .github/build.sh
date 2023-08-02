@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# CI script to build for "ubuntu", "mingw-32", "mingw-64", "macos", "coverity"
+# CI script to build for "ubuntu", "macos", "ape", "coverity"
 
 set -ex -o xtrace
 
@@ -10,18 +10,13 @@ case "$1" in
     ubuntu|coverity)
         DEPS="$DEPS gccgo golang-go openjdk-8-jdk openjdk-8-jre-headless python-dev ruby-dev swig xutils-dev doxygen"
         ;;
-    mingw-32)
-        DEPS="$DEPS mingw-w64-tools binutils-mingw-w64-i686 gcc-mingw-w64-i686"
-        export ac_cv_func_malloc_0_nonnull=yes CC=i686-w64-mingw32-gcc AR=i686-w64-mingw32-ar RANLIB=i686-w64-mingw32-ranlib
-        ;;
-    mingw-64)
-        DEPS="$DEPS mingw-w64-tools binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64"
-        export ac_cv_func_malloc_0_nonnull=yes CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar RANLIB=x86_64-w64-mingw32-ranlib
+    macos)
+        DEPS="$DEPS openssl"
         ;;
 esac
 
 case "$1" in
-    ubuntu|coverity|mingw-32|mingw-64)
+    ubuntu|coverity)
         sudo apt-get install -y $DEPS
         ;;
     macos)
@@ -37,19 +32,20 @@ case "$1" in
 esac
 
 case "$1" in
-    mingw-32)
-        test -d openssl || git clone --depth=1 https://github.com/openssl/openssl.git -b OpenSSL_1_0_2-stable openssl
+    ape)
+        sudo mkdir -p /opt
+        sudo chmod 1777 /opt
+        test -d /opt/cosmo || git clone https://github.com/jart/cosmopolitan /opt/cosmo
+        cd /opt/cosmo
+        make -j8 toolchain
+        mkdir -p /opt/cosmos/bin
+        cd -
+        test -d openssl || git clone --depth=1 https://github.com/openssl/openssl.git -b openssl-3.0 openssl
         cd openssl
-        ./Configure no-asm no-shared mingw -DPURIFY -static-libgcc
-        make
-        cd ..
-        ;;
-    mingw-64)
-        test -d openssl || git clone --depth=1 https://github.com/openssl/openssl.git -b OpenSSL_1_0_2-stable openssl
-        cd openssl
-        ./Configure no-asm no-shared mingw64 -DPURIFY -static-libgcc
-        make
-        cd ..
+        git apply $(realpath "${0}")/openssl_getrandom.diff
+        ./config --with-rand-seed=getrandom no-asm no-shared no-dso no-engine no-dynamic-engine -DPURIFY CC=/opt/cosmo/tool/scripts/cosmocc
+        make -j8
+        cd -
         ;;
 esac
 
@@ -60,11 +56,12 @@ case "$1" in
         export GCCGOFLAGS="-static-libgcc $CFLAGS"
         ./configure --enable-python --enable-java --enable-ruby --enable-go
         ;;
-    mingw-32)
-        ./configure --host=i686-w64-mingw32   CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto" LDFLAGS=""
-        ;;
-    mingw-64)
-        ./configure --host=x86_64-w64-mingw32 CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto"
+    ape)
+        ./configure CC=/opt/cosmo/tool/scripts/cosmocc CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto" --disable-shared
+        echo "#define ossl_unused"   >> config.h
+        echo "#define ossl_inline"   >> config.h
+        echo "#define __owur"        >> config.h
+        echo "#define ossl_noreturn" >> config.h
         ;;
     macos)
         ./configure
@@ -79,7 +76,18 @@ case "$1" in
         make distcheck
         sudo make uninstall
         ;;
-    mingw-32|mingw-64|macos)
+    ape|macos)
         make
+        ;;
+esac
+
+case "$1" in
+    ape)
+        mkdir -p openpace_ape
+        for file in openssl/apps/openssl src/eactest src/cvc-create src/cvc-print
+        do
+            objcopy -SO binary $file openpace_ape/${file##*/}.com
+        done
+        cp -r docs openpace_ape
         ;;
 esac

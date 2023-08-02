@@ -28,24 +28,13 @@ jobs:
         path:
           openpace*.tar.gz
 
-  build-mingw-64:
+  build-ape:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - run: .github/build.sh mingw-64
+    - run: .github/build.sh ape
     - uses: actions/upload-artifact@v2
       with:
-        name: openpace-win64
+        name: openpace-ape
         path:
-          openpace*_win32
-
-  build-mingw-32:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-    - run: .github/build.sh mingw-32
-    - uses: actions/upload-artifact@v2
-      with:
-        name: openpace-win32
-        path:
-          openpace*_win32
+          openpace_ape
