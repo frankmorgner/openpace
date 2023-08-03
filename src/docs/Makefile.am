@@ -13,7 +13,7 @@ do_subst = $(SED) \
 
 DOXYGEN_HTML = doxygen/index.html
 
-docs: $(DOXYGEN_HTML) $(srcdir)/*.in $(srcdir)/*.txt $(srcdir)/*.txt.in
+docs: $(DOXYGEN_HTML) $(srcdir)/*.in $(srcdir)/*.txt.in
 	@$(do_subst) < $(srcdir)/conf.py.in > conf.py
 	@$(do_subst) < $(srcdir)/index.txt.in > index.txt
 	@$(do_subst) < $(srcdir)/programming.txt.in > programming.txt
