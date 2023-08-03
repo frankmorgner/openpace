@@ -16,7 +16,8 @@ case "$1" in
 esac
 
 case "$1" in
-    ubuntu|coverity)
+    ubuntu|coverity|ape)
+        sudo apt-get update
         sudo apt-get install -y $DEPS
         ;;
     macos)
@@ -33,18 +34,21 @@ esac
 
 case "$1" in
     ape)
+        sudo sh -c "echo ':APE:M::MZqFpD::/bin/sh:' >/proc/sys/fs/binfmt_misc/register"
         sudo mkdir -p /opt
         sudo chmod 1777 /opt
         test -d /opt/cosmo || git clone https://github.com/jart/cosmopolitan /opt/cosmo
         cd /opt/cosmo
-        make -j8 toolchain
+        make toolchain 2>/dev/null
         mkdir -p /opt/cosmos/bin
+        /opt/cosmo/bin/cosmocc --update
         cd -
         test -d openssl || git clone --depth=1 https://github.com/openssl/openssl.git -b openssl-3.0 openssl
         cd openssl
-        git apply $(realpath "${0}")/openssl_getrandom.diff
-        ./config --with-rand-seed=getrandom no-asm no-shared no-dso no-engine no-dynamic-engine -DPURIFY CC=/opt/cosmo/tool/scripts/cosmocc
-        make -j8
+        git apply ../.github/openssl_getrandom.diff
+        ./config --with-rand-seed=getrandom no-asm no-shared no-dso no-engine no-dynamic-engine -DPURIFY CC=/opt/cosmo/bin/cosmocc
+        find /opt/cosmo/tool/scripts/
+        make
         cd -
         ;;
 esac
@@ -57,7 +61,7 @@ case "$1" in
         ./configure --enable-python --enable-java --enable-ruby --enable-go
         ;;
     ape)
-        ./configure CC=/opt/cosmo/tool/scripts/cosmocc CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto" --disable-shared
+        ./configure CC=/opt/cosmo/bin/cosmocc CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto" --disable-shared
         echo "#define ossl_unused"   >> config.h
         echo "#define ossl_inline"   >> config.h
         echo "#define __owur"        >> config.h
