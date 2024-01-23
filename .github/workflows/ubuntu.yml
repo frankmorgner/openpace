@@ -35,6 +35,6 @@ jobs:
     - run: .github/build.sh ape
     - uses: actions/upload-artifact@v2
       with:
-        name: openpace-ape
+        name: openpace-bin
         path:
-          openpace_ape
+          openpace-bin
