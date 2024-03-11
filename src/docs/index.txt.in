@@ -19,7 +19,8 @@ Welcome to @PACKAGE_NAME@'s documentation!
         - `Frank Morgner <frankmorgner@gmail.com>`_
         - `Dominik Oepen <oepen@informatik.hu-berlin.de>`_
     :License:
-        GPL version 3
+        - GPL version 3
+        - (proprietary `on request <frankmorgner@gmail.com?subject=OpenPACE%20proprietary%20license>`)
     :Tested Platforms:
         - Windows
         - Linux (Debian, Ubuntu, SUSE, OpenMoko)

@@ -38,7 +38,9 @@ Please refer to [our project's website](http://frankmorgner.github.io/openpace/)
 
 ## License
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) Proprietary licensing is possible [on request](mailto:frankmorgner@gmail.com?subject=OpenPACE%20proprietary%20license).
+
+Proprietary licensing is possible [on request](mailto:frankmorgner@gmail.com?subject=OpenPACE%20proprietary%20license).
 
 ## Tested Platforms
 
