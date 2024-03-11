@@ -53,6 +53,27 @@ You then need to ``vagrant ssh`` in order to access the VM. The
 changes you make on the host are immediately visible in the VM and vice versa.
 
 
+==================================================
+Creating a fat binary for Windows, Linux and macOS
+==================================================
+
+@PACKAGE_NAME@'s releases include `actually portable executables`_, that
+magically work all major OSs. They'll run on
+Linux/MacOS/Windows/FreeBSD/NetBSD/OpenBSD on the AMD64 and ARM64
+architectures. To build the polyglot, we need to download the `Cosmopolitan
+toolchain`_ and build OpenSSL from it:
+
+.. literalinclude:: @srcdir@/../../.github/build.sh
+    :lines: 40-47
+
+Next, use cosmopolitain libc to build OpenPACE:
+
+.. literalinclude:: @srcdir@/../../.github/build.sh
+    :lines: 59,75
+
+Now, optionally, add a ``.com`` extension to the executables so that Windows recognizes them correctly.
+
+
 ====================================
 Compiling on Linux, Unix and similar
 ====================================
@@ -144,3 +165,5 @@ which includes all steps of this procedure.
 .. _`MSYS2`: https://msys2.github.io/
 .. _`cccl`: https://github.com/frankmorgner/cccl
 .. _`OpenSSL Windows binaries`: https://slproweb.com/products/Win32OpenSSL.html
+.. _`actually portable executables`: https://justine.lol/ape.html
+.. _`Cosmopolitan toolchain`: https://justine.lol/cosmopolitan/index.html

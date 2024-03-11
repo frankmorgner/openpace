@@ -27,7 +27,7 @@ Welcome to @PACKAGE_NAME@'s documentation!
         - Mac OS
         - Solaris
         - Android
-        - Javascript
+        - Javascript (emscripten)
 
 OpenPACE implements Extended Access Control (EAC) version 2 as specified in
 `BSI TR-03110`_. OpenPACE comprises support for the following protocols:
