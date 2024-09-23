@@ -32,13 +32,13 @@ for:
 - Java
 - Go
 
-[![GitHub Ubuntu CI status](https://img.shields.io/github/actions/workflow/status/frankmorgner/openpace/ubuntu.yml?branch=master&label=Ubuntu&logo=github)](https://github.com/frankmorgner/openpace/actions/workflows/ubuntu.yml?branch=master) [![GitHub macOS CI status](https://img.shields.io/github/actions/workflow/status/frankmorgner/openpace/macos.yml?branch=master&label=macOS&logo=github)](https://github.com/frankmorgner/openpace/actions/workflows/macos.yml?branch=master) [![AppVeyor Windows CI status](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=Windows&logo=appveyor)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan CI status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20Scan)](https://scan.coverity.com/projects/1789)
+[![GitHub Ubuntu CI status](https://img.shields.io/github/actions/workflow/status/frankmorgner/openpace/ubuntu.yml?branch=master&label=Ubuntu&logo=github)](https://github.com/frankmorgner/openpace/actions/workflows/ubuntu.yml?branch=master) [![GitHub macOS CI status](https://img.shields.io/github/actions/workflow/status/frankmorgner/openpace/macos.yml?branch=master&label=macOS&logo=github)](https://github.com/frankmorgner/openpace/actions/workflows/macos.yml?branch=master) [![AppVeyor Windows CI status](https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=Windows&logo=appveyor)](https://ci.appveyor.com/project/frankmorgner/openpace) [![Coverity Scan CI status](https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20Scan)](https://scan.coverity.com/projects/1789) [!![OpenSSF Best Practices](https://img.shields.io/cii/:metric/:9479)](https://www.bestpractices.dev/projects/9479)
 
 Please refer to [our project's website](http://frankmorgner.github.io/openpace/) for more information.
 
 ## License
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) Proprietary licensing is possible [on request](mailto:frankmorgner@gmail.com?subject=OpenPACE%20proprietary%20license).
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 Proprietary licensing is possible [on request](mailto:frankmorgner@gmail.com?subject=OpenPACE%20proprietary%20license).
 
