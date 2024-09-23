@@ -10,9 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
     - run: .github/build.sh coverity
-    - uses: vapier/coverity-scan-action@v0
+    - uses: vapier/coverity-scan-action@2dd9b03b1987669de7a6db4203ba44b76a636ce4 # v0.0.1
       with:
         project: frankmorgner%2Fopenpace
         token: ${{ secrets.COVERITY_SCAN_TOKEN }}
