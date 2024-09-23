@@ -95,7 +95,7 @@ SWIG, a java compiler and the JNI developement headers. You may set the
 
 Here is a sample program that shows how OpenPACE is accessed from Java:
 
-.. literalinclude:: @srcdir@/../../bindings/java/Example.java
+.. literalinclude:: @srcdir@/../../bindings/java/EAC_Example.java
     :language: java
 
 
