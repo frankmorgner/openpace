@@ -1,7 +1,7 @@
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
-public class Example {
+public class EAC_Example {
 	static {
 		System.loadLibrary("jeac");
 	}
