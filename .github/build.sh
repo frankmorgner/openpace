@@ -28,7 +28,8 @@ esac
 case "$1" in
     ubuntu)
         # full documentation is only built on ubuntu
-        pip install -U sphinx sphinx-bootstrap-theme breathe sphinxcontrib-programoutput
+        #pip install -r sphinx sphinx-bootstrap-theme breathe sphinxcontrib-programoutput
+        pip install -r src/docs/requirements.txt
         ;;
 esac
 
