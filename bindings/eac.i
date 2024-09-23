@@ -44,8 +44,6 @@
 
 %module eac
 
-%apply ulong {size_t}
-
 %include "cstring.i"
 
 %{
