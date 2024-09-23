@@ -103,8 +103,10 @@ void EAC_cleanup(void);
     /* Converts a binary string and a length into a BUF_MEM structure */
     static BUF_MEM * get_buf(char *in, size_t in_len) {
         BUF_MEM *buf = NULL;
-//        if (in_len > 0)
-        buf = BUF_MEM_create_init(in, in_len);
+        if (in_len > 0)
+            buf = BUF_MEM_create_init(in, in_len);
+        else
+            buf = BUF_MEM_create_init("", 0);
         return buf;
     }
 %}
