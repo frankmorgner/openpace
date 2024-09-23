@@ -51,3 +51,9 @@ Proprietary licensing is possible [on request](mailto:frankmorgner@gmail.com?sub
 - Solaris
 - Android
 - Javascript
+
+## Dependencies
+
+- Openssl version 1.0.2 or later
+
+See the detailled instructions for [building and installing OpenPACE](https://frankmorgner.github.io/openpace/install.html)

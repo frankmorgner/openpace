@@ -29,6 +29,14 @@ precompiled Windows `32 bit binaries
 and `64 bit binaries
 <https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_win64-vs14-python3.zip?branch=master&job=Environment:%20VSVER=14;%20Platform:%20x64>`_.
 
+The Windows binaries are created in the CI environment of AppVeyor, using its
+currently installed build tools of the [Visual Studio 2015 worker
+image](https://www.appveyor.com/docs/windows-images-software/). The build
+script invokes installation of additional components via [MSYS2's
+pacman](https://github.com/frankmorgner/openpace/blob/master/appveyor.yml). If
+you require supply chain security, we recommend to compile the software from
+source (see below).
+
 
 
 *******************************************************************************
