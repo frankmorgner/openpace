@@ -8,7 +8,7 @@ DEPS="gengetopt help2man automake libtool"
 
 case "$1" in
     ubuntu|coverity)
-        DEPS="$DEPS gccgo golang-go openjdk-8-jdk openjdk-8-jre-headless python-dev ruby-dev swig xutils-dev doxygen"
+        DEPS="$DEPS gccgo golang-go openjdk-8-jdk openjdk-8-jre-headless python3-dev ruby-dev swig xutils-dev doxygen"
         ;;
     macos)
         DEPS="$DEPS openssl"
