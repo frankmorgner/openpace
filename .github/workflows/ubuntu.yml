@@ -23,9 +23,9 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+    - uses: actions/checkout@v4
     - run: .github/build.sh ubuntu
-    - uses: actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # v3.2.1
+    - uses: actions/upload-artifact@v4
       with:
         name: openpace
         path:
@@ -34,9 +34,9 @@ jobs:
   build-ape:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+    - uses: actions/checkout@v4
     - run: .github/build.sh ape
-    - uses: actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # v3.2.1
+    - uses: actions/upload-artifact@v4
       with:
         name: openpace-bin
         path:
