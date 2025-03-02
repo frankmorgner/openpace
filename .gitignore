@@ -219,6 +219,9 @@ src/example
 src/cvc-print
 src/cvcprint
 bindings/python/cvc_rehash
+bindings/python/*.i
+bindings/python/OpenPACE.egg-info
+bindings/python/dist
 eac_wrap.c
 SWIGTYPE_p_*
 eac.go

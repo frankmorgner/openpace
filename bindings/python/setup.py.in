@@ -3,7 +3,7 @@
 """
 setup.py file for OpenPACE wrapper
 """
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 import shlex
 
 #The following variables are set by autotools at build-time
@@ -21,10 +21,8 @@ all_cflags = shlex.split(CPPFLAGS + ' ' + CFLAGS + ' ' + OPENPACE_CFLAGS + ' ' +
 #Prepare the external module that we want to build
 eac_module = Extension('_eac',
                            sources=['eac.i'],
-                           swig_opts=['-modern', '-outdir', '@builddir@', '-I@srcdir@/..'],
                            extra_compile_args=all_cflags,
-                           extra_link_args=all_libs,
-                          )
+                           extra_link_args=all_libs)
 
 #Setup Distutils
 setup (name         = '@PACKAGE_NAME@',

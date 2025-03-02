@@ -6,10 +6,8 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-BUILT_SOURCES = eac_wrap.c eac.py
-
 EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py example.py
-CLEANFILES = installed_files.txt setup.py $(BUILT_SOURCES)
+CLEANFILES = setup.py
 bin_SCRIPTS = cvc_rehash
 
 do_subst=$(SED)\
@@ -41,7 +39,8 @@ setup.py: setup.py.in $(top_builddir)/src/libeac.la
 cvc_rehash: cvc_rehash.in
 	@$(do_subst) < $(srcdir)/cvc_rehash.in > cvc_rehash
 
-$(BUILT_SOURCES): $(INTERFACES) setup.py
+eac.py: $(INTERFACES) setup.py
+	for f in $(INTERFACES); do cp $$f .; done
 	env CC="$(CC)" $(PYTHON) setup.py build_ext --swig=$(SWIG)
 
 # Androids implementation does not honour --root=$(DESTDIR) so we change the prefix
@@ -52,8 +51,10 @@ uninstall-local:
 	cat installed_files.txt | xargs rm -rf
 
 clean-local:
-	rm -rf build
+	rm -rf build eac_wrap.c eac.py
 	rm -f *.pyc setup.inc
+	rm -f *.i
+	rm -rf OpenPACE.egg-info dist installed_files.txt
 
 distclean-local:
 	rm -f cvc_rehash setup
