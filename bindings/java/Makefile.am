@@ -47,7 +47,7 @@ lib_LTLIBRARIES = libjeac.la
 openpace_javadir = $(pkgdatadir)/java
 openpace_java_DATA = EAC_Example.java $(CLASSES_EXAMPLE) $(CLASSES_SWIG)
 
-libjeac_la_SOURCES = eac_wrap.c
+nodist_libjeac_la_SOURCES = eac_wrap.c
 libjeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS) $(JAVA_CFLAGS)
 libjeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
 

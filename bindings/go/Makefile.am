@@ -10,7 +10,7 @@ EXTRA_DIST = example.go
 
 lib_LTLIBRARIES = libgeac.la
 
-libgeac_la_SOURCES = eac_wrap.c
+nodist_libgeac_la_SOURCES = eac_wrap.c
 libgeac_la_CFLAGS  = -I$(top_srcdir)/src $(CRYPTO_CFLAGS)
 libgeac_la_LDFLAGS = $(top_builddir)/src/libeac.la $(CRYPTO_LIBS)
 

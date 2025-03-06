@@ -5,10 +5,10 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-BUILT_SOURCES = eac_wrap.c
+BUILT_SOURCES_RUBY = eac_wrap.c
 
 EXTRA_DIST = example.rb extconf.rb.in
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES_RUBY)
 
 do_subst=$(SED)\
 	-e's,[@]prefix[@],$(prefix),g'\
@@ -20,7 +20,7 @@ do_subst=$(SED)\
 	-e's,[@]OPENPACE_CFLAGS[@],-I$(abs_top_srcdir)/src,g'\
 	-e's,[@]OPENPACE_LIBS[@],$(abs_top_builddir)/src/.libs/libeac.so,g'
 
-$(BUILT_SOURCES): $(INTERFACES)
+$(BUILT_SOURCES_RUBY): $(INTERFACES)
 
 ext/extconf.rb: $(srcdir)/extconf.rb.in
 	mkdir -p ext
