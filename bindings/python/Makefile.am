@@ -6,7 +6,7 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py example.py
+EXTRA_DIST = setup.py.in cvc_rehash.in test.py chat.py example.py pace_entity.py
 CLEANFILES = setup.py
 bin_SCRIPTS = cvc_rehash
 
