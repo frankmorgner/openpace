@@ -8,7 +8,7 @@ DEPS="gengetopt help2man automake libtool"
 
 case "$1" in
     ubuntu|coverity)
-        DEPS="$DEPS gccgo golang-go openjdk-8-jdk openjdk-8-jre-headless python3-dev ruby-dev swig xutils-dev doxygen"
+        DEPS="$DEPS openjdk-8-jdk openjdk-8-jre-headless python3-dev ruby-dev swig xutils-dev doxygen"
         ;;
     macos)
         DEPS="$DEPS openssl"
@@ -53,8 +53,7 @@ autoreconf -vis
 
 case "$1" in
     ubuntu|coverity)
-        export GCCGOFLAGS="-static-libgcc $CFLAGS"
-        ./configure --enable-python --enable-java --enable-ruby --enable-go
+        ./configure --enable-python --enable-java --enable-ruby
         ;;
     ape)
         ./configure CC=/opt/cosmo/bin/cosmocc INSTALL="/opt/cosmo/bin/cosmoinstall" AR="/opt/cosmo/bin/cosmoar" CRYPTO_CFLAGS="-I$PWD/openssl/include" CRYPTO_LIBS="-L$PWD/openssl -lcrypto" --disable-shared
