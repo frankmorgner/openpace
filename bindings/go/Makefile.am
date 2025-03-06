@@ -6,7 +6,7 @@ INTERFACES = $(srcdir)/../ca.i \
 			 $(srcdir)/../objects.i \
 			 $(srcdir)/../util.i
 
-BUILT_SOURCES = eac_wrap.c eac.go
+BUILT_SOURCES = eac_wrap.c
 
 EXTRA_DIST = example.go
 CLEANFILES = $(BUILT_SOURCES)
@@ -34,8 +34,6 @@ libgeac_la-local: $(BUILT_SOURCES)
 all-local: eac.o example
 
 clean-local:
+	rm -f $(BUILT_SOURCES) eac.go
 	rm -f example example.o
 	rm -f eac.o
-
-distclean-local:
-	rm -f $(BUILT_SOURCES)
