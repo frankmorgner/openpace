@@ -336,7 +336,7 @@ retail_mac_des(const BUF_MEM * key, const BUF_MEM * in)
     check(key, "Invalid arguments");
 
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-    OSSL_PROVIDER *legacy;
+    OSSL_PROVIDER *legacy = NULL;
     legacy = OSSL_PROVIDER_load(NULL, "legacy");
 #endif
 
