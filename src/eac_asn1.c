@@ -593,7 +593,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
             }
 
             ca_ctx->version = (unsigned char) ASN1_INTEGER_get(tmp_ca_info->version);
-            if (ca_ctx->version <= 0 || ca_ctx->version > 2
+            if (ca_ctx->version <= 0 || ca_ctx->version > 3
                     || !CA_CTX_set_protocol(ca_ctx, nid))
                 goto err;
 
