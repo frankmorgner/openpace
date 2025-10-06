@@ -85,6 +85,7 @@ cvc-print.ggo: cvc-print.ggo.in
 
 
 cvc-create.1: cvc-create.ggo.in
+	$(MAKE) $(AM_MAKEFLAGS) cvc-create$(EXEEXT)
 	$(ENV) $(HELP2MAN) \
 		--output=$(builddir)/$@ \
 		--no-info \
@@ -92,6 +93,7 @@ cvc-create.1: cvc-create.ggo.in
 		$(builddir)/cvc-create$(EXEEXT)
 
 cvc-print.1: cvc-print.ggo.in
+	$(MAKE) $(AM_MAKEFLAGS) cvc-print$(EXEEXT)
 	$(ENV) $(HELP2MAN) \
 		--output=$(builddir)/$@ \
 		--no-info \

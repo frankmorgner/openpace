@@ -63,6 +63,9 @@ case "$1" in
         ;;
 esac
 
+# Make sure future race conditions get caught
+export MAKEFLAGS="-j$(nproc)"
+
 case "$1" in
     ubuntu)
         make
