@@ -84,7 +84,7 @@ cvc-print.ggo: cvc-print.ggo.in
 	@$(do_subst) < $< > $(builddir)/$@
 
 
-cvc-create.1: cvc-create.c
+cvc-create.1: cvc-create.ggo.in
 	$(MAKE) $(AM_MAKEFLAGS) cvc-create$(EXEEXT)
 	$(ENV) $(HELP2MAN) \
 		--output=$(builddir)/$@ \
@@ -92,7 +92,7 @@ cvc-create.1: cvc-create.c
 		--source='$(PACKAGE_STRING)' \
 		$(builddir)/cvc-create$(EXEEXT)
 
-cvc-print.1: cvc-print.c
+cvc-print.1: cvc-print.ggo.in
 	$(MAKE) $(AM_MAKEFLAGS) cvc-print$(EXEEXT)
 	$(ENV) $(HELP2MAN) \
 		--output=$(builddir)/$@ \
