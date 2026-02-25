@@ -64,7 +64,11 @@ case "$1" in
 esac
 
 # Make sure future race conditions get caught
-export MAKEFLAGS="-j$(nproc)"
+if command -v nproc &> /dev/null; then
+    export MAKEFLAGS="-j$(nproc)"
+else
+    export MAKEFLAGS="-j8"
+fi
 
 case "$1" in
     ubuntu)
