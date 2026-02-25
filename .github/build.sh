@@ -50,6 +50,8 @@ case "$1" in
 esac
 
 autoreconf -vis
+# FIXME switch to non-deprecated OpenSSL API functions where needed
+export CFLAGS=-Wno-deprecated-declarations
 
 case "$1" in
     ubuntu|coverity)
