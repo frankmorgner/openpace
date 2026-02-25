@@ -70,6 +70,9 @@ example_SOURCES      = example.c
 example_LDADD        = $(EAC_LIBS)
 example_CFLAGS       = $(EAC_CFLAGS)
 
+# FIXME test and fix parallel execution of make jobs
+.NOTPARALLEL:
+
 
 cvc-create-cmdline.c cvc-create-cmdline.h: cvc-create.ggo
 	$(GENGETOPT) --file-name=cvc-create-cmdline --output-dir=$(builddir) < $<
