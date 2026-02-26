@@ -25,8 +25,3 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: .github/build.sh macos
-    - uses: actions/upload-artifact@v4
-      with:
-        name: openpace-dmg
-        path:
-          openpace*.dmg
