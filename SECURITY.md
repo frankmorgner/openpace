@@ -9,4 +9,4 @@
 
 ## Reporting a Vulnerability
 
-Please report vulnerabilities to frankmorgner@gmail.com; you can expect a response within one week.
+Please report vulnerabilities at the project's [security page](https://github.com/OpenSC/OpenSC/security/advisories/new); you can expect a response within one week.
