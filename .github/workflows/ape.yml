@@ -1,0 +1,58 @@
+name: Actually Portable Executable CI
+
+on:
+  pull_request:
+    paths:
+      - '**.c'
+      - '**.h'
+      - '**.i'
+      - '**.in'
+      - '**.sh'
+      - '**.py'
+      - '**.go'
+      - '**.java'
+      - '**.rb'
+      - .github/workflows/ape.yml
+  push:
+
+
+permissions:  # added using https://github.com/step-security/secure-repo
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - run: .github/build.sh ape
+    - uses: actions/upload-artifact@v4
+      with:
+        name: openpace-bin
+        path:
+          openpace-bin
+
+  test-unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel, macos-26, macos-26-intel]
+    name: test-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v5
+      - run: .github/test.sh
+
+  test-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2025, windows-11-arm]
+    name: test-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v5
+      - run: .github/test.bat
