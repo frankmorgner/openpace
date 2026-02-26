@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src bindings
 
-EXTRA_DIST = libeac.pc.in bootstrap generate-eac-pki.sh docs appveyor.yml NEWS.md
+EXTRA_DIST = libeac.pc.in bootstrap generate-eac-pki.sh docs appveyor.yml
 DISTCHECK_CONFIGURE_FLAGS = --enable-java --enable-python --disable-openssl-install
 
 if WIN32
