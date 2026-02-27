@@ -1,4 +1,4 @@
-name: Coverity CI
+name: Coverity Scan
 
 # We only want to test master or explicitly via coverity branch
 on:

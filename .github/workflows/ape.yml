@@ -1,4 +1,4 @@
-name: Actually Portable Executable CI
+name: Actually Portable Executable
 
 on:
   pull_request:
@@ -27,7 +27,7 @@ jobs:
     - run: .github/build.sh ape
     - uses: actions/upload-artifact@v4
       with:
-        name: openpace-bin
+        name: openpace-${{ github.ref_name }}-bin
         path:
           openpace-bin
 
