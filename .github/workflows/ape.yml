@@ -23,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - run: .github/build.sh ape
     - uses: actions/upload-artifact@v4
       with:
@@ -40,7 +40,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v5
       - run: .github/test.sh
 
@@ -53,6 +53,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v5
       - run: .github/test.bat
