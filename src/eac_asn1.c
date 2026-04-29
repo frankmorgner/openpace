@@ -456,7 +456,7 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
 {
     ASN1_INTEGER *i = NULL;
     ASN1_OBJECT *oid = NULL;
-    unsigned char *pubkey;
+    const unsigned char *pubkey;
     size_t pubkey_len;
     CA_CTX *ca_ctx = NULL;
     CA_DP_INFO *tmp_ca_dp_info = NULL;
@@ -637,15 +637,15 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
                  * UNSIGNED INTEGER, which is an ASN.1 INTEGER that is
                  * always positive. Parsing the unsigned integer should be
                  * done in EVP_PKEY_set_key. */
-                const unsigned char *p = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
+                const unsigned char *p = ASN1_STRING_get0_data(ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey);
                 check(d2i_ASN1_UINTEGER(&i, &p,
-                            ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length),
+                            ASN1_STRING_length(ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey)),
                         "Could not decode CA PK");
-                pubkey = i->data;
-                pubkey_len = i->length;
+                pubkey = ASN1_STRING_get0_data(i);
+                pubkey_len = ASN1_STRING_length(i);
             } else {
-                pubkey = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->data;
-                pubkey_len = ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey->length;
+                pubkey = ASN1_STRING_get0_data(ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey);
+                pubkey_len = ASN1_STRING_length(ca_public_key_info->chipAuthenticationPublicKeyInfo->subjectPublicKey);
             }
 
             if (!EVP_PKEY_set_keys(ca_ctx->ka_ctx->key, NULL, 0, pubkey, pubkey_len, ctx->bn_ctx))

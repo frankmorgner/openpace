@@ -184,7 +184,7 @@ EAC_CTX_init_ef_cardsecurity(const unsigned char *ef_cardsecurity,
         goto err;
     os = signed_data->d.other->value.octet_string;
 
-    if (!EAC_CTX_init_ef_cardaccess(os->data, os->length, ctx)
+    if (!EAC_CTX_init_ef_cardaccess(ASN1_STRING_get0_data(os), ASN1_STRING_length(os), ctx)
             || !ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx)
         goto err;
 
