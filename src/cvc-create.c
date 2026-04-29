@@ -709,16 +709,16 @@ int main(int argc, char *argv[])
             sign_as_cert = read_cvc_cert(cmdline.sign_as_arg);
             if (!sign_as_cert)
                 goto err;
-            car = sign_as_cert->body->certificate_holder_reference->data;
-            car_len = sign_as_cert->body->certificate_holder_reference->length;
+            car = ASN1_STRING_get0_data(sign_as_cert->body->certificate_holder_reference);
+            car_len = ASN1_STRING_length(sign_as_cert->body->certificate_holder_reference);
         } else {
             /* self signed certificate */
             if (cmdline.manual_mode_counter) {
                 car = (unsigned char *) cmdline.chr_arg;
                 car_len = strlen(cmdline.chr_arg);
             } else {
-                car = request->body->certificate_holder_reference->data;
-                car_len = request->body->certificate_holder_reference->length;
+                car = ASN1_STRING_get0_data(request->body->certificate_holder_reference);
+                car_len = ASN1_STRING_length(request->body->certificate_holder_reference);
             }
         }
         if (!cert->body->certificate_authority_reference)
@@ -744,15 +744,15 @@ int main(int argc, char *argv[])
         strncpy(basename, cmdline.chr_arg, (sizeof basename) - 1);
         basename[sizeof basename - 1] = '\0';
     } else {
+        int name_len;
         cert->body->certificate_holder_reference = (ASN1_UTF8STRING *) ASN1_STRING_dup((ASN1_STRING *) request->body->certificate_holder_reference);
         if (!cert->body->certificate_holder_reference)
             goto err;
-        memcpy(basename, (char *) request->body->certificate_holder_reference->data,
-                sizeof basename < request->body->certificate_holder_reference->length ?
-                sizeof basename : request->body->certificate_holder_reference->length);
-        basename[
-            sizeof basename - 1 < request->body->certificate_holder_reference->length ?
-            sizeof basename - 1 : request->body->certificate_holder_reference->length] = '\0';
+        name_len = ASN1_STRING_length(request->body->certificate_holder_reference);
+        memcpy(basename, (const char *) ASN1_STRING_get0_data(request->body->certificate_holder_reference),
+                sizeof basename < name_len ?
+                sizeof basename : name_len);
+        basename[sizeof basename - 1 < name_len ? sizeof basename - 1 : name_len] = '\0';
     }
 
 

@@ -89,8 +89,8 @@ static int CVC_find_chr_in_file(const unsigned char *chr, size_t chr_len,
         }
         cvc = *cv_certificate;
         if (cvc && cvc->body && cvc->body->certificate_holder_reference
-                && cvc->body->certificate_holder_reference->length == chr_len
-                && 0 == memcmp(cvc->body->certificate_holder_reference->data,
+                && ASN1_STRING_length(cvc->body->certificate_holder_reference) == chr_len
+                && 0 == memcmp(ASN1_STRING_get0_data(cvc->body->certificate_holder_reference),
                     chr, chr_len)) {
             ok = 1;
             break;

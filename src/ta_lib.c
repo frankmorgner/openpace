@@ -97,15 +97,17 @@ cvc_check_time(const CVC_CERT *cert)
 {
     time_t loc;
     struct tm exp_tm, eff_tm, *utc_tm;
+    const unsigned char *eff_d;
+    const unsigned char *exp_d;
 
     if (!cert || !cert->body
             || !cert->body->certificate_effective_date
-            || cert->body->certificate_effective_date->length != 6
-            || !is_bcd(cert->body->certificate_effective_date->data,
-                cert->body->certificate_effective_date->length)
-            || cert->body->certificate_expiration_date->length != 6
-            || !is_bcd(cert->body->certificate_expiration_date->data,
-                cert->body->certificate_expiration_date->length))
+            || ASN1_STRING_length(cert->body->certificate_effective_date) != 6
+            || !is_bcd(ASN1_STRING_get0_data(cert->body->certificate_effective_date),
+                ASN1_STRING_length(cert->body->certificate_effective_date))
+            || ASN1_STRING_length(cert->body->certificate_expiration_date) != 6
+            || !is_bcd(ASN1_STRING_get0_data(cert->body->certificate_expiration_date),
+                ASN1_STRING_length(cert->body->certificate_expiration_date)))
         return -1;
 
     /* FIXME gmtime is not thread safe */
@@ -120,13 +122,16 @@ cvc_check_time(const CVC_CERT *cert)
     eff_tm.tm_hour = 0;         /* hours */
     eff_tm.tm_wday = -1;        /* day of the week */
     eff_tm.tm_yday = -1;        /* day in the year */
+
+    eff_d = ASN1_STRING_get0_data(cert->body->certificate_effective_date);
+    exp_d = ASN1_STRING_get0_data(cert->body->certificate_expiration_date);
     eff_tm.tm_year = 100        /* The number of years since 1900 */
-        + ((unsigned char) cert->body->certificate_effective_date->data[0])*10
-        + (unsigned char) cert->body->certificate_effective_date->data[1];
-    eff_tm.tm_mon = ((unsigned char) cert->body->certificate_effective_date->data[2])*10
-        + (unsigned char) cert->body->certificate_effective_date->data[3] - 1;
-    eff_tm.tm_mday = ((unsigned char) cert->body->certificate_effective_date->data[4])*10
-        + (unsigned char) cert->body->certificate_effective_date->data[5];
+        + ((unsigned char) eff_d[0])*10
+        + (unsigned char) eff_d[1];
+    eff_tm.tm_mon = ((unsigned char) eff_d[2])*10
+        + (unsigned char) eff_d[3] - 1;
+    eff_tm.tm_mday = ((unsigned char) eff_d[4])*10
+        + (unsigned char) eff_d[5];
 
     memcpy(&exp_tm, utc_tm, sizeof(struct tm));
     exp_tm.tm_sec = 59;         /* seconds */
@@ -135,12 +140,12 @@ cvc_check_time(const CVC_CERT *cert)
     exp_tm.tm_wday = -1;        /* day of the week */
     exp_tm.tm_yday = -1;        /* day in the year */
     exp_tm.tm_year = 100        /* The number of years since 1900 */
-        + ((unsigned char) cert->body->certificate_expiration_date->data[0])*10
-        + (unsigned char) cert->body->certificate_expiration_date->data[1];
-    exp_tm.tm_mon = ((unsigned char) cert->body->certificate_expiration_date->data[2])*10
-        + (unsigned char) cert->body->certificate_expiration_date->data[3] - 1;
-    exp_tm.tm_mday = ((unsigned char) cert->body->certificate_expiration_date->data[4])*10
-        + (unsigned char) cert->body->certificate_expiration_date->data[5];
+        + ((unsigned char) exp_d[0])*10
+        + (unsigned char) exp_d[1];
+    exp_tm.tm_mon = ((unsigned char) exp_d[2])*10
+        + (unsigned char) exp_d[3] - 1;
+    exp_tm.tm_mday = ((unsigned char) exp_d[4])*10
+        + (unsigned char) exp_d[5];
 
     if (exp_tm.tm_mon < 0 || exp_tm.tm_mon > 12
             || exp_tm.tm_mday > 31
@@ -219,8 +224,8 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
         trust_anchor = ctx->trust_anchor;
     } else if (ctx->lookup_cvca_cert) {
         trust_anchor = ctx->lookup_cvca_cert(
-                next_cert->body->certificate_authority_reference->data,
-                next_cert->body->certificate_authority_reference->length);
+                ASN1_STRING_get0_data(next_cert->body->certificate_authority_reference),
+                ASN1_STRING_length(next_cert->body->certificate_authority_reference));
         check(trust_anchor, "Could not look up trust anchor");
 
         /* lookup the whole certificate chain until we hit an CVCA
@@ -240,11 +245,11 @@ TA_CTX_import_certificate(TA_CTX *ctx, const CVC_CERT *next_cert,
      * the CHR of the next certificate in the chain */
     check((next_cert->body->certificate_authority_reference
                 && trust_anchor->body->certificate_holder_reference
-                && next_cert->body->certificate_authority_reference->length ==
-                trust_anchor->body->certificate_holder_reference->length
-                && memcmp(trust_anchor->body->certificate_holder_reference->data,
-                    next_cert->body->certificate_authority_reference->data,
-                    trust_anchor->body->certificate_holder_reference->length) == 0),
+                && ASN1_STRING_length(next_cert->body->certificate_authority_reference) ==
+                ASN1_STRING_length(trust_anchor->body->certificate_holder_reference)
+                && memcmp(ASN1_STRING_get0_data(trust_anchor->body->certificate_holder_reference),
+                    ASN1_STRING_get0_data(next_cert->body->certificate_authority_reference),
+                    ASN1_STRING_length(trust_anchor->body->certificate_holder_reference)) == 0),
             "Current CHR does not match next CAR");
 
     i = CVC_verify_signature(next_cert,
