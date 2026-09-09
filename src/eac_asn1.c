@@ -380,11 +380,12 @@ aid2pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
         EC_KEY_free(tmp_ec);
 
     } else if (nid == NID_standardizedDomainParameters) {
-        check(aid->parameters->type == V_ASN1_INTEGER,
+        check(aid->parameters && aid->parameters->type == V_ASN1_INTEGER
+                && aid->parameters->value.integer,
                 "Invalid data");
         check(EVP_PKEY_set_std_dp(tmp_key,
                     ASN1_INTEGER_get(aid->parameters->value.integer)),
-                "Could not decode standardized domain parameter")
+                "Could not decode standardized domain parameter");
 
     } else {
         OBJ_obj2txt(obj_txt, sizeof obj_txt, aid->algorithm, 0);

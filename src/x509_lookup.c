@@ -71,14 +71,15 @@ static X509_STORE *X509_default_lookup(unsigned long issuer_name_hash)
 {
     static X509_STORE *store = NULL;
 
-    if (!store)
-       store = X509_STORE_new();
-    check(store, "Failed to create trust store");
+    if (!store) {
+        store = X509_STORE_new();
+        check(store, "Failed to create trust store");
 
-    if (!X509_STORE_load_locations(store, NULL, x509_default_dir)) {
+        if (!X509_STORE_load_locations(store, NULL, x509_default_dir)) {
             log_err("Failed to load trusted certificates");
             X509_STORE_free(store);
             store = NULL;
+        }
     }
 
 err:
