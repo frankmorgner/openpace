@@ -96,23 +96,30 @@ static int
 cvc_check_time(const CVC_CERT *cert)
 {
     time_t loc;
-    struct tm exp_tm, eff_tm, *utc_tm;
+    struct tm exp_tm, eff_tm, utc_tm_buf;
+    struct tm *utc_tm = &utc_tm_buf;
 
     if (!cert || !cert->body
             || !cert->body->certificate_effective_date
             || cert->body->certificate_effective_date->length != 6
             || !is_bcd(cert->body->certificate_effective_date->data,
                 cert->body->certificate_effective_date->length)
+            || !cert->body->certificate_expiration_date
             || cert->body->certificate_expiration_date->length != 6
             || !is_bcd(cert->body->certificate_expiration_date->data,
                 cert->body->certificate_expiration_date->length))
         return -1;
 
-    /* FIXME gmtime is not thread safe */
     time(&loc);
-    utc_tm = gmtime(&loc);
-    if (!utc_tm)
+#ifdef _WIN32
+    /* `gmtime_s()` is the `gmtime_r()` variant on Windows;
+     * note reversed argument order */
+    if (gmtime_s(&utc_tm_buf, &loc) != 0)
         return -1;
+#else
+    if (!gmtime_r(&loc, &utc_tm_buf))
+        return -1;
+#endif
 
     memcpy(&eff_tm, utc_tm, sizeof(struct tm));
     eff_tm.tm_sec = 0;          /* seconds */
