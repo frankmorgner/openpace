@@ -105,16 +105,22 @@ cvc_check_time(const CVC_CERT *cert)
             || ASN1_STRING_length(cert->body->certificate_effective_date) != 6
             || !is_bcd(ASN1_STRING_get0_data(cert->body->certificate_effective_date),
                 ASN1_STRING_length(cert->body->certificate_effective_date))
+            || !cert->body->certificate_expiration_date
             || ASN1_STRING_length(cert->body->certificate_expiration_date) != 6
             || !is_bcd(ASN1_STRING_get0_data(cert->body->certificate_expiration_date),
                 ASN1_STRING_length(cert->body->certificate_expiration_date)))
         return -1;
 
-    /* FIXME gmtime is not thread safe */
     time(&loc);
-    utc_tm = gmtime(&loc);
-    if (!utc_tm)
+#ifdef _WIN32
+    /* `gmtime_s()` is the `gmtime_r()` variant on Windows;
+     * note reversed argument order */
+    if (gmtime_s(&utc_tm_buf, &loc) != 0)
         return -1;
+#else
+    if (!gmtime_r(&loc, &utc_tm_buf))
+        return -1;
+#endif
 
     memcpy(&eff_tm, utc_tm, sizeof(struct tm));
     eff_tm.tm_sec = 0;          /* seconds */
