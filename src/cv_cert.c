@@ -794,6 +794,8 @@ CVC_verify_authentication_request_signatures(EAC_CTX *ctx,
     data = BUF_MEM_create(
             ASN1_STRING_length(authentication->certificate_authority_reference)
             + (size_t) request_len);
+    if (!data)
+        goto err;
     memcpy(data->data, request, request_len);
     memcpy(data->data + request_len,
             ASN1_STRING_get0_data(authentication->certificate_authority_reference),
