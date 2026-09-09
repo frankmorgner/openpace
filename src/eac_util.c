@@ -406,12 +406,12 @@ BUF_MEM *
 add_iso_pad(const BUF_MEM * m, int block_size)
 {
     BUF_MEM * out = NULL;
-    int p_len;
+    size_t p_len;
 
-    check(m, "Invalid arguments");
+    check(m && block_size > 0, "Invalid arguments");
 
     /* calculate length of padded message */
-    p_len = (m->length / block_size) * block_size + block_size;
+    p_len = (m->length / (size_t) block_size) * (size_t) block_size + (size_t) block_size;
 
     out = BUF_MEM_create(p_len);
     if (!out)
