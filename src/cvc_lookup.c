@@ -116,7 +116,7 @@ static int CVC_find_chr_in_directory(const unsigned char *chr, size_t chr_len,
     if(strlen(dir)+1+chr_len+5 > sizeof path)
         goto err;
 
-    r = BIO_snprintf(path, sizeof path, "%s/%s", dir, chr);
+    r = BIO_snprintf(path, sizeof path, "%s/%.*s", dir, (int) chr_len, (const char *) chr);
     if (r <= 0)
         goto err;
 

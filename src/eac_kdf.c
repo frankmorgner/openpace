@@ -67,7 +67,7 @@ kdf(const BUF_MEM *key, const BUF_MEM *nonce, const uint32_t counter,
     size_t inlen, key_len;
     BUF_MEM *in = NULL, *digest = NULL, *out = NULL;
 
-    check((key && ka_ctx->md && ka_ctx->cipher), "Invalid arguments");
+    check((key && ka_ctx && ka_ctx->md && ka_ctx->cipher), "Invalid arguments");
 
     key_len = EVP_CIPHER_key_length(ka_ctx->cipher);
     check(0 < EVP_MD_size(ka_ctx->md)
@@ -117,11 +117,9 @@ err:
 BUF_MEM *
 kdf_pi(const PACE_SEC *pi, const BUF_MEM *nonce, const KA_CTX *ctx, EVP_MD_CTX *md_ctx)
 {
-    BUF_MEM * out;
+    check_return(pi && pi->encoded && ctx, "Invalid arguments");
 
-    out = kdf(pi->encoded, nonce, htonl(KDF_PI_COUNTER), ctx, md_ctx);
-
-    return out;
+    return kdf(pi->encoded, nonce, htonl(KDF_PI_COUNTER), ctx, md_ctx);
 }
 
 BUF_MEM *

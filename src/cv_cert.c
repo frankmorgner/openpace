@@ -1206,10 +1206,13 @@ CVC_check_description(const CVC_CERT *cv, const unsigned char *cert_desc_in,
 
     unsigned int ret = -1;
 
+    if (!cv || !cv->body)
+        return -1;
+
     count = sk_num((_STACK*) cv->body->certificate_extensions);
     for (i = 0; i < count; i++) {
         p = sk_value((_STACK*) cv->body->certificate_extensions, i);
-        if (OBJ_obj2nid(p->type) == NID_id_description) {
+        if (p && OBJ_obj2nid(p->type) == NID_id_description) {
             hash_check = p->discretionary_data1;
             break;
         }

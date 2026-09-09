@@ -178,11 +178,16 @@ EAC_CTX_init_ef_cardsecurity(const unsigned char *ef_cardsecurity,
         check((CA_passive_authentication(ctx, p7) == 1),
                 "Failed to perform passive authentication");
 
+    if (!p7->d.sign || !p7->d.sign->contents)
+        goto err;
     signed_data = p7->d.sign->contents;
-    if (OBJ_obj2nid(signed_data->type) != NID_id_SecurityObject
+    if (!signed_data->type || !signed_data->d.other
+            || OBJ_obj2nid(signed_data->type) != NID_id_SecurityObject
             || ASN1_TYPE_get(signed_data->d.other) != V_ASN1_OCTET_STRING)
         goto err;
     os = signed_data->d.other->value.octet_string;
+    if (!os || !os->data)
+        goto err;
 
     if (!EAC_CTX_init_ef_cardaccess(os->data, os->length, ctx)
             || !ctx || !ctx->ca_ctx || !ctx->ca_ctx->ka_ctx)
@@ -305,7 +310,7 @@ CA_STEP6_derive_keys(EAC_CTX *ctx, const BUF_MEM *nonce, const BUF_MEM *token)
     check(rv >= 0, "Failed to verify authentication token");
 
     /* PACE, TA and CA were successful. Update the trust anchor! */
-    if (rv) {
+    if (rv && ctx->ta_ctx) {
         if (ctx->ta_ctx->new_trust_anchor) {
             CVC_CERT_free(ctx->ta_ctx->trust_anchor);
             ctx->ta_ctx->trust_anchor = ctx->ta_ctx->new_trust_anchor;
