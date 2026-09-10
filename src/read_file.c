@@ -53,7 +53,7 @@ int read_file(const char *filename, unsigned char **out, size_t *outlen)
 {
     FILE *fp = NULL;
     int fail = 1;
-    int filesize;
+    long filesize;
     unsigned char *p;
 
     fp = fopen(filename, "rb");
@@ -74,19 +74,19 @@ int read_file(const char *filename, unsigned char **out, size_t *outlen)
     fseek(fp, 0L, SEEK_SET);
 
     if (0 != filesize) {
-        p = (unsigned char*) realloc(*out, filesize);
+        p = (unsigned char*) realloc(*out, (size_t) filesize);
         if (!p) {
             puts("Failed to allocate memory");
             goto err;
         }
         *out = p;
 
-        if (filesize != fread(p, sizeof(unsigned char), filesize, fp)) {
+        if ((size_t) filesize != fread(p, sizeof(unsigned char), (size_t) filesize, fp)) {
             perror("Failed to read file");
             goto err;
         }
     }
-    *outlen = filesize;
+    *outlen = (size_t) filesize;
 
     fail = 0;
 
