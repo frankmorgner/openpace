@@ -96,7 +96,8 @@ static int
 cvc_check_time(const CVC_CERT *cert)
 {
     time_t loc;
-    struct tm exp_tm, eff_tm, *utc_tm;
+    struct tm exp_tm, eff_tm, utc_tm_buf;
+    struct tm *utc_tm = NULL;
     const unsigned char *eff_d;
     const unsigned char *exp_d;
 
@@ -115,12 +116,13 @@ cvc_check_time(const CVC_CERT *cert)
 #ifdef _WIN32
     /* `gmtime_s()` is the `gmtime_r()` variant on Windows;
      * note reversed argument order */
-    if (gmtime_s(&utc_tm_buf, &loc) != 0)
-        return -1;
+    if (gmtime_s(&utc_tm_buf, &loc) == 0)
+        utc_tm = &utc_tm_buf;
 #else
-    if (!gmtime_r(&loc, &utc_tm_buf))
-        return -1;
+    utc_tm = gmtime_r(&loc, &utc_tm_buf);
 #endif
+    if (!utc_tm)
+        return -1;
 
     memcpy(&eff_tm, utc_tm, sizeof(struct tm));
     eff_tm.tm_sec = 0;          /* seconds */
