@@ -380,8 +380,7 @@ aid2pkey(EVP_PKEY **key, ALGORITHM_IDENTIFIER *aid, BN_CTX *bn_ctx)
         EC_KEY_free(tmp_ec);
 
     } else if (nid == NID_standardizedDomainParameters) {
-        check(aid->parameters && aid->parameters->type == V_ASN1_INTEGER
-                && aid->parameters->value.integer,
+        check(aid->parameters && aid->parameters->type == V_ASN1_INTEGER,
                 "Invalid data");
         check(EVP_PKEY_set_std_dp(tmp_key,
                     ASN1_INTEGER_get(aid->parameters->value.integer)),
@@ -497,9 +496,14 @@ EAC_CTX_init_ef_cardaccess(const unsigned char * in, size_t in_len,
     while (todo > 0) {
         info_start = in;
 
-        if (!(ASN1_get_object(&in, &data_len, &tag, &class, todo))
+        if ((0x80 & ASN1_get_object(&in, &data_len, &tag, &class, todo))
                 || tag != V_ASN1_SEQUENCE) {
             /* we've reached the junk */
+            break;
+        }
+
+        if (data_len < 0 || (size_t) data_len > todo || (size_t)(in - info_start) > todo - (size_t) data_len) {
+            log_err("Invalid ASN.1 length in SecurityInfo");
             break;
         }
 
