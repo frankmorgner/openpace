@@ -68,9 +68,9 @@ BUF_MEM *
 EAC_remove_iso_pad(const BUF_MEM *padded)
 {
     BUF_MEM *out = NULL;
-    unsigned int m_len;
+    size_t m_len;
 
-    check(padded, "Invalid arguments");
+    check(padded && padded->data && padded->length > 0, "Invalid arguments");
 
     /* Find length of unpadded message */
     m_len = padded->length - 1;
