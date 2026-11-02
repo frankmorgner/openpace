@@ -27,6 +27,6 @@ jobs:
     - run: .github/build.sh ubuntu
     - uses: actions/upload-artifact@v6
       with:
-        name: openpace-${{ github.ref_name }}-src
+        name: openpace-src
         path:
           openpace*.tar.gz
