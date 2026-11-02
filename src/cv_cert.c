@@ -1131,12 +1131,14 @@ certificate_description_print(BIO *bio,
 
     nid = OBJ_obj2nid(desc->descriptionType);
     if (nid == NID_id_plainFormat) {
+        if (desc->termsOfUsage) {
             if (!BIO_indent(bio, indent, 80)
                     || !BIO_printf(bio, "%s\n%.*s\n", cert_desc_field_strings[5],
                         ASN1_STRING_length(desc->termsOfUsage),
                         ASN1_STRING_get0_data(desc->termsOfUsage)))
                 return 0;
-            ret = 1;
+        }
+        ret = 1;
     } else if (nid == NID_id_htmlFormat) {
         ret = 2;
     } else if (nid == NID_id_pdfFormat) {
