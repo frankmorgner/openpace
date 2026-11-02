@@ -61,17 +61,43 @@
 #include <openssl/rsa.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #define err(s) { puts(s); ERR_print_errors_fp(stdout); goto err; }
 
-static int write_file(const char *filename, unsigned char *data, size_t length)
+static int write_file(const char *filename, unsigned char *data, size_t length, int is_private)
 {
     FILE *fp = NULL;
     int fail = 1;
+    int fd;
 
-    fp = fopen(filename, "wb");
-    if (!fp) {
+#ifdef _WIN32
+    int pmode = _S_IREAD | _S_IWRITE;
+    int oflag = _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY;
+    fd = _open(filename, oflag, pmode);
+#else
+    mode_t mode = is_private ? 0600 : 0666;
+    fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, mode);
+#endif
+    if (fd < 0) {
         perror("Could not open file");
+        goto err;
+    }
+
+    fp = fdopen(fd, "wb");
+    if (!fp) {
+        perror("Could not open file stream");
+#ifdef _WIN32
+        _close(fd);
+#else
+        close(fd);
+#endif
         goto err;
     }
 
@@ -795,7 +821,7 @@ int main(int argc, char *argv[])
                 } else {
                     out = cmdline.out_key_arg;
                 }
-                if (0 != write_file(out, term_key_buf, term_key_len))
+                if (0 != write_file(out, term_key_buf, term_key_len, 1))
                     err("Could not write terminal key");
                 printf("Created %s\n", out);
             } else {
@@ -931,7 +957,7 @@ int main(int argc, char *argv[])
         } else {
             out = cmdline.out_desc_arg;
         }
-        if (0 != write_file(out, desc_buf, desc_buf_len))
+        if (0 != write_file(out, desc_buf, desc_buf_len, 0))
             err("Could not write certificate description");
         printf("Created %s\n", out);
     }
@@ -974,7 +1000,7 @@ int main(int argc, char *argv[])
     } else {
         out = cmdline.out_cert_arg;
     }
-    if (0 != write_file(out, cert_buf, cert_len))
+    if (0 != write_file(out, cert_buf, cert_len, 0))
         err("Could not write certificate");
     printf("Created %s\n", out);
 
