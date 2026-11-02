@@ -38,7 +38,7 @@ case "$1" in
         sudo sh -c "echo ':APE:M::MZqFpD::/bin/sh:' >/proc/sys/fs/binfmt_misc/register"
         sudo mkdir -p /opt
         sudo chmod 1777 /opt
-        test -d /opt/cosmo || (wget https://cosmo.zip/pub/cosmocc/cosmocc-3.3.1.zip && sudo unzip cosmocc-3.3.1.zip -d /opt/cosmo)
+        test -d /opt/cosmo || (wget https://github.com/jart/cosmopolitan/releases/download/3.3.1/cosmocc-3.3.1.zip && sudo unzip cosmocc-3.3.1.zip -d /opt/cosmo)
         test -d openssl || git clone --depth=1 https://github.com/openssl/openssl.git -b openssl-3.0 openssl
         # see also https://github.com/ahgamut/superconfigure/blob/main/lib/openssl/BUILD.mk
         cd openssl
