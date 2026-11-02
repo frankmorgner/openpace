@@ -27,7 +27,7 @@ jobs:
     - run: .github/build.sh ape
     - uses: actions/upload-artifact@v6
       with:
-        name: openpace-${{ github.ref_name }}-bin
+        name: openpace--bin
         path:
           openpace-bin
 
