@@ -21,7 +21,7 @@ permissions:  # added using https://github.com/step-security/secure-repo
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
     - uses: actions/checkout@v6
     - run: .github/build.sh macos
