@@ -49,11 +49,18 @@ except ImportError:
     sys.exit(1)
 
 def hash_dir(dir):
+    safe_dir = os.path.realpath(dir)
+    if not safe_dir.endswith(os.path.sep):
+        safe_dir += os.path.sep
     files = os.listdir(dir)
     os.chdir(dir)
     for file in files:
         try:
             cvc = CVC(open(file).read())
+            requested_path = os.path.join(safe_dir, cvc.get_chr())
+            if os.path.commonprefix((os.path.realpath(requested_path), safe_dir)) != safe_dir:
+                sys.stderr.write("Skipping %s: unsafe certificate holder reference %s\n" % (file, cvc.get_chr()))
+                continue
             if platform.system() == 'Windows':
                 print "Copying " + file + " to " + cvc.get_chr()
                 shutil.copyfile(file, cvc.get_chr())
